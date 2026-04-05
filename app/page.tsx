@@ -7,230 +7,192 @@ export default function Home() {
 
       <main className="flex-1">
         {/* ── Hero ── */}
-        <section className="relative bg-gray-900 text-white overflow-hidden">
-          {/* Subtle gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-900 to-scarlet/20" />
-          <div className="relative mx-auto max-w-7xl px-6 lg:px-8 py-28 md:py-40">
+        <section className="relative overflow-hidden bg-gradient-to-br from-cream via-cream to-[#FDF0EB]">
+          <div className="absolute top-[-120px] right-[-120px] w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,rgba(242,190,106,0.15)_0%,transparent_70%)] pointer-events-none" />
+          <div className="relative mx-auto max-w-7xl px-6 lg:px-8 py-20 md:py-32">
             <div className="max-w-2xl">
-              <p className="text-scarlet font-semibold text-sm tracking-widest uppercase mb-4">
-                MCAT Prep, Redefined
-              </p>
-              <h1 className="font-serif text-4xl md:text-6xl font-bold leading-tight tracking-tight">
+              <div className="flex items-center gap-2 text-coral text-xs font-semibold tracking-[0.12em] uppercase mb-5">
+                <span className="block w-6 h-0.5 bg-coral" />
+                MCAT Prep, Reimagined
+              </div>
+              <h1 className="font-serif text-4xl md:text-6xl text-navy leading-tight tracking-tight">
                 Your MCAT Score
                 <br />
                 Shouldn&rsquo;t Hold
                 <br />
-                You Back.
+                <em className="italic text-coral">You Back.</em>
               </h1>
-              <p className="mt-6 text-lg md:text-xl text-gray-300 leading-relaxed max-w-lg">
+              <p className="mt-6 text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg">
                 Built by someone who&rsquo;s been through it. Praxis Prep gives
                 you the strategies, structure, and support to score higher —
                 without the burnout.
               </p>
-              <div className="mt-10 flex flex-col sm:flex-row gap-4">
+              <div className="mt-10 flex flex-col sm:flex-row gap-3.5">
                 <a
                   href="#cta"
-                  className="rounded-full bg-scarlet px-8 py-3.5 text-sm font-semibold text-white shadow-lg hover:bg-scarlet-dark transition-colors text-center"
+                  className="rounded-full bg-coral px-8 py-3.5 text-sm font-semibold text-white shadow-[0_4px_16px_rgba(224,122,95,0.3)] hover:bg-coral-dark hover:-translate-y-0.5 transition-all text-center"
                 >
-                  Start Prepping Today
+                  Start Your Free Trial &rarr;
                 </a>
                 <a
                   href="#why"
-                  className="rounded-full border border-white/20 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors text-center"
+                  className="rounded-full border-2 border-navy px-8 py-3.5 text-sm font-semibold text-navy hover:bg-navy hover:text-white transition-colors text-center"
                 >
-                  Learn More
+                  See How It Works
                 </a>
               </div>
+              <p className="mt-5 text-xs text-gray-400 flex items-center gap-1.5">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <circle cx="7" cy="7" r="6.5" stroke="currentColor" />
+                  <path
+                    d="M7 4v3l2 2"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                No credit card required &middot; Cancel anytime
+              </p>
             </div>
           </div>
         </section>
 
         {/* ── Social Proof Bar ── */}
-        <section className="bg-gray-50 border-b border-gray-200">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8 py-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              <div>
-                <p className="text-3xl md:text-4xl font-serif font-bold text-scarlet">
-                  1:1
-                </p>
-                <p className="mt-1 text-sm text-gray-600">
-                  Personal Mentorship
-                </p>
-              </div>
-              <div>
-                <p className="text-3xl md:text-4xl font-serif font-bold text-scarlet">
-                  24/7
-                </p>
-                <p className="mt-1 text-sm text-gray-600">
-                  Student Support
-                </p>
-              </div>
-              <div>
-                <p className="text-3xl md:text-4xl font-serif font-bold text-scarlet">
-                  50%
-                </p>
-                <p className="mt-1 text-sm text-gray-600">
-                  Less Than Big Prep
-                </p>
-              </div>
-              <div>
-                <p className="text-3xl md:text-4xl font-serif font-bold text-scarlet">
-                  100%
-                </p>
-                <p className="mt-1 text-sm text-gray-600">
-                  Personalized Plans
-                </p>
-              </div>
+        <section className="bg-navy py-6">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="flex flex-wrap items-center justify-between gap-6 text-center">
+              {[
+                { num: "1:1", label: "Personal Mentorship" },
+                { num: "24/7", label: "Student Support" },
+                { num: "50%", label: "Less Than Big Prep" },
+                { num: "100%", label: "Personalized Plans" },
+              ].map((stat, i, arr) => (
+                <div key={stat.label} className="flex items-center gap-6 mx-auto md:mx-0">
+                  <div>
+                    <p className="text-2xl md:text-3xl font-serif text-gold">
+                      {stat.num}
+                    </p>
+                    <p className="text-xs text-white/60 mt-0.5">{stat.label}</p>
+                  </div>
+                  {i < arr.length - 1 && (
+                    <div className="hidden md:block w-px h-10 bg-white/15" />
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* ── Why Praxis ── */}
-        <section id="why" className="bg-white">
+        <section id="why" className="bg-cream">
           <div className="mx-auto max-w-7xl px-6 lg:px-8 py-24 md:py-32">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <p className="text-scarlet font-semibold text-sm tracking-widest uppercase mb-3">
+            <div className="text-center max-w-xl mx-auto mb-14">
+              <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#FDF0EB] border border-[#F5C8BA] rounded-full px-3.5 py-1 mb-4">
                 Why Praxis Prep
-              </p>
-              <h2 className="font-serif text-3xl md:text-5xl font-bold text-gray-900 tracking-tight">
+              </span>
+              <h2 className="font-serif text-3xl md:text-4xl text-navy tracking-tight">
                 We&rsquo;ve Been Where You Are
               </h2>
-              <p className="mt-6 text-lg text-gray-600 leading-relaxed">
+              <p className="mt-3 text-base text-gray-600 leading-relaxed">
                 Most prep companies are built by test-prep corporations. Praxis
-                was built by someone who recently sat in your seat, took the
-                exam, and learned exactly what works — and what doesn&rsquo;t.
+                was built by someone who recently sat in your seat.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 lg:gap-12">
-              {/* Card 1 */}
-              <div className="bg-gray-50 rounded-2xl p-8 lg:p-10">
-                <div className="w-12 h-12 rounded-xl bg-scarlet/10 flex items-center justify-center mb-6">
-                  <svg className="w-6 h-6 text-scarlet" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
-                  </svg>
+            <div className="grid md:grid-cols-3 gap-7">
+              {[
+                {
+                  icon: "📚",
+                  bg: "#FDF0EB",
+                  title: "Strategy Over Memorization",
+                  desc: "We teach you how to think through problems, manage your time, and approach each section with a clear game plan.",
+                },
+                {
+                  icon: "📅",
+                  bg: "#F0FBF5",
+                  title: "Personalized Study Plans",
+                  desc: "We build a prep schedule around your strengths, weaknesses, timeline, and life — not a one-size-fits-all curriculum.",
+                },
+                {
+                  icon: "🤝",
+                  bg: "#F5F0FF",
+                  title: "Real Mentorship",
+                  desc: "You're getting a mentor who understands the pressure, the stakes, and what it takes to reach your target score.",
+                },
+              ].map((card) => (
+                <div
+                  key={card.title}
+                  className="bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-lg hover:-translate-y-1 transition-all"
+                >
+                  <div
+                    className="w-[52px] h-[52px] rounded-[14px] flex items-center justify-center text-2xl mb-5"
+                    style={{ background: card.bg }}
+                  >
+                    {card.icon}
+                  </div>
+                  <h3 className="font-serif text-lg text-navy mb-2">
+                    {card.title}
+                  </h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {card.desc}
+                  </p>
                 </div>
-                <h3 className="font-serif text-xl font-bold text-gray-900 mb-3">
-                  Strategy Over Memorization
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  The MCAT isn&rsquo;t about cramming facts. We teach you how to
-                  think through problems, manage your time, and approach each
-                  section with a clear game plan.
-                </p>
-              </div>
-
-              {/* Card 2 */}
-              <div className="bg-gray-50 rounded-2xl p-8 lg:p-10">
-                <div className="w-12 h-12 rounded-xl bg-scarlet/10 flex items-center justify-center mb-6">
-                  <svg className="w-6 h-6 text-scarlet" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
-                  </svg>
-                </div>
-                <h3 className="font-serif text-xl font-bold text-gray-900 mb-3">
-                  Personalized Study Plans
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  No two students are the same. We build a prep schedule around
-                  your strengths, weaknesses, timeline, and life — not a
-                  one-size-fits-all curriculum.
-                </p>
-              </div>
-
-              {/* Card 3 */}
-              <div className="bg-gray-50 rounded-2xl p-8 lg:p-10">
-                <div className="w-12 h-12 rounded-xl bg-scarlet/10 flex items-center justify-center mb-6">
-                  <svg className="w-6 h-6 text-scarlet" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-                  </svg>
-                </div>
-                <h3 className="font-serif text-xl font-bold text-gray-900 mb-3">
-                  Real Mentorship
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  You&rsquo;re not just getting content — you&rsquo;re getting a
-                  mentor who understands the pressure, the stakes, and what it
-                  takes to reach your target score.
-                </p>
-              </div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* ── Student Stories ── */}
-        <section id="results" className="bg-gray-50">
+        <section id="results" className="bg-sand">
           <div className="mx-auto max-w-7xl px-6 lg:px-8 py-24 md:py-32">
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <div>
-                <p className="text-scarlet font-semibold text-sm tracking-widest uppercase mb-3">
+                <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#FDF0EB] border border-[#F5C8BA] rounded-full px-3.5 py-1 mb-4">
                   Student Stories
-                </p>
-                <h2 className="font-serif text-3xl md:text-5xl font-bold text-gray-900 tracking-tight">
+                </span>
+                <h2 className="font-serif text-3xl md:text-4xl text-navy tracking-tight">
                   We Show Up for Our Students
                 </h2>
-                <p className="mt-6 text-lg text-gray-600 leading-relaxed">
+                <p className="mt-4 text-base text-gray-600 leading-relaxed">
                   We can&rsquo;t take your test for you — but we can make sure
                   you never feel alone preparing for it. Our students tell us
                   the difference isn&rsquo;t just the material. It&rsquo;s
                   having someone in their corner who genuinely cares.
                 </p>
                 <div className="mt-10 grid grid-cols-2 gap-6">
-                  <div className="border-l-4 border-scarlet pl-4">
-                    <p className="text-2xl font-serif font-bold text-gray-900">
-                      Always
-                    </p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Available when you need us
-                    </p>
-                  </div>
-                  <div className="border-l-4 border-scarlet pl-4">
-                    <p className="text-2xl font-serif font-bold text-gray-900">
-                      Custom
-                    </p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Every plan built for you
-                    </p>
-                  </div>
-                  <div className="border-l-4 border-scarlet pl-4">
-                    <p className="text-2xl font-serif font-bold text-gray-900">
-                      Honest
-                    </p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Real talk, no empty promises
-                    </p>
-                  </div>
-                  <div className="border-l-4 border-scarlet pl-4">
-                    <p className="text-2xl font-serif font-bold text-gray-900">
-                      Affordable
-                    </p>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Premium prep, fair price
-                    </p>
-                  </div>
+                  {[
+                    { word: "Always", desc: "Available when you need us" },
+                    { word: "Custom", desc: "Every plan built for you" },
+                    { word: "Honest", desc: "Real talk, no empty promises" },
+                    { word: "Affordable", desc: "Premium prep, fair price" },
+                  ].map((item) => (
+                    <div
+                      key={item.word}
+                      className="border-l-4 border-coral pl-4"
+                    >
+                      <p className="text-xl font-serif text-navy">
+                        {item.word}
+                      </p>
+                      <p className="text-xs text-gray-600 mt-1">{item.desc}</p>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Testimonial card */}
               <div className="bg-white rounded-2xl p-8 lg:p-10 shadow-sm border border-gray-200">
-                <svg className="w-10 h-10 text-scarlet/30 mb-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                </svg>
-                <blockquote className="text-lg text-gray-900 leading-relaxed font-medium">
-                  &ldquo;What set Praxis apart wasn&rsquo;t a score guarantee —
-                  it was having someone who actually picked up the phone when I
-                  was spiraling before my exam. They walked me through it, calmed
-                  me down, and helped me show up ready. I couldn&rsquo;t have
-                  done it without that support.&rdquo;
+                <div className="text-coral/30 text-4xl mb-4">&ldquo;</div>
+                <blockquote className="text-base text-gray-900 leading-relaxed italic">
+                  What set Praxis apart wasn&rsquo;t a score guarantee — it was
+                  having someone who actually picked up the phone when I was
+                  spiraling before my exam. They walked me through it, calmed me
+                  down, and helped me show up ready.
                 </blockquote>
-                <div className="mt-8 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-scarlet/10 flex items-center justify-center">
-                    <span className="text-scarlet font-serif font-bold text-lg">
-                      S
-                    </span>
+                <div className="mt-8 flex items-center gap-3">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-coral to-gold flex items-center justify-center text-white font-semibold text-sm">
+                    SM
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">Sarah M.</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-semibold text-sm text-navy">Sarah M.</p>
+                    <p className="text-xs text-gray-400">
                       Praxis Prep Student
                     </p>
                   </div>
@@ -241,52 +203,51 @@ export default function Home() {
         </section>
 
         {/* ── Our Approach ── */}
-        <section id="approach" className="bg-white">
+        <section id="approach" className="bg-cream">
           <div className="mx-auto max-w-7xl px-6 lg:px-8 py-24 md:py-32">
-            <div className="text-center max-w-3xl mx-auto mb-16">
-              <p className="text-scarlet font-semibold text-sm tracking-widest uppercase mb-3">
-                Our Approach
-              </p>
-              <h2 className="font-serif text-3xl md:text-5xl font-bold text-gray-900 tracking-tight">
-                How Praxis Works
+            <div className="text-center max-w-xl mx-auto mb-14">
+              <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#FDF0EB] border border-[#F5C8BA] rounded-full px-3.5 py-1 mb-4">
+                How It Works
+              </span>
+              <h2 className="font-serif text-3xl md:text-4xl text-navy tracking-tight">
+                From sign-up to test day in 4 steps
               </h2>
-              <p className="mt-6 text-lg text-gray-600 leading-relaxed">
-                A clear, structured path from where you are to the score you
-                need — no fluff, no filler.
+              <p className="mt-3 text-base text-gray-600">
+                We handle the structure. You handle the studying.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
                 {
-                  step: "01",
-                  title: "Diagnostic Assessment",
-                  desc: "We start by understanding exactly where you stand with a full-length practice exam and detailed score analysis.",
+                  step: "1",
+                  title: "Tell Us Your Goals",
+                  desc: "Enter your target score, test date, and how many hours per week you can study.",
                 },
                 {
-                  step: "02",
-                  title: "Custom Study Plan",
-                  desc: "Based on your diagnostic, timeline, and goals, we create a week-by-week plan tailored specifically to you.",
+                  step: "2",
+                  title: "Get Your Study Plan",
+                  desc: "We generate a personalized week-by-week schedule tailored to your timeline.",
                 },
                 {
-                  step: "03",
-                  title: "Guided Preparation",
-                  desc: "Work through high-yield content, practice questions, and strategy sessions with direct mentor support.",
+                  step: "3",
+                  title: "Learn & Practice",
+                  desc: "Work through lessons, practice questions, and strategy sessions with mentor support.",
                 },
                 {
-                  step: "04",
-                  title: "Test Day Confidence",
-                  desc: "Full-length practice exams, timing drills, and mindset coaching so you walk in ready — not anxious.",
+                  step: "4",
+                  title: "Walk In Confident",
+                  desc: "Full-length practice exams, timing drills, and mindset coaching so you're ready.",
                 },
               ].map((item) => (
-                <div key={item.step} className="text-center md:text-left">
-                  <p className="text-5xl font-serif font-bold text-scarlet/15 mb-4">
+                <div key={item.step} className="text-center py-8 px-5">
+                  <div className="w-[52px] h-[52px] rounded-full bg-gradient-to-br from-coral to-gold text-white font-serif text-xl flex items-center justify-center mx-auto mb-5 shadow-[0_4px_16px_rgba(224,122,95,0.35)]">
                     {item.step}
-                  </p>
-                  <h3 className="font-serif text-lg font-bold text-gray-900 mb-2">
+                  </div>
+                  <h3 className="font-serif text-base text-navy mb-2">
                     {item.title}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="text-sm text-gray-600 leading-relaxed">
                     {item.desc}
                   </p>
                 </div>
@@ -296,26 +257,26 @@ export default function Home() {
         </section>
 
         {/* ── FAQ ── */}
-        <section id="faq" className="bg-gray-50">
+        <section id="faq" className="bg-sand">
           <div className="mx-auto max-w-3xl px-6 lg:px-8 py-24 md:py-32">
-            <div className="text-center mb-16">
-              <p className="text-scarlet font-semibold text-sm tracking-widest uppercase mb-3">
+            <div className="text-center mb-14">
+              <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#FDF0EB] border border-[#F5C8BA] rounded-full px-3.5 py-1 mb-4">
                 FAQ
-              </p>
-              <h2 className="font-serif text-3xl md:text-4xl font-bold text-gray-900 tracking-tight">
+              </span>
+              <h2 className="font-serif text-3xl md:text-4xl text-navy tracking-tight">
                 Common Questions
               </h2>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               {[
                 {
                   q: "Who is Praxis Prep for?",
-                  a: "Anyone preparing for the MCAT — whether you're just starting out, retaking the exam, or looking to push your score into the 515+ range. Our approach works for all levels.",
+                  a: "Anyone preparing for the MCAT — whether you're just starting out, retaking the exam, or looking to push your score higher. Our approach works for all levels.",
                 },
                 {
                   q: "What makes Praxis different from other prep companies?",
-                  a: "Two things: the experience and the price. We give you real, personal mentorship from someone who's recently been through the MCAT — not a faceless corporation. And we do it at a fraction of the cost of the big prep companies. We'd rather invest in your experience than in marketing promises.",
+                  a: "Two things: the experience and the price. We give you real, personal mentorship from someone who's recently been through the MCAT — not a faceless corporation. And we do it at a fraction of the cost of the big prep companies.",
                 },
                 {
                   q: "How long should I prep for the MCAT?",
@@ -327,19 +288,19 @@ export default function Home() {
                 },
                 {
                   q: "What if I'm struggling during the program?",
-                  a: "That's exactly what we're here for. Prep is hard, and tough stretches are normal. Your mentor will adjust your plan, work through problem areas with you, and make sure you're never stuck alone. We're in your corner the entire way.",
+                  a: "That's exactly what we're here for. Prep is hard, and tough stretches are normal. Your mentor will adjust your plan, work through problem areas with you, and make sure you're never stuck alone.",
                 },
               ].map((item, i) => (
                 <details
                   key={i}
-                  className="group bg-white rounded-xl border border-gray-200 px-6 py-5"
+                  className="group bg-white rounded-2xl border border-gray-200 px-6 py-5"
                 >
                   <summary className="flex items-center justify-between cursor-pointer list-none">
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-sm text-navy">
                       {item.q}
                     </span>
                     <svg
-                      className="w-5 h-5 text-gray-400 group-open:rotate-180 transition-transform"
+                      className="w-4 h-4 text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-4"
                       fill="none"
                       viewBox="0 0 24 24"
                       strokeWidth={2}
@@ -352,7 +313,7 @@ export default function Home() {
                       />
                     </svg>
                   </summary>
-                  <p className="mt-4 text-gray-600 leading-relaxed">
+                  <p className="mt-4 text-sm text-gray-600 leading-relaxed">
                     {item.a}
                   </p>
                 </details>
@@ -362,56 +323,97 @@ export default function Home() {
         </section>
 
         {/* ── Final CTA ── */}
-        <section id="cta" className="bg-gray-900 text-white">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8 py-24 md:py-32 text-center">
-            <h2 className="font-serif text-3xl md:text-5xl font-bold tracking-tight">
-              Ready to Raise Your Score?
+        <section
+          id="cta"
+          className="relative bg-gradient-to-br from-navy to-navy-light text-white overflow-hidden"
+        >
+          <div className="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(242,190,106,0.12)_0%,transparent_70%)]" />
+          <div className="relative mx-auto max-w-7xl px-6 lg:px-8 py-20 md:py-28 text-center">
+            <h2 className="font-serif text-3xl md:text-5xl tracking-tight">
+              Ready to Start Prepping?
             </h2>
-            <p className="mt-6 text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            <p className="mt-4 text-base text-white/65 max-w-xl mx-auto leading-relaxed">
               Join the students who stopped stressing about the MCAT and started
               seeing real progress. Your medical school journey starts here.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="mt-10 flex flex-col sm:flex-row gap-3.5 justify-center">
               <a
                 href="#"
-                className="rounded-full bg-scarlet px-10 py-4 text-base font-semibold text-white shadow-lg hover:bg-scarlet-dark transition-colors"
+                className="rounded-full bg-white text-navy px-10 py-3.5 text-sm font-bold hover:bg-cream hover:-translate-y-0.5 transition-all"
               >
-                Get Started — It&rsquo;s Free to Apply
+                Start Your Free Trial &rarr;
+              </a>
+              <a
+                href="#"
+                className="rounded-full border-2 border-white/40 text-white px-10 py-3.5 text-sm font-semibold hover:border-white transition-colors"
+              >
+                Talk to Us
               </a>
             </div>
-            <p className="mt-4 text-sm text-gray-400">
-              No commitment required. Let&rsquo;s see where you stand.
+            <p className="mt-4 text-xs text-white/40">
+              No credit card required &middot; Cancel anytime
             </p>
           </div>
         </section>
       </main>
 
       {/* ── Footer ── */}
-      <footer className="bg-gray-900 border-t border-white/10 text-white">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8 py-12">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div>
-              <p className="font-serif text-xl font-bold text-white">
-                Praxis Prep
-              </p>
-              <p className="text-sm text-gray-400 mt-1">
-                MCAT prep that actually works.
+      <footer className="bg-navy text-white/60">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8 py-14">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+            <div className="col-span-2 md:col-span-1">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-[8px] bg-gradient-to-br from-coral to-gold flex items-center justify-center text-white font-serif text-sm">
+                  P
+                </div>
+                <span className="font-serif text-lg text-white">
+                  Praxis Prep
+                </span>
+              </div>
+              <p className="text-sm text-white/55 leading-relaxed max-w-[260px]">
+                MCAT prep built by someone who&rsquo;s been through it.
+                Affordable, personal, and effective.
               </p>
             </div>
-            <div className="flex gap-6 text-sm text-gray-400">
-              <a href="#" className="hover:text-white transition-colors">
-                Privacy
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                Terms
-              </a>
-              <a href="#" className="hover:text-white transition-colors">
-                Contact
-              </a>
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-white mb-4">
+                Product
+              </h4>
+              <div className="space-y-2.5">
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Courses</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Practice Exams</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Question Bank</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Mentorship</a>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-white mb-4">
+                Resources
+              </h4>
+              <div className="space-y-2.5">
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Blog</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">MCAT Guides</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Test Dates</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Score Calculator</a>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-white mb-4">
+                Company
+              </h4>
+              <div className="space-y-2.5">
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Our Story</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Contact</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Privacy</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Terms</a>
+              </div>
             </div>
           </div>
-          <div className="mt-8 border-t border-white/10 pt-8 text-center text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} Praxis Prep. All rights reserved.
+          <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-xs text-white/40">
+              &copy; {new Date().getFullYear()} Praxis Prep. All rights
+              reserved.
+            </p>
           </div>
         </div>
       </footer>
