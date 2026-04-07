@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function PricingPage() {
@@ -359,10 +360,14 @@ export default function PricingPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-14">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
             <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-[8px] bg-gradient-to-br from-coral to-gold flex items-center justify-center text-white font-serif text-sm">
-                  P
-                </div>
+              <div className="flex items-center gap-1.5 mb-3">
+                <Image
+                  src="/logo.png"
+                  alt="Praxis Prep logo"
+                  width={22}
+                  height={42}
+                  className="h-8 w-auto brightness-0 invert"
+                />
                 <span className="font-serif text-lg text-white">
                   Praxis Prep
                 </span>

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type DropdownKey = "courses" | "resources" | "about" | null;
 
@@ -225,11 +226,15 @@ export default function Navigation() {
       <nav className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex h-[68px] items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-coral to-gold flex items-center justify-center text-white font-serif text-lg">
-              P
-            </div>
-            <span className="text-xl font-serif text-navy">Praxis Prep</span>
+          <Link href="/" className="flex items-center gap-2">
+            <Image
+              src="/logo.png"
+              alt="Praxis Prep logo"
+              width={36}
+              height={68}
+              className="h-12 w-auto -my-1"
+            />
+            <span className="text-[22px] font-serif text-navy">Praxis Prep</span>
           </Link>
 
           {/* Desktop nav */}
@@ -283,7 +288,7 @@ export default function Navigation() {
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-3">
             <Link
-              href="#"
+              href="/login"
               className="rounded-full border-2 border-navy px-5 py-2 text-sm font-semibold text-navy hover:bg-navy hover:text-white transition-colors"
             >
               Log In
@@ -460,7 +465,7 @@ export default function Navigation() {
               </Link>
               <div className="pt-4 border-t border-gray-200 space-y-3">
                 <Link
-                  href="#"
+                  href="/login"
                   className="block rounded-full border-2 border-navy px-5 py-2.5 text-sm font-semibold text-navy text-center hover:bg-navy hover:text-white transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >

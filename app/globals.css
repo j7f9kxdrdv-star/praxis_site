@@ -1,24 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #FDFAF6;
-  --foreground: #2A2420;
+  --background: #FAF7F2;
+  --foreground: #2E2520;
   --scarlet: #BB0000;
   --scarlet-dark: #990000;
-  --navy: #1B3D5C;
-  --navy-light: #2A6092;
-  --coral: #E07A5F;
-  --coral-dark: #C9674D;
-  --gold: #F2BE6A;
+  --navy: #3B2A1A;
+  --navy-light: #5C4430;
+  --coral: #B8704A;
+  --coral-dark: #9E5F3C;
+  --gold: #C8994B;
   --sage: #8FAF9F;
-  --sand: #F5EFE6;
-  --cream: #FDFAF6;
-  --gray-900: #2A2420;
-  --gray-600: #6B5E57;
-  --gray-400: #A09086;
-  --gray-200: #EDE5DC;
-  --gray-100: #F5EFE6;
-  --gray-50: #FDFAF6;
+  --sand: #F0E8DC;
+  --cream: #FAF7F2;
+  --amber: #D4A84B;
+  --plum: #7A3B5E;
+  --warm-brown: #5C3E27;
+  --gray-900: #2E2520;
+  --gray-600: #6B5E52;
+  --gray-400: #9C8E82;
+  --gray-200: #E8DFD4;
+  --gray-100: #F0E8DC;
+  --gray-50: #FAF7F2;
 }
 
 @theme inline {
@@ -34,6 +37,9 @@
   --color-sage: var(--sage);
   --color-sand: var(--sand);
   --color-cream: var(--cream);
+  --color-amber: var(--amber);
+  --color-plum: var(--plum);
+  --color-warm-brown: var(--warm-brown);
   --color-gray-900: var(--gray-900);
   --color-gray-600: var(--gray-600);
   --color-gray-400: var(--gray-400);
