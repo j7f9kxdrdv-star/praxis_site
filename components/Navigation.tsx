@@ -288,7 +288,7 @@ export default function Navigation() {
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-3">
             <Link
-              href="#"
+              href="/login"
               className="rounded-full border-2 border-navy px-5 py-2 text-sm font-semibold text-navy hover:bg-navy hover:text-white transition-colors"
             >
               Log In
@@ -465,7 +465,7 @@ export default function Navigation() {
               </Link>
               <div className="pt-4 border-t border-gray-200 space-y-3">
                 <Link
-                  href="#"
+                  href="/login"
                   className="block rounded-full border-2 border-navy px-5 py-2.5 text-sm font-semibold text-navy text-center hover:bg-navy hover:text-white transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
