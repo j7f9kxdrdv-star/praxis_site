@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Navigation from "@/components/Navigation";
 
 export default function Home() {
@@ -7,51 +8,66 @@ export default function Home() {
 
       <main className="flex-1">
         {/* ── Hero ── */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-cream via-cream to-[#FDF0EB]">
-          <div className="absolute top-[-120px] right-[-120px] w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,rgba(242,190,106,0.15)_0%,transparent_70%)] pointer-events-none" />
-          <div className="relative mx-auto max-w-7xl px-6 lg:px-8 py-20 md:py-32">
-            <div className="max-w-2xl">
-              <div className="flex items-center gap-2 text-coral text-xs font-semibold tracking-[0.12em] uppercase mb-5">
-                <span className="block w-6 h-0.5 bg-coral" />
-                MCAT Prep, Reimagined
+        <section className="relative overflow-hidden bg-cream">
+          {/* Hero image with overlay */}
+          <div className="relative w-full h-[520px] md:h-[620px]">
+            <Image
+              src="/hero-library.jpg"
+              alt="Student studying in a university library"
+              fill
+              className="object-cover object-center"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#2E2520]/80 via-[#2E2520]/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#2E2520]/60 to-transparent" />
+
+            {/* Hero text overlaid on image */}
+            <div className="relative z-10 h-full flex items-end">
+              <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-14 md:pb-20 w-full">
+                <div className="max-w-2xl">
+                  <div className="flex items-center gap-2 text-amber text-xs font-semibold tracking-[0.12em] uppercase mb-5">
+                    <span className="block w-6 h-0.5 bg-amber" />
+                    MCAT Prep, Reimagined
+                  </div>
+                  <h1 className="font-serif text-4xl md:text-6xl text-white leading-tight tracking-tight">
+                    Your MCAT Score
+                    <br />
+                    Shouldn&rsquo;t Hold
+                    <br />
+                    <em className="italic text-amber">You Back.</em>
+                  </h1>
+                  <p className="mt-6 text-lg md:text-xl text-white/80 leading-relaxed max-w-lg">
+                    Built by someone who&rsquo;s been through it. Praxis Prep
+                    gives you the strategies, structure, and support to score
+                    higher — without the burnout.
+                  </p>
+                  <div className="mt-10 flex flex-col sm:flex-row gap-3.5">
+                    <a
+                      href="#cta"
+                      className="rounded-full bg-amber px-8 py-3.5 text-sm font-semibold text-navy shadow-[0_4px_16px_rgba(212,168,75,0.35)] hover:bg-gold hover:-translate-y-0.5 transition-all text-center"
+                    >
+                      Start Your Free Trial &rarr;
+                    </a>
+                    <a
+                      href="#why"
+                      className="rounded-full border-2 border-white/50 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white hover:text-navy transition-colors text-center"
+                    >
+                      See How It Works
+                    </a>
+                  </div>
+                  <p className="mt-5 text-xs text-white/50 flex items-center gap-1.5">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <circle cx="7" cy="7" r="6.5" stroke="currentColor" />
+                      <path
+                        d="M7 4v3l2 2"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    No credit card required &middot; Cancel anytime
+                  </p>
+                </div>
               </div>
-              <h1 className="font-serif text-4xl md:text-6xl text-navy leading-tight tracking-tight">
-                Your MCAT Score
-                <br />
-                Shouldn&rsquo;t Hold
-                <br />
-                <em className="italic text-coral">You Back.</em>
-              </h1>
-              <p className="mt-6 text-lg md:text-xl text-gray-600 leading-relaxed max-w-lg">
-                Built by someone who&rsquo;s been through it. Praxis Prep gives
-                you the strategies, structure, and support to score higher —
-                without the burnout.
-              </p>
-              <div className="mt-10 flex flex-col sm:flex-row gap-3.5">
-                <a
-                  href="#cta"
-                  className="rounded-full bg-coral px-8 py-3.5 text-sm font-semibold text-white shadow-[0_4px_16px_rgba(224,122,95,0.3)] hover:bg-coral-dark hover:-translate-y-0.5 transition-all text-center"
-                >
-                  Start Your Free Trial &rarr;
-                </a>
-                <a
-                  href="#why"
-                  className="rounded-full border-2 border-navy px-8 py-3.5 text-sm font-semibold text-navy hover:bg-navy hover:text-white transition-colors text-center"
-                >
-                  See How It Works
-                </a>
-              </div>
-              <p className="mt-5 text-xs text-gray-400 flex items-center gap-1.5">
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <circle cx="7" cy="7" r="6.5" stroke="currentColor" />
-                  <path
-                    d="M7 4v3l2 2"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                  />
-                </svg>
-                No credit card required &middot; Cancel anytime
-              </p>
             </div>
           </div>
         </section>
@@ -66,12 +82,17 @@ export default function Home() {
                 { num: "50%", label: "Less Than Big Prep" },
                 { num: "100%", label: "Personalized Plans" },
               ].map((stat, i, arr) => (
-                <div key={stat.label} className="flex items-center gap-6 mx-auto md:mx-0">
+                <div
+                  key={stat.label}
+                  className="flex items-center gap-6 mx-auto md:mx-0"
+                >
                   <div>
-                    <p className="text-2xl md:text-3xl font-serif text-gold">
+                    <p className="text-2xl md:text-3xl font-serif text-amber">
                       {stat.num}
                     </p>
-                    <p className="text-xs text-white/60 mt-0.5">{stat.label}</p>
+                    <p className="text-xs text-white/60 mt-0.5">
+                      {stat.label}
+                    </p>
                   </div>
                   {i < arr.length - 1 && (
                     <div className="hidden md:block w-px h-10 bg-white/15" />
@@ -86,7 +107,7 @@ export default function Home() {
         <section id="why" className="bg-cream">
           <div className="mx-auto max-w-7xl px-6 lg:px-8 py-24 md:py-32">
             <div className="text-center max-w-xl mx-auto mb-14">
-              <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#FDF0EB] border border-[#F5C8BA] rounded-full px-3.5 py-1 mb-4">
+              <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#F5E6DB] border border-[#E5CBBA] rounded-full px-3.5 py-1 mb-4">
                 Why Praxis Prep
               </span>
               <h2 className="font-serif text-3xl md:text-4xl text-navy tracking-tight">
@@ -102,19 +123,19 @@ export default function Home() {
               {[
                 {
                   icon: "📚",
-                  bg: "#FDF0EB",
+                  bg: "#F5E6DB",
                   title: "Strategy Over Memorization",
                   desc: "We teach you how to think through problems, manage your time, and approach each section with a clear game plan.",
                 },
                 {
                   icon: "📅",
-                  bg: "#F0FBF5",
+                  bg: "#F0EAD6",
                   title: "Personalized Study Plans",
                   desc: "We build a prep schedule around your strengths, weaknesses, timeline, and life — not a one-size-fits-all curriculum.",
                 },
                 {
                   icon: "🤝",
-                  bg: "#F5F0FF",
+                  bg: "#F2E8EF",
                   title: "Real Mentorship",
                   desc: "You're getting a mentor who understands the pressure, the stakes, and what it takes to reach your target score.",
                 },
@@ -146,7 +167,7 @@ export default function Home() {
           <div className="mx-auto max-w-7xl px-6 lg:px-8 py-24 md:py-32">
             <div className="grid md:grid-cols-2 gap-16 items-center">
               <div>
-                <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#FDF0EB] border border-[#F5C8BA] rounded-full px-3.5 py-1 mb-4">
+                <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#F5E6DB] border border-[#E5CBBA] rounded-full px-3.5 py-1 mb-4">
                   Student Stories
                 </span>
                 <h2 className="font-serif text-3xl md:text-4xl text-navy tracking-tight">
@@ -187,7 +208,7 @@ export default function Home() {
                   down, and helped me show up ready.
                 </blockquote>
                 <div className="mt-8 flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-coral to-gold flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-coral to-amber flex items-center justify-center text-white font-semibold text-sm">
                     SM
                   </div>
                   <div>
@@ -206,7 +227,7 @@ export default function Home() {
         <section id="approach" className="bg-cream">
           <div className="mx-auto max-w-7xl px-6 lg:px-8 py-24 md:py-32">
             <div className="text-center max-w-xl mx-auto mb-14">
-              <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#FDF0EB] border border-[#F5C8BA] rounded-full px-3.5 py-1 mb-4">
+              <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#F5E6DB] border border-[#E5CBBA] rounded-full px-3.5 py-1 mb-4">
                 How It Works
               </span>
               <h2 className="font-serif text-3xl md:text-4xl text-navy tracking-tight">
@@ -241,7 +262,7 @@ export default function Home() {
                 },
               ].map((item) => (
                 <div key={item.step} className="text-center py-8 px-5">
-                  <div className="w-[52px] h-[52px] rounded-full bg-gradient-to-br from-coral to-gold text-white font-serif text-xl flex items-center justify-center mx-auto mb-5 shadow-[0_4px_16px_rgba(224,122,95,0.35)]">
+                  <div className="w-[52px] h-[52px] rounded-full bg-gradient-to-br from-coral to-amber text-white font-serif text-xl flex items-center justify-center mx-auto mb-5 shadow-[0_4px_16px_rgba(184,112,74,0.35)]">
                     {item.step}
                   </div>
                   <h3 className="font-serif text-base text-navy mb-2">
@@ -260,7 +281,7 @@ export default function Home() {
         <section id="faq" className="bg-sand">
           <div className="mx-auto max-w-3xl px-6 lg:px-8 py-24 md:py-32">
             <div className="text-center mb-14">
-              <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#FDF0EB] border border-[#F5C8BA] rounded-full px-3.5 py-1 mb-4">
+              <span className="inline-block text-xs font-semibold tracking-[0.1em] uppercase text-coral bg-[#F5E6DB] border border-[#E5CBBA] rounded-full px-3.5 py-1 mb-4">
                 FAQ
               </span>
               <h2 className="font-serif text-3xl md:text-4xl text-navy tracking-tight">
@@ -325,9 +346,9 @@ export default function Home() {
         {/* ── Final CTA ── */}
         <section
           id="cta"
-          className="relative bg-gradient-to-br from-navy to-navy-light text-white overflow-hidden"
+          className="relative bg-gradient-to-br from-navy to-warm-brown text-white overflow-hidden"
         >
-          <div className="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(242,190,106,0.12)_0%,transparent_70%)]" />
+          <div className="absolute bottom-[-100px] left-[-100px] w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(212,168,75,0.12)_0%,transparent_70%)]" />
           <div className="relative mx-auto max-w-7xl px-6 lg:px-8 py-20 md:py-28 text-center">
             <h2 className="font-serif text-3xl md:text-5xl tracking-tight">
               Ready to Start Prepping?
@@ -339,7 +360,7 @@ export default function Home() {
             <div className="mt-10 flex flex-col sm:flex-row gap-3.5 justify-center">
               <a
                 href="#"
-                className="rounded-full bg-white text-navy px-10 py-3.5 text-sm font-bold hover:bg-cream hover:-translate-y-0.5 transition-all"
+                className="rounded-full bg-amber text-navy px-10 py-3.5 text-sm font-bold hover:bg-gold hover:-translate-y-0.5 transition-all"
               >
                 Start Your Free Trial &rarr;
               </a>
@@ -362,10 +383,14 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-6 lg:px-8 py-14">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
             <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-[8px] bg-gradient-to-br from-coral to-gold flex items-center justify-center text-white font-serif text-sm">
-                  P
-                </div>
+              <div className="flex items-center gap-1.5 mb-3">
+                <Image
+                  src="/logo.png"
+                  alt="Praxis Prep logo"
+                  width={22}
+                  height={42}
+                  className="h-10 w-auto brightness-0 invert"
+                />
                 <span className="font-serif text-lg text-white">
                   Praxis Prep
                 </span>
@@ -380,10 +405,10 @@ export default function Home() {
                 Product
               </h4>
               <div className="space-y-2.5">
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Courses</a>
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Practice Exams</a>
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Question Bank</a>
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Mentorship</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">Courses</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">Practice Exams</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">Question Bank</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">Mentorship</a>
               </div>
             </div>
             <div>
@@ -391,10 +416,10 @@ export default function Home() {
                 Resources
               </h4>
               <div className="space-y-2.5">
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Blog</a>
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">MCAT Guides</a>
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Test Dates</a>
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Score Calculator</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">Blog</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">MCAT Guides</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">Test Dates</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">Score Calculator</a>
               </div>
             </div>
             <div>
@@ -402,10 +427,10 @@ export default function Home() {
                 Company
               </h4>
               <div className="space-y-2.5">
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Our Story</a>
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Contact</a>
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Privacy</a>
-                <a href="#" className="block text-sm text-white/55 hover:text-gold transition-colors">Terms</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">Our Story</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">Contact</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">Privacy</a>
+                <a href="#" className="block text-sm text-white/55 hover:text-amber transition-colors">Terms</a>
               </div>
             </div>
           </div>
