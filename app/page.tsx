@@ -43,7 +43,7 @@ export default function Home() {
                   </p>
                   <div className="mt-10 flex flex-col sm:flex-row gap-3.5">
                     <a
-                      href="#cta"
+                      href="/signup"
                       className="rounded-full bg-amber px-8 py-3.5 text-sm font-semibold text-navy shadow-[0_4px_16px_rgba(212,168,75,0.35)] hover:bg-gold hover:-translate-y-0.5 transition-all text-center"
                     >
                       Start Your Free Trial &rarr;
@@ -55,16 +55,8 @@ export default function Home() {
                       See How It Works
                     </a>
                   </div>
-                  <p className="mt-5 text-xs text-white/50 flex items-center gap-1.5">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <circle cx="7" cy="7" r="6.5" stroke="currentColor" />
-                      <path
-                        d="M7 4v3l2 2"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    No credit card required &middot; Cancel anytime
+                  <p className="mt-5 text-xs text-white/50">
+                    Cancel anytime &middot; No long-term contracts
                   </p>
                 </div>
               </div>
@@ -359,7 +351,7 @@ export default function Home() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3.5 justify-center">
               <a
-                href="#"
+                href="/signup"
                 className="rounded-full bg-amber text-navy px-10 py-3.5 text-sm font-bold hover:bg-gold hover:-translate-y-0.5 transition-all"
               >
                 Start Your Free Trial &rarr;
@@ -372,7 +364,7 @@ export default function Home() {
               </a>
             </div>
             <p className="mt-4 text-xs text-white/40">
-              No credit card required &middot; Cancel anytime
+              Cancel anytime &middot; No long-term contracts
             </p>
           </div>
         </section>

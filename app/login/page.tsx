@@ -3,12 +3,17 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   return (
     <div className="min-h-screen bg-cream flex">
@@ -81,10 +86,31 @@ export default function LoginPage() {
               </p>
             </div>
 
+            {/* Error message */}
+            {error && (
+              <div className="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
-                // Auth integration goes here
+                setError("");
+                setLoading(true);
+
+                const { error } = await supabase.auth.signInWithPassword({
+                  email,
+                  password,
+                });
+
+                if (error) {
+                  setError(error.message);
+                  setLoading(false);
+                  return;
+                }
+
+                router.push("/dashboard");
               }}
               className="space-y-5"
             >
@@ -204,9 +230,10 @@ export default function LoginPage() {
               {/* Submit */}
               <button
                 type="submit"
-                className="w-full rounded-xl bg-navy py-3.5 text-sm font-semibold text-white hover:bg-navy-light transition-colors"
+                disabled={loading}
+                className="w-full rounded-xl bg-navy py-3.5 text-sm font-semibold text-white hover:bg-navy-light transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Log In
+                {loading ? "Logging in..." : "Log In"}
               </button>
             </form>
 
@@ -221,6 +248,15 @@ export default function LoginPage() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
+                onClick={async () => {
+                  const { error } = await supabase.auth.signInWithOAuth({
+                    provider: "google",
+                    options: {
+                      redirectTo: `${window.location.origin}/dashboard`,
+                    },
+                  });
+                  if (error) setError(error.message);
+                }}
                 className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3 text-sm font-medium text-gray-700 hover:bg-sand transition-colors"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -258,7 +294,7 @@ export default function LoginPage() {
             <p className="mt-8 text-center text-sm text-gray-600">
               Don&rsquo;t have an account?{" "}
               <Link
-                href="#cta"
+                href="/signup"
                 className="font-semibold text-coral hover:text-coral-dark transition-colors"
               >
                 Start your free trial

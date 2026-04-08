@@ -294,7 +294,7 @@ export default function Navigation() {
               Log In
             </Link>
             <Link
-              href="#cta"
+              href="/signup"
               className="rounded-full bg-coral px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-coral-dark transition-colors"
             >
               Start Free Trial
@@ -472,7 +472,7 @@ export default function Navigation() {
                   Log In
                 </Link>
                 <Link
-                  href="#cta"
+                  href="/signup"
                   className="block rounded-full bg-coral px-5 py-2.5 text-sm font-semibold text-white text-center shadow-sm hover:bg-coral-dark transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >

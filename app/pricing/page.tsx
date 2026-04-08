@@ -46,7 +46,7 @@ export default function PricingPage() {
                 </div>
 
                 <a
-                  href="#"
+                  href="/signup"
                   className="block w-full rounded-full border-2 border-navy py-3 text-sm font-semibold text-navy text-center hover:bg-navy hover:text-white transition-colors mb-8"
                 >
                   Get Started
@@ -114,7 +114,7 @@ export default function PricingPage() {
                 </div>
 
                 <a
-                  href="#"
+                  href="/signup"
                   className="block w-full rounded-full bg-white py-3 text-sm font-bold text-navy text-center hover:bg-cream hover:-translate-y-0.5 transition-all mb-8"
                 >
                   Start Your Free Trial &rarr;
@@ -280,7 +280,7 @@ export default function PricingPage() {
                 },
                 {
                   q: "Is there a free trial?",
-                  a: "Yes — the Complete plan comes with a free trial so you can experience everything before you commit. No credit card required to start.",
+                  a: "Yes — the Complete plan comes with a free trial so you can experience everything before you commit.",
                 },
                 {
                   q: "What does 1:1 support look like?",
@@ -334,12 +334,12 @@ export default function PricingPage() {
               Still Not Sure?
             </h2>
             <p className="mt-4 text-base text-white/65 max-w-lg mx-auto leading-relaxed">
-              Start with the free trial — no commitment, no credit card. See for
-              yourself what makes Praxis different.
+              Start with the free trial and see for yourself what makes
+              Praxis different.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-3.5 justify-center">
               <a
-                href="#"
+                href="/signup"
                 className="rounded-full bg-white text-navy px-10 py-3.5 text-sm font-bold hover:bg-cream hover:-translate-y-0.5 transition-all"
               >
                 Start Your Free Trial &rarr;
