@@ -8,13 +8,13 @@ export default function CheckEmailPage() {
       <div className="px-6 py-5">
         <Link href="/" className="inline-flex items-center gap-2">
           <Image
-            src="/logo.png"
-            alt="Praxis Prep logo"
+            src="/logo-green.png"
+            alt="Praxist Prep logo"
             width={30}
             height={58}
-            className="h-10 w-auto"
+            className="h-9 w-auto"
           />
-          <span className="text-xl font-serif text-navy">Praxis Prep</span>
+          <span className="text-[32px] leading-9 font-serif text-navy">Praxist Prep</span>
         </Link>
       </div>
 
@@ -43,7 +43,7 @@ export default function CheckEmailPage() {
           </h1>
           <p className="text-sm text-gray-600 leading-relaxed mb-6">
             We&rsquo;ve sent a confirmation link to your email address. Click
-            the link to verify your account and get started with Praxis Prep.
+            the link to verify your account and get started with Praxist Prep.
           </p>
 
           <div className="bg-sand rounded-xl px-4 py-3 text-xs text-gray-500 mb-8">

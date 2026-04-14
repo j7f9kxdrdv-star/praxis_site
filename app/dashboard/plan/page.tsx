@@ -14,9 +14,9 @@ interface StudyTask {
 }
 
 const taskTypeIcons: Record<string, { icon: string; color: string }> = {
-  lesson: { icon: "📖", color: "bg-sage/10" },
-  practice: { icon: "📝", color: "bg-amber/10" },
-  review: { icon: "🔄", color: "bg-plum/10" },
+  lesson: { icon: "📖", color: "bg-as-primary/10" },
+  practice: { icon: "📝", color: "bg-as-surface-tint/10" },
+  review: { icon: "🔄", color: "bg-as-primary-container/10" },
 };
 
 function getWeekDates(): { date: Date; label: string; isToday: boolean }[] {
@@ -222,17 +222,17 @@ export default function StudyPlanPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-2 border-navy border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-as-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-      <h1 className="font-serif text-2xl sm:text-3xl text-navy mb-2">
+      <h1 className="font-headline text-2xl sm:text-3xl text-as-primary mb-2">
         Study Plan
       </h1>
-      <p className="text-sm text-gray-600 mb-8">
+      <p className="text-sm text-as-secondary mb-8">
         {hasPlan
           ? "Your personalized weekly study schedule. Check off tasks as you complete them."
           : "Set up your study preferences and we'll create a weekly plan for you."}
@@ -240,8 +240,8 @@ export default function StudyPlanPage() {
 
       {/* Setup / Preferences */}
       {!hasPlan && (
-        <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 mb-8">
-          <h2 className="font-serif text-lg text-navy mb-4">
+        <div className="bg-as-surface-container-lowest rounded-2xl border border-as-outline-variant/15 p-6 sm:p-8 mb-8">
+          <h2 className="font-headline text-lg text-as-primary mb-4">
             Let&rsquo;s build your plan
           </h2>
 
@@ -254,9 +254,9 @@ export default function StudyPlanPage() {
                 type="date"
                 value={testDate}
                 onChange={(e) => setTestDate(e.target.value)}
-                className="w-full sm:w-64 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 focus:border-coral focus:ring-2 focus:ring-coral/20 focus:outline-none transition-colors"
+                className="w-full sm:w-64 rounded-xl border border-as-outline-variant/15 bg-as-surface-container-lowest px-4 py-3 text-sm text-gray-900 focus:border-as-on-surface-variant focus:ring-2 focus:ring-as-on-surface-variant/20 focus:outline-none transition-colors"
               />
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-as-outline mt-1">
                 Optional — helps us pace your studying
               </p>
             </div>
@@ -273,9 +273,9 @@ export default function StudyPlanPage() {
                   step={5}
                   value={hoursPerWeek}
                   onChange={(e) => setHoursPerWeek(Number(e.target.value))}
-                  className="flex-1 accent-navy"
+                  className="flex-1 accent-as-primary"
                 />
-                <span className="text-sm font-semibold text-navy w-16 text-right">
+                <span className="text-sm font-semibold text-as-primary w-16 text-right">
                   {hoursPerWeek} hrs
                 </span>
               </div>
@@ -284,7 +284,7 @@ export default function StudyPlanPage() {
             <button
               onClick={generatePlan}
               disabled={generating}
-              className="w-full sm:w-auto rounded-xl bg-navy px-8 py-3.5 text-sm font-semibold text-white hover:bg-navy-light transition-colors disabled:opacity-50"
+              className="w-full sm:w-auto rounded-xl bg-as-primary px-8 py-3.5 text-sm font-semibold text-as-on-primary hover:bg-as-primary-container transition-colors disabled:opacity-50"
             >
               {generating ? "Building your plan..." : "Generate My Plan"}
             </button>
@@ -315,10 +315,10 @@ export default function StudyPlanPage() {
                   onClick={() => setSelectedDay(dateStr)}
                   className={`flex flex-col items-center min-w-[4rem] px-3 py-2.5 rounded-xl border transition-all ${
                     isSelected
-                      ? "bg-navy text-white border-navy"
+                      ? "bg-as-primary text-as-on-primary border-as-primary"
                       : day.isToday
-                      ? "bg-amber/10 border-amber/30 text-navy"
-                      : "bg-white border-gray-200 text-gray-600 hover:border-gray-300"
+                      ? "bg-as-surface-tint/10 border-as-surface-tint/30 text-as-primary"
+                      : "bg-as-surface-container-lowest border-as-outline-variant/15 text-as-secondary hover:border-gray-300"
                   }`}
                 >
                   <span className="text-[10px] font-medium uppercase">
@@ -331,10 +331,10 @@ export default function StudyPlanPage() {
                     <div
                       className={`w-1.5 h-1.5 rounded-full mt-0.5 ${
                         allDone
-                          ? "bg-sage"
+                          ? "bg-as-primary"
                           : isSelected
-                          ? "bg-white/50"
-                          : "bg-amber"
+                          ? "bg-as-surface-container-lowest/50"
+                          : "bg-as-surface-tint"
                       }`}
                     />
                   )}
@@ -347,27 +347,27 @@ export default function StudyPlanPage() {
           <div className="space-y-3">
             {dayTasks.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-as-outline">
                   No tasks scheduled for this day. Enjoy the break!
                 </p>
               </div>
             ) : (
               <>
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-as-outline">
                     {completedToday}/{dayTasks.length} tasks complete
                   </p>
                 </div>
                 {dayTasks.map((task) => {
                   const typeInfo = taskTypeIcons[task.task_type] || {
                     icon: "📋",
-                    color: "bg-gray-100",
+                    color: "bg-as-surface-container",
                   };
 
                   return (
                     <div
                       key={task.id}
-                      className={`flex items-start gap-3 bg-white rounded-xl border border-gray-200 p-4 transition-all ${
+                      className={`flex items-start gap-3 bg-as-surface-container-lowest rounded-xl border border-as-outline-variant/15 p-4 transition-all ${
                         task.completed ? "opacity-60" : ""
                       }`}
                     >
@@ -375,8 +375,8 @@ export default function StudyPlanPage() {
                         onClick={() => toggleTask(task.id, task.completed)}
                         className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
                           task.completed
-                            ? "bg-sage border-sage text-white"
-                            : "border-gray-300 hover:border-navy"
+                            ? "bg-as-primary border-as-primary text-as-on-primary"
+                            : "border-gray-300 hover:border-as-primary"
                         }`}
                       >
                         {task.completed && (
@@ -400,14 +400,14 @@ export default function StudyPlanPage() {
                         <p
                           className={`text-sm font-medium ${
                             task.completed
-                              ? "line-through text-gray-400"
-                              : "text-navy"
+                              ? "line-through text-as-outline"
+                              : "text-as-primary"
                           }`}
                         >
                           {task.title}
                         </p>
                         {task.description && (
-                          <p className="text-xs text-gray-400 mt-0.5">
+                          <p className="text-xs text-as-outline mt-0.5">
                             {task.description}
                           </p>
                         )}
@@ -426,11 +426,11 @@ export default function StudyPlanPage() {
           </div>
 
           {/* Regenerate button */}
-          <div className="mt-8 pt-6 border-t border-gray-200">
+          <div className="mt-8 pt-6 border-t border-as-outline-variant/15">
             <button
               onClick={generatePlan}
               disabled={generating}
-              className="text-sm text-gray-400 hover:text-navy transition-colors disabled:opacity-50"
+              className="text-sm text-as-outline hover:text-as-primary transition-colors disabled:opacity-50"
             >
               {generating
                 ? "Regenerating..."

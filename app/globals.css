@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  /* === Legacy palette (marketing pages) === */
   --background: #FAF7F2;
   --foreground: #2E2520;
   --scarlet: #BB0000;
@@ -22,9 +23,42 @@
   --gray-200: #E8DFD4;
   --gray-100: #F0E8DC;
   --gray-50: #FAF7F2;
+
+  /* === Academic Sanctuary palette (dashboard) === */
+  --as-primary: #003630;
+  --as-primary-container: #034f46;
+  --as-on-primary: #ffffff;
+  --as-on-primary-container: #81bfb3;
+  --as-secondary: #5e5f58;
+  --as-secondary-container: #e4e3d9;
+  --as-on-secondary-container: #64655d;
+  --as-tertiary: #2f2f2f;
+  --as-surface: #fcfae9;
+  --as-surface-bright: #fcfae9;
+  --as-surface-dim: #dcdbcb;
+  --as-surface-container-lowest: #ffffff;
+  --as-surface-container-low: #f6f4e4;
+  --as-surface-container: #f0eede;
+  --as-surface-container-high: #ebe9d9;
+  --as-surface-container-highest: #e5e3d3;
+  --as-surface-variant: #e5e3d3;
+  --as-on-surface: #1c1c13;
+  --as-on-surface-variant: #3f4946;
+  --as-outline: #6f7976;
+  --as-outline-variant: #bfc9c5;
+  --as-surface-tint: #29685f;
+  --as-primary-fixed: #afefe2;
+  --as-primary-fixed-dim: #94d2c6;
+  --as-inverse-surface: #313126;
+  --as-inverse-on-surface: #f3f1e1;
+  --as-inverse-primary: #94d2c6;
+  --as-error: #ba1a1a;
+  --as-error-container: #ffdad6;
+  --as-on-error-container: #93000a;
 }
 
 @theme inline {
+  /* Legacy colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-scarlet: var(--scarlet);
@@ -46,8 +80,42 @@
   --color-gray-200: var(--gray-200);
   --color-gray-100: var(--gray-100);
   --color-gray-50: var(--gray-50);
+
+  /* Academic Sanctuary colors */
+  --color-as-primary: var(--as-primary);
+  --color-as-primary-container: var(--as-primary-container);
+  --color-as-on-primary: var(--as-on-primary);
+  --color-as-on-primary-container: var(--as-on-primary-container);
+  --color-as-secondary: var(--as-secondary);
+  --color-as-secondary-container: var(--as-secondary-container);
+  --color-as-on-secondary-container: var(--as-on-secondary-container);
+  --color-as-tertiary: var(--as-tertiary);
+  --color-as-surface: var(--as-surface);
+  --color-as-surface-bright: var(--as-surface-bright);
+  --color-as-surface-dim: var(--as-surface-dim);
+  --color-as-surface-container-lowest: var(--as-surface-container-lowest);
+  --color-as-surface-container-low: var(--as-surface-container-low);
+  --color-as-surface-container: var(--as-surface-container);
+  --color-as-surface-container-high: var(--as-surface-container-high);
+  --color-as-surface-container-highest: var(--as-surface-container-highest);
+  --color-as-surface-variant: var(--as-surface-variant);
+  --color-as-on-surface: var(--as-on-surface);
+  --color-as-on-surface-variant: var(--as-on-surface-variant);
+  --color-as-outline: var(--as-outline);
+  --color-as-outline-variant: var(--as-outline-variant);
+  --color-as-surface-tint: var(--as-surface-tint);
+  --color-as-primary-fixed: var(--as-primary-fixed);
+  --color-as-primary-fixed-dim: var(--as-primary-fixed-dim);
+  --color-as-inverse-surface: var(--as-inverse-surface);
+  --color-as-inverse-on-surface: var(--as-inverse-on-surface);
+  --color-as-error: var(--as-error);
+  --color-as-error-container: var(--as-error-container);
+  --color-as-on-error-container: var(--as-on-error-container);
+
   --font-serif: var(--font-dm-serif);
   --font-sans: var(--font-inter);
+  --font-headline: var(--font-newsreader);
+  --font-body: var(--font-manrope);
 }
 
 body {
@@ -72,4 +140,92 @@ html {
 
 .animate-fade-in-up {
   animation: fadeInUp 0.8s ease-out forwards;
+}
+
+/* === Stitch Landing Page Styles === */
+.reveal-element {
+  opacity: 0;
+  transform: translateY(-40px);
+  transition: opacity 1.4s cubic-bezier(0.19, 1, 0.22, 1), transform 1.4s cubic-bezier(0.19, 1, 0.22, 1);
+  will-change: transform, opacity;
+}
+.reveal-element.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.stagger-1 { transition-delay: 100ms; }
+.stagger-2 { transition-delay: 250ms; }
+.stagger-3 { transition-delay: 400ms; }
+.stagger-4 { transition-delay: 550ms; }
+
+.btn-magnetic {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.btn-magnetic:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px -10px rgba(0, 54, 48, 0.3);
+}
+
+.card-hover {
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card-hover:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.text-shadow-hero {
+  text-shadow: 0 4px 30px rgba(0,0,0,0.3);
+}
+
+.hero-dissolve-mask {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(252, 250, 233, 0.02) 40%,
+    rgba(252, 250, 233, 0.1) 60%,
+    rgba(252, 250, 233, 0.3) 75%,
+    rgba(252, 250, 233, 0.6) 85%,
+    rgba(252, 250, 233, 0.9) 95%,
+    #fcfae9 100%
+  );
+}
+
+.nav-scrolled {
+  background-color: rgba(252, 250, 233, 0.95);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(0, 54, 48, 0.05);
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+.nav-scrolled .nav-logo-text {
+  color: #034f46 !important;
+}
+.nav-scrolled .nav-logo-img {
+  content: url('/logo-green.png');
+}
+.nav-scrolled .nav-link {
+  color: rgba(3, 79, 70, 0.6) !important;
+  font-size: 11px !important;
+  font-weight: 800 !important;
+}
+.nav-scrolled .nav-link:hover {
+  color: #034f46 !important;
+}
+.nav-scrolled .nav-cta-outline {
+  border-color: #034f46 !important;
+  color: #034f46 !important;
+}
+
+/* Dashboard Harvey-style cards */
+.harvey-card {
+  background-color: #FCFAE9;
+  border: 1px solid rgba(28, 28, 19, 0.04);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.harvey-card:hover {
+  border-color: rgba(3, 79, 70, 0.15);
+  background-color: #ffffff;
 }

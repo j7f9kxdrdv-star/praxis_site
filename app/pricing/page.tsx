@@ -362,14 +362,14 @@ export default function PricingPage() {
             <div className="col-span-2 md:col-span-1">
               <div className="flex items-center gap-1.5 mb-3">
                 <Image
-                  src="/logo.png"
-                  alt="Praxis Prep logo"
+                  src="/logo-white.png"
+                  alt="Praxist Prep logo"
                   width={22}
                   height={42}
-                  className="h-8 w-auto brightness-0 invert"
+                  className="h-7 w-auto"
                 />
-                <span className="font-serif text-lg text-white">
-                  Praxis Prep
+                <span className="font-serif text-[28px] leading-7 text-white">
+                  Praxist Prep
                 </span>
               </div>
               <p className="text-sm text-white/55 leading-relaxed max-w-[260px]">
@@ -411,7 +411,7 @@ export default function PricingPage() {
           </div>
           <div className="border-t border-white/10 pt-6 text-center">
             <p className="text-xs text-white/40">
-              &copy; {new Date().getFullYear()} Praxis Prep. All rights reserved.
+              &copy; {new Date().getFullYear()} Praxist Prep. All rights reserved.
             </p>
           </div>
         </div>

@@ -9,7 +9,7 @@ const tabs = [
     href: "/dashboard",
     icon: (active: boolean) => (
       <svg
-        className={`w-6 h-6 ${active ? "text-navy" : "text-gray-400"}`}
+        className={`w-6 h-6 ${active ? "text-as-primary" : "text-as-outline"}`}
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={1.5}
@@ -28,7 +28,7 @@ const tabs = [
     href: "/dashboard/practice",
     icon: (active: boolean) => (
       <svg
-        className={`w-6 h-6 ${active ? "text-navy" : "text-gray-400"}`}
+        className={`w-6 h-6 ${active ? "text-as-primary" : "text-as-outline"}`}
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={1.5}
@@ -47,7 +47,7 @@ const tabs = [
     href: "/dashboard/lessons",
     icon: (active: boolean) => (
       <svg
-        className={`w-6 h-6 ${active ? "text-navy" : "text-gray-400"}`}
+        className={`w-6 h-6 ${active ? "text-as-primary" : "text-as-outline"}`}
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={1.5}
@@ -66,7 +66,7 @@ const tabs = [
     href: "/dashboard/plan",
     icon: (active: boolean) => (
       <svg
-        className={`w-6 h-6 ${active ? "text-navy" : "text-gray-400"}`}
+        className={`w-6 h-6 ${active ? "text-as-primary" : "text-as-outline"}`}
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={1.5}
@@ -86,7 +86,7 @@ export default function BottomTabs() {
   const pathname = usePathname();
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 pb-[env(safe-area-inset-bottom)]">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-as-surface-container-low/95 backdrop-blur-xl pb-[env(safe-area-inset-bottom)]">
       <div className="flex items-center justify-around h-14">
         {tabs.map((tab) => {
           const isActive =
@@ -102,8 +102,8 @@ export default function BottomTabs() {
             >
               {tab.icon(isActive)}
               <span
-                className={`text-[10px] font-medium ${
-                  isActive ? "text-navy" : "text-gray-400"
+                className={`text-[10px] font-medium font-label ${
+                  isActive ? "text-as-primary" : "text-as-outline"
                 }`}
               >
                 {tab.label}

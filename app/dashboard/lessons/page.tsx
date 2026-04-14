@@ -23,26 +23,26 @@ const sectionMeta: Record<
     label: "Bio/Biochem",
     description: "Biological and Biochemical Foundations of Living Systems",
     icon: "🧬",
-    color: "from-sage/20 to-sage/5",
+    color: "from-as-primary/20 to-as-primary/5",
   },
   chem_phys: {
     label: "Chem/Phys",
     description: "Chemical and Physical Foundations of Biological Systems",
     icon: "⚗️",
-    color: "from-amber/20 to-amber/5",
+    color: "from-as-surface-tint/20 to-as-surface-tint/5",
   },
   psych_soc: {
     label: "Psych/Soc",
     description:
       "Psychological, Social, and Biological Foundations of Behavior",
     icon: "🧠",
-    color: "from-plum/20 to-plum/5",
+    color: "from-as-primary-container/20 to-as-primary-container/5",
   },
   cars: {
     label: "CARS",
     description: "Critical Analysis and Reasoning Skills",
     icon: "📖",
-    color: "from-coral/20 to-coral/5",
+    color: "from-as-on-surface-variant/20 to-as-on-surface-variant/5",
   },
 };
 
@@ -103,17 +103,17 @@ export default function LessonsHub() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-2 border-navy border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-as-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-      <h1 className="font-serif text-2xl sm:text-3xl text-navy mb-2">
+      <h1 className="font-headline text-2xl sm:text-3xl text-as-primary mb-2">
         Course Lessons
       </h1>
-      <p className="text-sm text-gray-600 mb-8">
+      <p className="text-sm text-as-secondary mb-8">
         Structured content covering all four MCAT sections. Work through the
         lessons at your own pace.
       </p>
@@ -131,7 +131,7 @@ export default function LessonsHub() {
             <Link
               key={section.id}
               href={`/dashboard/lessons/${section.id}`}
-              className="block bg-white rounded-2xl border border-gray-200 p-6 hover:border-amber/50 hover:shadow-sm transition-all"
+              className="block bg-as-surface-container-lowest rounded-2xl border border-as-outline-variant/15 p-6 hover:border-as-surface-tint/50 hover:shadow-sm transition-all"
             >
               <div className="flex items-start gap-4">
                 <div
@@ -141,20 +141,20 @@ export default function LessonsHub() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <h2 className="font-serif text-lg text-navy">
+                    <h2 className="font-headline text-lg text-as-primary">
                       {section.label}
                     </h2>
-                    <span className="text-xs font-medium text-gray-400 shrink-0">
+                    <span className="text-xs font-medium text-as-outline shrink-0">
                       {section.completedLessons}/{section.totalLessons} lessons
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5 mb-3">
+                  <p className="text-xs text-as-secondary mt-0.5 mb-3">
                     {section.description}
                   </p>
                   {/* Progress bar */}
-                  <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-as-surface-container rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-navy rounded-full transition-all duration-300"
+                      className="h-full bg-as-primary rounded-full transition-all duration-300"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -167,7 +167,7 @@ export default function LessonsHub() {
 
       {sections.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-gray-400 text-sm">
+          <p className="text-as-outline text-sm">
             No lessons available yet. Check back soon!
           </p>
         </div>

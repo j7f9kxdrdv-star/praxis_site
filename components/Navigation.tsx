@@ -228,13 +228,13 @@ export default function Navigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/logo.png"
-              alt="Praxis Prep logo"
+              src="/logo-green.png"
+              alt="Praxist Prep logo"
               width={36}
               height={68}
-              className="h-12 w-auto -my-1"
+              className="h-9 w-auto"
             />
-            <span className="text-[22px] font-serif text-navy">Praxis Prep</span>
+            <span className="text-[32px] leading-9 font-serif text-navy">Praxist Prep</span>
           </Link>
 
           {/* Desktop nav */}

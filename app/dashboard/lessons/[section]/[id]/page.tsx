@@ -35,7 +35,7 @@ function renderContent(content: string) {
     const parts = text.split(/\*\*(.*?)\*\*/g);
     return parts.map((part, i) =>
       i % 2 === 1 ? (
-        <strong key={i} className="font-semibold text-navy">
+        <strong key={i} className="font-semibold text-as-primary">
           {part}
         </strong>
       ) : (
@@ -71,7 +71,7 @@ function renderContent(content: string) {
                   {tableHeaders.map((h, j) => (
                     <th
                       key={j}
-                      className="border border-gray-200 bg-sand px-3 py-2 text-left font-semibold text-navy text-xs"
+                      className="border border-as-outline-variant/15 bg-as-surface-container-low px-3 py-2 text-left font-semibold text-as-primary text-xs"
                     >
                       {h}
                     </th>
@@ -84,7 +84,7 @@ function renderContent(content: string) {
                     {row.map((cell, k) => (
                       <td
                         key={k}
-                        className="border border-gray-200 px-3 py-2 text-xs text-gray-700"
+                        className="border border-as-outline-variant/15 px-3 py-2 text-xs text-gray-700"
                       >
                         {processInline(cell)}
                       </td>
@@ -105,14 +105,14 @@ function renderContent(content: string) {
       elements.push(
         <h2
           key={i}
-          className="font-serif text-xl text-navy mt-8 mb-3 first:mt-0"
+          className="font-headline text-xl text-as-primary mt-8 mb-3 first:mt-0"
         >
           {line.slice(3)}
         </h2>
       );
     } else if (line.startsWith("### ")) {
       elements.push(
-        <h3 key={i} className="font-semibold text-base text-navy mt-6 mb-2">
+        <h3 key={i} className="font-semibold text-base text-as-primary mt-6 mb-2">
           {line.slice(4)}
         </h3>
       );
@@ -270,7 +270,7 @@ export default function LessonPage() {
   if (loading || !lesson) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-2 border-navy border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-as-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -278,36 +278,36 @@ export default function LessonPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs text-gray-400 mb-6">
+      <div className="flex items-center gap-2 text-xs text-as-outline mb-6">
         <Link
           href="/dashboard/lessons"
-          className="hover:text-navy transition-colors"
+          className="hover:text-as-primary transition-colors"
         >
           Lessons
         </Link>
         <span>/</span>
         <Link
           href={`/dashboard/lessons/${section}`}
-          className="hover:text-navy transition-colors"
+          className="hover:text-as-primary transition-colors"
         >
           {sectionLabels[section] || section}
         </Link>
         <span>/</span>
-        <span className="text-navy font-medium truncate">{lesson.title}</span>
+        <span className="text-as-primary font-medium truncate">{lesson.title}</span>
       </div>
 
       {/* Lesson header */}
       <div className="mb-8">
-        <span className="inline-block text-xs font-medium text-gray-400 bg-white border border-gray-200 rounded-full px-3 py-1 mb-3">
+        <span className="inline-block text-xs font-medium text-as-outline bg-as-surface-container-lowest border border-as-outline-variant/15 rounded-full px-3 py-1 mb-3">
           {lesson.topic} · ~{lesson.estimated_minutes} min
         </span>
-        <h1 className="font-serif text-2xl sm:text-3xl text-navy">
+        <h1 className="font-headline text-2xl sm:text-3xl text-as-primary">
           {lesson.title}
         </h1>
       </div>
 
       {/* Lesson content */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 mb-6">
+      <div className="bg-as-surface-container-lowest rounded-2xl border border-as-outline-variant/15 p-6 sm:p-8 mb-6">
         {renderContent(lesson.content)}
       </div>
 
@@ -318,8 +318,8 @@ export default function LessonPage() {
           disabled={marking}
           className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl px-8 py-3.5 text-sm font-semibold transition-colors disabled:opacity-50 ${
             completed
-              ? "bg-sage text-white hover:bg-sage/90"
-              : "bg-navy text-white hover:bg-navy-light"
+              ? "bg-as-primary text-as-on-primary hover:bg-as-primary/90"
+              : "bg-as-primary text-as-on-primary hover:bg-as-primary-container"
           }`}
         >
           {completed ? (
@@ -345,7 +345,7 @@ export default function LessonPage() {
         </button>
         <Link
           href={`/dashboard/lessons/${section}`}
-          className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-gray-200 px-8 py-3.5 text-sm font-semibold text-navy hover:bg-sand transition-colors"
+          className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-as-outline-variant/15 px-8 py-3.5 text-sm font-semibold text-as-primary hover:bg-as-surface-container-low transition-colors"
         >
           Back to {sectionLabels[section]}
         </Link>

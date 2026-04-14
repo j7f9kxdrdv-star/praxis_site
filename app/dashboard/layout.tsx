@@ -1,7 +1,7 @@
 import DashboardShell from "@/components/dashboard/DashboardShell";
 
 export const metadata = {
-  title: "Dashboard — Praxis Prep",
+  title: "Dashboard — Praxist Prep",
 };
 
 export default function DashboardLayout({

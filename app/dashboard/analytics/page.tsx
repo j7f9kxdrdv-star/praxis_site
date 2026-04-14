@@ -36,24 +36,24 @@ const sectionLabels: Record<string, string> = {
 const sectionColors: Record<string, { bar: string; bg: string; text: string }> =
   {
     bio_biochem: {
-      bar: "bg-sage",
-      bg: "bg-sage/10",
-      text: "text-sage",
+      bar: "bg-as-primary",
+      bg: "bg-as-primary/10",
+      text: "text-as-primary",
     },
     chem_phys: {
-      bar: "bg-amber",
-      bg: "bg-amber/10",
-      text: "text-amber",
+      bar: "bg-as-surface-tint",
+      bg: "bg-as-surface-tint/10",
+      text: "text-as-surface-tint",
     },
     psych_soc: {
-      bar: "bg-plum",
-      bg: "bg-plum/10",
-      text: "text-plum",
+      bar: "bg-as-primary-container",
+      bg: "bg-as-primary-container/10",
+      text: "text-as-primary-container",
     },
     cars: {
-      bar: "bg-coral",
-      bg: "bg-coral/10",
-      text: "text-coral",
+      bar: "bg-as-on-surface-variant",
+      bg: "bg-as-on-surface-variant/10",
+      text: "text-as-on-surface-variant",
     },
   };
 
@@ -62,10 +62,10 @@ function getMasteryLabel(accuracy: number): {
   color: string;
 } {
   if (accuracy >= 80)
-    return { label: "Strong", color: "bg-sage/20 text-sage" };
+    return { label: "Strong", color: "bg-as-primary/20 text-as-primary" };
   if (accuracy >= 60)
-    return { label: "Developing", color: "bg-amber/20 text-amber" };
-  return { label: "Needs Work", color: "bg-coral/20 text-coral" };
+    return { label: "Developing", color: "bg-as-surface-tint/20 text-as-surface-tint" };
+  return { label: "Needs Work", color: "bg-as-on-surface-variant/20 text-as-on-surface-variant" };
 }
 
 export default function AnalyticsPage() {
@@ -258,7 +258,7 @@ export default function AnalyticsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-2 border-navy border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-as-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -272,56 +272,56 @@ export default function AnalyticsPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-      <h1 className="font-serif text-2xl sm:text-3xl text-navy mb-2">
+      <h1 className="font-headline text-2xl sm:text-3xl text-as-primary mb-2">
         Analytics
       </h1>
-      <p className="text-sm text-gray-600 mb-8">
+      <p className="text-sm text-as-secondary mb-8">
         Track your progress and identify areas to improve.
       </p>
 
       {/* Overview stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-        <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5">
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">
+        <div className="bg-as-surface-container-lowest rounded-2xl border border-as-outline-variant/15 p-4 sm:p-5">
+          <p className="text-xs font-medium text-as-outline uppercase tracking-wider mb-1">
             Total Questions
           </p>
-          <p className="text-2xl font-semibold text-navy">{totalQuestions}</p>
+          <p className="text-2xl font-semibold text-as-primary">{totalQuestions}</p>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5">
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">
+        <div className="bg-as-surface-container-lowest rounded-2xl border border-as-outline-variant/15 p-4 sm:p-5">
+          <p className="text-xs font-medium text-as-outline uppercase tracking-wider mb-1">
             Overall Accuracy
           </p>
-          <p className="text-2xl font-semibold text-navy">
+          <p className="text-2xl font-semibold text-as-primary">
             {totalQuestions > 0 ? `${overallAccuracy}%` : "—"}
           </p>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5">
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">
+        <div className="bg-as-surface-container-lowest rounded-2xl border border-as-outline-variant/15 p-4 sm:p-5">
+          <p className="text-xs font-medium text-as-outline uppercase tracking-wider mb-1">
             Study Streak
           </p>
-          <p className="text-2xl font-semibold text-navy">
+          <p className="text-2xl font-semibold text-as-primary">
             {streak} {streak === 1 ? "day" : "days"}
           </p>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5">
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-1">
+        <div className="bg-as-surface-container-lowest rounded-2xl border border-as-outline-variant/15 p-4 sm:p-5">
+          <p className="text-xs font-medium text-as-outline uppercase tracking-wider mb-1">
             Lessons Done
           </p>
-          <p className="text-2xl font-semibold text-navy">
+          <p className="text-2xl font-semibold text-as-primary">
             {lessonsCompleted}
           </p>
         </div>
       </div>
 
       {/* Activity chart (last 30 days) */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 mb-8">
-        <h2 className="font-serif text-lg text-navy mb-1">Weekly Activity</h2>
-        <p className="text-xs text-gray-400 mb-4">
+      <div className="bg-as-surface-container-lowest rounded-2xl border border-as-outline-variant/15 p-5 sm:p-6 mb-8">
+        <h2 className="font-headline text-lg text-as-primary mb-1">Weekly Activity</h2>
+        <p className="text-xs text-as-outline mb-4">
           Questions answered per week since you started
         </p>
 
         {dailyData.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-8">
+          <p className="text-sm text-as-outline text-center py-8">
             Complete a practice session to see your activity here.
           </p>
         ) : (
@@ -346,23 +346,23 @@ export default function AnalyticsPage() {
                       flex: dailyData.length >= 8 ? "1" : undefined,
                     }}
                   >
-                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-navy text-white text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-as-primary text-as-on-primary text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                       {d.questions}
                     </div>
                     <div
                       className={`w-full rounded-t-md transition-all ${
                         d.questions > 0
                           ? isCurrentWeek
-                            ? "bg-amber"
-                            : "bg-navy/60 group-hover:bg-navy"
-                          : "bg-gray-100"
+                            ? "bg-as-surface-tint"
+                            : "bg-as-primary/60 group-hover:bg-as-primary"
+                          : "bg-as-surface-container"
                       }`}
                       style={{
                         height: d.questions > 0 ? `${height}%` : "2px",
                       }}
                     />
                     {dailyData.length <= 12 && (
-                      <span className="text-[9px] text-gray-400 mt-1 whitespace-nowrap">
+                      <span className="text-[9px] text-as-outline mt-1 whitespace-nowrap">
                         {new Date(d.date + "T00:00:00").toLocaleDateString(
                           "en-US",
                           { month: "short", day: "numeric" }
@@ -374,7 +374,7 @@ export default function AnalyticsPage() {
               })}
             </div>
             {dailyData.length > 12 && (
-              <div className="flex justify-between mt-2 text-[10px] text-gray-400">
+              <div className="flex justify-between mt-2 text-[10px] text-as-outline">
                 <span>
                   {new Date(
                     dailyData[0].date + "T00:00:00"
@@ -391,13 +391,13 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Section breakdown */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6 mb-8">
-        <h2 className="font-serif text-lg text-navy mb-4">
+      <div className="bg-as-surface-container-lowest rounded-2xl border border-as-outline-variant/15 p-5 sm:p-6 mb-8">
+        <h2 className="font-headline text-lg text-as-primary mb-4">
           Accuracy by Section
         </h2>
 
         {sectionStats.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-8">
+          <p className="text-sm text-as-outline text-center py-8">
             Answer some practice questions to see your section breakdown.
           </p>
         ) : (
@@ -407,29 +407,29 @@ export default function AnalyticsPage() {
               return (
                 <div key={s.section}>
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm font-medium text-navy">
+                    <span className="text-sm font-medium text-as-primary">
                       {s.label}
                     </span>
                     <div className="flex items-center gap-3">
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-as-outline">
                         {s.correct}/{s.total} correct
                       </span>
                       <span
                         className={`text-sm font-semibold ${
                           s.accuracy >= 80
-                            ? "text-sage"
+                            ? "text-as-primary"
                             : s.accuracy >= 60
-                            ? "text-amber"
-                            : "text-coral"
+                            ? "text-as-surface-tint"
+                            : "text-as-on-surface-variant"
                         }`}
                       >
                         {s.accuracy}%
                       </span>
                     </div>
                   </div>
-                  <div className="h-3 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-3 bg-as-surface-container rounded-full overflow-hidden">
                     <div
-                      className={`h-full ${colors?.bar || "bg-navy"} rounded-full transition-all duration-500`}
+                      className={`h-full ${colors?.bar || "bg-as-primary"} rounded-full transition-all duration-500`}
                       style={{ width: `${s.accuracy}%` }}
                     />
                   </div>
@@ -441,17 +441,17 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Subtopic mastery */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-5 sm:p-6">
-        <h2 className="font-serif text-lg text-navy mb-1">
+      <div className="bg-as-surface-container-lowest rounded-2xl border border-as-outline-variant/15 p-5 sm:p-6">
+        <h2 className="font-headline text-lg text-as-primary mb-1">
           Topic Mastery
         </h2>
-        <p className="text-xs text-gray-400 mb-4">
+        <p className="text-xs text-as-outline mb-4">
           Sorted by accuracy — weakest topics first so you know where to
           focus.
         </p>
 
         {subtopicStats.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-8">
+          <p className="text-sm text-as-outline text-center py-8">
             Answer some practice questions to see your topic breakdown.
           </p>
         ) : (
@@ -463,7 +463,7 @@ export default function AnalyticsPage() {
               return (
                 <div
                   key={`${s.section}::${s.subtopic}`}
-                  className="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0"
+                  className="flex items-center gap-3 py-2.5 border-b border-as-outline-variant/10 last:border-0"
                 >
                   {/* Section indicator */}
                   <div
@@ -472,10 +472,10 @@ export default function AnalyticsPage() {
 
                   {/* Topic name */}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-navy truncate">
+                    <p className="text-sm text-as-primary truncate">
                       {s.subtopic.replace(/_/g, " ")}
                     </p>
-                    <p className="text-[10px] text-gray-400">
+                    <p className="text-[10px] text-as-outline">
                       {sectionLabels[s.section]} · {s.correct}/{s.total}{" "}
                       correct
                     </p>
@@ -483,7 +483,7 @@ export default function AnalyticsPage() {
 
                   {/* Accuracy + mastery badge */}
                   <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-sm font-semibold text-navy">
+                    <span className="text-sm font-semibold text-as-primary">
                       {s.accuracy}%
                     </span>
                     <span

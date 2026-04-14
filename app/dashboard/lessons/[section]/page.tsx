@@ -68,7 +68,7 @@ export default function SectionLessonsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-8 h-8 border-2 border-navy border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-as-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -84,23 +84,23 @@ export default function SectionLessonsPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs text-gray-400 mb-6">
+      <div className="flex items-center gap-2 text-xs text-as-outline mb-6">
         <Link
           href="/dashboard/lessons"
-          className="hover:text-navy transition-colors"
+          className="hover:text-as-primary transition-colors"
         >
           Lessons
         </Link>
         <span>/</span>
-        <span className="text-navy font-medium">
+        <span className="text-as-primary font-medium">
           {sectionLabels[section] || section}
         </span>
       </div>
 
-      <h1 className="font-serif text-2xl sm:text-3xl text-navy mb-1">
+      <h1 className="font-headline text-2xl sm:text-3xl text-as-primary mb-1">
         {sectionLabels[section] || section}
       </h1>
-      <p className="text-sm text-gray-600 mb-8">
+      <p className="text-sm text-as-secondary mb-8">
         {sectionFullNames[section] || ""}
       </p>
 
@@ -114,8 +114,8 @@ export default function SectionLessonsPage() {
           return (
             <div key={topic}>
               <div className="flex items-center justify-between mb-3">
-                <h2 className="font-semibold text-sm text-navy">{topic}</h2>
-                <span className="text-xs text-gray-400">
+                <h2 className="font-semibold text-sm text-as-primary">{topic}</h2>
+                <span className="text-xs text-as-outline">
                   {completedCount}/{topicLessons.length} complete
                 </span>
               </div>
@@ -124,14 +124,14 @@ export default function SectionLessonsPage() {
                   <Link
                     key={lesson.id}
                     href={`/dashboard/lessons/${section}/${lesson.id}`}
-                    className="flex items-center gap-4 bg-white rounded-xl border border-gray-200 p-4 hover:border-amber/50 hover:shadow-sm transition-all"
+                    className="flex items-center gap-4 bg-as-surface-container-lowest rounded-xl border border-as-outline-variant/15 p-4 hover:border-as-surface-tint/50 hover:shadow-sm transition-all"
                   >
                     {/* Status indicator */}
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
                         lesson.completed
-                          ? "bg-sage text-white"
-                          : "bg-gray-100 text-gray-400"
+                          ? "bg-as-primary text-as-on-primary"
+                          : "bg-as-surface-container text-as-outline"
                       }`}
                     >
                       {lesson.completed ? (
@@ -154,10 +154,10 @@ export default function SectionLessonsPage() {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-medium text-navy">
+                      <h3 className="text-sm font-medium text-as-primary">
                         {lesson.title}
                       </h3>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-as-outline">
                         ~{lesson.estimated_minutes} min read
                       </p>
                     </div>

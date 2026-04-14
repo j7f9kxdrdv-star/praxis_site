@@ -75,10 +75,10 @@ export default function DashboardShell({
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-sand flex items-center justify-center">
+      <div className="min-h-screen bg-as-surface flex items-center justify-center font-body">
         <div className="text-center">
-          <div className="w-8 h-8 border-2 border-navy border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-sm text-gray-600">Loading your dashboard...</p>
+          <div className="w-8 h-8 border-2 border-as-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-sm text-as-secondary">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -94,9 +94,9 @@ export default function DashboardShell({
         refreshProfile: () => fetchProfile(user.id),
       }}
     >
-      <div className="min-h-screen bg-sand flex">
+      <div className="min-h-screen bg-as-surface-container-low font-body text-as-on-surface flex">
         <Sidebar />
-        <main className="flex-1 pb-16 lg:pb-0">{children}</main>
+        <main className="flex-1 pb-16 lg:pb-0 lg:px-16 lg:py-16 max-w-[1440px]">{children}</main>
         <BottomTabs />
       </div>
     </DashboardCtx.Provider>
