@@ -366,14 +366,13 @@ export default function PracticeSession() {
   const answeredQuestions = new Set(results.map((r) => r.questionId));
 
   // Parse per-answer explanations from the explanation string
-  // Looks for patterns like "A)" or "A." or "A:" followed by explanation text
+  // Expects format: "(Choice A) explanation text\n\n(Choice B) ..."
   function getPerAnswerExplanation(label: string): string | null {
     const explanation = currentQuestion.explanation;
     if (!explanation) return null;
 
-    // Try matching "A)" or "A." or "A:" patterns
     const regex = new RegExp(
-      `${label}[).:]\\s*(.+?)(?=\\s*[B-D][).:]|$)`,
+      `\\(Choice ${label}\\)\\s*(.+?)(?=\\s*\\(Choice [A-D]\\)|$)`,
       "is"
     );
     const match = explanation.match(regex);
@@ -601,26 +600,33 @@ export default function PracticeSession() {
                   </p>
                 </div>
 
-                {/* Main explanation */}
+                {/* Main explanation — show only content before the first (Choice X) block */}
                 <div className="text-[13px] text-[#333] leading-relaxed pb-4">
-                  <p>{currentQuestion.explanation}</p>
+                  <p>{currentQuestion.explanation?.split(/\n\n?\(Choice [A-D]\)/)[0].trim()}</p>
                 </div>
 
-                {/* Per-choice breakdown */}
+                {/* Per-choice breakdown — incorrect answers only */}
                 <div className="space-y-2 pb-4">
                   {currentQuestion.options.map((option) => {
                     const isCorrect = option.label === currentQuestion.correct_answer;
-                    const perAnswer = getPerAnswerExplanation(option.label);
 
-                    // Only show per-choice if we found a parsed explanation
+                    // Skip the correct answer — already explained at the top
+                    if (isCorrect) return null;
+
+                    const perAnswer = getPerAnswerExplanation(option.label);
                     if (!perAnswer) return null;
+
+                    // Strip leading "This is incorrect." or "This is incorrect " prefix
+                    const cleanAnswer = perAnswer
+                      .replace(/^This is incorrect[.,]?\s*/i, "")
+                      .trim();
 
                     return (
                       <p key={option.label} className="text-[13px] text-[#333] leading-relaxed">
-                        <strong className={isCorrect ? "text-green-700" : "text-[#333]"}>
-                          (Choice {option.label})
+                        <strong className="text-red-600">
+                          Choice {option.label}:
                         </strong>{" "}
-                        {perAnswer}
+                        {cleanAnswer}
                       </p>
                     );
                   })}

@@ -62,11 +62,13 @@ export default function PracticeHub() {
   const [builderDifficulty, setBuilderDifficulty] = useState("all");
   const [builderCount, setBuilderCount] = useState(10);
   const [builderSections, setBuilderSections] = useState<Set<string>>(
-    new Set(["bio_biochem", "chem_phys", "psych_soc", "cars"])
+    new Set()
   );
   const [builderTopics, setBuilderTopics] = useState<Set<string>>(new Set());
-  const [builderAllTopics, setBuilderAllTopics] = useState(true);
-  const [builderStep, setBuilderStep] = useState<1 | 2>(1);
+  const [builderSubtopics, setBuilderSubtopics] = useState<Set<string>>(new Set());
+  const [builderAllTopics, setBuilderAllTopics] = useState(false);
+  const [builderStep, setBuilderStep] = useState<1 | 2 | 3>(1);
+  const [expandedBuilderTopic, setExpandedBuilderTopic] = useState<string | null>(null);
 
   // Browse accordion state
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
@@ -124,12 +126,18 @@ export default function PracticeHub() {
     return allQuestions.filter((q) => {
       if (q.passage_id) return false;
       if (!builderSections.has(q.section)) return false;
-      if (
-        !builderAllTopics &&
-        builderTopics.size > 0 &&
-        !builderTopics.has(q.topic || "")
-      )
-        return false;
+      // If not "all topics" and some topics are selected, filter by topic
+      if (!builderAllTopics && builderTopics.size > 0) {
+        if (!builderTopics.has(q.topic || "")) return false;
+        // If subtopics are selected for this topic, filter by subtopic too
+        if (builderSubtopics.size > 0) {
+          const topicSubs = getSubtopicsForTopic(q.topic || "");
+          const hasSubsForThisTopic = topicSubs.some((s) => builderSubtopics.has(s.name));
+          if (hasSubsForThisTopic && !builderSubtopics.has(q.subtopic)) return false;
+        }
+      } else if (!builderAllTopics && builderTopics.size === 0) {
+        return false; // No topics selected and not "all"
+      }
       if (builderDifficulty !== "all" && q.difficulty !== builderDifficulty)
         return false;
       if (answeredIds.has(q.id)) return false;
@@ -137,33 +145,69 @@ export default function PracticeHub() {
     }).length;
   }
 
+  // Get subtopics for a given topic within selected sections
+  function getSubtopicsForTopic(topicName: string) {
+    const subtopics = new Map<string, number>();
+    allQuestions
+      .filter(
+        (q) => !q.passage_id && builderSections.has(q.section) && q.topic === topicName && q.subtopic
+      )
+      .forEach((q) => {
+        subtopics.set(q.subtopic, (subtopics.get(q.subtopic) || 0) + 1);
+      });
+    return Array.from(subtopics.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
   function toggleSection(id: string) {
     const next = new Set(builderSections);
     if (next.has(id)) {
-      if (next.size > 1) next.delete(id);
+      next.delete(id);
     } else {
       next.add(id);
     }
     setBuilderSections(next);
     // Reset topic selection when sections change
     setBuilderTopics(new Set());
-    setBuilderAllTopics(true);
+    setBuilderSubtopics(new Set());
+    setBuilderAllTopics(false);
   }
 
   function toggleTopic(name: string) {
     if (builderAllTopics) {
-      // Switching from "all" to specific — start with just this topic
       setBuilderAllTopics(false);
       setBuilderTopics(new Set([name]));
+      setBuilderSubtopics(new Set());
     } else {
       const next = new Set(builderTopics);
       if (next.has(name)) {
         next.delete(name);
-        if (next.size === 0) setBuilderAllTopics(true);
+        // Also remove any subtopics belonging to this topic
+        const subs = getSubtopicsForTopic(name);
+        const nextSubs = new Set(builderSubtopics);
+        subs.forEach((s) => nextSubs.delete(s.name));
+        setBuilderSubtopics(nextSubs);
       } else {
         next.add(name);
       }
       setBuilderTopics(next);
+    }
+  }
+
+  function toggleSubtopic(subtopicName: string, topicName: string) {
+    const nextSubs = new Set(builderSubtopics);
+    if (nextSubs.has(subtopicName)) {
+      nextSubs.delete(subtopicName);
+    } else {
+      nextSubs.add(subtopicName);
+    }
+    setBuilderSubtopics(nextSubs);
+    // Ensure the parent topic is selected
+    if (!builderTopics.has(topicName) && !builderAllTopics) {
+      const nextTopics = new Set(builderTopics);
+      nextTopics.add(topicName);
+      setBuilderTopics(nextTopics);
     }
   }
 
@@ -177,7 +221,7 @@ export default function PracticeHub() {
 
     let query = supabase
       .from("questions")
-      .select("id, passage_id, difficulty, topic")
+      .select("id, passage_id, difficulty, topic, subtopic")
       .is("passage_id", null)
       .in("section", Array.from(builderSections));
 
@@ -196,9 +240,17 @@ export default function PracticeHub() {
     // Filter by topics if specific ones selected
     let filtered = questions;
     if (!builderAllTopics && builderTopics.size > 0) {
-      filtered = questions.filter((q) =>
-        builderTopics.has((q as unknown as QuestionInfo).topic || "")
-      );
+      filtered = questions.filter((q) => {
+        const qi = q as unknown as QuestionInfo;
+        if (!builderTopics.has(qi.topic || "")) return false;
+        // If subtopics are selected, filter by those too
+        if (builderSubtopics.size > 0) {
+          const topicSubs = getSubtopicsForTopic(qi.topic || "");
+          const hasSubsForThisTopic = topicSubs.some((s) => builderSubtopics.has(s.name));
+          if (hasSubsForThisTopic && !builderSubtopics.has(qi.subtopic)) return false;
+        }
+        return true;
+      });
     }
 
     // Exclude answered
@@ -856,7 +908,7 @@ export default function PracticeHub() {
             className="absolute inset-0 bg-as-on-surface/30"
             onClick={() => setShowBuilder(false)}
           />
-          <div className="relative bg-as-surface-container-lowest rounded-t-2xl sm:rounded-2xl w-full sm:max-w-lg max-h-[85vh] overflow-y-auto p-6 pb-8 sm:pb-6">
+          <div className="relative bg-as-surface-container-lowest rounded-t-2xl sm:rounded-2xl w-full sm:max-w-4xl sm:min-h-[540px] max-h-[92vh] overflow-y-auto p-10 pb-12 sm:pb-12">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-headline text-xl text-as-primary">
@@ -882,114 +934,228 @@ export default function PracticeHub() {
               </button>
             </div>
 
+            {/* Step indicator */}
+            <div className="flex items-center gap-2 mb-6">
+              {[1, 2, 3].map((step) => (
+                <div key={step} className="flex items-center gap-2 flex-1">
+                  <div className={`h-1 flex-1 rounded-full transition-colors ${
+                    builderStep >= step ? "bg-as-primary" : "bg-as-outline-variant/20"
+                  }`} />
+                </div>
+              ))}
+            </div>
+
+            {/* ===== STEP 1: SECTIONS ===== */}
             {builderStep === 1 && (
               <>
-                {/* Sections */}
-                <div className="mb-6">
-                  <p className="text-xs font-medium text-as-on-surface-variant mb-2">
-                    Sections
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    {sections.map((s) => {
-                      const selected = builderSections.has(s.id);
-                      const sectionUnseen = allQuestions.filter(
-                        (q) =>
-                          q.section === s.id &&
-                          !q.passage_id &&
-                          !answeredIds.has(q.id)
-                      ).length;
+                <p className="text-sm text-as-on-surface-variant mb-1">
+                  Step 1 of 3
+                </p>
+                <p className="text-lg font-headline text-as-primary mb-4">
+                  What do you want to study?
+                </p>
+                <p className="text-xs text-as-outline mb-4">
+                  Select the sections you want to practice.
+                </p>
 
-                      return (
-                        <button
-                          key={s.id}
-                          onClick={() => toggleSection(s.id)}
-                          className={`rounded-xl border-2 p-3 text-left transition-all ${
-                            selected
-                              ? "border-as-primary bg-as-primary/5"
-                              : "border-as-outline-variant/15 opacity-50"
-                          }`}
-                        >
-                          <div className="flex items-center gap-2">
-                            <div
-                              className={`w-6 h-6 rounded-md ${s.color} flex items-center justify-center`}
-                            >
-                              <span className="text-[10px] font-bold">
-                                {s.label.charAt(0)}
-                              </span>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-as-primary">
-                                {s.label}
-                              </p>
-                              <p className="text-[10px] text-as-outline">
-                                {sectionUnseen} unseen
-                              </p>
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  {sections.map((s) => {
+                    const selected = builderSections.has(s.id);
+                    const sectionUnseen = allQuestions.filter(
+                      (q) =>
+                        q.section === s.id &&
+                        !q.passage_id &&
+                        !answeredIds.has(q.id)
+                    ).length;
 
-                {/* Topics */}
-                {availableTopics.length > 0 && (
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs font-medium text-as-on-surface-variant">
-                        Topics
-                      </p>
+                    return (
                       <button
-                        onClick={() => {
-                          setBuilderAllTopics(true);
-                          setBuilderTopics(new Set());
-                        }}
-                        className={`text-[10px] font-medium px-2 py-0.5 rounded-full transition-colors ${
-                          builderAllTopics
-                            ? "bg-as-primary text-as-on-primary"
-                            : "text-as-outline hover:text-as-primary"
+                        key={s.id}
+                        onClick={() => toggleSection(s.id)}
+                        className={`rounded-xl border-2 p-5 text-left transition-all ${
+                          selected
+                            ? "border-as-primary bg-as-primary/5"
+                            : "border-as-outline-variant/15 opacity-50"
                         }`}
                       >
-                        All Topics
-                      </button>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      {availableTopics.map((t) => {
-                        const selected =
-                          builderAllTopics || builderTopics.has(t.name);
-
-                        return (
-                          <button
-                            key={t.name}
-                            onClick={() => toggleTopic(t.name)}
-                            className={`text-xs font-medium px-3 py-1.5 rounded-full border transition-colors ${
-                              selected
-                                ? "bg-as-primary/10 border-as-outline-variant/15 text-as-primary"
-                                : "border-as-outline-variant/15 text-as-outline"
-                            }`}
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`w-6 h-6 rounded-md ${s.color} flex items-center justify-center`}
                           >
-                            {t.name}
-                            <span className="text-[10px] ml-1 opacity-60">
-                              {t.count}
+                            <span className="text-[10px] font-bold">
+                              {s.label.charAt(0)}
                             </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-as-primary">
+                              {s.label}
+                            </p>
+                            <p className="text-[10px] text-as-outline">
+                              {sectionUnseen} unseen
+                            </p>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
 
                 <button
-                  onClick={() => setBuilderStep(2)}
-                  className="w-full bg-as-primary text-as-on-primary text-sm font-semibold rounded-xl py-3 hover:bg-as-primary-container transition-colors"
+                  onClick={() => {
+                    setBuilderStep(2);
+                    setExpandedBuilderTopic(null);
+                  }}
+                  disabled={builderSections.size === 0}
+                  className="w-full bg-as-primary text-as-on-primary text-sm font-semibold rounded-xl py-3 hover:bg-as-primary-container transition-colors disabled:opacity-30"
                 >
                   Next
                 </button>
               </>
             )}
 
+            {/* ===== STEP 2: TOPICS ===== */}
             {builderStep === 2 && (
               <>
+                <p className="text-sm text-as-on-surface-variant mb-1">
+                  Step 2 of 3
+                </p>
+                <p className="text-lg font-headline text-as-primary mb-2">
+                  Narrow your focus
+                </p>
+                <p className="text-xs text-as-outline mb-4">
+                  Select the topics you want to practice. Expand any topic to pick specific subtopics.
+                </p>
+
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-xs font-medium text-as-on-surface-variant">
+                    {builderAllTopics
+                      ? "All topics selected"
+                      : builderTopics.size === 0
+                        ? "No topics selected"
+                        : `${builderTopics.size} topic${builderTopics.size > 1 ? "s" : ""} selected`}
+                  </p>
+                  <button
+                    onClick={() => {
+                      if (builderAllTopics) {
+                        setBuilderAllTopics(false);
+                        setBuilderTopics(new Set());
+                        setBuilderSubtopics(new Set());
+                      } else {
+                        setBuilderAllTopics(true);
+                        setBuilderTopics(new Set());
+                        setBuilderSubtopics(new Set());
+                      }
+                    }}
+                    className={`text-[10px] font-medium px-3 py-1 rounded-full transition-colors ${
+                      builderAllTopics
+                        ? "bg-as-primary text-as-on-primary"
+                        : "text-as-outline hover:text-as-primary border border-as-outline-variant/15"
+                    }`}
+                  >
+                    {builderAllTopics ? "All Topics ✓" : "Select All"}
+                  </button>
+                </div>
+
+                <div className="max-h-[60vh] overflow-y-auto -mx-1 px-1 mb-6 space-y-1.5">
+                  {availableTopics.map((t) => {
+                    const selected = builderAllTopics || builderTopics.has(t.name);
+                    const subtopics = getSubtopicsForTopic(t.name);
+                    const isExpanded = expandedBuilderTopic === t.name;
+                    const selectedSubCount = subtopics.filter((s) => builderSubtopics.has(s.name)).length;
+
+                    return (
+                      <div key={t.name}>
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => toggleTopic(t.name)}
+                            className={`flex-1 text-left text-xs font-medium px-3 py-2.5 rounded-lg border transition-colors ${
+                              selected
+                                ? "bg-as-primary/10 border-as-primary/20 text-as-primary"
+                                : "border-as-outline-variant/15 text-as-outline"
+                            }`}
+                          >
+                            <span className="flex items-center justify-between">
+                              <span>{t.name}</span>
+                              <span className="flex items-center gap-2">
+                                {selectedSubCount > 0 && !builderAllTopics && (
+                                  <span className="text-[9px] bg-as-primary/20 text-as-primary px-1.5 py-0.5 rounded-full">
+                                    {selectedSubCount} sub
+                                  </span>
+                                )}
+                                <span className="text-[10px] opacity-60">{t.count}</span>
+                              </span>
+                            </span>
+                          </button>
+                          {subtopics.length > 0 && (
+                            <button
+                              onClick={() => setExpandedBuilderTopic(isExpanded ? null : t.name)}
+                              className="p-2 text-as-outline hover:text-as-primary transition-colors"
+                              title="Show subtopics"
+                            >
+                              <svg className={`w-3.5 h-3.5 transition-transform ${isExpanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                        {isExpanded && subtopics.length > 0 && (
+                          <div className="ml-4 mt-1.5 space-y-0.5 border-l-2 border-as-outline-variant/15 pl-3">
+                            {subtopics.map((sub) => {
+                              const subSelected = builderAllTopics || builderSubtopics.has(sub.name) || (builderTopics.has(t.name) && builderSubtopics.size === 0);
+                              const isActiveSubFilter = builderSubtopics.has(sub.name);
+
+                              return (
+                                <button
+                                  key={sub.name}
+                                  onClick={() => toggleSubtopic(sub.name, t.name)}
+                                  className={`w-full flex items-center justify-between text-[11px] py-1.5 px-2 rounded-md transition-colors ${
+                                    isActiveSubFilter
+                                      ? "bg-as-primary/10 text-as-primary font-medium"
+                                      : subSelected
+                                        ? "text-as-on-surface-variant hover:bg-as-surface-container-high"
+                                        : "text-as-outline hover:bg-as-surface-container-high"
+                                  }`}
+                                >
+                                  <span>{sub.name}</span>
+                                  <span className="text-[10px] opacity-60">{sub.count}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setBuilderStep(1)}
+                    className="flex-1 border border-as-outline-variant/15 text-sm font-semibold text-as-primary rounded-xl py-3 hover:bg-as-surface-container-low transition-colors"
+                  >
+                    Back
+                  </button>
+                  <button
+                    onClick={() => setBuilderStep(3)}
+                    disabled={!builderAllTopics && builderTopics.size === 0}
+                    className="flex-1 bg-as-primary text-as-on-primary text-sm font-semibold rounded-xl py-3 hover:bg-as-primary-container transition-colors disabled:opacity-30"
+                  >
+                    Next
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* ===== STEP 3: DIFFICULTY & COUNT ===== */}
+            {builderStep === 3 && (
+              <>
+                <p className="text-sm text-as-on-surface-variant mb-1">
+                  Step 3 of 3
+                </p>
+                <p className="text-lg font-headline text-as-primary mb-4">
+                  Customize your session
+                </p>
+
                 {/* Difficulty */}
                 <div className="mb-6">
                   <p className="text-xs font-medium text-as-on-surface-variant mb-2">
@@ -1077,6 +1243,11 @@ export default function PracticeHub() {
                           )
                           .join(", ")}
                   </p>
+                  {!builderAllTopics && builderTopics.size > 0 && (
+                    <p className="text-[10px] text-as-outline mt-0.5">
+                      Topics: {Array.from(builderTopics).join(", ")}
+                    </p>
+                  )}
                   <p className="text-[10px] text-as-outline mt-1">
                     {builderMatch} unseen questions match
                   </p>
@@ -1084,7 +1255,7 @@ export default function PracticeHub() {
 
                 <div className="flex gap-3">
                   <button
-                    onClick={() => setBuilderStep(1)}
+                    onClick={() => setBuilderStep(2)}
                     className="flex-1 border border-as-outline-variant/15 text-sm font-semibold text-as-primary rounded-xl py-3 hover:bg-as-surface-container-low transition-colors"
                   >
                     Back
