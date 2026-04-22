@@ -55,6 +55,32 @@
   --as-error: #ba1a1a;
   --as-error-container: #ffdad6;
   --as-on-error-container: #93000a;
+
+  /* Dashboard sidebar width (matches components/dashboard/Sidebar.tsx lg:w-72 = 18rem = 288px) */
+  --sidebar-w: 288px;
+}
+
+/* ── Flashcards decorative background (Glyphs treatment) ─────────────── */
+/* A fixed layer that tiles the glyph SVG across the full viewport, inset  */
+/* from the left by the sidebar width so the sidebar stays flat cream.     */
+.bg-canvas {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: var(--sidebar-w, 288px);
+  right: 0;
+  width: auto;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("/glyph-tile.svg");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  background-position: 0 0;
+}
+/* On < lg viewports the sidebar is hidden, so the canvas should span full width */
+@media (max-width: 1023px) {
+  .bg-canvas { left: 0; }
 }
 
 @theme inline {

@@ -43,6 +43,31 @@ const tabs = [
     ),
   },
   {
+    label: "Cards",
+    href: "/dashboard/flashcards",
+    icon: (active: boolean) => (
+      <svg
+        className={`w-6 h-6 ${active ? "text-as-primary" : "text-as-outline"}`}
+        fill="none"
+        viewBox="0 0 24 24"
+        strokeWidth={1.5}
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3.75 8.25a2.25 2.25 0 012.25-2.25h12a2.25 2.25 0 012.25 2.25v8.25a2.25 2.25 0 01-2.25 2.25h-12A2.25 2.25 0 013.75 16.5V8.25z"
+        />
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity="0.6"
+          d="M7.5 3.75h9M6 21h12"
+        />
+      </svg>
+    ),
+  },
+  {
     label: "Lessons",
     href: "/dashboard/lessons",
     icon: (active: boolean) => (

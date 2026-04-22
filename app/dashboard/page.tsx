@@ -39,6 +39,11 @@ export default function DashboardHome() {
     total_questions: number;
   } | null>(null);
   const [subjectProgress, setSubjectProgress] = useState<SubjectProgress[]>([]);
+  const [flashcardSummary, setFlashcardSummary] = useState<{
+    dueCount: number;
+    deckCount: number;
+    recentDeck: { id: string; title: string } | null;
+  }>({ dueCount: 0, deckCount: 0, recentDeck: null });
 
   const firstName =
     profile?.first_name ||
@@ -150,7 +155,67 @@ export default function DashboardHome() {
       }
     }
 
+    async function loadFlashcardSummary() {
+      // All decks → all card ids → state rows for this user
+      const { data: deckRows } = await supabase
+        .from("flashcard_decks")
+        .select("id, title");
+      if (!deckRows || deckRows.length === 0) return;
+
+      const { data: cardRows } = await supabase
+        .from("flashcards")
+        .select("id, deck_id, cloze_count, card_type")
+        .in("deck_id", deckRows.map((d) => d.id));
+
+      let totalItems = 0;
+      const cardToDeck = new Map<string, string>();
+      (cardRows || []).forEach((c) => {
+        totalItems += c.card_type === "cloze" ? c.cloze_count || 1 : 1;
+        cardToDeck.set(c.id, c.deck_id);
+      });
+
+      let stateRows: { flashcard_id: string; cloze_index: number; next_review_at: string; suspended: boolean; last_reviewed_at: string | null }[] = [];
+      if (cardRows && cardRows.length > 0) {
+        const { data } = await supabase
+          .from("flashcard_user_state")
+          .select("flashcard_id, cloze_index, next_review_at, suspended, last_reviewed_at")
+          .eq("user_id", user.id)
+          .in("flashcard_id", cardRows.map((c) => c.id));
+        stateRows = data || [];
+      }
+
+      const now = new Date().toISOString();
+      const seen = new Set<string>();
+      let dueCount = 0;
+      let mostRecentAt = "";
+      let mostRecentCardId = "";
+      stateRows.forEach((s) => {
+        seen.add(`${s.flashcard_id}::${s.cloze_index}`);
+        if (!s.suspended && s.next_review_at <= now) dueCount++;
+        if (s.last_reviewed_at && s.last_reviewed_at > mostRecentAt) {
+          mostRecentAt = s.last_reviewed_at;
+          mostRecentCardId = s.flashcard_id;
+        }
+      });
+      const unseen = totalItems - seen.size;
+      if (unseen > 0) dueCount += unseen;
+
+      let recentDeck: { id: string; title: string } | null = null;
+      if (mostRecentCardId) {
+        const deckId = cardToDeck.get(mostRecentCardId);
+        const d = deckRows.find((dr) => dr.id === deckId);
+        if (d) recentDeck = { id: d.id, title: d.title };
+      }
+
+      setFlashcardSummary({
+        dueCount,
+        deckCount: deckRows.length,
+        recentDeck,
+      });
+    }
+
     loadStats();
+    loadFlashcardSummary();
   }, [user.id]);
 
   const isNewUser = stats.totalQuestions === 0;
@@ -310,6 +375,59 @@ export default function DashboardHome() {
           </div>
         </section>
       </div>
+
+      {/* Flashcards Widget */}
+      {flashcardSummary.deckCount > 0 && (
+        <div className="mb-16 sm:mb-24">
+          <div className="flex items-center justify-between mb-8 px-2">
+            <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-as-secondary/60">
+              Spaced Repetition
+            </h4>
+            <Link
+              href="/dashboard/flashcards"
+              className="text-xs font-bold text-as-primary hover:underline underline-offset-4 transition-all"
+            >
+              All Decks
+            </Link>
+          </div>
+
+          <Link
+            href="/dashboard/flashcards"
+            className="block harvey-card p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] group hover:shadow-md transition-all"
+          >
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div className="flex items-center gap-6">
+                <div className="w-14 h-14 bg-as-primary/5 rounded-2xl flex items-center justify-center text-as-primary shrink-0">
+                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 8.25a2.25 2.25 0 012.25-2.25h12a2.25 2.25 0 012.25 2.25v8.25a2.25 2.25 0 01-2.25 2.25h-12A2.25 2.25 0 013.75 16.5V8.25z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 3.75h9" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="font-headline text-2xl sm:text-3xl text-as-on-surface mb-1">
+                    {flashcardSummary.dueCount > 0
+                      ? `${flashcardSummary.dueCount} card${flashcardSummary.dueCount === 1 ? "" : "s"} due`
+                      : "All caught up"}
+                  </h4>
+                  <p className="text-sm text-as-secondary/70 font-light">
+                    {flashcardSummary.dueCount > 0
+                      ? "Review now to keep retention strong."
+                      : flashcardSummary.recentDeck
+                      ? `Last studied: ${flashcardSummary.recentDeck.title}`
+                      : "Pick a deck to get ahead of the curve."}
+                  </p>
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-3 text-as-primary font-bold text-sm uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
+                {flashcardSummary.dueCount > 0 ? "Review Now" : "Browse Decks"}
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+              </span>
+            </div>
+          </Link>
+        </div>
+      )}
 
       {/* Deep Dives & Progress */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-12 mb-16 sm:mb-24">

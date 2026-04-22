@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Serif_Display, Inter, Newsreader, Manrope } from "next/font/google";
+import { DM_Serif_Display, Inter, Newsreader, Manrope, Fraunces } from "next/font/google";
 import "./globals.css";
 
 const dmSerif = DM_Serif_Display({
@@ -23,6 +23,13 @@ const manrope = Manrope({
   subsets: ["latin"],
 });
 
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  weight: ["400", "500"],
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+});
+
 export const metadata: Metadata = {
   title: "Praxist Prep — MCAT Prep That Works",
   description:
@@ -37,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${dmSerif.variable} ${inter.variable} ${newsreader.variable} ${manrope.variable} h-full antialiased`}
+      className={`${dmSerif.variable} ${inter.variable} ${newsreader.variable} ${manrope.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
