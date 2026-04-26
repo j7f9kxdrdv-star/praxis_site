@@ -1,265 +1,52 @@
 "use client";
 
-import { useState } from "react";
-import MolecularBg from "@/components/dashboard/MolecularBg";
+import { useEffect, useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { isLive } from "@/lib/launch-mode";
+import ComingSoon from "@/components/ComingSoon";
+import MarketingHome from "@/components/MarketingHome";
 
 /**
- * Public homepage — coming-soon waitlist landing.
+ * Public homepage dispatcher.
  *
- * Replaces the marketing site for now. Visitors enter their email and we
- * insert it into the `waitlist_signups` Supabase table via /api/waitlist.
- * /login is still reachable by direct URL for the founder.
+ * Picks one of two views based on the site's launch mode + the visitor's
+ * auth state:
+ *
+ *   live   + (authed or not) -> MarketingHome   (auth-aware CTAs)
+ *   preview + authed         -> MarketingHome   (founder bypass)
+ *   preview + not authed     -> ComingSoon      (waitlist gate)
+ *
+ * To open the gate to the public, set NEXT_PUBLIC_LAUNCH_MODE=live in
+ * Vercel and redeploy. See lib/launch-mode.ts.
  */
-export default function ComingSoon() {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<
-    "idle" | "submitting" | "success" | "error"
-  >("idle");
-  const [errorMsg, setErrorMsg] = useState("");
+export default function HomeRouter() {
+  const live = isLive();
+  const [authChecked, setAuthChecked] = useState(false);
+  const [authed, setAuthed] = useState(false);
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (status === "submitting") return;
+  useEffect(() => {
+    // In live mode the page is public; we still check session so the
+    // marketing CTAs can route a logged-in visitor straight to /dashboard
+    // instead of bouncing them through /login.
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (cancelled) return;
+      setAuthed(!!data.session);
+      setAuthChecked(true);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-    const trimmed = email.trim();
-    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      setErrorMsg("Please enter a valid email address.");
-      setStatus("error");
-      return;
-    }
+  // While we're checking auth, render nothing — keeps the page from briefly
+  // flashing the wrong view (especially the coming-soon page for someone
+  // who's actually logged in).
+  if (!authChecked) return null;
 
-    setStatus("submitting");
-    setErrorMsg("");
-
-    try {
-      const res = await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: trimmed, source: "coming_soon" }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error || "Could not save your email — try again.");
-      }
-      setStatus("success");
-    } catch (err) {
-      setStatus("error");
-      setErrorMsg(err instanceof Error ? err.message : "Something went wrong.");
-    }
+  if (live) {
+    return <MarketingHome />;
   }
-
-  return (
-    <main
-      className="relative min-h-screen w-full overflow-hidden flex flex-col"
-      style={{
-        background: "var(--color-prax-cream)",
-        fontFamily: "var(--font-prax-sans)",
-        color: "var(--color-prax-ink)",
-      }}
-    >
-      <MolecularBg variant="hex" opacity={0.08} />
-
-      {/* Top — wordmark only, no nav */}
-      <header className="relative z-[1] flex items-center justify-between px-6 sm:px-10 lg:px-16 py-8">
-        <div className="flex items-center gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/logo-green.png"
-            alt="Praxist Prep logo"
-            className="h-9 w-auto"
-          />
-          <div
-            className="leading-[1.02] font-semibold"
-            style={{
-              fontFamily: "var(--font-prax-serif)",
-              fontSize: 22,
-              color: "var(--color-prax-green)",
-            }}
-          >
-            Praxist
-            <br />
-            Prep
-          </div>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-2.5">
-          <div className="relative w-2 h-2">
-            <div
-              className="absolute inset-0 rounded-full"
-              style={{ background: "var(--color-prax-green-soft)" }}
-            />
-            <div
-              className="absolute inset-0 rounded-full animate-prax-pulse"
-              style={{ background: "var(--color-prax-green-soft)" }}
-            />
-          </div>
-          <div
-            className="font-semibold uppercase whitespace-nowrap"
-            style={{
-              fontSize: 10,
-              letterSpacing: "0.22em",
-              color: "var(--color-prax-ink-mute)",
-            }}
-          >
-            Coming soon
-          </div>
-        </div>
-      </header>
-
-      {/* Centered hero */}
-      <section className="relative z-[1] flex-1 flex items-center justify-center px-6 sm:px-10 lg:px-16 pb-20">
-        <div className="w-full max-w-[680px] text-center">
-          <div
-            className="font-semibold uppercase mx-auto mb-6"
-            style={{
-              fontSize: 10.5,
-              letterSpacing: "0.28em",
-              color: "var(--color-prax-ink-mute)",
-            }}
-          >
-            Praxist Prep · MCAT
-          </div>
-
-          <h1
-            className="font-medium m-0"
-            style={{
-              fontFamily: "var(--font-prax-serif)",
-              fontSize: "clamp(36px, 5.5vw, 56px)",
-              lineHeight: 1.08,
-              color: "var(--color-prax-green)",
-              letterSpacing: "-0.015em",
-            }}
-          >
-            Still preparing your individualized MCAT prep course.
-          </h1>
-
-          <p
-            className="italic mt-6 mx-auto"
-            style={{
-              fontFamily: "var(--font-prax-serif)",
-              fontSize: "clamp(15px, 2vw, 18px)",
-              lineHeight: 1.55,
-              color: "var(--color-prax-ink-soft)",
-              maxWidth: 520,
-            }}
-          >
-            Enter your email to be notified the moment it&apos;s ready.
-          </p>
-
-          {/* Form */}
-          {status !== "success" ? (
-            <form
-              onSubmit={onSubmit}
-              className="mt-10 mx-auto flex flex-col sm:flex-row items-stretch gap-3 max-w-[520px]"
-            >
-              <input
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                required
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (status === "error") setStatus("idle");
-                }}
-                disabled={status === "submitting"}
-                className="flex-1 outline-none transition-colors"
-                style={{
-                  background: "var(--color-prax-cream-card)",
-                  border: "1px solid var(--color-prax-cream-border)",
-                  borderRadius: 999,
-                  padding: "14px 22px",
-                  fontSize: 15,
-                  color: "var(--color-prax-ink)",
-                }}
-              />
-              <button
-                type="submit"
-                disabled={status === "submitting"}
-                className="cursor-pointer transition-opacity"
-                style={{
-                  background: "var(--color-prax-green)",
-                  color: "var(--color-prax-cream)",
-                  border: "none",
-                  borderRadius: 999,
-                  padding: "14px 28px",
-                  fontSize: 13.5,
-                  fontWeight: 600,
-                  letterSpacing: "0.02em",
-                  opacity: status === "submitting" ? 0.7 : 1,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {status === "submitting" ? "Sending…" : "Notify me"}
-              </button>
-            </form>
-          ) : (
-            <div
-              className="mt-10 mx-auto rounded-2xl text-center px-6 py-5 max-w-[520px]"
-              style={{
-                background: "var(--color-prax-green)",
-                color: "var(--color-prax-cream)",
-              }}
-            >
-              <div
-                className="font-medium"
-                style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 20,
-                }}
-              >
-                You&apos;re on the list.
-              </div>
-              <div
-                className="italic mt-1.5"
-                style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 14,
-                  color: "rgba(246,244,227,0.75)",
-                }}
-              >
-                We&apos;ll email you the moment Praxist Prep opens.
-              </div>
-            </div>
-          )}
-
-          {status === "error" && errorMsg && (
-            <div
-              className="mt-3 italic"
-              style={{
-                fontFamily: "var(--font-prax-serif)",
-                fontSize: 13,
-                color: "var(--color-prax-danger, #a64432)",
-              }}
-            >
-              {errorMsg}
-            </div>
-          )}
-
-          <div
-            className="mt-12 italic"
-            style={{
-              fontFamily: "var(--font-prax-serif)",
-              fontSize: 12,
-              color: "var(--color-prax-ink-mute)",
-            }}
-          >
-            — Built deliberately. Tempered by practice. —
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer
-        className="relative z-[1] px-6 sm:px-10 lg:px-16 pb-8"
-        style={{ fontSize: 11, color: "var(--color-prax-ink-mute)" }}
-      >
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <span>© {new Date().getFullYear()} Praxist Prep</span>
-          <span className="opacity-70">All rights reserved</span>
-        </div>
-      </footer>
-    </main>
-  );
+  // preview mode
+  return authed ? <MarketingHome /> : <ComingSoon />;
 }

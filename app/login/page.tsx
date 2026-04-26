@@ -1,18 +1,58 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-export default function LoginPage() {
+/**
+ * Sign-in page.
+ *
+ * Reads `?next=<path>` to determine where to send the user after auth — and
+ * where to bounce them if they hit /login while already authenticated.
+ *
+ *   - From coming-soon (/) Sign In pill: no `next` param. After auth -> /
+ *     (renders marketing for authed users, coming-soon otherwise).
+ *   - From marketing nav Sign In button: `?next=/dashboard`. After auth ->
+ *     /dashboard. Already-authed founder gets jumped straight there.
+ *
+ * Only same-origin internal paths are accepted as `next` to avoid open-
+ * redirect attacks.
+ */
+function LoginInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = sanitizeNext(searchParams.get("next")) ?? "/";
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [sessionChecked, setSessionChecked] = useState(false);
+
+  // If you're already signed in, skip the form and go to wherever the
+  // visitor was trying to reach (the `next` param). For the coming-soon
+  // entry point this is `/` (back to the marketing/coming-soon dispatcher).
+  // For the marketing nav Sign In button this is `/dashboard` — straight
+  // into the app.
+  useEffect(() => {
+    let cancelled = false;
+    supabase.auth.getSession().then(({ data }) => {
+      if (cancelled) return;
+      if (data.session) {
+        router.replace(next);
+      } else {
+        setSessionChecked(true);
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [router, next]);
+
+  if (!sessionChecked) return null;
 
   return (
     <div
@@ -75,7 +115,7 @@ export default function LoginPage() {
                 return;
               }
 
-              router.push("/dashboard");
+              router.push(next);
             }}
             className="space-y-6"
           >
@@ -220,7 +260,7 @@ export default function LoginPage() {
                 const { error } = await supabase.auth.signInWithOAuth({
                   provider: "google",
                   options: {
-                    redirectTo: `${window.location.origin}/dashboard`,
+                    redirectTo: `${window.location.origin}${next}`,
                   },
                 });
                 if (error) setError(error.message);
@@ -288,5 +328,27 @@ export default function LoginPage() {
         </footer>
       </main>
     </div>
+  );
+}
+
+/**
+ * Only allow `next` to redirect to internal paths starting with "/" — and
+ * not "//" (which is the start of a protocol-relative external URL). This
+ * prevents an attacker from crafting `/login?next=//evil.com` and using us
+ * as an open-redirect oracle for phishing.
+ */
+function sanitizeNext(raw: string | null): string | null {
+  if (!raw) return null;
+  if (!raw.startsWith("/")) return null;
+  if (raw.startsWith("//")) return null;
+  return raw;
+}
+
+export default function LoginPage() {
+  // useSearchParams() requires a Suspense boundary in the App Router.
+  return (
+    <Suspense fallback={null}>
+      <LoginInner />
+    </Suspense>
   );
 }
