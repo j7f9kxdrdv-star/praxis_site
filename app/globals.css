@@ -138,10 +138,28 @@
   --color-as-error-container: var(--as-error-container);
   --color-as-on-error-container: var(--as-on-error-container);
 
+  /* Praxist dashboard tokens (v2 redesign) */
+  --color-prax-cream: #f6f4e3;
+  --color-prax-cream-deep: #efe7d1;
+  --color-prax-cream-card: #fbf8eb;
+  --color-prax-cream-border: #e3dabe;
+  --color-prax-ink: #1a2723;
+  --color-prax-ink-soft: #4a5d56;
+  --color-prax-ink-mute: #7a8a82;
+  --color-prax-green: #054f46;
+  --color-prax-green-deep: #033830;
+  --color-prax-green-soft: #0a6a5c;
+  --color-prax-green-tint: #d8e5df;
+  --color-prax-gold: #b88746;
+  --color-prax-gold-soft: #d9b37a;
+  --color-prax-danger: #a64432;
+
   --font-serif: var(--font-dm-serif);
   --font-sans: var(--font-inter);
   --font-headline: var(--font-newsreader);
   --font-body: var(--font-manrope);
+  --font-prax-serif: var(--font-instrument-serif);
+  --font-prax-sans: var(--font-be-vietnam);
 }
 
 body {
@@ -166,6 +184,15 @@ html {
 
 .animate-fade-in-up {
   animation: fadeInUp 0.8s ease-out forwards;
+}
+
+@keyframes praxPulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.6); opacity: 0; }
+}
+
+.animate-prax-pulse {
+  animation: praxPulse 2s ease-out infinite;
 }
 
 /* === Stitch Landing Page Styles === */

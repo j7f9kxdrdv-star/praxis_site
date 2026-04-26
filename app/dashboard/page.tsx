@@ -4,18 +4,59 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
+import MolecularBg from "@/components/dashboard/MolecularBg";
 
-interface DashboardStats {
+/* ---------------------------------------------------------------------- */
+/* Types                                                                  */
+/* ---------------------------------------------------------------------- */
+
+interface Stats {
   streak: number;
   questionsThisWeek: number;
   totalQuestions: number;
   accuracy: number | null;
+  weeklySpark: number[]; // 7 buckets, oldest → newest
+  precisionSpark: number[]; // 7-day rolling accuracy
+  weekDelta: number; // questions this week vs prev week
+  precisionDelta: number; // percentage points vs last week
 }
 
 interface SubjectProgress {
+  section: string;
   label: string;
   percent: number;
+  attention: boolean;
 }
+
+interface FlashcardSummary {
+  totalDue: number;
+  urgent: number;
+  soon: number;
+  later: number;
+  deckCount: number;
+}
+
+interface TodaysFocus {
+  section: string;
+  sectionLabel: string;
+  topic: string;
+  questionCount: number;
+  estimatedMinutes: number;
+  expectedGainPct: number;
+  altLabel: string | null;
+  altMinutes: number | null;
+}
+
+const SECTION_LABELS: Record<string, string> = {
+  bio_biochem: "Biological Systems",
+  chem_phys: "Physical Sciences",
+  psych_soc: "Psychological Behavior",
+  cars: "Critical Reasoning",
+};
+
+/* ---------------------------------------------------------------------- */
+/* Helpers                                                                */
+/* ---------------------------------------------------------------------- */
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -24,26 +65,272 @@ function getGreeting(): string {
   return "Good evening";
 }
 
+function todayLabel(): string {
+  return new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
+
+function startOfDayMs(d: Date): number {
+  const c = new Date(d);
+  c.setHours(0, 0, 0, 0);
+  return c.getTime();
+}
+
+/* ---------------------------------------------------------------------- */
+/* Sparkline (inline SVG)                                                 */
+/* ---------------------------------------------------------------------- */
+
+function Spark({
+  points,
+  color,
+  width = 72,
+  height = 22,
+}: {
+  points: number[];
+  color: string;
+  width?: number;
+  height?: number;
+}) {
+  if (points.length === 0) {
+    return <div style={{ width, height }} />;
+  }
+  const max = Math.max(...points, 1);
+  const min = Math.min(...points, 0);
+  const range = max - min || 1;
+  const step = points.length > 1 ? width / (points.length - 1) : 0;
+  const coords = points.map(
+    (p, i) => [i * step, height - ((p - min) / range) * height] as [number, number]
+  );
+  const d = coords
+    .map((c, i) => (i === 0 ? "M" : "L") + c[0].toFixed(1) + " " + c[1].toFixed(1))
+    .join(" ");
+  const area = d + ` L ${width} ${height} L 0 ${height} Z`;
+  const last = coords[coords.length - 1];
+  return (
+    <svg width={width} height={height} style={{ display: "block" }}>
+      <path d={area} fill={color} opacity="0.12" />
+      <path
+        d={d}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx={last[0]} cy={last[1]} r="2.2" fill={color} />
+    </svg>
+  );
+}
+
+/* ---------------------------------------------------------------------- */
+/* Stat card                                                              */
+/* ---------------------------------------------------------------------- */
+
+function StatCard({
+  label,
+  value,
+  unit,
+  delta,
+  deltaIsGood = true,
+  spark,
+  hint,
+  empty,
+  emptyCta,
+  emptyHref,
+}: {
+  label: string;
+  value: string;
+  unit?: string;
+  delta?: string;
+  deltaIsGood?: boolean;
+  spark?: number[];
+  hint?: string;
+  empty?: boolean;
+  emptyCta?: string;
+  emptyHref?: string;
+}) {
+  const card = (
+    <div
+      className="relative flex flex-1 min-w-0 flex-col rounded-xl px-[18px] pt-4 pb-3.5"
+      style={{
+        background: "var(--color-prax-cream-card)",
+        border: "1px solid var(--color-prax-cream-border)",
+      }}
+    >
+      <div className="flex items-baseline justify-between mb-2.5">
+        <div
+          className="font-semibold uppercase"
+          style={{
+            fontFamily: "var(--font-prax-sans)",
+            fontSize: 10,
+            letterSpacing: "0.2em",
+            color: "var(--color-prax-ink-mute)",
+          }}
+        >
+          {label}
+        </div>
+        {delta && (
+          <div
+            className="font-semibold"
+            style={{
+              fontFamily: "var(--font-prax-sans)",
+              fontSize: 10.5,
+              color: deltaIsGood
+                ? "var(--color-prax-green-soft)"
+                : "var(--color-prax-ink-mute)",
+            }}
+          >
+            {delta}
+          </div>
+        )}
+      </div>
+      <div className="flex items-end justify-between gap-2.5">
+        <div className="flex items-baseline gap-1">
+          <div
+            className="leading-none font-medium"
+            style={{
+              fontFamily: "var(--font-prax-serif)",
+              fontSize: 30,
+              color: empty
+                ? "var(--color-prax-ink-mute)"
+                : "var(--color-prax-green)",
+              fontVariantNumeric: "tabular-nums lining-nums",
+            }}
+          >
+            {value}
+          </div>
+          {unit && (
+            <div
+              style={{
+                fontFamily: "var(--font-prax-serif)",
+                fontSize: 15,
+                color: "var(--color-prax-ink-soft)",
+              }}
+            >
+              {unit}
+            </div>
+          )}
+        </div>
+        {spark && <Spark points={spark} color="var(--color-prax-green-soft)" />}
+      </div>
+      <div
+        className="mt-2"
+        style={{
+          fontFamily: "var(--font-prax-sans)",
+          fontSize: 11,
+          color: empty ? "var(--color-prax-gold)" : "var(--color-prax-ink-mute)",
+          fontWeight: empty ? 600 : 400,
+        }}
+      >
+        {empty ? emptyCta : hint}
+      </div>
+    </div>
+  );
+  return empty && emptyHref ? (
+    <Link href={emptyHref} className="flex flex-1 min-w-0">
+      {card}
+    </Link>
+  ) : (
+    card
+  );
+}
+
+/* ---------------------------------------------------------------------- */
+/* Subject row                                                            */
+/* ---------------------------------------------------------------------- */
+
+function SubjectRow({
+  name,
+  value,
+  attention,
+}: {
+  name: string;
+  value: number;
+  attention: boolean;
+}) {
+  return (
+    <div className="mb-3.5">
+      <div className="flex items-baseline justify-between mb-1.5">
+        <div className="flex items-center gap-2">
+          {attention && (
+            <div
+              className="rounded-full"
+              style={{ width: 5, height: 5, background: "var(--color-prax-gold)" }}
+            />
+          )}
+          <div
+            style={{
+              fontFamily: "var(--font-prax-sans)",
+              fontSize: 12.5,
+              color: "var(--color-prax-ink)",
+              fontWeight: attention ? 600 : 500,
+            }}
+          >
+            {name}
+          </div>
+        </div>
+        <div
+          style={{
+            fontFamily: "var(--font-prax-serif)",
+            fontSize: 14,
+            color: attention
+              ? "var(--color-prax-gold)"
+              : "var(--color-prax-green)",
+            fontVariantNumeric: "tabular-nums lining-nums",
+          }}
+        >
+          {value}
+          <span style={{ fontSize: 11, color: "var(--color-prax-ink-mute)" }}>%</span>
+        </div>
+      </div>
+      <div
+        className="rounded-full overflow-hidden"
+        style={{ height: 4, background: "var(--color-prax-cream-deep)" }}
+      >
+        <div
+          className="h-full rounded-full"
+          style={{
+            width: `${value}%`,
+            background: attention
+              ? "var(--color-prax-gold)"
+              : "var(--color-prax-green)",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
+/* ---------------------------------------------------------------------- */
+/* Main page                                                              */
+/* ---------------------------------------------------------------------- */
+
 export default function DashboardHome() {
   const { user, profile } = useDashboard();
-  const [stats, setStats] = useState<DashboardStats>({
+
+  const [stats, setStats] = useState<Stats>({
     streak: 0,
     questionsThisWeek: 0,
     totalQuestions: 0,
     accuracy: null,
+    weeklySpark: [],
+    precisionSpark: [],
+    weekDelta: 0,
+    precisionDelta: 0,
   });
-  const [recentSession, setRecentSession] = useState<{
-    id: string;
-    section: string | null;
-    correct_count: number;
-    total_questions: number;
-  } | null>(null);
-  const [subjectProgress, setSubjectProgress] = useState<SubjectProgress[]>([]);
-  const [flashcardSummary, setFlashcardSummary] = useState<{
-    dueCount: number;
-    deckCount: number;
-    recentDeck: { id: string; title: string } | null;
-  }>({ dueCount: 0, deckCount: 0, recentDeck: null });
+  const [subjects, setSubjects] = useState<SubjectProgress[]>([]);
+  const [flashcards, setFlashcards] = useState<FlashcardSummary>({
+    totalDue: 0,
+    urgent: 0,
+    soon: 0,
+    later: 0,
+    deckCount: 0,
+  });
+  const [focus, setFocus] = useState<TodaysFocus | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const firstName =
     profile?.first_name ||
@@ -51,32 +338,22 @@ export default function DashboardHome() {
     user.email?.split("@")[0] ||
     "Student";
 
+  /* -------------------------------------------------------- *
+   * Load all dashboard data.                                  *
+   * -------------------------------------------------------- */
+
   useEffect(() => {
-    async function loadStats() {
+    let cancelled = false;
+
+    async function load() {
+      // -- Question attempts (basis for stats, accuracy, week, sparks) --
       const { data: attempts } = await supabase
         .from("question_attempts")
         .select("is_correct, created_at, question_id")
-        .eq("user_id", user.id);
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
 
-      if (attempts && attempts.length > 0) {
-        const correct = attempts.filter((a) => a.is_correct).length;
-        const total = attempts.length;
-
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        const thisWeek = attempts.filter(
-          (a) => new Date(a.created_at) >= weekAgo
-        ).length;
-
-        setStats({
-          streak: 0,
-          questionsThisWeek: thisWeek,
-          totalQuestions: total,
-          accuracy: total >= 20 ? Math.round((correct / total) * 100) : null,
-        });
-      }
-
-      // Streak from daily_activity
+      // -- Daily activity (basis for streak) --
       const { data: activity } = await supabase
         .from("daily_activity")
         .select("activity_date")
@@ -84,457 +361,1071 @@ export default function DashboardHome() {
         .order("activity_date", { ascending: false })
         .limit(60);
 
+      // -- All questions (for section/topic mapping + Today's Focus) --
+      const { data: allQuestions } = await supabase
+        .from("questions")
+        .select("id, section, topic")
+        .is("passage_id", null);
+
+      // -- Flashcards: decks, cards, user state --
+      const { data: deckRows } = await supabase
+        .from("flashcard_decks")
+        .select("id");
+      const deckIds = (deckRows || []).map((d) => d.id);
+
+      let cardRows: { id: string; deck_id: string; cloze_count: number; card_type: string }[] = [];
+      if (deckIds.length > 0) {
+        const { data } = await supabase
+          .from("flashcards")
+          .select("id, deck_id, cloze_count, card_type")
+          .in("deck_id", deckIds);
+        cardRows = data || [];
+      }
+
+      let stateRows: {
+        flashcard_id: string;
+        cloze_index: number;
+        next_review_at: string;
+        suspended: boolean;
+      }[] = [];
+      if (cardRows.length > 0) {
+        const { data } = await supabase
+          .from("flashcard_user_state")
+          .select("flashcard_id, cloze_index, next_review_at, suspended")
+          .eq("user_id", user.id)
+          .in(
+            "flashcard_id",
+            cardRows.map((c) => c.id)
+          );
+        stateRows = data || [];
+      }
+
+      if (cancelled) return;
+
+      // ── Compute stats ────────────────────────────────────
+      const now = new Date();
+      const todayStart = startOfDayMs(now);
+      const weekAgo = todayStart - 7 * 86400000;
+      const twoWeeksAgo = todayStart - 14 * 86400000;
+
+      const allAttempts = attempts || [];
+      const total = allAttempts.length;
+      const correct = allAttempts.filter((a) => a.is_correct).length;
+      const accuracy = total >= 20 ? Math.round((correct / total) * 100) : null;
+
+      const thisWeekAttempts = allAttempts.filter(
+        (a) => new Date(a.created_at).getTime() >= weekAgo
+      );
+      const lastWeekAttempts = allAttempts.filter((a) => {
+        const t = new Date(a.created_at).getTime();
+        return t >= twoWeeksAgo && t < weekAgo;
+      });
+
+      const questionsThisWeek = thisWeekAttempts.length;
+      const weekDelta = questionsThisWeek - lastWeekAttempts.length;
+
+      // Daily buckets for last 7 days
+      const weeklySpark: number[] = Array(7).fill(0);
+      const precisionSpark: number[] = [];
+      const dailyCorrect = Array(7).fill(0);
+      const dailyTotal = Array(7).fill(0);
+      thisWeekAttempts.forEach((a) => {
+        const dayOffset = Math.floor(
+          (startOfDayMs(new Date(a.created_at)) - weekAgo) / 86400000
+        );
+        if (dayOffset >= 0 && dayOffset < 7) {
+          weeklySpark[dayOffset]++;
+          dailyTotal[dayOffset]++;
+          if (a.is_correct) dailyCorrect[dayOffset]++;
+        }
+      });
+      // Precision sparkline = rolling daily accuracy
+      for (let i = 0; i < 7; i++) {
+        precisionSpark.push(
+          dailyTotal[i] > 0 ? Math.round((dailyCorrect[i] / dailyTotal[i]) * 100) : 0
+        );
+      }
+
+      // Precision delta: this-week accuracy vs prev-week accuracy
+      const thisWeekCorrect = thisWeekAttempts.filter((a) => a.is_correct).length;
+      const lastWeekCorrect = lastWeekAttempts.filter((a) => a.is_correct).length;
+      const thisWeekAcc =
+        thisWeekAttempts.length >= 10
+          ? Math.round((thisWeekCorrect / thisWeekAttempts.length) * 100)
+          : null;
+      const lastWeekAcc =
+        lastWeekAttempts.length >= 10
+          ? Math.round((lastWeekCorrect / lastWeekAttempts.length) * 100)
+          : null;
+      const precisionDelta =
+        thisWeekAcc !== null && lastWeekAcc !== null ? thisWeekAcc - lastWeekAcc : 0;
+
+      // Streak
+      let streak = 0;
       if (activity && activity.length > 0) {
-        let streak = 0;
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-
         for (let i = 0; i < activity.length; i++) {
           const actDate = new Date(activity[i].activity_date + "T00:00:00");
           const expected = new Date(today);
           expected.setDate(expected.getDate() - i);
-
-          if (actDate.getTime() === expected.getTime()) {
-            streak++;
-          } else {
-            break;
-          }
+          if (actDate.getTime() === expected.getTime()) streak++;
+          else break;
         }
-        setStats((prev) => ({ ...prev, streak }));
       }
 
-      // Recent session
-      const { data: sessions } = await supabase
-        .from("practice_sessions")
-        .select("id, section, correct_count, total_questions")
-        .eq("user_id", user.id)
-        .eq("status", "completed")
-        .order("completed_at", { ascending: false })
-        .limit(1);
+      setStats({
+        streak,
+        questionsThisWeek,
+        totalQuestions: total,
+        accuracy,
+        weeklySpark,
+        precisionSpark,
+        weekDelta,
+        precisionDelta,
+      });
 
-      if (sessions && sessions.length > 0) {
-        setRecentSession(sessions[0]);
-      }
-
-      // Subject progress - questions answered per section vs total available
-      const { data: allQuestions } = await supabase
-        .from("questions")
-        .select("id, section")
-        .is("passage_id", null);
-
-      const { data: answeredAttempts } = await supabase
-        .from("question_attempts")
-        .select("question_id")
-        .eq("user_id", user.id);
-
-      if (allQuestions && answeredAttempts) {
-        const answeredSet = new Set(answeredAttempts.map((a) => a.question_id));
+      // ── Subject mastery ──────────────────────────────────
+      if (allQuestions && allAttempts) {
+        const answered = new Set(allAttempts.map((a) => a.question_id));
         const sectionMap: Record<string, { total: number; done: number }> = {};
-
         allQuestions.forEach((q) => {
           if (!sectionMap[q.section]) sectionMap[q.section] = { total: 0, done: 0 };
           sectionMap[q.section].total++;
-          if (answeredSet.has(q.id)) sectionMap[q.section].done++;
+          if (answered.has(q.id)) sectionMap[q.section].done++;
         });
 
-        const labels: Record<string, string> = {
-          bio_biochem: "Biological Systems",
-          chem_phys: "Chemical Foundations",
-          psych_soc: "Psychological Behavior",
-          cars: "Critical Reasoning",
-        };
-
-        const progress = Object.entries(sectionMap)
-          .map(([key, val]) => ({
-            label: labels[key] || key,
-            percent: val.total > 0 ? Math.round((val.done / val.total) * 100) : 0,
-          }))
-          .sort((a, b) => b.percent - a.percent);
-
-        setSubjectProgress(progress);
+        const subjectList = Object.entries(sectionMap).map(([key, val]) => ({
+          section: key,
+          label: SECTION_LABELS[key] || key,
+          percent: val.total > 0 ? Math.round((val.done / val.total) * 100) : 0,
+          attention: false,
+        }));
+        subjectList.sort((a, b) => b.percent - a.percent);
+        // Mark the lowest as attention (the weakest)
+        if (subjectList.length > 0) {
+          const min = subjectList.reduce((a, b) => (b.percent < a.percent ? b : a));
+          min.attention = true;
+        }
+        setSubjects(subjectList);
       }
-    }
 
-    async function loadFlashcardSummary() {
-      // All decks → all card ids → state rows for this user
-      const { data: deckRows } = await supabase
-        .from("flashcard_decks")
-        .select("id, title");
-      if (!deckRows || deckRows.length === 0) return;
+      // ── Today's Focus: weakest topic by accuracy ─────────
+      if (allQuestions && allAttempts && allAttempts.length >= 5) {
+        const qById = new Map(allQuestions.map((q) => [q.id, q]));
+        type Bucket = { total: number; correct: number; section: string; topic: string };
+        const topicMap = new Map<string, Bucket>();
+        allAttempts.forEach((a) => {
+          const q = qById.get(a.question_id);
+          if (!q || !q.topic) return;
+          const key = `${q.section}::${q.topic}`;
+          const b =
+            topicMap.get(key) ||
+            ({ total: 0, correct: 0, section: q.section, topic: q.topic } as Bucket);
+          b.total++;
+          if (a.is_correct) b.correct++;
+          topicMap.set(key, b);
+        });
+        // Filter to topics with at least 3 attempts (signal vs noise)
+        const ranked = Array.from(topicMap.values())
+          .filter((b) => b.total >= 3)
+          .map((b) => ({ ...b, acc: b.correct / b.total }))
+          .sort((a, b) => a.acc - b.acc);
 
-      const { data: cardRows } = await supabase
-        .from("flashcards")
-        .select("id, deck_id, cloze_count, card_type")
-        .in("deck_id", deckRows.map((d) => d.id));
+        if (ranked.length > 0) {
+          const weakest = ranked[0];
+          const accPct = Math.round(weakest.acc * 100);
+          // Simple heuristic for expected gain
+          const expectedGainPct = Math.max(3, Math.min(12, Math.round((85 - accPct) * 0.15)));
+          const second = ranked[1];
+          setFocus({
+            section: weakest.section,
+            sectionLabel: SECTION_LABELS[weakest.section] || weakest.section,
+            topic: weakest.topic,
+            questionCount: 12,
+            estimatedMinutes: 25,
+            expectedGainPct,
+            altLabel: second
+              ? `${SECTION_LABELS[second.section] || second.section} · ${second.topic}`
+              : null,
+            altMinutes: second ? 18 : null,
+          });
+        }
+      }
 
+      // ── Flashcards ───────────────────────────────────────
       let totalItems = 0;
-      const cardToDeck = new Map<string, string>();
-      (cardRows || []).forEach((c) => {
+      cardRows.forEach((c) => {
         totalItems += c.card_type === "cloze" ? c.cloze_count || 1 : 1;
-        cardToDeck.set(c.id, c.deck_id);
       });
 
-      let stateRows: { flashcard_id: string; cloze_index: number; next_review_at: string; suspended: boolean; last_reviewed_at: string | null }[] = [];
-      if (cardRows && cardRows.length > 0) {
-        const { data } = await supabase
-          .from("flashcard_user_state")
-          .select("flashcard_id, cloze_index, next_review_at, suspended, last_reviewed_at")
-          .eq("user_id", user.id)
-          .in("flashcard_id", cardRows.map((c) => c.id));
-        stateRows = data || [];
-      }
-
-      const now = new Date().toISOString();
+      const nowIso = new Date().toISOString();
+      const threeDaysIso = new Date(Date.now() + 3 * 86400000).toISOString();
       const seen = new Set<string>();
-      let dueCount = 0;
-      let mostRecentAt = "";
-      let mostRecentCardId = "";
+      let urgent = 0;
+      let soon = 0;
+      let later = 0;
       stateRows.forEach((s) => {
         seen.add(`${s.flashcard_id}::${s.cloze_index}`);
-        if (!s.suspended && s.next_review_at <= now) dueCount++;
-        if (s.last_reviewed_at && s.last_reviewed_at > mostRecentAt) {
-          mostRecentAt = s.last_reviewed_at;
-          mostRecentCardId = s.flashcard_id;
-        }
+        if (s.suspended) return;
+        if (s.next_review_at <= nowIso) urgent++;
+        else if (s.next_review_at <= threeDaysIso) soon++;
+        else later++;
       });
-      const unseen = totalItems - seen.size;
-      if (unseen > 0) dueCount += unseen;
+      // Unseen items are treated as urgent
+      const unseen = Math.max(0, totalItems - seen.size);
+      urgent += unseen;
+      const totalDue = urgent + soon + later;
 
-      let recentDeck: { id: string; title: string } | null = null;
-      if (mostRecentCardId) {
-        const deckId = cardToDeck.get(mostRecentCardId);
-        const d = deckRows.find((dr) => dr.id === deckId);
-        if (d) recentDeck = { id: d.id, title: d.title };
-      }
-
-      setFlashcardSummary({
-        dueCount,
-        deckCount: deckRows.length,
-        recentDeck,
+      setFlashcards({
+        totalDue,
+        urgent,
+        soon,
+        later,
+        deckCount: deckIds.length,
       });
+
+      setLoading(false);
     }
 
-    loadStats();
-    loadFlashcardSummary();
+    load();
+    return () => {
+      cancelled = true;
+    };
   }, [user.id]);
 
+  /* -------------------------------------------------------- */
+
+  // Weekly goal: rolling target of 50 q/week (placeholder until settings)
+  const weeklyGoal = 50;
+  const weeklyGoalPct = Math.min(
+    100,
+    Math.round((stats.questionsThisWeek / weeklyGoal) * 100)
+  );
+  const weeklyGoalRemaining = Math.max(0, weeklyGoal - stats.questionsThisWeek);
+
+  // Practice link with focus params
+  const practiceHref = focus
+    ? `/dashboard/practice?section=${encodeURIComponent(focus.section)}&topic=${encodeURIComponent(focus.topic)}`
+    : "/dashboard/practice";
+
   const isNewUser = stats.totalQuestions === 0;
-  const lastAccuracy = recentSession
-    ? Math.round((recentSession.correct_count / recentSession.total_questions) * 100)
-    : null;
+
+  /* -------------------------------------------------------- *
+   * Render                                                    *
+   * -------------------------------------------------------- */
 
   return (
-    <div className="px-4 sm:px-6 lg:px-0 py-6 sm:py-10 lg:py-0">
-      {/* Top Header */}
-      <header className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-12 sm:mb-20 gap-4">
-        <div>
-          <h2 className="font-headline text-3xl sm:text-4xl lg:text-5xl font-medium tracking-tight text-as-on-surface">
-            {getGreeting()}, {firstName}
-          </h2>
-          <div className="flex items-center gap-3 mt-4 text-as-secondary/80 font-medium">
-            <span className="flex h-2 w-2 rounded-full bg-as-primary/40" />
-            <span className="text-sm tracking-[0.015em]">
-              {isNewUser
-                ? "Welcome to Praxist Prep. Let's begin your journey."
-                : lastAccuracy !== null
-                ? `Your last session accuracy was ${lastAccuracy}%.${lastAccuracy >= 80 ? " Maintaining peak performance." : " Keep pushing forward."}`
-                : "Let's keep the momentum going."}
-            </span>
-          </div>
-        </div>
-      </header>
+    <div
+      className="relative min-h-full w-full lg:-mx-16 lg:-my-16 overflow-hidden"
+      style={{
+        background: "var(--color-prax-cream)",
+        fontFamily: "var(--font-prax-sans)",
+        color: "var(--color-prax-ink)",
+      }}
+    >
+      <MolecularBg opacity={0.07} />
 
-      {/* Prominent Action Entry */}
-      <section className="mb-16 sm:mb-24">
-        <Link
-          href="/dashboard/practice"
-          className="block bg-as-primary-container group overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] p-8 sm:p-12 lg:p-16 text-white relative"
-        >
-          <div className="z-10 max-w-2xl relative">
-            <span className="text-[11px] uppercase tracking-[0.3em] font-bold text-white/50 mb-6 block">
-              Current Curricula
-            </span>
-            <h3 className="font-headline text-3xl sm:text-4xl lg:text-5xl mb-6 leading-tight tracking-tight italic">
-              Master the MCAT through deliberate, scholarly practice.
-            </h3>
-            <p className="font-body text-white/70 mb-10 sm:mb-12 text-base sm:text-lg font-light leading-relaxed max-w-lg">
-              Your personalized path to mastery is optimized by our core algorithms
-              and your unique study rhythm.
-            </p>
-            <span className="inline-flex items-center gap-4 bg-as-surface text-as-primary px-8 sm:px-10 py-4 sm:py-5 rounded-full font-semibold tracking-[0.015em] group-hover:bg-white group-hover:scale-[1.02] transition-all duration-500 shadow-xl shadow-as-primary/20">
-              {isNewUser ? "Start Practicing" : "Continue Practicing"}
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </span>
-          </div>
-        </Link>
-      </section>
-
-      {/* Insight Pulse Grid */}
-      <div className="mb-16 sm:mb-24">
-        <div className="flex items-center justify-between mb-8 px-2">
-          <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-as-secondary/60">
-            Insight Pulse
-          </h4>
-          <Link
-            href="/dashboard/analytics"
-            className="text-xs font-bold text-as-primary hover:underline underline-offset-4 transition-all"
-          >
-            Detailed Analytics
-          </Link>
-        </div>
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
-          {/* Streak */}
-          <div className="harvey-card p-6 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between aspect-auto sm:aspect-[1.1/1]">
-            <div className="flex justify-between items-start mb-4 sm:mb-0">
-              <div className="w-10 h-10 rounded-full bg-as-primary/5 flex items-center justify-center">
-                <svg className="w-5 h-5 text-as-primary" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1A3.75 3.75 0 0012 18z" />
-                </svg>
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-as-secondary/40">
-                Streak
-              </span>
-            </div>
-            <div>
-              <div className="text-4xl sm:text-6xl font-headline text-as-primary mb-1">
-                {stats.streak}
-              </div>
-              <div className="text-[11px] uppercase tracking-[0.015em] text-as-secondary font-medium">
-                Days active
-              </div>
-            </div>
-          </div>
-
-          {/* Activity */}
-          <div className="harvey-card p-6 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between aspect-auto sm:aspect-[1.1/1]">
-            <div className="flex justify-between items-start mb-4 sm:mb-0">
-              <div className="w-10 h-10 rounded-full bg-as-primary/5 flex items-center justify-center">
-                <svg className="w-5 h-5 text-as-primary" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-as-secondary/40">
-                Activity
-              </span>
-            </div>
-            <div>
-              <div className="text-4xl sm:text-6xl font-headline text-as-primary mb-1">
-                {stats.questionsThisWeek}
-              </div>
-              <div className="text-[11px] uppercase tracking-[0.015em] text-as-secondary font-medium">
-                Questions this week
-              </div>
-            </div>
-          </div>
-
-          {/* Precision */}
-          <div className="harvey-card p-6 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between aspect-auto sm:aspect-[1.1/1]">
-            <div className="flex justify-between items-start mb-4 sm:mb-0">
-              <div className="w-10 h-10 rounded-full bg-as-primary/5 flex items-center justify-center">
-                <svg className="w-5 h-5 text-as-primary" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-                </svg>
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-as-secondary/40">
-                Precision
-              </span>
-            </div>
-            <div>
-              <div className="text-4xl sm:text-6xl font-headline text-as-primary mb-1">
-                {stats.accuracy !== null ? `${stats.accuracy}%` : "—"}
-              </div>
-              <div className="text-[11px] uppercase tracking-[0.015em] text-as-secondary font-medium">
-                {stats.accuracy !== null ? "Overall accuracy" : "Answer 20+ to see"}
-              </div>
-            </div>
-          </div>
-
-          {/* Total */}
-          <div className="harvey-card p-6 sm:p-8 rounded-2xl sm:rounded-3xl flex flex-col justify-between aspect-auto sm:aspect-[1.1/1]">
-            <div className="flex justify-between items-start mb-4 sm:mb-0">
-              <div className="w-10 h-10 rounded-full bg-as-primary/5 flex items-center justify-center">
-                <svg className="w-5 h-5 text-as-primary" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                </svg>
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-as-secondary/40">
-                Total
-              </span>
-            </div>
-            <div>
-              <div className="text-4xl sm:text-6xl font-headline text-as-primary mb-1">
-                {stats.totalQuestions}
-              </div>
-              <div className="text-[11px] uppercase tracking-[0.015em] text-as-secondary font-medium">
-                Total Solved
-              </div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      {/* Flashcards Widget */}
-      {flashcardSummary.deckCount > 0 && (
-        <div className="mb-16 sm:mb-24">
-          <div className="flex items-center justify-between mb-8 px-2">
-            <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-as-secondary/60">
-              Spaced Repetition
-            </h4>
-            <Link
-              href="/dashboard/flashcards"
-              className="text-xs font-bold text-as-primary hover:underline underline-offset-4 transition-all"
+      <div className="relative z-[1] px-6 py-8 lg:px-12 lg:py-10">
+        {/* ── Greeting row ─────────────────────────────────────── */}
+        <div className="mb-8 flex items-start justify-between gap-4">
+          <div>
+            <h1
+              className="font-medium m-0"
+              style={{
+                fontFamily: "var(--font-prax-serif)",
+                fontSize: 44,
+                lineHeight: 1.05,
+                color: "var(--color-prax-green)",
+                letterSpacing: "-0.015em",
+              }}
             >
-              All Decks
+              {getGreeting()}, {firstName}.
+            </h1>
+            <div
+              className="italic mt-1.5 max-w-[520px]"
+              style={{
+                fontFamily: "var(--font-prax-serif)",
+                fontSize: 16,
+                color: "var(--color-prax-ink-soft)",
+              }}
+            >
+              Master the MCAT through deliberate, scholarly practice.
+            </div>
+          </div>
+
+          {/* Date / active-now pill — top right */}
+          <div className="hidden sm:flex items-center gap-2.5 pt-2 shrink-0">
+            <div className="relative w-2 h-2">
+              <div
+                className="absolute inset-0 rounded-full"
+                style={{ background: "var(--color-prax-green-soft)" }}
+              />
+              <div
+                className="absolute inset-0 rounded-full animate-prax-pulse"
+                style={{ background: "var(--color-prax-green-soft)" }}
+              />
+            </div>
+            <div
+              className="font-semibold uppercase whitespace-nowrap"
+              style={{
+                fontSize: 10,
+                letterSpacing: "0.22em",
+                color: "var(--color-prax-ink-mute)",
+              }}
+            >
+              {todayLabel()} · Active now
+            </div>
+          </div>
+        </div>
+
+        {/* ── TERTIARY: Insight Pulse ────────────────────────────── */}
+        <div className="mb-8">
+          <div
+            className="flex justify-between items-baseline pb-3.5 mb-4"
+            style={{ borderBottom: "1px solid var(--color-prax-cream-border)" }}
+          >
+            <div className="flex items-baseline gap-2.5">
+              <div
+                className="font-semibold uppercase"
+                style={{
+                  fontSize: 10,
+                  letterSpacing: "0.22em",
+                  color: "var(--color-prax-ink-mute)",
+                }}
+              >
+                Insight Pulse
+              </div>
+              <div
+                className="italic"
+                style={{
+                  fontFamily: "var(--font-prax-serif)",
+                  fontSize: 13,
+                  color: "var(--color-prax-ink-mute)",
+                }}
+              >
+                last 7 days
+              </div>
+            </div>
+            <Link
+              href="/dashboard/analytics"
+              className="font-semibold cursor-pointer"
+              style={{
+                fontSize: 11.5,
+                color: "var(--color-prax-green)",
+              }}
+            >
+              Detailed Analytics →
             </Link>
           </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <StatCard
+              label="Streak"
+              value={String(stats.streak)}
+              empty={stats.streak === 0}
+              emptyCta="Start a streak today →"
+              emptyHref={practiceHref}
+              hint={stats.streak === 1 ? "day" : "days"}
+            />
+            <StatCard
+              label="Activity"
+              value={String(stats.questionsThisWeek)}
+              unit="q"
+              delta={
+                stats.weekDelta > 0
+                  ? `+${stats.weekDelta} vs last`
+                  : stats.weekDelta < 0
+                  ? `${stats.weekDelta} vs last`
+                  : "—"
+              }
+              deltaIsGood={stats.weekDelta >= 0}
+              spark={stats.weeklySpark.some((v) => v > 0) ? stats.weeklySpark : undefined}
+              hint="Questions this week"
+            />
+            <StatCard
+              label="Precision"
+              value={stats.accuracy !== null ? String(stats.accuracy) : "—"}
+              unit={stats.accuracy !== null ? "%" : undefined}
+              delta={
+                stats.precisionDelta > 0
+                  ? `+${stats.precisionDelta} pts`
+                  : stats.precisionDelta < 0
+                  ? `${stats.precisionDelta} pts`
+                  : undefined
+              }
+              deltaIsGood={stats.precisionDelta >= 0}
+              spark={
+                stats.precisionSpark.some((v) => v > 0) ? stats.precisionSpark : undefined
+              }
+              hint={stats.accuracy !== null ? "Overall accuracy" : "Answer 20+ to see"}
+            />
+            <StatCard
+              label="Solved"
+              value={String(stats.totalQuestions)}
+              hint="All questions answered"
+              delta="lifetime"
+              deltaIsGood={false}
+            />
+          </div>
+        </div>
 
-          <Link
-            href="/dashboard/flashcards"
-            className="block harvey-card p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] group hover:shadow-md transition-all"
+        {/* ── PRIMARY: Today's Focus ────────────────────────────── */}
+        <div
+          className="relative overflow-hidden mb-8"
+          style={{
+            background: "var(--color-prax-green)",
+            borderRadius: 20,
+            padding: "32px 36px",
+            boxShadow:
+              "0 1px 2px rgba(3,56,48,0.05), 0 12px 40px -20px rgba(3,56,48,0.35)",
+          }}
+        >
+          {/* Decorative orbital motif */}
+          <svg
+            className="absolute opacity-20"
+            style={{ right: -80, top: -100 }}
+            width="440"
+            height="440"
+            viewBox="0 0 440 440"
+            aria-hidden
           >
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-              <div className="flex items-center gap-6">
-                <div className="w-14 h-14 bg-as-primary/5 rounded-2xl flex items-center justify-center text-as-primary shrink-0">
-                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 8.25a2.25 2.25 0 012.25-2.25h12a2.25 2.25 0 012.25 2.25v8.25a2.25 2.25 0 01-2.25 2.25h-12A2.25 2.25 0 013.75 16.5V8.25z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 3.75h9" />
-                  </svg>
-                </div>
-                <div>
-                  <h4 className="font-headline text-2xl sm:text-3xl text-as-on-surface mb-1">
-                    {flashcardSummary.dueCount > 0
-                      ? `${flashcardSummary.dueCount} card${flashcardSummary.dueCount === 1 ? "" : "s"} due`
-                      : "All caught up"}
-                  </h4>
-                  <p className="text-sm text-as-secondary/70 font-light">
-                    {flashcardSummary.dueCount > 0
-                      ? "Review now to keep retention strong."
-                      : flashcardSummary.recentDeck
-                      ? `Last studied: ${flashcardSummary.recentDeck.title}`
-                      : "Pick a deck to get ahead of the curve."}
-                  </p>
+            <g fill="none" stroke="var(--color-prax-cream)" strokeWidth="1">
+              <circle cx="220" cy="220" r="200" />
+              <circle cx="220" cy="220" r="150" />
+              <circle cx="220" cy="220" r="100" />
+              <circle cx="220" cy="220" r="50" />
+              <ellipse cx="220" cy="220" rx="200" ry="70" transform="rotate(30 220 220)" />
+              <ellipse cx="220" cy="220" rx="200" ry="70" transform="rotate(-30 220 220)" />
+              <ellipse cx="220" cy="220" rx="200" ry="70" transform="rotate(90 220 220)" />
+            </g>
+            <circle cx="220" cy="220" r="5" fill="var(--color-prax-gold-soft)" />
+          </svg>
+
+          <div className="relative grid grid-cols-1 lg:[grid-template-columns:1.55fr_auto] gap-12 items-center">
+            <div>
+              <div className="flex items-center gap-2.5 mb-4">
+                <div
+                  className="rounded-full"
+                  style={{ width: 6, height: 6, background: "var(--color-prax-gold-soft)" }}
+                />
+                <div
+                  className="font-semibold uppercase"
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: "0.22em",
+                    color: "var(--color-prax-gold-soft)",
+                  }}
+                >
+                  Today&apos;s Focus
+                  {focus && ` · ${focus.estimatedMinutes} min · Adaptive`}
                 </div>
               </div>
-              <span className="inline-flex items-center gap-3 text-as-primary font-bold text-sm uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
-                {flashcardSummary.dueCount > 0 ? "Review Now" : "Browse Decks"}
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                </svg>
-              </span>
+              <h2
+                className="font-normal italic m-0 max-w-[520px]"
+                style={{
+                  fontFamily: "var(--font-prax-serif)",
+                  fontSize: 38,
+                  lineHeight: 1.08,
+                  color: "var(--color-prax-cream)",
+                  letterSpacing: "-0.005em",
+                }}
+              >
+                {focus
+                  ? `${focus.sectionLabel} — ${focus.topic.toLowerCase()}.`
+                  : isNewUser
+                  ? "Begin with your first practice session."
+                  : "Keep building your practice rhythm."}
+              </h2>
+              <div
+                className="mt-3.5 max-w-[500px]"
+                style={{
+                  color: "rgba(246,244,227,0.72)",
+                  fontSize: 13.5,
+                  lineHeight: 1.6,
+                }}
+              >
+                {focus ? (
+                  <>
+                    {focus.questionCount} adaptive questions on your weakest cluster this
+                    week. Expected precision gain{" "}
+                    <strong
+                      style={{
+                        color: "var(--color-prax-cream)",
+                        fontWeight: 600,
+                      }}
+                    >
+                      +{focus.expectedGainPct}%
+                    </strong>
+                    .
+                  </>
+                ) : isNewUser ? (
+                  "We'll start surfacing personalized drills once you've answered a few questions."
+                ) : (
+                  "Answer a few more questions in any section to unlock personalized drill recommendations."
+                )}
+              </div>
+              <div className="flex items-center gap-4 mt-7 flex-wrap">
+                <Link
+                  href={practiceHref}
+                  className="inline-flex items-center gap-2.5 cursor-pointer"
+                  style={{
+                    background: "var(--color-prax-cream)",
+                    color: "var(--color-prax-green)",
+                    border: "none",
+                    borderRadius: 999,
+                    padding: "14px 26px",
+                    fontSize: 13.5,
+                    fontWeight: 600,
+                    letterSpacing: "0.02em",
+                  }}
+                >
+                  Start Daily Drill
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </Link>
+                {focus?.altLabel && (
+                  <div
+                    style={{
+                      fontSize: 11.5,
+                      color: "rgba(246,244,227,0.6)",
+                    }}
+                  >
+                    or{" "}
+                    <Link
+                      href="/dashboard/practice"
+                      className="underline cursor-pointer"
+                    >
+                      swap focus
+                    </Link>{" "}
+                    · {focus.altLabel} · {focus.altMinutes} min
+                  </div>
+                )}
+              </div>
             </div>
-          </Link>
+
+            {/* Weekly goal ring */}
+            <div className="text-center pr-3 hidden lg:block">
+              <svg width="140" height="140" viewBox="0 0 140 140">
+                <circle
+                  cx="70"
+                  cy="70"
+                  r="60"
+                  fill="none"
+                  stroke="rgba(246,244,227,0.18)"
+                  strokeWidth="9"
+                />
+                <circle
+                  cx="70"
+                  cy="70"
+                  r="60"
+                  fill="none"
+                  stroke="var(--color-prax-gold-soft)"
+                  strokeWidth="9"
+                  strokeDasharray={`${(2 * Math.PI * 60 * weeklyGoalPct) / 100} ${
+                    2 * Math.PI * 60
+                  }`}
+                  strokeLinecap="round"
+                  transform="rotate(-90 70 70)"
+                />
+                <text
+                  x="70"
+                  y="70"
+                  textAnchor="middle"
+                  dominantBaseline="central"
+                  style={{
+                    fontFamily: "var(--font-prax-serif)",
+                    fontSize: 32,
+                    fill: "var(--color-prax-cream)",
+                    fontWeight: 500,
+                  }}
+                >
+                  {weeklyGoalPct}
+                  <tspan fontSize="16">%</tspan>
+                </text>
+                <text
+                  x="70"
+                  y="96"
+                  textAnchor="middle"
+                  style={{
+                    fontFamily: "var(--font-prax-sans)",
+                    fontSize: 8,
+                    fill: "var(--color-prax-gold-soft)",
+                    letterSpacing: "0.2em",
+                    fontWeight: 600,
+                  }}
+                >
+                  WEEKLY GOAL
+                </text>
+              </svg>
+              <div
+                className="italic mt-1"
+                style={{
+                  fontFamily: "var(--font-prax-serif)",
+                  fontSize: 11,
+                  color: "rgba(246,244,227,0.65)",
+                }}
+              >
+                {stats.questionsThisWeek} of {weeklyGoal} · {weeklyGoalRemaining} to go
+              </div>
+            </div>
+          </div>
         </div>
-      )}
 
-      {/* Deep Dives & Progress */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-12 mb-16 sm:mb-24">
-        {/* Question Bank */}
-        <Link href="/dashboard/practice" className="lg:col-span-1 group cursor-pointer block">
-          <div className="harvey-card h-full p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem]">
-            <div className="w-14 h-14 bg-as-surface-container-low border border-as-on-surface/[0.04] rounded-2xl flex items-center justify-center mb-10 group-hover:bg-as-primary-container group-hover:text-white transition-all duration-500">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-              </svg>
+        {/* ── SECONDARY row: Spaced Repetition + Subject Mastery ── */}
+        <div className="grid grid-cols-1 lg:[grid-template-columns:1.25fr_1fr] gap-5 mb-8">
+          {/* Spaced Repetition */}
+          <div
+            className="relative overflow-hidden flex flex-col"
+            style={{
+              background: "var(--color-prax-cream-deep)",
+              border: "1px solid var(--color-prax-cream-border)",
+              borderRadius: 16,
+              padding: "24px 26px",
+            }}
+          >
+            <div className="flex justify-between items-baseline mb-[18px]">
+              <div
+                className="font-semibold uppercase"
+                style={{
+                  fontSize: 10,
+                  letterSpacing: "0.22em",
+                  color: "var(--color-prax-ink-mute)",
+                }}
+              >
+                Spaced Repetition
+              </div>
+              <Link
+                href="/dashboard/flashcards"
+                className="font-semibold cursor-pointer"
+                style={{ fontSize: 11.5, color: "var(--color-prax-green)" }}
+              >
+                All Decks →
+              </Link>
             </div>
-            <h4 className="font-headline text-2xl sm:text-3xl text-as-on-surface mb-4">
-              The Question Bank
-            </h4>
-            <p className="text-as-secondary/70 text-base mb-10 leading-relaxed font-light">
-              Dive into high-yield questions designed for conceptual mastery.
-            </p>
-            <div className="flex items-center gap-3 text-as-primary font-bold text-sm uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
-              <span>Access Bank</span>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
+            <div className="flex items-baseline gap-2.5">
+              <div
+                className="leading-none font-medium"
+                style={{
+                  fontFamily: "var(--font-prax-serif)",
+                  fontSize: 52,
+                  color: "var(--color-prax-green)",
+                  fontVariantNumeric: "tabular-nums lining-nums",
+                }}
+              >
+                {flashcards.totalDue}
+              </div>
+              <div
+                className="italic"
+                style={{
+                  fontFamily: "var(--font-prax-serif)",
+                  fontSize: 18,
+                  color: "var(--color-prax-ink-soft)",
+                }}
+              >
+                cards due
+              </div>
             </div>
-          </div>
-        </Link>
+            <div
+              className="mt-2 max-w-[340px]"
+              style={{ fontSize: 13, color: "var(--color-prax-ink-soft)" }}
+            >
+              {flashcards.deckCount === 0
+                ? "Create or import a deck to begin spaced repetition."
+                : flashcards.totalDue === 0
+                ? "All caught up. New cards will surface as you progress."
+                : "Review now to keep retention strong."}
+            </div>
 
-        {/* Course Lessons */}
-        <Link href="/dashboard/lessons" className="lg:col-span-1 group cursor-pointer block">
-          <div className="harvey-card h-full p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem]">
-            <div className="w-14 h-14 bg-as-surface-container-low border border-as-on-surface/[0.04] rounded-2xl flex items-center justify-center mb-10 group-hover:bg-as-primary-container group-hover:text-white transition-all duration-500">
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-              </svg>
-            </div>
-            <h4 className="font-headline text-2xl sm:text-3xl text-as-on-surface mb-4">
-              Curated Modules
-            </h4>
-            <p className="text-as-secondary/70 text-base mb-10 leading-relaxed font-light">
-              Structured video lectures and clinical breakdowns of complex topics.
-            </p>
-            <div className="flex items-center gap-3 text-as-primary font-bold text-sm uppercase tracking-widest opacity-80 group-hover:opacity-100 transition-opacity">
-              <span>Explore modules</span>
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
-            </div>
-          </div>
-        </Link>
-
-        {/* Subject Mastery */}
-        <div className="lg:col-span-1 harvey-card p-8 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem]">
-          <h4 className="font-headline text-2xl text-as-on-surface mb-8">Subject Mastery</h4>
-          <div className="space-y-10">
-            {subjectProgress.length > 0 ? (
-              subjectProgress.map((subject) => (
-                <div key={subject.label} className="space-y-3">
-                  <div className="flex justify-between items-end">
-                    <span className="text-sm font-medium tracking-[0.015em] opacity-60 italic">
-                      {subject.label}
-                    </span>
-                    <span className="text-sm font-bold tracking-[0.015em]">
-                      {subject.percent}%
+            {/* Segmented urgency bar */}
+            {flashcards.totalDue > 0 && (
+              <div className="mt-5">
+                <div
+                  className="flex rounded-full overflow-hidden"
+                  style={{ height: 8, gap: 2 }}
+                >
+                  {flashcards.urgent > 0 && (
+                    <div
+                      style={{ flex: flashcards.urgent, background: "var(--color-prax-gold)" }}
+                    />
+                  )}
+                  {flashcards.soon > 0 && (
+                    <div
+                      style={{
+                        flex: flashcards.soon,
+                        background: "var(--color-prax-green-soft)",
+                      }}
+                    />
+                  )}
+                  {flashcards.later > 0 && (
+                    <div
+                      style={{
+                        flex: flashcards.later,
+                        background: "var(--color-prax-green-tint)",
+                      }}
+                    />
+                  )}
+                </div>
+                <div
+                  className="flex justify-between mt-2.5"
+                  style={{ fontSize: 11 }}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <div
+                      className="rounded-full"
+                      style={{ width: 6, height: 6, background: "var(--color-prax-gold)" }}
+                    />
+                    <span style={{ color: "var(--color-prax-ink-soft)" }}>
+                      <strong
+                        style={{
+                          color: "var(--color-prax-gold)",
+                          fontWeight: 700,
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {flashcards.urgent}
+                      </strong>{" "}
+                      urgent
                     </span>
                   </div>
-                  <div className="h-[1px] w-full bg-as-on-surface/5">
+                  <div className="flex items-center gap-1.5">
                     <div
-                      className="h-full bg-as-primary-container transition-all duration-700"
-                      style={{ width: `${subject.percent}%` }}
+                      className="rounded-full"
+                      style={{
+                        width: 6,
+                        height: 6,
+                        background: "var(--color-prax-green-soft)",
+                      }}
                     />
+                    <span style={{ color: "var(--color-prax-ink-soft)" }}>
+                      <strong
+                        style={{
+                          color: "var(--color-prax-green)",
+                          fontWeight: 700,
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {flashcards.soon}
+                      </strong>{" "}
+                      soon
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div
+                      className="rounded-full"
+                      style={{
+                        width: 6,
+                        height: 6,
+                        background: "var(--color-prax-green-tint)",
+                      }}
+                    />
+                    <span style={{ color: "var(--color-prax-ink-soft)" }}>
+                      <strong
+                        style={{
+                          color: "var(--color-prax-ink-soft)",
+                          fontWeight: 700,
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {flashcards.later}
+                      </strong>{" "}
+                      later
+                    </span>
                   </div>
                 </div>
+              </div>
+            )}
+
+            <div className="flex-1" />
+            {flashcards.totalDue > 0 && (
+              <Link
+                href="/dashboard/flashcards"
+                className="self-start font-semibold uppercase cursor-pointer mt-6"
+                style={{
+                  background: "var(--color-prax-green)",
+                  color: "var(--color-prax-cream)",
+                  border: "none",
+                  borderRadius: 999,
+                  padding: "11px 22px",
+                  fontSize: 11.5,
+                  letterSpacing: "0.14em",
+                }}
+              >
+                Review Now
+              </Link>
+            )}
+          </div>
+
+          {/* Subject Mastery */}
+          <div
+            style={{
+              background: "var(--color-prax-cream-deep)",
+              border: "1px solid var(--color-prax-cream-border)",
+              borderRadius: 16,
+              padding: "24px 26px",
+            }}
+          >
+            <div className="flex justify-between items-baseline mb-5">
+              <div
+                className="font-semibold uppercase"
+                style={{
+                  fontSize: 10,
+                  letterSpacing: "0.22em",
+                  color: "var(--color-prax-ink-mute)",
+                }}
+              >
+                Subject Mastery
+              </div>
+              <div
+                className="italic"
+                style={{
+                  fontFamily: "var(--font-prax-serif)",
+                  fontSize: 12,
+                  color: "var(--color-prax-ink-mute)",
+                }}
+              >
+                {subjects.length} subjects tracked
+              </div>
+            </div>
+            {subjects.length > 0 ? (
+              subjects.map((s) => (
+                <SubjectRow
+                  key={s.section}
+                  name={s.label}
+                  value={s.percent}
+                  attention={s.attention}
+                />
               ))
             ) : (
-              <p className="text-sm text-as-secondary/50 italic">
-                Complete practice questions to see your progress here.
-              </p>
+              <div
+                className="italic"
+                style={{
+                  fontSize: 12,
+                  color: "var(--color-prax-ink-mute)",
+                }}
+              >
+                Complete practice questions to start tracking mastery.
+              </div>
+            )}
+            {subjects.find((s) => s.attention) && (
+              <div
+                className="flex items-center gap-2 mt-[18px] pt-3.5"
+                style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
+              >
+                <div
+                  className="rounded-full"
+                  style={{ width: 5, height: 5, background: "var(--color-prax-gold)" }}
+                />
+                <div
+                  className="italic"
+                  style={{
+                    fontFamily: "var(--font-prax-serif)",
+                    fontSize: 11.5,
+                    color: "var(--color-prax-ink-soft)",
+                  }}
+                >
+                  Weakest cluster — drill queued in today&apos;s focus.
+                </div>
+              </div>
             )}
           </div>
         </div>
-      </section>
 
-      {/* Elite Access Banner */}
-      {profile?.subscription_tier === "free" && (
-        <section className="harvey-card p-8 sm:p-12 rounded-[2rem] sm:rounded-[2.5rem] border border-as-primary/10 flex flex-col md:flex-row items-center justify-between gap-8 sm:gap-12">
-          <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-10">
-            <div className="w-16 h-16 rounded-full bg-as-primary/5 flex items-center justify-center text-as-primary shrink-0">
-              <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-              </svg>
-            </div>
-            <div className="text-center sm:text-left">
-              <h4 className="font-headline text-2xl sm:text-3xl text-as-on-surface mb-2">
-                Elevate your scholarship
-              </h4>
-              <p className="text-as-secondary/70 text-base sm:text-lg font-light">
-                Access simulated exams and advanced predictive analytics.
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/pricing"
-            className="whitespace-nowrap px-10 py-4 border border-as-primary text-as-primary hover:bg-as-primary-container hover:text-white rounded-full font-semibold transition-all duration-500 tracking-[0.015em]"
+        {/* ── SECONDARY: Question Bank + Modules ─────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
+          {[
+            {
+              title: "The Question Bank",
+              desc: "High-yield questions designed for conceptual mastery.",
+              cta: "Access Bank",
+              meta: "Filter by section, topic, difficulty",
+              href: "/dashboard/practice",
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+                  <path d="M8 9h8M8 13h5" />
+                  <path d="M4 5h16v12l-4 4H4z" />
+                </svg>
+              ),
+            },
+            {
+              title: "Curated Modules",
+              desc: "Structured video lectures and clinical breakdowns of complex topics.",
+              cta: "Explore Modules",
+              meta: "Lessons across all MCAT sections",
+              href: "/dashboard/lessons",
+              icon: (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="M10 9l5 3-5 3z" fill="currentColor" />
+                </svg>
+              ),
+            },
+          ].map((c) => (
+            <Link
+              key={c.title}
+              href={c.href}
+              className="flex items-center gap-5"
+              style={{
+                background: "var(--color-prax-cream-deep)",
+                border: "1px solid var(--color-prax-cream-border)",
+                borderRadius: 16,
+                padding: "22px 26px",
+              }}
+            >
+              <div
+                className="grid place-items-center shrink-0"
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 10,
+                  background: "var(--color-prax-green-tint)",
+                  color: "var(--color-prax-green)",
+                }}
+              >
+                {c.icon}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div
+                  className="font-medium mb-1"
+                  style={{
+                    fontFamily: "var(--font-prax-serif)",
+                    fontSize: 20,
+                    color: "var(--color-prax-green)",
+                  }}
+                >
+                  {c.title}
+                </div>
+                <div
+                  className="leading-snug mb-1.5"
+                  style={{
+                    fontSize: 12.5,
+                    color: "var(--color-prax-ink-soft)",
+                  }}
+                >
+                  {c.desc}
+                </div>
+                <div
+                  className="font-semibold uppercase"
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: "0.18em",
+                    color: "var(--color-prax-ink-mute)",
+                  }}
+                >
+                  {c.meta}
+                </div>
+              </div>
+              <div
+                className="font-bold uppercase flex items-center gap-2 cursor-pointer hidden lg:flex"
+                style={{
+                  fontSize: 10,
+                  letterSpacing: "0.18em",
+                  color: "var(--color-prax-green)",
+                }}
+              >
+                {c.cta}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M13 6l6 6-6 6" />
+                </svg>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* ── FOOTER banner: Elite ──────────────────────────────── */}
+        {profile?.subscription_tier === "free" && (
+          <div
+            className="relative overflow-hidden flex items-center gap-5 flex-wrap"
+            style={{
+              background: "var(--color-prax-green-deep)",
+              borderRadius: 14,
+              padding: "18px 28px",
+              color: "var(--color-prax-cream)",
+            }}
           >
-            Explore Elite Plans
-          </Link>
-        </section>
-      )}
+            <svg
+              className="absolute opacity-15 hidden lg:block"
+              style={{ right: 20, top: -10 }}
+              width="180"
+              height="120"
+              viewBox="0 0 180 120"
+              aria-hidden
+            >
+              <g fill="none" stroke="var(--color-prax-gold-soft)" strokeWidth="0.8">
+                <ellipse cx="90" cy="60" rx="80" ry="30" />
+                <ellipse cx="90" cy="60" rx="80" ry="30" transform="rotate(30 90 60)" />
+                <ellipse cx="90" cy="60" rx="80" ry="30" transform="rotate(-30 90 60)" />
+              </g>
+            </svg>
+            <div
+              className="font-semibold uppercase pr-5"
+              style={{
+                fontSize: 10,
+                letterSpacing: "0.22em",
+                color: "var(--color-prax-gold-soft)",
+                borderRight: "1px solid rgba(246,244,227,0.2)",
+              }}
+            >
+              Elite
+            </div>
+            <div className="flex-1 relative">
+              <div
+                className="font-medium italic leading-tight"
+                style={{
+                  fontFamily: "var(--font-prax-serif)",
+                  fontSize: 17,
+                  color: "var(--color-prax-cream)",
+                }}
+              >
+                Elevate your scholarship — simulated exams and predictive analytics.
+              </div>
+            </div>
+            <Link
+              href="/pricing"
+              className="font-semibold uppercase cursor-pointer shrink-0"
+              style={{
+                background: "transparent",
+                color: "var(--color-prax-gold-soft)",
+                border: "1px solid var(--color-prax-gold-soft)",
+                borderRadius: 999,
+                padding: "9px 18px",
+                fontSize: 11,
+                letterSpacing: "0.14em",
+              }}
+            >
+              Explore Plans
+            </Link>
+          </div>
+        )}
+
+        {/* Tiny signature */}
+        <div
+          className="text-center mt-10 italic"
+          style={{
+            fontFamily: "var(--font-prax-serif)",
+            fontSize: 11,
+            color: "var(--color-prax-ink-mute)",
+            letterSpacing: "0.04em",
+          }}
+        >
+          <span
+            className="inline-block pb-1.5"
+            style={{
+              borderBottom: "1px solid var(--color-prax-cream-border)",
+              minWidth: 200,
+            }}
+          >
+            — tempered by practice —
+          </span>
+        </div>
+      </div>
     </div>
   );
 }

@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local-only tooling state
+.claude/worktrees/
+
+# Reference textbook corpus — large local cache, not committed
+# (~350MB PDFs + ~33MB text). Used only for content verification on
+# the local machine. License terms (LibreTexts CC BY-NC-SA) also
+# preclude redistribution in a commercial repository.
+reference-textbooks/

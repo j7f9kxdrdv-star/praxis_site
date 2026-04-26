@@ -2,123 +2,297 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useDashboard } from "./DashboardShell";
 
-const navItems = [
+interface NavItem {
+  label: string;
+  href: string;
+  icon: React.ReactNode;
+}
+
+interface NavGroup {
+  label: string | null;
+  items: NavItem[];
+}
+
+const navGroups: NavGroup[] = [
   {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-      </svg>
-    ),
+    label: null,
+    items: [
+      {
+        label: "Dashboard",
+        href: "/dashboard",
+        icon: (
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 12l9-8 9 8" />
+            <path d="M5 10v10h14V10" />
+          </svg>
+        ),
+      },
+    ],
   },
   {
-    label: "Practice",
-    href: "/dashboard/practice",
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-      </svg>
-    ),
+    label: "Study",
+    items: [
+      {
+        label: "Practice",
+        href: "/dashboard/practice",
+        icon: (
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 4h10l6 6v10H4z" />
+            <path d="M14 4v6h6" />
+            <path d="M8 14h8M8 18h5" />
+          </svg>
+        ),
+      },
+      {
+        label: "Flashcards",
+        href: "/dashboard/flashcards",
+        icon: (
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="6" width="16" height="12" rx="2" />
+            <path d="M7 3h14v12" />
+          </svg>
+        ),
+      },
+      {
+        label: "Lessons",
+        href: "/dashboard/lessons",
+        icon: (
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 4h7a4 4 0 014 4v12H8a4 4 0 01-4-4z" />
+            <path d="M20 4h-3a4 4 0 00-4 4v12h4a3 3 0 003-3z" />
+          </svg>
+        ),
+      },
+    ],
   },
   {
-    label: "Flashcards",
-    href: "/dashboard/flashcards",
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 8.25a2.25 2.25 0 012.25-2.25h12a2.25 2.25 0 012.25 2.25v8.25a2.25 2.25 0 01-2.25 2.25h-12A2.25 2.25 0 013.75 16.5V8.25z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 3.75h9M6 21h12" opacity="0.6" />
-      </svg>
-    ),
-  },
-  {
-    label: "Lessons",
-    href: "/dashboard/lessons",
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-      </svg>
-    ),
-  },
-  {
-    label: "Study Plan",
-    href: "/dashboard/plan",
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-      </svg>
-    ),
-  },
-  {
-    label: "Analytics",
-    href: "/dashboard/analytics",
-    icon: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-      </svg>
-    ),
+    label: "Progress",
+    items: [
+      {
+        label: "Study Plan",
+        href: "/dashboard/plan",
+        icon: (
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M3 9h18M8 3v4M16 3v4" />
+            <path d="M8 14l2 2 4-4" />
+          </svg>
+        ),
+      },
+      {
+        label: "Analytics",
+        href: "/dashboard/analytics",
+        icon: (
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+          </svg>
+        ),
+      },
+    ],
   },
 ];
 
+function daysUntil(dateStr: string | null): number | null {
+  if (!dateStr) return null;
+  const target = new Date(dateStr + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const diff = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  return diff >= 0 ? diff : null;
+}
+
+function formatTestDate(dateStr: string | null): string | null {
+  if (!dateStr) return null;
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
 export default function Sidebar() {
   const pathname = usePathname();
+  const { profile, user } = useDashboard();
+
+  const initial =
+    (profile?.first_name?.[0] ||
+      user.user_metadata?.first_name?.[0] ||
+      user.email?.[0] ||
+      "M").toUpperCase();
+  const displayName =
+    profile?.first_name ||
+    user.user_metadata?.first_name ||
+    user.email?.split("@")[0] ||
+    "Student";
+
+  const days = daysUntil(profile?.mcat_test_date || null);
+  const testDateLabel = formatTestDate(profile?.mcat_test_date || null);
 
   return (
-    <aside className="hidden lg:flex lg:flex-col lg:w-72 bg-as-surface-container-low h-screen sticky top-0 p-8">
+    <aside
+      className="hidden lg:flex lg:flex-col lg:w-56 sticky top-0 h-screen px-[18px] pt-8 pb-[22px] z-10 shrink-0"
+      style={{
+        background: "var(--color-prax-cream)",
+        borderRight: "1px solid var(--color-prax-cream-border)",
+        fontFamily: "var(--font-prax-sans)",
+      }}
+    >
       {/* Logo */}
-      <div className="mb-16 px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <img
-            src="/logo-green.png"
-            alt="Praxist Prep logo"
-            className="h-9 w-auto"
-          />
-          <h1 className="font-headline text-[32px] leading-9 font-semibold tracking-[0.015em] text-as-primary">
-            Praxist Prep
-          </h1>
-        </Link>
-      </div>
+      <Link href="/" className="flex items-center gap-2.5 mb-9 pl-2">
+        <img
+          src="/logo-green.png"
+          alt="Praxist Prep logo"
+          className="h-9 w-auto"
+        />
+        <div
+          className="leading-[1.02] font-semibold"
+          style={{
+            fontFamily: "var(--font-prax-serif)",
+            fontSize: 20,
+            color: "var(--color-prax-green)",
+          }}
+        >
+          Praxist
+          <br />
+          Prep
+        </div>
+      </Link>
 
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1">
-        {navItems.map((item) => {
-          const isActive =
-            item.href === "/dashboard"
-              ? pathname === "/dashboard"
-              : pathname.startsWith(item.href);
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-4 py-3 px-4 rounded-xl text-sm transition-colors ${
-                isActive
-                  ? "text-as-primary font-medium bg-as-surface/50"
-                  : "text-as-secondary hover:text-as-primary hover:bg-as-surface/30"
-              }`}
-            >
-              {item.icon}
-              <span className="tracking-[0.015em]">{item.label}</span>
-            </Link>
-          );
-        })}
+      {/* Navigation groups */}
+      <nav className="flex flex-col gap-0.5">
+        {navGroups.map((group, gi) => (
+          <div key={gi} className={group.label ? "mb-[18px]" : "mb-2"}>
+            {group.label && (
+              <div
+                className="font-semibold uppercase pl-3 mb-2 mt-1"
+                style={{
+                  fontSize: 9,
+                  letterSpacing: "0.22em",
+                  color: "var(--color-prax-ink-mute)",
+                }}
+              >
+                {group.label}
+              </div>
+            )}
+            {group.items.map((item) => {
+              const isActive =
+                item.href === "/dashboard"
+                  ? pathname === "/dashboard"
+                  : pathname.startsWith(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="relative flex items-center gap-3 py-2 px-3 rounded-lg text-[13px] cursor-pointer"
+                  style={{
+                    color: isActive
+                      ? "var(--color-prax-green)"
+                      : "var(--color-prax-ink-soft)",
+                    background: isActive
+                      ? "var(--color-prax-cream-card)"
+                      : "transparent",
+                    border: isActive
+                      ? "1px solid var(--color-prax-cream-border)"
+                      : "1px solid transparent",
+                    fontWeight: isActive ? 600 : 500,
+                  }}
+                >
+                  {isActive && (
+                    <div
+                      className="absolute top-1/2 -translate-y-1/2"
+                      style={{
+                        left: -18,
+                        width: 3,
+                        height: 16,
+                        background: "var(--color-prax-green)",
+                        borderRadius: 2,
+                      }}
+                    />
+                  )}
+                  <span className="opacity-90">{item.icon}</span>
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
-      {/* Bottom section */}
-      <div className="mt-auto space-y-8">
-        <Link
-          href="/dashboard/practice"
-          className="w-full py-4 px-6 bg-as-primary-container text-white rounded-2xl font-medium text-sm tracking-[0.015em] flex items-center justify-center gap-2 shadow-sm hover:bg-as-primary transition-colors"
+      <div className="flex-1" />
+
+      {/* Test-day countdown */}
+      {days !== null && testDateLabel && (
+        <div
+          className="px-3.5 py-3 mb-3"
+          style={{
+            background: "var(--color-prax-cream-card)",
+            border: "1px solid var(--color-prax-cream-border)",
+            borderRadius: 10,
+          }}
         >
-          Start Daily Drill
-        </Link>
-        <div className="flex items-center justify-between px-4 text-[11px] font-semibold uppercase tracking-widest text-as-secondary/40">
-          <Link href="#" className="hover:text-as-primary transition-colors">Support</Link>
-          <span className="block w-1 h-1 rounded-full bg-as-secondary/20" />
-          <Link href="#" className="hover:text-as-primary transition-colors">Privacy</Link>
-          <span className="block w-1 h-1 rounded-full bg-as-secondary/20" />
-          <Link href="/dashboard/settings" className="hover:text-as-primary transition-colors">Settings</Link>
+          <div
+            className="font-semibold uppercase mb-1.5"
+            style={{
+              fontSize: 9,
+              letterSpacing: "0.18em",
+              color: "var(--color-prax-ink-mute)",
+            }}
+          >
+            Test Day
+          </div>
+          <div className="flex items-baseline gap-1.5">
+            <div
+              className="leading-none font-medium"
+              style={{
+                fontFamily: "var(--font-prax-serif)",
+                fontSize: 22,
+                color: "var(--color-prax-green)",
+              }}
+            >
+              {days}
+            </div>
+            <div
+              className="text-[10.5px]"
+              style={{ color: "var(--color-prax-ink-soft)" }}
+            >
+              days · {testDateLabel}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* User block */}
+      <div className="flex items-center gap-2.5 pl-0.5">
+        <div
+          className="grid place-items-center"
+          style={{
+            width: 30,
+            height: 30,
+            borderRadius: "50%",
+            background: "var(--color-prax-green-deep)",
+            color: "var(--color-prax-cream)",
+            fontSize: 12,
+            fontWeight: 600,
+          }}
+        >
+          {initial}
+        </div>
+        <div>
+          <div
+            className="text-[12px] font-semibold leading-[1.1]"
+            style={{ color: "var(--color-prax-ink)" }}
+          >
+            {displayName}
+          </div>
+          <div
+            className="mt-0.5"
+            style={{
+              fontSize: 9.5,
+              letterSpacing: "0.08em",
+              color: "var(--color-prax-ink-mute)",
+            }}
+          >
+            Support · Settings
+          </div>
         </div>
       </div>
     </aside>

@@ -7,6 +7,18 @@
       "runtimeArgs": ["node_modules/.bin/next", "dev"],
       "env": { "PATH": "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin" },
       "port": 3000
+    },
+    {
+      "name": "samson",
+      "runtimeExecutable": "/bin/sh",
+      "runtimeArgs": [
+        "-c",
+        "cd /Users/mikkonieveras/the-samson-brand && exec node node_modules/.bin/next dev --port 3100"
+      ],
+      "env": {
+        "PATH": "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin"
+      },
+      "port": 3100
     }
   ]
 }
