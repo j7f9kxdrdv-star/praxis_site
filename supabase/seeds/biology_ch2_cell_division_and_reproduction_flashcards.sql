@@ -225,7 +225,7 @@ BEGIN
    'If fertilization does not occur, the corpus luteum regresses into the {{c1::corpus albicans}} about 10–14 days after ovulation, and the sharp drop in {{c2::estrogen}} and {{c2::progesterone}} removes the support that was holding up the endometrium.', 2),
 
   (deck, 60, 'cloze',
-   'Once progesterone and estrogen fall, the spiral arteries of the endometrium constrict and the functional layer — the {{c1::decidua}} — sheds as {{c2::menstrual flow}}, while withdrawal of negative feedback lets {{c3::GnRH}} rise and a new cycle begins.', 3),
+   'Once progesterone and estrogen fall, the spiral arteries of the endometrium constrict and the functional layer — the {{c1::stratum functionalis}} — sheds as {{c2::menstrual flow}}, while withdrawal of negative feedback lets {{c3::GnRH}} rise and a new cycle begins.', 3),
 
   (deck, 61, 'cloze',
    'If fertilization occurs, the implanting embryo secretes {{c1::hCG (human chorionic gonadotropin)}}, which mimics LH to keep the {{c2::corpus luteum}} alive and progesterone flowing through the first trimester until the {{c3::placenta}} takes over hormone production.', 3),
