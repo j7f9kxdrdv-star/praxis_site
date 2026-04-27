@@ -1,6 +1,20 @@
+import type { Metadata } from "next";
 import Navigation from "@/components/Navigation";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Pricing",
+  description:
+    "Two simple MCAT prep plans: Practice ($79/mo) for unlimited questions and exams, or Self-Paced Course ($199/mo) with 1:1 mentor support. No long contracts.",
+  alternates: { canonical: "/pricing" },
+  openGraph: {
+    title: "Pricing — Praxist Prep",
+    description:
+      "Practice ($79/mo) or Self-Paced Course ($199/mo) with one-on-one mentor support. The most cost-effective serious MCAT prep on the market.",
+    url: "/pricing",
+  },
+};
 
 export default function PricingPage() {
   return (
