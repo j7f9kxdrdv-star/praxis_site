@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import MolecularBg from "@/components/dashboard/MolecularBg";
+import Image from "next/image";
 
 /**
  * Coming-soon waitlist landing.
@@ -11,6 +11,9 @@ import MolecularBg from "@/components/dashboard/MolecularBg";
  * is not authenticated. Captures emails into `waitlist_signups` via
  * /api/waitlist. The "Sign in →" pill in the header is the founder's way past
  * this gate (and any pre-created early-access user can also use it).
+ *
+ * Layout: full-bleed split screen — photo on the left, black panel on the
+ * right with the wordmark, copy, email form, and sign-in. Stacks on mobile.
  */
 export default function ComingSoon() {
   const [email, setEmail] = useState("");
@@ -52,21 +55,46 @@ export default function ComingSoon() {
 
   return (
     <main
-      className="relative min-h-screen w-full overflow-hidden flex flex-col"
+      className="relative min-h-screen w-full grid grid-cols-1 lg:grid-cols-[65%_35%]"
       style={{
-        background: "var(--color-prax-cream)",
         fontFamily: "var(--font-prax-sans)",
-        color: "var(--color-prax-ink)",
+        background: "#0a0a0a",
       }}
     >
-      <MolecularBg variant="hex" opacity={0.08} />
+      {/* Left — full-bleed photo */}
+      <div className="relative w-full h-[42vh] lg:h-screen lg:sticky lg:top-0">
+        <Image
+          src="/coming-soon-hero.jpg"
+          alt="Two students studying together at a lamp-lit desk"
+          fill
+          priority
+          sizes="(max-width: 1024px) 100vw, 65vw"
+          className="object-cover"
+        />
+        {/* Subtle vignette so the logo reads cleanly on the image */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.4) 100%)",
+          }}
+        />
+        {/* Desktop only — fade the right edge of the photo into the black panel
+            so the divider disappears. Bottom fade on mobile (where panels
+            stack) is handled by the vignette above. */}
+        <div
+          className="pointer-events-none absolute inset-0 hidden lg:block"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(10,10,10,0) 60%, rgba(10,10,10,0.6) 82%, #0a0a0a 100%)",
+          }}
+        />
 
-      {/* Top — wordmark only, no nav */}
-      <header className="relative z-[1] flex items-center justify-between px-6 sm:px-10 lg:px-16 py-8">
-        <div className="flex items-center gap-3">
+        {/* Logo + brand — overlays the photo */}
+        <div className="absolute top-6 left-6 sm:top-8 sm:left-10 lg:top-10 lg:left-12 flex items-center gap-3 z-[1]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/logo-green.png"
+            src="/logo-white.png"
             alt="Praxist Prep logo"
             className="h-9 w-auto"
           />
@@ -75,7 +103,7 @@ export default function ComingSoon() {
             style={{
               fontFamily: "var(--font-prax-serif)",
               fontSize: 22,
-              color: "var(--color-prax-green)",
+              color: "var(--color-prax-cream)",
             }}
           >
             Praxist
@@ -83,8 +111,12 @@ export default function ComingSoon() {
             Prep
           </div>
         </div>
+      </div>
 
-        <div className="flex items-center gap-5">
+      {/* Right — black panel with copy + form */}
+      <div className="relative flex flex-col" style={{ background: "#0a0a0a" }}>
+        {/* Top-right corner — coming soon indicator + sign in */}
+        <div className="flex items-center justify-end gap-5 px-6 sm:px-10 lg:px-12 pt-6 sm:pt-8 lg:pt-10">
           <div className="hidden sm:flex items-center gap-2.5">
             <div className="relative w-2 h-2">
               <div
@@ -101,190 +133,183 @@ export default function ComingSoon() {
               style={{
                 fontSize: 10,
                 letterSpacing: "0.22em",
-                color: "var(--color-prax-ink-mute)",
+                color: "rgba(246,244,227,0.6)",
               }}
             >
               Coming soon
             </div>
           </div>
 
-          {/* Discreet sign-in for the founder / early-access users.
-              Public visitors will see it, but /signup is gated so the only
-              people who can actually log in are users we've created accounts
-              for. */}
           <Link
             href="/login"
-            className="font-semibold uppercase whitespace-nowrap transition-colors hover:opacity-100"
+            className="font-semibold uppercase whitespace-nowrap transition-opacity hover:opacity-100"
             style={{
               fontSize: 10,
               letterSpacing: "0.22em",
-              color: "var(--color-prax-green)",
-              opacity: 0.75,
+              color: "var(--color-prax-cream)",
+              opacity: 0.85,
               padding: "6px 12px",
               borderRadius: 999,
-              border: "1px solid var(--color-prax-cream-border)",
-              background: "var(--color-prax-cream-card)",
+              border: "1px solid rgba(246,244,227,0.25)",
+              background: "transparent",
             }}
           >
             Sign in →
           </Link>
         </div>
-      </header>
 
-      {/* Centered hero */}
-      <section className="relative z-[1] flex-1 flex items-center justify-center px-6 sm:px-10 lg:px-16 pb-20">
-        <div className="w-full max-w-[680px] text-center">
-          <div
-            className="font-semibold uppercase mx-auto mb-6"
-            style={{
-              fontSize: 10.5,
-              letterSpacing: "0.28em",
-              color: "var(--color-prax-ink-mute)",
-            }}
-          >
-            Praxist Prep · MCAT
-          </div>
-
-          <h1
-            className="font-medium m-0"
-            style={{
-              fontFamily: "var(--font-prax-serif)",
-              fontSize: "clamp(36px, 5.5vw, 56px)",
-              lineHeight: 1.08,
-              color: "var(--color-prax-green)",
-              letterSpacing: "-0.015em",
-            }}
-          >
-            Still preparing your individualized MCAT prep course.
-          </h1>
-
-          <p
-            className="italic mt-6 mx-auto"
-            style={{
-              fontFamily: "var(--font-prax-serif)",
-              fontSize: "clamp(15px, 2vw, 18px)",
-              lineHeight: 1.55,
-              color: "var(--color-prax-ink-soft)",
-              maxWidth: 520,
-            }}
-          >
-            Enter your email to be notified the moment it&apos;s ready.
-          </p>
-
-          {/* Form */}
-          {status !== "success" ? (
-            <form
-              onSubmit={onSubmit}
-              className="mt-10 mx-auto flex flex-col sm:flex-row items-stretch gap-3 max-w-[520px]"
+        {/* Centered content */}
+        <div className="flex-1 flex items-center px-6 sm:px-10 lg:px-12 py-12 lg:py-16">
+          <div className="w-full max-w-[520px] mx-auto lg:mx-0">
+            <div
+              className="font-semibold uppercase mb-6"
+              style={{
+                fontSize: 10.5,
+                letterSpacing: "0.28em",
+                color: "rgba(246,244,227,0.55)",
+              }}
             >
-              <input
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                required
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (status === "error") setStatus("idle");
-                }}
-                disabled={status === "submitting"}
-                className="flex-1 outline-none transition-colors"
-                style={{
-                  background: "var(--color-prax-cream-card)",
-                  border: "1px solid var(--color-prax-cream-border)",
-                  borderRadius: 999,
-                  padding: "14px 22px",
-                  fontSize: 15,
-                  color: "var(--color-prax-ink)",
-                }}
-              />
-              <button
-                type="submit"
-                disabled={status === "submitting"}
-                className="cursor-pointer transition-opacity"
+              Praxist Prep · MCAT
+            </div>
+
+            <h1
+              className="font-medium m-0"
+              style={{
+                fontFamily: "var(--font-prax-serif)",
+                fontSize: "clamp(34px, 4.2vw, 50px)",
+                lineHeight: 1.08,
+                color: "var(--color-prax-cream)",
+                letterSpacing: "-0.015em",
+              }}
+            >
+              Still preparing your individualized MCAT prep course.
+            </h1>
+
+            <p
+              className="italic mt-5"
+              style={{
+                fontFamily: "var(--font-prax-serif)",
+                fontSize: "clamp(15px, 1.5vw, 17px)",
+                lineHeight: 1.55,
+                color: "rgba(246,244,227,0.7)",
+              }}
+            >
+              Enter your email to be notified the moment it&apos;s ready.
+            </p>
+
+            {/* Form */}
+            {status !== "success" ? (
+              <form
+                onSubmit={onSubmit}
+                className="mt-8 flex flex-col sm:flex-row items-stretch gap-3"
+              >
+                <input
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  required
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (status === "error") setStatus("idle");
+                  }}
+                  disabled={status === "submitting"}
+                  className="flex-1 outline-none transition-colors placeholder:opacity-50"
+                  style={{
+                    background: "rgba(246,244,227,0.06)",
+                    border: "1px solid rgba(246,244,227,0.18)",
+                    borderRadius: 999,
+                    padding: "14px 22px",
+                    fontSize: 15,
+                    color: "var(--color-prax-cream)",
+                  }}
+                />
+                <button
+                  type="submit"
+                  disabled={status === "submitting"}
+                  className="cursor-pointer transition-opacity"
+                  style={{
+                    background: "var(--color-prax-cream)",
+                    color: "var(--color-prax-ink)",
+                    border: "none",
+                    borderRadius: 999,
+                    padding: "14px 28px",
+                    fontSize: 13.5,
+                    fontWeight: 600,
+                    letterSpacing: "0.02em",
+                    opacity: status === "submitting" ? 0.7 : 1,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {status === "submitting" ? "Sending…" : "Notify me"}
+                </button>
+              </form>
+            ) : (
+              <div
+                className="mt-8 rounded-2xl px-6 py-5"
                 style={{
                   background: "var(--color-prax-green)",
                   color: "var(--color-prax-cream)",
-                  border: "none",
-                  borderRadius: 999,
-                  padding: "14px 28px",
-                  fontSize: 13.5,
-                  fontWeight: 600,
-                  letterSpacing: "0.02em",
-                  opacity: status === "submitting" ? 0.7 : 1,
-                  whiteSpace: "nowrap",
                 }}
               >
-                {status === "submitting" ? "Sending…" : "Notify me"}
-              </button>
-            </form>
-          ) : (
-            <div
-              className="mt-10 mx-auto rounded-2xl text-center px-6 py-5 max-w-[520px]"
-              style={{
-                background: "var(--color-prax-green)",
-                color: "var(--color-prax-cream)",
-              }}
-            >
-              <div
-                className="font-medium"
-                style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 20,
-                }}
-              >
-                You&apos;re on the list.
+                <div
+                  className="font-medium"
+                  style={{
+                    fontFamily: "var(--font-prax-serif)",
+                    fontSize: 20,
+                  }}
+                >
+                  You&apos;re on the list.
+                </div>
+                <div
+                  className="italic mt-1.5"
+                  style={{
+                    fontFamily: "var(--font-prax-serif)",
+                    fontSize: 14,
+                    color: "rgba(246,244,227,0.75)",
+                  }}
+                >
+                  We&apos;ll email you the moment Praxist Prep opens.
+                </div>
               </div>
-              <div
-                className="italic mt-1.5"
-                style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 14,
-                  color: "rgba(246,244,227,0.75)",
-                }}
-              >
-                We&apos;ll email you the moment Praxist Prep opens.
-              </div>
-            </div>
-          )}
+            )}
 
-          {status === "error" && errorMsg && (
+            {status === "error" && errorMsg && (
+              <div
+                className="mt-3 italic"
+                style={{
+                  fontFamily: "var(--font-prax-serif)",
+                  fontSize: 13,
+                  color: "#e8a594",
+                }}
+              >
+                {errorMsg}
+              </div>
+            )}
+
             <div
-              className="mt-3 italic"
+              className="mt-12 italic"
               style={{
                 fontFamily: "var(--font-prax-serif)",
-                fontSize: 13,
-                color: "var(--color-prax-danger, #a64432)",
+                fontSize: 12,
+                color: "rgba(246,244,227,0.4)",
               }}
             >
-              {errorMsg}
+              — Built deliberately. Tempered by practice. —
             </div>
-          )}
-
-          <div
-            className="mt-12 italic"
-            style={{
-              fontFamily: "var(--font-prax-serif)",
-              fontSize: 12,
-              color: "var(--color-prax-ink-mute)",
-            }}
-          >
-            — Built deliberately. Tempered by practice. —
           </div>
         </div>
-      </section>
 
-      {/* Footer */}
-      <footer
-        className="relative z-[1] px-6 sm:px-10 lg:px-16 pb-8"
-        style={{ fontSize: 11, color: "var(--color-prax-ink-mute)" }}
-      >
-        <div className="flex items-center justify-between flex-wrap gap-2">
+        {/* Footer */}
+        <footer
+          className="px-6 sm:px-10 lg:px-12 pb-6 lg:pb-8 flex items-center justify-between flex-wrap gap-2"
+          style={{ fontSize: 11, color: "rgba(246,244,227,0.4)" }}
+        >
           <span>© {new Date().getFullYear()} Praxist Prep</span>
           <span className="opacity-70">All rights reserved</span>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </main>
   );
 }
