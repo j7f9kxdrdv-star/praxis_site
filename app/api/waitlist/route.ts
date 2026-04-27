@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { sendWaitlistWelcome } from "@/lib/email/welcome";
 
 /**
  * Public waitlist signup endpoint.
@@ -49,7 +50,8 @@ export async function POST(req: NextRequest) {
     .insert({ email, source, user_agent: userAgent });
 
   if (error) {
-    // Postgres unique-violation = already on list. Treat as success.
+    // Postgres unique-violation = already on list. Treat as success — don't
+    // resend the welcome email (they've already had it).
     if (error.code === "23505") {
       return NextResponse.json({ ok: true, alreadyOnList: true });
     }
@@ -59,6 +61,10 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+
+  // Fire-and-forget: don't await, don't fail the signup if email send fails.
+  // sendWaitlistWelcome handles its own errors internally and never throws.
+  void sendWaitlistWelcome(email);
 
   return NextResponse.json({ ok: true });
 }
