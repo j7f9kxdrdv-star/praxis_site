@@ -2,6 +2,7 @@
 
 **Deck:** Inside the Atom — From Nucleus to Quantum Shells
 **Source SQL:** supabase/seeds/general_chemistry_ch1_inside_the_atom_flashcards.sql
+**Section / Topic:** chemistry / General Chemistry
 **Verified:** 2026-04-26
 **Corpus:**
 - openstax-chemistry-atoms-first-2e.txt (primary — atomic structure, quantum mechanics, electron configuration; Ch 2 §2.3 and Ch 3 throughout)

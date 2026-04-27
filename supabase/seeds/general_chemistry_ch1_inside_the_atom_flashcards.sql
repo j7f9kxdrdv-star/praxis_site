@@ -1,7 +1,7 @@
 -- ============================================================
 -- Praxist Prep — Flashcard Seed
 -- Deck: Inside the Atom — From Nucleus to Quantum Shells
--- Section: general_chemistry · Topic: General Chemistry
+-- Section: chemistry · Topic: General Chemistry
 --
 -- Coverage: subatomic particles (protons, neutrons, electrons,
 -- charges, locations, atomic & mass numbers, isotopes, valence,
@@ -28,7 +28,7 @@ BEGIN
   -- Wipe any prior copy of this deck
   -- (also matches older Kaplan-styled names in case any were previously seeded)
   DELETE FROM flashcard_decks
-   WHERE section = 'general_chemistry'
+   WHERE section = 'chemistry'
      AND topic   = 'General Chemistry'
      AND title   IN (
        'Inside the Atom — From Nucleus to Quantum Shells',
@@ -39,7 +39,7 @@ BEGIN
   -- Insert deck
   INSERT INTO flashcard_decks (section, topic, subtopic, title, description, sort_order)
   VALUES (
-    'general_chemistry',
+    'chemistry',
     'General Chemistry',
     'atoms_and_quantum_model',
     'Inside the Atom — From Nucleus to Quantum Shells',
