@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Navigation from "@/components/Navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { SITE_NAME, SITE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -16,9 +17,77 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Course structured data for both pricing tiers. Google uses Course markup
+ * to show rich results for education queries (course name, provider, offer).
+ *
+ * `hasCourseInstance` describes how the course is delivered. We model both
+ * tiers as self-paced online courses with a monthly subscription offer.
+ *
+ * Schema reference: https://schema.org/Course
+ * Google guidance: https://developers.google.com/search/docs/appearance/structured-data/course-info
+ */
+const courseSchemas = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: "Practice Exams + Question Bank",
+    description:
+      "Unlimited MCAT practice questions and full-length practice exams with detailed explanations and analytics.",
+    provider: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      sameAs: SITE_URL,
+    },
+    url: `${SITE_URL}/pricing`,
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "Online",
+      courseWorkload: "PT10H", // ~10 hrs/week of self-paced practice
+    },
+    offers: {
+      "@type": "Offer",
+      category: "Subscription",
+      price: "79",
+      priceCurrency: "USD",
+      url: `${SITE_URL}/pricing`,
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: "Self-Paced MCAT Course",
+    description:
+      "Full self-paced MCAT course with lessons, practice questions, full-length exams, and one-on-one mentor support throughout your prep.",
+    provider: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      sameAs: SITE_URL,
+    },
+    url: `${SITE_URL}/pricing`,
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "Online",
+      courseWorkload: "PT15H", // ~15 hrs/week mix of lessons + practice
+    },
+    offers: {
+      "@type": "Offer",
+      category: "Subscription",
+      price: "199",
+      priceCurrency: "USD",
+      url: `${SITE_URL}/pricing`,
+    },
+  },
+];
+
 export default function PricingPage() {
   return (
     <>
+      {/* Course rich-result markup — one Course entity per pricing tier. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchemas) }}
+      />
       <Navigation />
 
       <main className="flex-1">

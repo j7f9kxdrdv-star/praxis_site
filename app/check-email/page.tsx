@@ -1,5 +1,17 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+/**
+ * Transactional confirmation page shown after signup. No SEO value — this
+ * is only ever reached as part of the signup flow — so we keep crawlers
+ * out and skip the canonical URL.
+ */
+export const metadata: Metadata = {
+  title: "Check Your Email",
+  description: "Confirm your email address to finish setting up your Praxist Prep account.",
+  robots: { index: false, follow: true },
+};
 
 export default function CheckEmailPage() {
   return (

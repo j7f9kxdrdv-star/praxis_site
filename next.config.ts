@@ -14,8 +14,18 @@ const isLive = process.env.NEXT_PUBLIC_LAUNCH_MODE === "live";
 
 const nextConfig: NextConfig = {
   async redirects() {
-    if (isLive) return [];
+    // Permanent (301) redirects always apply, regardless of launch mode.
+    // /home was a legacy URL for the marketing site; the marketing content
+    // now lives at / and is dispatched by app/page.tsx. A server-side 301
+    // tells Google to consolidate any inbound /home link equity into /.
+    const permanent = [
+      { source: "/home", destination: "/", permanent: true },
+    ];
+
+    if (isLive) return permanent;
+
     return [
+      ...permanent,
       // Pre-launch only: keep visitors out of the marketing surface so
       // they see the coming-soon page first.
       { source: "/pricing", destination: "/", permanent: false },

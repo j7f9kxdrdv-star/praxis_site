@@ -136,6 +136,21 @@ export default function RootLayout({
             }),
           }}
         />
+        {/* WebSite structured data — pairs with Organization. Tells Google
+            this is the canonical site for the brand and (eventually) lets
+            us request a site-search box in results. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: SITE_NAME,
+              url: SITE_URL,
+              description: DEFAULT_DESCRIPTION,
+            }),
+          }}
+        />
         {children}
       </body>
     </html>
