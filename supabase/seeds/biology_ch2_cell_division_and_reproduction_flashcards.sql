@@ -1,16 +1,50 @@
 -- ============================================================
 -- Praxist Prep — Flashcard Seed
 -- Deck: Cell Division & Human Reproduction
--- Section: biology · Topic: Chapter 2 — Cell Division & Human Reproduction
+-- Section: biology · Topic: Molecular and Cellular Biology
 --
--- Coverage: the cell cycle and mitosis, meiosis I & II with
--- recombination and nondisjunction, the male and female
--- reproductive systems, gametogenesis, the menstrual cycle,
--- and hormonal control of reproduction.
+-- Coverage: the cell cycle (G₁/S/G₂/M, G₀, interphase,
+-- restriction point); cell cycle controls (p53, cyclin/CDK,
+-- TP53 mutation in cancer, metastasis); mitosis (prophase →
+-- metaphase → anaphase → telophase + cytokinesis); meiosis
+-- foundations (reductional vs equational, homologs vs sister
+-- chromatids, post-S chromatid/chromosome counts); meiosis I
+-- (prophase I synapsis/tetrads/crossing over/chiasmata,
+-- metaphase I, anaphase I, telophase I + interkinesis);
+-- meiosis II; genetic implications (Mendel's laws of
+-- segregation + independent assortment, linkage,
+-- nondisjunction → aneuploidy); sex chromosomes & sex
+-- determination (XX/XY, SRY gene, hemizygous males, female
+-- carriers, androgen insensitivity syndrome); male
+-- reproductive anatomy (testes, Sertoli/Leydig, sperm
+-- pathway, seminal fluid sources, semen, scrotum);
+-- spermatogenesis (stages, four-sperm outcome, sperm
+-- anatomy with acrosome); female reproductive anatomy
+-- (ovaries + follicles, egg pathway, vulva); oogenesis
+-- (fixed oocyte pool, prophase I arrest at birth, ovum +
+-- polar bodies via unequal cytokinesis, metaphase II arrest,
+-- zona pellucida + corona radiata); the HPG axis (GnRH →
+-- FSH/LH; male and female axis specifics; estrogen vs
+-- progesterone roles); the menstrual cycle (follicular →
+-- ovulation → luteal → menses; feedback logic);
+-- pregnancy (hCG, placental takeover at end of 1st trimester);
+-- and menopause.
 --
 -- All cards are CLOZE-format. Cards are ORIGINAL Praxist Prep
--- content — written from the underlying concepts, not lifted
--- from any third-party source material.
+-- content — written from the underlying biology and re-sourced
+-- from the reference textbooks listed in the companion
+-- verification.md file; no prose is lifted from any third-
+-- party source.
+--
+-- Subtopic ordering follows the AAMC content outline
+-- (Foundation 2C for cell division/genetics; Foundation 3B
+-- for reproductive anatomy; Foundation 5C-D for HPG and
+-- menstrual cycle), NOT the source .docx's chapter ordering.
+-- The deck spans Foundations 2C and 3B intentionally; the
+-- bucket "Molecular and Cellular Biology" keeps Ch1 and Ch2
+-- together in the UI, with reproductive-physiology framed
+-- through gametogenesis. Deep organ-system physiology of
+-- reproduction will live in a future dedicated chapter.
 --
 -- Idempotent: re-running deletes the prior version of this
 -- deck and re-seeds. User review history attached to those
@@ -21,19 +55,27 @@ DO $$
 DECLARE
   deck UUID;
 BEGIN
-  -- Wipe any prior copy of this deck
+  -- Wipe any prior copy of this deck (across any historical titles)
   DELETE FROM flashcard_decks
    WHERE section = 'biology'
-     AND title   IN ('Cell Division & Human Reproduction', 'Chapter 2 — Reproduction');
+     AND title   IN (
+           'Cell Division & Human Reproduction',
+           'Cell Division and Reproduction',
+           'Cell Division & Reproduction',
+           'Reproduction',
+           'Chapter 2 — Cell Division & Human Reproduction',
+           'Chapter 2 — Cell Division and Reproduction',
+           'Chapter 2 — Reproduction'
+         );
 
   -- Insert deck
   INSERT INTO flashcard_decks (section, topic, subtopic, title, description, sort_order)
   VALUES (
     'biology',
-    'Chapter 2 — Cell Division & Human Reproduction',
+    'Molecular and Cellular Biology',
     'cell_division_and_reproduction',
     'Cell Division & Human Reproduction',
-    'The cell cycle, mitosis, meiosis, recombination, nondisjunction, male and female reproductive anatomy, gametogenesis, the menstrual cycle, and endocrine control of reproduction.',
+    'The cell cycle and its checkpoints, mitosis, meiosis I & II with crossing over and Mendelian implications, nondisjunction and aneuploidy, sex chromosomes and the SRY gene, male and female reproductive anatomy, spermatogenesis and oogenesis, the hypothalamic-pituitary-gonadal axis, the four phases of the menstrual cycle, pregnancy hormonal maintenance, and menopause.',
     2
   )
   RETURNING id INTO deck;
@@ -41,219 +83,204 @@ BEGIN
   -- Insert cards
   INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
 
-  -- ── 2.1 The Cell Cycle & Mitosis ─────────────────────────
+  -- ── 1. Cell Cycle Overview ───────────────────────────────
   (deck,  0, 'cloze',
-   'A dividing cell moves through {{c1::four}} ordered phases — {{c2::G₁}}, {{c2::S}}, {{c2::G₂}}, and {{c2::M}} — with the first three collectively called {{c3::interphase}}.', 3),
+   'A dividing cell moves through {{c1::four}} ordered phases — {{c2::G₁}}, {{c2::S}}, {{c2::G₂}}, and {{c2::M}} — with the first three collectively called {{c3::interphase}}. Cells that have exited the cycle and stopped preparing to divide reside in {{c4::G₀}}.', 4),
 
   (deck,  1, 'cloze',
-   'A cell that has exited the division cycle — such as a mature neuron or cardiac myocyte — sits in {{c1::G₀}}, performing its specialized role without preparing to replicate its DNA.', 1),
+   'During interphase the cell uses {{c1::G₁}} to grow and stockpile organelles, {{c2::S}} to replicate its DNA, and {{c3::G₂}} to verify replication, repair errors, and prepare for division.', 3),
 
   (deck,  2, 'cloze',
-   'During the {{c1::G₁ phase}}, the cell grows, synthesizes new proteins and organelles, and passes a checkpoint that verifies its DNA is intact before committing to replication.', 1),
+   'Cells that have permanently exited the cell cycle — neurons, mature cardiac myocytes, mature adipocytes — sit in {{c1::G₀}}, performing their specialized functions without preparing to divide.', 1),
 
   (deck,  3, 'cloze',
-   'In {{c1::S phase}}, each chromosome is duplicated so that it now consists of two {{c2::sister chromatids}} joined at a shared centromere.', 2),
+   'Tissues with constant cell turnover — {{c1::gastrointestinal epithelium}}, {{c1::skin epithelium}}, and {{c1::bone-marrow hematopoietic stem cells}} — cycle rapidly through G₁→M. By contrast, {{c2::neurons}}, {{c2::cardiac muscle cells}}, and {{c2::mature adipocytes}} are largely post-mitotic and reside in G₀.', 2),
 
+  -- ── 2. Cell Cycle Controls ───────────────────────────────
   (deck,  4, 'cloze',
-   'The {{c1::G₂ phase}} is the final gap before mitosis; the cell continues to grow, stockpiles the proteins needed for division, and passes a checkpoint that screens for {{c2::DNA damage}} introduced during replication.', 2),
+   'The {{c1::restriction point}} is the critical transition between G₁ and S phase — once a cell passes it, the cell is committed to completing the cycle even if growth-factor signals are subsequently withdrawn.', 1),
 
   (deck,  5, 'cloze',
-   'The {{c1::M phase}} is where division actually happens — it couples {{c2::mitosis}} (nuclear division) with {{c2::cytokinesis}} (splitting of the cytoplasm).', 2),
+   'The tumor suppressor {{c1::p53}} acts at the {{c2::G₁/S}} and {{c2::G₂/M}} checkpoints, halting cell-cycle progression when DNA damage is detected so the cell can repair, enter senescence, or trigger apoptosis.', 2),
 
   (deck,  6, 'cloze',
-   'The tumor suppressor protein {{c1::p53}} guards the {{c2::G₁/S}} and {{c2::G₂/M}} checkpoints, halting progression when DNA damage is detected so the cell can repair, senesce, or undergo apoptosis.', 2),
+   'Cell-cycle progression requires a {{c1::cyclin}} to bind and activate its matching {{c1::cyclin-dependent kinase (CDK)}}; the active complex phosphorylates {{c2::transcription factors}} that switch on the genes needed for the next phase.', 2),
 
   (deck,  7, 'cloze',
-   'Progression through each checkpoint requires a {{c1::cyclin}} to bind and activate its matching {{c1::cyclin-dependent kinase (CDK)}}; the active complex then phosphorylates {{c2::transcription factors}} that switch on the next wave of cell-cycle genes.', 2),
+   'Cancer arises when checkpoint genes lose function — mutations in {{c1::TP53}} (the gene encoding p53) are among the most common drivers because they cripple checkpoint arrest after DNA damage, letting genetically damaged cells continue to divide.', 1),
 
   (deck,  8, 'cloze',
-   'Cancer arises when mutations disable the genes that enforce cell-cycle control — loss-of-function mutations in the {{c1::TP53}} tumor-suppressor gene are among the most common drivers because they cripple checkpoint arrest after DNA damage.', 1),
+   'A tumor becomes {{c1::malignant}} once its cells acquire the ability to invade surrounding tissue and {{c2::metastasize}} — to spread via blood or lymph and seed new tumors at distant sites.', 2),
 
+  -- ── 3. Mitosis ───────────────────────────────────────────
   (deck,  9, 'cloze',
-   'A tumor becomes {{c1::malignant}} rather than benign when its cells acquire the ability to invade surrounding tissue and {{c2::metastasize}} — spreading via blood or lymph to seed new tumors at distant sites.', 2),
+   'In {{c1::prophase}}, chromosomes condense, nucleoli disappear, the nuclear envelope dissolves, and the {{c2::centrosomes}} migrate to opposite poles where they nucleate the {{c2::spindle apparatus}} from microtubules.', 2),
 
   (deck, 10, 'cloze',
-   '{{c1::Chromatin}} is the loose DNA–histone complex seen during interphase; after replication it condenses, and each duplicated chromosome appears as a pair of identical {{c2::sister chromatids}} held together at the {{c3::centromere}}.', 3),
+   'In {{c1::metaphase}}, condensed chromosomes align along the {{c2::metaphase plate}} — equidistant from the two poles — with spindle microtubules attached to each {{c3::kinetochore}} on the sister-chromatid centromeres.', 3),
 
   (deck, 11, 'cloze',
-   'Tissues that must constantly regenerate — {{c1::gastrointestinal epithelium}}, {{c1::skin epithelium}}, and {{c1::hematopoietic stem cells}} — cycle rapidly, while {{c2::neurons}}, {{c2::cardiac muscle cells}}, and {{c2::mature adipocytes}} are largely post-mitotic and rarely divide.', 2),
+   'In {{c1::anaphase}}, centromeres split and the {{c2::sister chromatids}} (now each its own chromosome) are pulled to opposite poles by the shortening of kinetochore microtubules.', 2),
 
   (deck, 12, 'cloze',
-   'Mitosis generates {{c1::two}} daughter cells that are {{c2::diploid}} and genetically {{c3::identical}} to the parent — in contrast to meiosis, which produces four haploid, genetically unique gametes.', 3),
+   'In {{c1::telophase}}, chromosomes decondense, nuclear envelopes reform around each set, nucleoli reappear, and the spindle disassembles; {{c2::cytokinesis}} (driven by an actin-myosin contractile ring) then splits the cytoplasm into two daughter cells.', 2),
 
   (deck, 13, 'cloze',
-   'During {{c1::prophase}}, chromatin condenses into visible chromosomes, the {{c2::nuclear envelope}} breaks down, nucleoli disappear, and {{c3::centrioles}} migrate to opposite poles and nucleate the spindle apparatus.', 3),
+   'Mitosis yields {{c1::two}} genetically identical {{c2::diploid (2n = 46)}} daughter cells — each carrying a full copy of the parent''s chromosomes.', 2),
 
+  -- ── 4. Meiosis vs Mitosis Foundations ────────────────────
   (deck, 14, 'cloze',
-   'In {{c1::metaphase}}, spindle microtubules capture each chromosome at its {{c2::kinetochore}} and align the chromosomes along the {{c3::metaphase plate}} at the cell''s equator.', 3),
+   'Meiosis takes a single diploid germ cell through one round of replication and {{c1::two}} rounds of division, yielding up to {{c2::four}} genetically unique {{c3::haploid (n = 23)}} gametes.', 3),
 
   (deck, 15, 'cloze',
-   '{{c1::Anaphase}} begins when the bonds holding sister chromatids snap at the centromere and each chromatid is pulled toward an opposite pole — so each daughter receives a complete chromosome set.', 1),
+   'Meiosis I is called the {{c1::reductional}} division because it halves the chromosome number by separating {{c2::homologous chromosomes}}; meiosis II is called the {{c3::equational}} division because — like mitosis — it separates {{c4::sister chromatids}} without further changing ploidy.', 4),
 
   (deck, 16, 'cloze',
-   'In {{c1::telophase}}, chromosomes decondense, new nuclear envelopes assemble around each set, and the spindle breaks down; {{c2::cytokinesis}} then pinches the cytoplasm via a contractile ring of actin, producing two genetically identical {{c3::diploid}} daughter cells.', 3),
+   '{{c1::Homologous chromosomes}} are the maternal and paternal copies of the same chromosome (e.g., maternal chr 15 and paternal chr 15) — similar genes, different alleles. {{c2::Sister chromatids}} are the two identical DNA copies produced by S-phase replication, held together at the {{c3::centromere}}.', 3),
 
-  -- ── 2.2 Meiosis ──────────────────────────────────────────
   (deck, 17, 'cloze',
-   'Meiosis converts one diploid germ cell into {{c1::four}} {{c2::haploid}} gametes that are genetically {{c3::unique}} — a consequence of crossing over and independent assortment.', 3),
+   'After S phase, a human somatic cell contains {{c1::92}} chromatids organized as {{c2::46}} chromosomes — i.e., {{c3::23}} homologous pairs each made of two sister chromatids.', 3),
 
+  -- ── 5. Meiosis I ─────────────────────────────────────────
   (deck, 18, 'cloze',
-   '{{c1::Homologous chromosomes}} are the maternal and paternal copies of the same chromosome (e.g., maternal chromosome 15 and paternal chromosome 15) and separate during {{c2::meiosis I}}; {{c1::sister chromatids}} are identical copies joined at the {{c3::centromere}} and separate during {{c2::meiosis II}} or mitosis.', 3),
+   'In {{c1::prophase I}}, chromatin condenses, the nuclear envelope dissolves, and the spindle reforms — but uniquely, {{c2::homologous chromosomes}} pair off in a process called {{c3::synapsis}}, producing four-chromatid structures called {{c3::tetrads}} held together by the synaptonemal complex.', 3),
 
   (deck, 19, 'cloze',
-   'Once a human cell finishes S phase it contains {{c1::46 chromosomes}}, {{c1::92 chromatids}}, and {{c1::23 homologous pairs}} — ready to enter either mitosis or meiosis I.', 1),
+   'During prophase I, non-sister chromatids of paired homologs exchange equivalent segments at contact points called {{c1::chiasmata}} — a process named {{c2::crossing over}} that shuffles linked alleles and increases gamete-to-gamete genetic diversity.', 2),
 
   (deck, 20, 'cloze',
-   '{{c1::Meiosis I}} is the reductional division: it separates {{c2::homologous chromosomes}}, so each daughter cell leaves with {{c3::half}} the original chromosome number and ploidy drops from diploid to haploid.', 3),
+   'In {{c1::metaphase I}}, homologous chromosome pairs (tetrads) line up on opposite sides of the {{c2::metaphase plate}} — unlike mitosis, where individual chromosomes align single-file.', 2),
 
   (deck, 21, 'cloze',
-   'During {{c1::prophase I}}, homologous chromosomes pair up along their length in a process called {{c2::synapsis}}, forming a four-chromatid structure known as a {{c3::tetrad}} (or bivalent).', 3),
+   'In {{c1::anaphase I}}, homologous chromosomes are pulled to opposite poles — but centromeres do NOT split, so each pole receives chromosomes still composed of {{c2::two sister chromatids}}.', 2),
 
   (deck, 22, 'cloze',
-   'The {{c1::synaptonemal complex}} is the protein scaffold that zips homologous chromosomes together during prophase I, holding them in precise alignment so that {{c2::crossing over}} can occur between aligned regions.', 2),
+   'In {{c1::telophase I}}, a nuclear envelope may reform and cytokinesis produces two {{c2::haploid}} daughter cells (each still containing duplicated chromosomes); a brief rest period called {{c3::interkinesis}} precedes meiosis II.', 3),
 
+  -- ── 6. Meiosis II ────────────────────────────────────────
   (deck, 23, 'cloze',
-   'Crossing over exchanges DNA between non-sister chromatids at contact points called {{c1::chiasmata}}; this is how {{c2::recombination}} generates new combinations of maternal and paternal alleles on the same chromosome.', 2),
+   'Meiosis II runs essentially like mitosis — but on haploid cells: {{c1::prophase II}} (spindle reforms) → {{c1::metaphase II}} (chromosomes align individually at the plate) → {{c1::anaphase II}} (sister chromatids finally separate) → {{c1::telophase II}} with cytokinesis.', 1),
 
   (deck, 24, 'cloze',
-   'A {{c1::single crossover}} swaps one segment between non-sister chromatids, while a {{c2::double crossover}} swaps two — the farther apart two loci sit on a chromosome, the greater the chance a crossover falls between them and the {{c3::higher}} their observed recombination frequency.', 3),
+   'By the end of meiosis II, one diploid primary cell has produced up to {{c1::four}} genetically unique {{c2::haploid}} cells, each ready to mature into a gamete.', 2),
 
+  -- ── 7. Genetic Implications ──────────────────────────────
   (deck, 25, 'cloze',
-   'In {{c1::metaphase I}}, tetrads — not individual chromosomes — line up at the metaphase plate, and the {{c2::random orientation}} of each homologous pair provides the physical basis for independent assortment.', 2),
+   'Mendel''s {{c1::law of segregation}} states that the two alleles for a single gene separate during gamete formation so that each gamete carries only one allele — a consequence of {{c2::anaphase I}}, when each homologous chromosome of a pair moves to a different daughter cell.', 2),
 
   (deck, 26, 'cloze',
-   '{{c1::Mendel''s Second Law (Independent Assortment)}} states that the alleles of different genes sort into gametes independently of one another, a physical consequence of how homologous pairs orient {{c2::randomly}} at the metaphase I plate.', 2),
+   'Mendel''s {{c1::law of independent assortment}} states that alleles for different genes segregate into gametes independently of one another — a consequence of the {{c2::random orientation}} of homologous chromosome pairs at metaphase I, not of crossing over per se.', 2),
 
   (deck, 27, 'cloze',
-   'In {{c1::anaphase I}}, homologous chromosomes are pulled to opposite poles while the {{c2::centromeres remain intact}} — sister chromatids stay joined and travel together as a unit.', 2),
+   'Genes located close together on the same chromosome tend to be inherited as a unit — a phenomenon called {{c1::linkage}}; the closer two genes are physically, the more likely they are to stay together and the {{c2::less likely}} crossing over will separate them.', 2),
 
   (deck, 28, 'cloze',
-   '{{c1::Mendel''s First Law (Segregation)}} states that the two alleles at a gene locus separate into different gametes, which physically corresponds to the separation of {{c2::homologous chromosomes}} during anaphase I.', 2),
+   '{{c1::Nondisjunction}} — the failure of homologs (meiosis I) or sister chromatids (meiosis II or mitosis) to separate properly — produces gametes or cells with abnormal chromosome counts, a condition called {{c2::aneuploidy}}.', 2),
 
+  -- ── 8. Sex Chromosomes & Determination ───────────────────
   (deck, 29, 'cloze',
-   'Telophase I produces {{c1::two haploid}} daughter cells whose chromosomes may or may not decondense; the brief pause that follows is called {{c2::interkinesis}}, and notably, DNA is {{c3::not}} re-replicated before meiosis II begins.', 3),
+   'Chromosomal sex is determined by the {{c1::23rd}} chromosome pair — {{c2::XX}} in females, {{c2::XY}} in males. Because ova carry only the {{c3::X}} chromosome and sperm can carry either {{c3::X or Y}}, it is the sperm that determines the chromosomal sex of the offspring.', 3),
 
   (deck, 30, 'cloze',
-   '{{c1::Meiosis II}} is the equational division: it splits {{c2::sister chromatids}} apart without changing ploidy, so the two haploid cells entering meiosis II become {{c3::four}} haploid gametes.', 3),
+   'The {{c1::SRY gene}} on the Y chromosome encodes a transcription factor that drives the indifferent fetal gonad toward testicular development; absent SRY, the default developmental pathway is {{c2::ovarian}}.', 2),
 
   (deck, 31, 'cloze',
-   'In {{c1::metaphase II}}, individual chromosomes — not tetrads — align single-file at the metaphase plate, exactly as they do in mitotic metaphase.', 1),
+   'Males are {{c1::hemizygous}} for most X-linked genes — they carry only one copy — so an X-linked recessive allele is fully expressed in any male who inherits it. Females, with two X chromosomes, may be heterozygous {{c2::carriers}} who do not express the trait but can pass it to their sons.', 2),
 
   (deck, 32, 'cloze',
-   '{{c1::Anaphase II}} mirrors mitotic anaphase: the centromeres finally release, and {{c2::sister chromatids}} are pulled to opposite poles as independent chromosomes.', 2),
+   '{{c1::Androgen insensitivity syndrome (AIS)}} arises in a 46,XY individual whose cells lack functional {{c2::androgen receptors}} — the testes develop and secrete testosterone, but the body cannot respond to it, producing a phenotypically female external appearance despite the XY genotype.', 2),
 
+  -- ── 9. Male Reproductive Anatomy ─────────────────────────
   (deck, 33, 'cloze',
-   'Telophase II finishes with nuclear envelopes reforming around each of the {{c1::four}} haploid nuclei; cytokinesis then completes division, producing four genetically distinct {{c2::gametes}}.', 2),
+   'Each testis houses two functional compartments: the highly coiled {{c1::seminiferous tubules}}, where sperm are produced and nurtured by {{c2::Sertoli cells}}, and the surrounding {{c1::interstitium}}, where {{c2::Leydig cells}} produce testosterone.', 2),
 
   (deck, 34, 'cloze',
-   '{{c1::Nondisjunction}} is the failure of homologs (in meiosis I) or sister chromatids (in meiosis II or mitosis) to separate correctly; the resulting gametes carry an abnormal chromosome count and produce {{c2::aneuploid}} offspring such as trisomy 21.', 2),
+   'After they are produced, sperm travel: seminiferous tubules → {{c1::epididymis}} (maturation + storage) → {{c1::vas deferens}} → {{c1::ejaculatory duct}} → {{c1::urethra}} → out through the penis at ejaculation.', 1),
 
-  -- ── 2.3 The Reproductive System ──────────────────────────
   (deck, 35, 'cloze',
-   'The X chromosome carries many genes unrelated to sex determination, so mutations on it produce {{c1::X-linked (sex-linked)}} disorders; because males carry only one X, they are termed {{c2::hemizygous}} and express X-linked recessive traits whenever they inherit the allele.', 2),
+   'Seminal fluid is contributed by three accessory glands: the {{c1::seminal vesicles}} (fructose for sperm energy, alkaline buffering), the {{c1::prostate}} (more alkaline secretions to neutralize vaginal acidity), and the {{c1::bulbourethral (Cowper''s) glands}} (clear lubricant that clears the urethra before ejaculation).', 1),
 
   (deck, 36, 'cloze',
-   'The Y chromosome is largely gene-poor but carries the {{c1::SRY}} gene, whose product drives the undifferentiated gonad to develop into a {{c2::testis}} and initiates the male developmental cascade.', 2),
+   'The combination of sperm and seminal fluid is called {{c1::semen}}. The testes themselves sit outside the body in the {{c2::scrotum}}, where the slightly lower temperature is required for {{c3::spermatogenesis}} to proceed.', 3),
 
+  -- ── 10. Spermatogenesis ──────────────────────────────────
   (deck, 37, 'cloze',
-   'A heterozygous female who carries one recessive X-linked disease allele is a {{c1::carrier}} — unaffected herself but able to pass the allele to {{c2::half}} of her sons, which explains the male-predominant inheritance pattern of X-linked recessive disorders.', 2),
+   'Spermatogenesis proceeds: diploid {{c1::spermatogonia}} → diploid {{c1::primary spermatocytes}} (after DNA replication) → haploid {{c1::secondary spermatocytes}} (after meiosis I) → haploid {{c1::spermatids}} (after meiosis II) → mature {{c1::spermatozoa}}.', 1),
 
   (deck, 38, 'cloze',
-   'Sperm travel from their site of production in the {{c1::seminiferous tubules}} of the testis, mature in the {{c2::epididymis}}, then pass through the {{c2::vas deferens}} and {{c2::ejaculatory duct}} before exiting via the {{c2::urethra}}.', 2),
+   'Unlike oogenesis, spermatogenesis divides cytoplasm evenly — each spermatogonium ultimately yields {{c1::four}} functional sperm, and the process continues from puberty onward without depletion of the stem-cell pool.', 1),
 
   (deck, 39, 'cloze',
-   'The {{c1::interstitial cells of Leydig}} sit between the seminiferous tubules and secrete {{c2::testosterone}} in response to pituitary LH.', 2),
+   'A mature spermatozoon has three regions: a {{c1::head}} containing the genome and capped by the {{c2::acrosome}} (a Golgi-derived enzyme-filled vesicle that digests through the corona radiata and zona pellucida), a {{c1::midpiece}} packed with {{c3::mitochondria}} for ATP, and a flagellar {{c1::tail}} for swimming.', 3),
 
+  -- ── 11. Female Reproductive Anatomy ──────────────────────
   (deck, 40, 'cloze',
-   '{{c1::Sertoli cells}} line the seminiferous tubules and nourish developing sperm; they are stimulated by {{c2::FSH}} and form the blood–testis barrier that shields gametes from the immune system.', 2),
+   'The {{c1::ovaries}} contain thousands of {{c2::follicles}} — multilayered sacs that enclose, nourish, and protect immature ova until ovulation; one dominant follicle releases its egg per cycle from puberty through menopause.', 2),
 
   (deck, 41, 'cloze',
-   'Semen is assembled from secretions of three accessory glands: the {{c1::seminal vesicles}} contribute most of the fluid volume along with fructose to fuel sperm, the {{c1::prostate gland}} adds alkaline fluid to neutralize vaginal acidity, and the {{c1::bulbourethral (Cowper''s) glands}} release a pre-ejaculatory mucus that lubricates the urethra.', 1),
+   'After ovulation, an ovum travels: ovary → peritoneal cavity → {{c1::fallopian tube (oviduct)}} (ciliated lining propels it forward) → muscular {{c1::uterus}} (potential site of implantation) → {{c1::cervix}} (narrow opening) → {{c1::vagina}}.', 1),
 
   (deck, 42, 'cloze',
-   '{{c1::Spermatogenesis}} produces {{c2::four}} functional sperm from each precursor cell; unlike oogenesis, cytokinesis is equal and there are no polar bodies.', 2),
+   'The internal female reproductive organs are the ovaries, fallopian tubes, uterus, and vagina; the external genitalia — labia, clitoris, and associated structures — are collectively called the {{c1::vulva}}.', 1),
 
+  -- ── 12. Oogenesis ────────────────────────────────────────
   (deck, 43, 'cloze',
-   'The spermatogenic lineage progresses as {{c1::spermatogonium}} → {{c1::primary spermatocyte}} → {{c1::secondary spermatocyte}} → {{c1::spermatid}} → {{c1::spermatozoon}}, with meiosis I completed between primary and secondary spermatocyte and meiosis II completed before the spermatid stage.', 1),
+   'Unlike males (who continuously produce sperm from a stem-cell pool), every {{c1::oogonium}} a female will ever have is formed during {{c2::fetal development}}; no new oocytes are generated after birth.', 2),
 
   (deck, 44, 'cloze',
-   'A mature sperm has three regions: the {{c1::head}}, packed with condensed DNA and capped by an enzyme-filled {{c2::acrosome}}; the {{c1::midpiece}}, loaded with {{c3::mitochondria}} that power motility; and the {{c1::tail (flagellum)}}, which propels the cell.', 3),
+   'By the time of birth, all of a female''s oogonia have replicated their DNA and arrested as {{c1::primary oocytes}} in {{c2::prophase I}}, where they will wait — sometimes for decades — until ovulation.', 2),
 
   (deck, 45, 'cloze',
-   'The {{c1::acrosome}} carries hydrolytic enzymes that digest the {{c2::corona radiata}} and {{c2::zona pellucida}} surrounding the ovum, permitting sperm penetration and fertilization.', 2),
+   'Oogenesis divides cytoplasm {{c1::unequally}}: each primary oocyte ultimately produces {{c2::one}} large functional {{c3::ovum}} and {{c2::up to three}} small non-functional {{c3::polar bodies}} that degenerate.', 3),
 
   (deck, 46, 'cloze',
-   'A released ovum is swept from the {{c1::ovary}} into the {{c2::fallopian tube}} (oviduct), where fertilization typically occurs; the resulting embryo then travels to the {{c3::uterus}} for implantation, with the {{c4::cervix}} and {{c4::vaginal canal}} forming the lower birth canal.', 4),
+   'After ovulation, the egg is now a {{c1::secondary oocyte}} arrested in {{c2::metaphase II}}; it completes meiosis II only if a sperm penetrates it — fertilization is what triggers the final division.', 2),
 
   (deck, 47, 'cloze',
-   'At ovulation the secondary oocyte is released not directly into the fallopian tube but into the {{c1::peritoneal cavity}}, and the finger-like {{c2::fimbriae}} of the oviduct then sweep it into the tube — a gap that explains rare ectopic pregnancies.', 2),
+   'An ovulated oocyte is enclosed in two protective layers: the {{c1::zona pellucida}} (an acellular glycoprotein shell that binds sperm and triggers the acrosome reaction) and, surrounding it, the {{c1::corona radiata}} (a halo of follicular cells that remained attached during ovulation).', 1),
 
+  -- ── 13. Hypothalamic-Pituitary-Gonadal Axis ──────────────
   (deck, 48, 'cloze',
-   'Oogenesis is asymmetric: each primary oocyte yields just {{c1::one}} functional ovum and two or three {{c2::polar bodies}}, because cytokinesis is unequal and almost all the cytoplasm is retained by the ovum.', 2),
+   'The hypothalamus releases pulses of {{c1::GnRH}}, which drives the anterior pituitary to release {{c2::FSH}} and {{c2::LH}}; these gonadotropins in turn stimulate the gonads to produce gametes and sex steroids.', 2),
 
   (deck, 49, 'cloze',
-   'Primary oocytes are arrested in {{c1::prophase I}} from before birth until just before ovulation; each cycle a selected follicle resumes meiosis and its oocyte re-arrests in {{c2::metaphase II}}, only completing meiosis II if {{c3::fertilization}} occurs.', 3),
+   'In males, {{c1::FSH}} stimulates {{c2::Sertoli cells}} (which nurse developing sperm), and {{c1::LH}} stimulates {{c2::Leydig cells}} (which secrete {{c3::testosterone}} and other androgens).', 3),
 
   (deck, 50, 'cloze',
-   'Both {{c1::LH (luteinizing hormone)}} and {{c1::FSH (follicle-stimulating hormone)}} are glycoprotein gonadotropins secreted by the {{c2::anterior pituitary}} under hypothalamic GnRH control.', 2),
+   'In females, {{c1::FSH}} drives follicle development, and a midcycle surge of {{c1::LH}} triggers {{c2::ovulation}} and converts the ruptured follicle into the corpus luteum.', 2),
 
   (deck, 51, 'cloze',
-   'In males, {{c1::FSH}} acts on Sertoli cells to support {{c2::spermatogenesis}}, while {{c1::LH}} acts on Leydig cells to drive {{c2::testosterone}} production.', 2),
+   '{{c1::Estrogen}} (secreted by developing follicles) thickens and vascularizes the endometrium during the follicular phase; {{c2::progesterone}} (secreted by the corpus luteum after ovulation) maintains the thickened endometrium so it can support an embryo if fertilization occurs.', 2),
 
+  -- ── 14. The Menstrual Cycle ──────────────────────────────
   (deck, 52, 'cloze',
-   'In females, {{c1::FSH}} stimulates growth of ovarian follicles, while the mid-cycle {{c2::LH}} surge triggers {{c3::ovulation}} of the dominant follicle.', 3),
+   'The menstrual cycle has four phases: {{c1::follicular}} (egg matures, endometrium rebuilds) → {{c1::ovulation}} → {{c1::luteal}} (corpus luteum maintains endometrium) → {{c1::menses}} (endometrium sheds if no pregnancy).', 1),
 
   (deck, 53, 'cloze',
-   '{{c1::Estrogen}} drives proliferation and thickening of the endometrium in the first half of the cycle, while {{c2::progesterone}} — released after ovulation — stabilizes and maintains that lining in preparation for possible implantation.', 2),
+   'The {{c1::follicular phase}} begins as estrogen and progesterone from the previous cycle bottom out, lifting their negative feedback on the hypothalamus; rising {{c2::GnRH}} stimulates the anterior pituitary to release {{c2::FSH}} and {{c2::LH}}, which together recruit ovarian follicles. The growing follicles secrete estrogen that thickens the {{c3::endometrium}} and — early on — suppresses GnRH via negative feedback.', 3),
 
   (deck, 54, 'cloze',
-   'A single menstrual cycle passes through four phases in order: {{c1::menstruation}}, {{c1::follicular}}, {{c1::ovulation}}, and {{c1::luteal}} — driven by tightly coordinated changes in FSH, LH, estrogen, and progesterone.', 1),
+   'Late in the follicular phase, estrogen rises to a threshold that flips the hypothalamic feedback from negative to {{c1::positive}}, producing a sharp surge in {{c2::LH}} (and a smaller spike in FSH) that triggers {{c3::ovulation}} — the release of the ovum from the dominant follicle into the peritoneal cavity.', 3),
 
   (deck, 55, 'cloze',
-   'During the {{c1::follicular phase}}, rising GnRH drives {{c2::FSH}} release, which recruits ovarian follicles; growing follicles secrete {{c3::estrogen}} that first suppresses then — once high enough — flips to positive feedback, setting the stage for the LH surge.', 3),
+   'After ovulation, the ruptured follicle becomes the {{c1::corpus luteum}}, which secretes high levels of {{c2::progesterone}} (and some estrogen) to maintain the endometrium. These elevated steroids exert {{c3::negative feedback}} on GnRH, FSH, and LH — preventing a second ovulation in the same cycle.', 3),
 
   (deck, 56, 'cloze',
-   'Late in the follicular phase, a sustained peak in {{c1::estrogen}} switches feedback from negative to positive, producing the mid-cycle {{c2::LH surge}} that induces ovulation within roughly 24–36 hours.', 2),
+   'If implantation does not occur, the corpus luteum loses its LH support and degenerates; falling {{c1::estrogen}} and {{c1::progesterone}} cause the endometrium to slough off as {{c2::menstrual flow}}, and the loss of negative feedback lets {{c3::GnRH}} rise to begin a new cycle.', 3),
 
   (deck, 57, 'cloze',
-   'Ovulation is the rupture of the dominant follicle and release of a {{c1::secondary oocyte}}; the empty follicle left behind on the ovary luteinizes and becomes the {{c2::corpus luteum}}.', 2),
+   'The cycle''s hormone logic in one line: negative feedback dominates until estrogen peaks late in the follicular phase, briefly flipping to {{c1::positive feedback}} (the LH surge → ovulation), then reverting to negative feedback during the luteal phase, and finally being removed entirely when the corpus luteum degenerates — letting the next cycle start.', 1),
 
+  -- ── 15. Pregnancy ────────────────────────────────────────
   (deck, 58, 'cloze',
-   'During the {{c1::luteal phase}}, the corpus luteum secretes {{c2::progesterone}} (and some estrogen) that maintains the endometrium and exerts negative feedback on the hypothalamus, suppressing {{c3::GnRH}}, LH, and FSH to prevent a second ovulation.', 3),
+   'If fertilization occurs, the implanting embryo''s trophoblast secretes {{c1::human chorionic gonadotropin (hCG)}}, which mimics LH to maintain the {{c2::corpus luteum}} — keeping estrogen and progesterone high enough to preserve the endometrium through the first trimester.', 2),
 
   (deck, 59, 'cloze',
-   'If fertilization does not occur, the corpus luteum regresses into the {{c1::corpus albicans}} about 10–14 days after ovulation, and the sharp drop in {{c2::estrogen}} and {{c2::progesterone}} removes the support that was holding up the endometrium.', 2),
+   'By the end of the {{c1::first trimester}}, the placenta has grown large enough to produce sufficient estrogen and progesterone on its own; the corpus luteum atrophies, hCG levels fall, and the placenta sustains the pregnancy for the remaining ~6 months.', 1),
 
+  -- ── 16. Menopause ────────────────────────────────────────
   (deck, 60, 'cloze',
-   'Once progesterone and estrogen fall, the spiral arteries of the endometrium constrict and the functional layer — the {{c1::stratum functionalis}} — sheds as {{c2::menstrual flow}}, while withdrawal of negative feedback lets {{c3::GnRH}} rise and a new cycle begins.', 3),
-
-  (deck, 61, 'cloze',
-   'If fertilization occurs, the implanting embryo secretes {{c1::hCG (human chorionic gonadotropin)}}, which mimics LH to keep the {{c2::corpus luteum}} alive and progesterone flowing through the first trimester until the {{c3::placenta}} takes over hormone production.', 3),
-
-  (deck, 62, 'cloze',
-   'At {{c1::menopause}}, depleted ovarian follicles stop responding to {{c2::FSH}} and {{c2::LH}}, so estrogen and progesterone fall, negative feedback is lost, and gonadotropin levels consequently {{c3::rise}} — the biochemical signature of post-menopausal status.', 3),
-
-  (deck, 63, 'cloze',
-   '{{c1::Androgen insensitivity syndrome}} arises in an {{c2::XY}} individual whose cells lack functional androgen receptors; testes form and secrete testosterone, but target tissues cannot respond, so the external phenotype is {{c3::female}}.', 3),
-
-  (deck, 64, 'cloze',
-   'At {{c1::puberty}}, the hypothalamus ramps up pulsatile release of {{c2::GnRH}}, which triggers anterior-pituitary release of {{c3::FSH}} and {{c3::LH}}; these in turn drive gonadal output of sex steroids that produce the secondary sexual characteristics.', 3),
-
-  (deck, 65, 'cloze',
-   'In males, rising {{c1::testosterone}} at puberty produces the secondary sex characteristics — deepening of the voice, facial and body hair, increased muscle mass, and growth of the external genitalia.', 1),
-
-  (deck, 66, 'cloze',
-   'In females, rising {{c1::estrogen}} at puberty triggers breast development, widening of the pelvis, redistribution of body fat, and initiation of the menstrual cycle — an event specifically called {{c2::menarche}}.', 2);
+   '{{c1::Menopause}} occurs when the aging ovaries become unresponsive to FSH and LH; estrogen and progesterone fall, the endometrium atrophies and menstruation stops, and — with negative feedback lost — FSH and {{c2::LH}} blood levels actually rise.', 2);
 
   RAISE NOTICE 'Seeded deck % with % cards.', deck, (SELECT COUNT(*) FROM flashcards WHERE deck_id = deck);
 END $$;
-
--- ============================================================
--- Companion one-liner: align Chapter 1's topic column to the
--- new "Chapter N — Title" convention so Ch1 and Ch2 group
--- consistently in the Flashcards UI. Safe to run more than once.
--- ============================================================
-UPDATE flashcard_decks
-   SET topic = 'Chapter 1 — Cell Architecture, Microbes & Viruses'
- WHERE section = 'biology'
-   AND title   = 'Cell Architecture, Microbes & Viruses';

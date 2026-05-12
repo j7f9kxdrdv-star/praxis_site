@@ -1,562 +1,481 @@
-# Verification Report — Biology Ch 1: Cell Architecture, Microbes & Viruses
+# Verification Report — Biology Ch 1: The Cell
 
-**Deck:** Cell Architecture, Microbes & Viruses
+**Deck:** The Cell — Architecture, Microbiology, and Viruses
 **Source SQL:** supabase/seeds/biology_ch1_the_cell_flashcards.sql
-**Verified:** 2026-04-26
+**Verified:** 2026-05-11
 **Corpus:**
-- openstax-biology-2e.txt (primary for cell biology / organelles / cytoskeleton)
-- openstax-microbiology.txt (primary for prokaryotes / viruses / prions / viroids / bacterial genetics)
-- openstax-anatomy-physiology-2e.txt (primary for tissue types)
-
-## Summary
-
-- Total cards: 96
-- Confidence 5: 62
-- Confidence 4: 22
-- Confidence 3: 7
-- Confidence 2: 5
-- Confidence 1: 0
-- Cards flagged for needs_sme_review: 12
-- Cards where corpus contradicts card: 0
-
-## Per-card verification
-
-### Card 0 — Cell theory four principles
-**Cloze claim:** Four principles: cells build organisms; cell is smallest functional unit of life; new cells from pre-existing cells; hereditary information is DNA passed parent→daughter.
-**Confidence:** 4
-**Source:** openstax-biology-2e.txt §4.1, lines 5145–5165, 6271
-**Excerpt:** "The unified cell theory states that one or more cells comprise all living things, the cell is the basic unit of life, [and new cells arise from existing cells]."
-**Notes:** OpenStax Biology 2e gives a 3-pillar "unified cell theory." A 4th principle ("DNA hereditary, passed to daughter cells") is widely included in MCAT prep but is NOT stated as a "core principle of cell theory" in the OpenStax corpus. The fact is true, but the framing as "four core principles" is editorial. Mark needs_sme_review borderline-acceptable.
-
-### Card 1 — Modern addendum excludes viruses
-**Cloze claim:** Modern addendum excludes viruses from definition of life because they cannot reproduce without a host.
-**Confidence:** 3
-**Source:** openstax-microbiology.txt line 1898–1899: "Like viruses, prions are not found on the tree of life because they are acellular."
-**Notes:** Not framed as a "modern addendum to cell theory" in the corpus. The substantive claim (viruses excluded; need a host) is supported throughout, but the specific "addendum" wording isn't traceable.
-
-### Card 2 — Membrane-bound organelles distinguish eukaryotes
-**Cloze claim:** Presence of membrane-bound organelles (incl. true nucleus) defines eukaryotes vs prokaryotes.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5326–5328: "1) a membrane-bound nucleus; 2) numerous membrane-bound organelles such as the endoplasmic reticulum, Golgi apparatus..."
-
-### Card 3 — 80S vs 70S ribosomes
-**Cloze claim:** Eukaryotic 80S, prokaryotic 70S; antibiotic target.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 18596–18597: "the large subunit is 50S, for a total of 70S... Mammalian ribosomes have a small 40S subunit and a large 60S subunit, for a total of 80S."
-
-### Card 4 — Coupled transcription/translation in prokaryotes
-**Cloze claim:** Prokaryotes do simultaneous transcription/translation; eukaryotic transcription is in nucleus, translation in cytoplasm.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt line 18782, 18915, 20257–20267: "transcription and translation can occur simultaneously [in prokaryotes]" / "Transcription and translation are not coupled in [eukaryotes]."
-
-### Card 5 — Histones in archaea but not bacteria
-**Cloze claim:** Histones found in eukaryotes and archaea, absent in bacteria.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt lines 4448–4449, 17405–17407, 18263–18264: "Chromosomal DNA is typically wrapped around histones (in eukaryotes and archaea) or histone-like proteins (in bacteria)."
-
-### Card 6 — Krebs/ETC require final electron acceptor
-**Cloze claim:** Krebs cycle and ETC need final electron acceptor — typically O2 (aerobic) or sulfate/nitrate (anaerobic).
-**Confidence:** 4
-**Source:** openstax-microbiology.txt §8 metabolism (chapters around 13000–13300) discusses aerobic/anaerobic respiration with sulfate/nitrate acceptors.
-**Notes:** The simplified statement that Krebs "only runs when a final electron acceptor is available" is true in practice (NADH must be reoxidized) but slightly oversimplified — Krebs proper does not directly use the acceptor, the ETC does. Phrasing acceptable.
-
-### Card 7 — Cytosol hosts glycolysis
-**Cloze claim:** Cytosol is aqueous portion of cytoplasm; hosts glycolysis.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt §4 cytoplasm definition; glycolysis is repeatedly described as occurring in the cytoplasm/cytosol.
-
-### Card 8 — Nucleus stores DNA, controls transcription
-**Cloze claim:** DNA stored in nucleus; control center for transcription/regulation.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt §4 ~5400.
-
-### Card 9 — Nuclear envelope is double membrane with pores
-**Cloze claim:** Nuclear envelope is double-membraned, perforated by nuclear pores.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5410–5413: "The nuclear envelope is a double-membrane structure... punctuated with pores that control the passage of ions, molecules, and RNA."
-
-### Card 10 — Nucleolus makes rRNA, partial ribosome assembly
-**Cloze claim:** Nucleolus is dense subregion where rRNA is transcribed, ribosomal subunits partially assembled.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5442–5446: nucleolus "have sections of DNA that encode ribosomal RNA... ribosome synthesis occurs."
-
-### Card 11 — Chromatin condenses to chromosomes
-**Cloze claim:** DNA wraps around histones forming chromatin; condenses into chromosomes during division.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 12461–12465.
-
-### Card 12 — Mitochondrion makes ATP, releases cytochrome c for apoptosis
-**Cloze claim:** Mitochondria make ATP via oxidative phosphorylation and initiate apoptosis via cytochrome c.
-**Confidence:** 3
-**Source:** openstax-biology-2e.txt lines 5485–5495 covers ATP role; cytochrome c apoptosis role NOT directly stated in any of the three corpus files.
-**Notes:** ATP function fully supported; cytochrome c apoptosis claim is high-yield MCAT but unverifiable in this corpus.
-
-### Card 13 — Mitochondria divide by binary fission (endosymbiosis)
-**Cloze claim:** Mitochondria carry circular genome, divide by binary fission — supports endosymbiotic theory.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt line 4137: "fission of these organelles strongly resembles the binary fission of bacteria"; openstax-biology-2e.txt 5610–5624 endosymbiotic theory.
-
-### Card 14 — Outer mitochondrial membrane has porins; inner has cristae
-**Cloze claim:** Outer membrane permeable via porins; inner membrane folded into cristae and houses ETC.
-**Confidence:** 3
-**Source:** openstax-biology-2e.txt lines 5485–5496 confirms cristae and ETC location.
-**Notes:** "Porins" not mentioned by name in any of the three corpus files. The outer membrane permeability is described but the protein name is unverified. Inner membrane/cristae/ETC fully supported.
-
-### Card 15 — Intermembrane space holds proton gradient
-**Cloze claim:** Space between two mitochondrial membranes = intermembrane space; reservoir of proton gradient driving ATP synthase.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt line 5494–5495: "the space between the two membranes the intermembrane space."
-
-### Card 16 — Mitochondrial matrix houses Krebs and mtDNA
-**Cloze claim:** Matrix is innermost compartment; houses Krebs enzymes and mtDNA.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5486–5495.
-
-### Card 17 — Cytoplasmic (extranuclear) inheritance
-**Cloze claim:** Mitochondrial DNA is maternally inherited; called cytoplasmic/extranuclear inheritance.
-**Confidence:** 4
-**Source:** openstax-biology-2e.txt line 21188: "mitochondrial DNA in most multicellular organisms passes from the mother."
-**Notes:** Maternal inheritance confirmed. The label "cytoplasmic (extranuclear) inheritance" is conventional but not stated verbatim.
-
-### Card 18 — Lysosome: hydrolytic, acidic
-**Cloze claim:** Lysosome filled with hydrolytic enzymes optimal at acidic pH.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5547–5555.
-
-### Card 19 — Autolysis
-**Cloze claim:** Lysosome ruptures → self-digestion = autolysis.
-**Confidence:** 2
-**Source:** "Autolysis" term not located in the corpus.
-**Notes:** Concept correct but term unverified in corpus. needs_sme_review.
-
-### Card 20 — Endosome → lysosome maturation
-**Cloze claim:** Endocytosed material packaged in endosome; can mature and fuse with lysosome.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 7415–7416: "newly formed compartment (endosome)... merges with the plasma membrane... lysosome destroys."
-
-### Card 21 — RER: studded ribosomes; protein synthesis for secretion/membranes
-**Cloze claim:** RER is studded by ribosomes; synthesizes proteins for secretion or membrane insertion.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5664, 5684–5696.
-
-### Card 22 — SER: lipid synthesis & detoxification
-**Cloze claim:** SER lacks ribosomes; lipid synthesis and drug detoxification.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5712–5716.
-
-### Card 23 — SER specialized roles (steroids, glycogen, calcium/SR)
-**Cloze claim:** Steroid hormone synthesis, glycogen breakdown in hepatocytes, Ca2+ storage in muscle (SR).
-**Confidence:** 4
-**Source:** openstax-biology-2e.txt lines 5712–5716 covers Ca2+/sarcoplasmic reticulum and steroid synthesis. Glycogen breakdown localization noted but less explicit.
-
-### Card 24 — Golgi modifies/sorts/packages
-**Cloze claim:** Proteins from ER enter Golgi, modified, sorted, packaged.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5751–5777.
-
-### Card 25 — Trans face buds → secretory vesicles, lysosomes, plasma membrane
-**Cloze claim:** Vesicles bud from trans face → secretory vesicles, lysosomes, or plasma-membrane vesicles.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5764–5777.
-
-### Card 26 — Peroxisomes break down VLCFA via β-oxidation; produce H2O2
-**Cloze claim:** Peroxisomes use O2 to break down very-long-chain fatty acids via β-oxidation; H2O2 byproduct.
-**Confidence:** 4
-**Source:** openstax-biology-2e.txt lines 5507–5512; openstax-microbiology.txt 5357–5360.
-**Notes:** "Very-long-chain fatty acids" specifically not stated; corpus says peroxisomes carry out oxidation reactions and produce H2O2.
-
-### Card 27 — Catalase neutralizes H2O2
-**Cloze claim:** Catalase breaks down H2O2.
-**Confidence:** 4
-**Source:** openstax-biology-2e.txt lines 5510–5512: "enzymes safely break down the H2O2 into oxygen and water." (Catalase implied; not named.)
-**Notes:** Catalase is the textbook MCAT answer; corpus describes the function but not by enzyme name.
-
-### Card 28 — Peroxisomes contribute to lipid biosynthesis & PPP
-**Cloze claim:** Peroxisomes contribute to lipid biosynthesis and the pentose phosphate pathway.
-**Confidence:** 3
-**Source:** openstax-microbiology.txt line 5357–5360 mentions "biosynthesis."
-**Notes:** "Pentose phosphate pathway" peroxisomal localization not directly stated. needs_sme_review.
-
-### Card 29 — Microfilaments = actin; cell shape & contraction
-**Cloze claim:** Microfilaments built from actin; cell shape changes and muscle contraction with myosin.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5853–5876.
-
-### Card 30 — Cleavage furrow = actin/myosin contractile ring
-**Cloze claim:** Contractile ring of actin & myosin pinches cell, forming cleavage furrow.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 12692–12695, 13856.
-
-### Card 31 — Microtubules = tubulin dimers; spindle, transport
-**Cloze claim:** Hollow tubes of tubulin dimers; mitotic spindle and organelle transport.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5905–5910.
-
-### Card 32 — Kinesin (+ end) and dynein (− end)
-**Cloze claim:** Kinesin → plus (peripheral) end; dynein → minus (centrosomal) end.
-**Confidence:** 3
-**Source:** openstax-microbiology.txt line 5461 mentions both motors but does not specify directionality.
-**Notes:** Directionality is high-yield MCAT and correct, but neither corpus file states which motor goes which direction. needs_sme_review.
-
-### Card 33 — 9+2 cilia/flagella
-**Cloze claim:** Eukaryotic cilia/flagella display 9+2 array.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5933–5939; openstax-microbiology.txt line 5672.
-
-### Card 34 — Centriole = nine triplets
-**Cloze claim:** Centriole is barrel-shaped, made of nine triplets of microtubules.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5532–5540.
-
-### Card 35 — Centrosome = MTOC with paired centrioles
-**Cloze claim:** Centrosome is principal MTOC; pair of perpendicular centrioles.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 5526–5534.
-
-### Card 36 — Kinetochore at centromere
-**Cloze claim:** Spindle microtubules attach to chromosome at kinetochore (specialized complex on centromere).
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt lines 12601, 12617–12623.
-
-### Card 37 — Intermediate filaments: keratin, desmin, vimentin, lamins
-**Cloze claim:** Intermediate filaments provide tensile strength; examples keratin, desmin, vimentin, lamins.
-**Confidence:** 4
-**Source:** openstax-biology-2e.txt lines 5887–5902 confirms intermediate filaments + keratin; openstax-microbiology.txt 5444 confirms lamins (nuclear lamina).
-**Notes:** "Desmin" and "vimentin" specifically not located in corpus. The named examples are conventional and correct.
-
-### Card 38 — Epithelial tissue & basement membrane
-**Cloze claim:** Epithelial covers/lines surfaces; rests on basement membrane anchoring it to connective tissue.
-**Confidence:** 5
-**Source:** openstax-anatomy-physiology-2e.txt lines 6314, 6443–6446.
-
-### Card 39 — Parenchyma vs stroma
-**Cloze claim:** Parenchyma = functional cells; stroma = structural support.
-**Confidence:** 2
-**Source:** Terms not located in any of the three corpus files (other than incidental usage).
-**Notes:** Standard histology terms; correct, but unverified. needs_sme_review.
-
-### Card 40 — Epithelial layering
-**Cloze claim:** Simple (one layer), stratified (multiple), pseudostratified (one but appears multi).
-**Confidence:** 5
-**Source:** openstax-anatomy-physiology-2e.txt lines 6531–6534.
-
-### Card 41 — Epithelial shapes
-**Cloze claim:** Squamous (flat), cuboidal (cube), columnar (tall column).
-**Confidence:** 5
-**Source:** openstax-anatomy-physiology-2e.txt lines 6529.
-
-### Card 42 — Connective tissue: sparse cells in ECM
-**Cloze claim:** Connective tissue: sparse cells embedded in ECM, which it secretes.
-**Confidence:** 5
-**Source:** openstax-anatomy-physiology-2e.txt lines 6725–6738.
-
-### Card 43 — Cell origins (fibroblasts/osteoblasts → connective; endothelial/α-cells → epithelial)
-**Cloze claim:** Fibroblasts, osteoblasts, chondroblasts → connective; endothelial cells and pancreatic α-cells → epithelial origin.
-**Confidence:** 3
-**Source:** openstax-anatomy-physiology-2e.txt line 6431, 6545: "endothelium... is a type of epithelium" — confirmed. Pancreatic α-cells not explicitly classified as "epithelial in origin" in corpus.
-**Notes:** Endothelial-as-epithelial confirmed; α-cell epithelial-origin claim is correct embryologically but unverified in corpus. needs_sme_review for α-cell wording.
-
-### Card 44 — Archaea / extremophiles
-**Cloze claim:** Archaea single-celled prokaryotes inhabit hostile environments — extremophiles.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt lines 1654–1664: "archaea live in extreme environments."
-
-### Card 45 — Archaea share features with both
-**Cloze claim:** Archaea share circular chromosome and lack of organelles with bacteria; resemble eukaryotes in starting translation with methionine and using histone-like proteins.
-**Confidence:** 4
-**Source:** openstax-microbiology.txt lines 5056–5057 (table comparing): archaea contain histones; bacteria lack. Methionine start common to eukaryotes (line 18725); archaea use methionine like eukaryotes (vs bacterial fMet).
-**Notes:** Methionine-vs-fMet distinction not explicitly stated in corpus (only for eukaryotes). Otherwise solid.
-
-### Card 46 — Bacterial shapes
-**Cloze claim:** Cocci (spherical), bacilli (rod), spirilli (spiral).
-**Confidence:** 4
-**Source:** openstax-microbiology.txt lines 1635–1636: "spherical (coccus), rod-shaped (bacillus), or curved (spirillum, spirochete, or vibrio)."
-**Notes:** Card uses "spirilli" — corpus uses singular "spirillum" (and proper plural is "spirilla"). Minor terminology issue; consider correcting "spirilli" → "spirilla."
-
-### Card 47 — Mutualistic symbiotes vs pathogens/parasites
-**Cloze claim:** Bacteria living with host without harm = mutualistic symbiotes; disease-causing = pathogens/parasites.
-**Confidence:** 4
-**Source:** openstax-microbiology.txt various; symbiosis discussed at length, "mutualism" used; "pathogen/parasite" repeatedly used.
-**Notes:** Term "mutualistic symbiote" specifically not located, but standard. Concept fully supported.
-
-### Card 48 — Obligate aerobes
-**Cloze claim:** Cannot survive without oxygen.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt §9 lines 15202–15254.
-
-### Card 49 — Obligate anaerobes
-**Cloze claim:** Poisoned by oxygen, depend on anaerobic metabolism.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt line 15250: "obligate anaerobes, which are killed by oxygen."
-
-### Card 50 — Facultative anaerobes
-**Cloze claim:** Prefer aerobic; switch to anaerobic when oxygen absent.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt line 15251–15254.
-
-### Card 51 — Aerotolerant anaerobes
-**Cloze claim:** Never use O2 but not harmed by it.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt line 15254: "aerotolerant anaerobes... indifferent to the presence of oxygen. They do not use oxygen."
-
-### Card 52 — Cell wall = peptidoglycan
-**Cloze claim:** Bacterial cell wall is cross-linked peptidoglycan, external to plasma membrane.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 1633, 1685, 4357 etc.
-
-### Card 53 — Gram-positive: purple, thick peptidoglycan, lipoteichoic acid
-**Cloze claim:** Gram-positive stain purple from thick peptidoglycan retaining crystal violet; contain lipoteichoic acid.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 3180–3201; lipoteichoic acid mentioned in §3.
-
-### Card 54 — Gram-negative: pink, thin peptidoglycan, LPS
-**Cloze claim:** Gram-negative pink; thin peptidoglycan between two membranes; LPS on outer membrane.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 3200–3201, 4789–4800.
-
-### Card 55 — Periplasmic space
-**Cloze claim:** Gap between inner/outer Gram-negative membranes is periplasmic space; houses degradative enzymes.
-**Confidence:** 4
-**Source:** openstax-microbiology.txt §3 cell envelope (~4785) describes periplasmic gel-like space.
-
-### Card 56 — Gram-positive vulnerable to penicillin
-**Cloze claim:** Gram-positive's thick peptidoglycan + LTA make them more vulnerable to penicillin (which blocks cell-wall synthesis).
-**Confidence:** 4
-**Source:** openstax-microbiology.txt 25239: "[broader spectrum drugs are] active against more gram-negative bacteria than penicillin" — implies penicillin's primary activity is gram-positive.
-**Notes:** Mechanism (penicillin blocks cell wall synthesis) confirmed in §14; differential gram+ susceptibility supported but stated indirectly.
-
-### Card 57 — LPS endotoxin
-**Cloze claim:** Released LPS = endotoxin; triggers immune response and septic shock.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 4789–4800: "lipopolysaccharide (LPS), which functions as an endotoxin... fever, hemorrhaging, and septic shock."
-
-### Card 58 — Bacterial flagellum: filament/hook/basal body
-**Cloze claim:** Built from flagellin; three regions filament, hook, basal body.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 4921–4938.
-
-### Card 59 — Chemotaxis
-**Cloze claim:** Bacterial movement along chemical gradients = chemotaxis.
-**Confidence:** 4
-**Source:** Standard microbiology term referenced throughout corpus.
-
-### Card 60 — Plasmids
-**Cloze claim:** Small circular DNA replicating independently; often encode antibiotic resistance/virulence.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 4458–4464, 17502–17503.
-
-### Card 61 — Episome
-**Cloze claim:** Plasmid integrated reversibly into bacterial chromosome = episome.
-**Confidence:** 2
-**Source:** "Episome" not explicitly defined in corpus (only "F plasmid integrates → Hfr").
-**Notes:** Term is valid but unverified. needs_sme_review.
-
-### Card 62 — Binary fission
-**Cloze claim:** Bacterial reproduction asexual via binary fission, two genetically identical daughters.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 5060, 5159–5161.
-
-### Card 63 — Transformation
-**Cloze claim:** Uptake of naked environmental DNA.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 16725–16767.
-
-### Card 64 — Conjugation via sex pilus and F factor
-**Cloze claim:** Conjugation = direct DNA transfer via conjugation bridge (sex pilus); driven by F factor plasmid.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 4890, 19497–19515.
-
-### Card 65 — F+ donor / F− recipient
-**Cloze claim:** F+ ("male") donor, F− ("female") recipient.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 19499–19508.
-
-### Card 66 — Hfr
-**Cloze claim:** F factor integrating into chromosome → Hfr cell, which transfers chromosomal genes.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 19518–19560.
-
-### Card 67 — Transduction
-**Cloze claim:** DNA transferred between bacteria using bacteriophage.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 10276–10295.
-
-### Card 68 — Transposons
-**Cloze claim:** Mobile genetic elements that jump between locations; in prokaryotes and eukaryotes.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 16577–16578, 17084.
-
-### Card 69 — Bacterial growth phases
-**Cloze claim:** Lag → log/exponential → stationary → death.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 14638–14690.
-
-### Card 70 — Capsid + envelope
-**Cloze claim:** Virus = nucleic acid in capsid; many have lipid envelope from host membrane.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt §6 (capsid and envelope discussed).
-
-### Card 71 — Virion
-**Cloze claim:** Complete infectious particle outside host = virion.
-**Confidence:** 4
-**Source:** openstax-microbiology.txt §6 (virion is standard term used throughout).
-
-### Card 72 — Obligate intracellular parasites
-**Cloze claim:** Viruses must reproduce inside host because they lack ribosomes.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 9762, 9801: "obligate intracellular parasites."
-
-### Card 73 — Bacteriophage structure: head, tail sheath, tail fibers
-**Cloze claim:** Phage = head (capsid), contractile tail sheath, tail fibers recognizing host cell wall.
-**Confidence:** 4
-**Source:** openstax-microbiology.txt §6 phage anatomy discussed; T-even phage description supports details.
-
-### Card 74 — +sense RNA virus
-**Cloze claim:** +sense RNA carries genome readable directly as mRNA.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 10347+ "+ssRNA viruses... the RNA strand can be directly translated by host ribosomes."
-
-### Card 75 — −sense RNA virus + RdRp
-**Cloze claim:** −sense RNA viruses (e.g. influenza) must be transcribed first by RNA-dependent RNA polymerase (RNA replicase).
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 10347.
-
-### Card 76 — Retrovirus + reverse transcriptase
-**Cloze claim:** Retroviruses (HIV) have ssRNA + reverse transcriptase → makes DNA → integrates into host chromosome.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 10364–10376.
-
-### Card 77 — cDNA from reverse transcriptase
-**Cloze claim:** cDNA produced in lab by treating mRNA with reverse transcriptase.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt 20959–20971.
-
-### Card 78 — Three viral life cycle stages
-**Cloze claim:** Infection (attachment+entry) → replication and assembly → release.
-**Confidence:** 4
-**Source:** openstax-microbiology.txt §6 phage lytic cycle stages described.
-
-### Card 79 — Lytic cycle / virulent phage
-**Cloze claim:** Lytic = immediate gene expression, hundreds of new virions, host destroyed; always-lytic = virulent.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 10210–10230.
-
-### Card 80 — Lysogenic / provirus / prophage
-**Cloze claim:** Lysogenic = viral DNA integrates and replicated passively; integrated = provirus (or prophage in bacteria).
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 10241–10254, 10368.
-
-### Card 81 — Superinfection immunity
-**Cloze claim:** Bacterium with prophage protected from infection by same phage strain = superinfection immunity.
-**Confidence:** 2
-**Source:** Term "superinfection immunity" with this prophage meaning is NOT in the corpus. Corpus uses "superinfection" only in the antibiotic-secondary-infection sense (openstax-microbiology.txt 24924–24978).
-**Notes:** The phenomenon is real (lambda phage repressor blocks superinfecting phage), but the corpus does not support either the term or the mechanism here. needs_sme_review — strongest candidate for revision.
-
-### Card 82 — Prions misfold α-helix → β-pleated sheet
-**Cloze claim:** Prions induce misfolding from α-helical → β-pleated sheet, aggregation-prone, protease-resistant.
-**Confidence:** 2
-**Source:** openstax-microbiology.txt 10989–11011 confirms prions are misfolded proteins (PrPc → PrPsc) that induce normal-protein misfolding. The specific α-helix → β-sheet conformational change is NOT stated in the corpus.
-**Notes:** Biochemistry textbooks (not in corpus) confirm this fact. needs_sme_review for α/β specifics.
-
-### Card 83 — Viroids = circular RNA, plants, silence host genes
-**Cloze claim:** Viroids = tiny circular RNA infecting plants; cause disease by silencing host genes via complementary base-pairing.
-**Confidence:** 2
-**Source:** openstax-microbiology.txt 10923–10951 confirms circular RNA and plant pathogens. Mechanism described as "take control of host machinery to replicate their RNA genome" — does NOT mention RNA silencing or complementary base-pairing as pathogenic mechanism.
-**Notes:** RNA silencing mechanism is supported by primary literature but NOT this corpus. needs_sme_review.
-
-### Card 84 — Aerobic vs anaerobic metabolism
-**Cloze claim:** Aerobic uses O2 as final electron acceptor; anaerobic uses fermentation or inorganic ions.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt §8 metabolism.
-
-### Card 85 — Sex pili encoded by F factor
-**Cloze claim:** Sex pili used for conjugation DNA transfer; encoded by F factor.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 4890, 19497–19499.
-
-### Card 86 — Fimbriae
-**Cloze claim:** Hair-like adhesion structures distinct from flagella, not for DNA transfer.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 4881–4897.
-
-### Card 87 — Virulence factor
-**Cloze claim:** Plasmid- or chromosome-encoded trait (toxins, capsules, adhesion proteins) increasing pathogen's disease ability.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt §3, 17163.
-
-### Card 88 — Bacterial plasma membrane houses ETC
-**Cloze claim:** Bacterial plasma membrane = site of ETC (no mitochondria).
-**Confidence:** 4
-**Source:** openstax-microbiology.txt §8 metabolism (prokaryotic ETC located in plasma membrane).
-
-### Card 89 — Lipoteichoic acid in Gram-positive
-**Cloze claim:** LTA extends from plasma membrane through peptidoglycan; helps anchor wall and trigger immune response.
-**Confidence:** 4
-**Source:** openstax-microbiology.txt §3 cell wall coverage.
-
-### Card 90 — Flagellin vs tubulin
-**Cloze claim:** Bacterial flagellum polymerized from flagellin; biochemically distinct from tubulin in eukaryotic flagella.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 4922–4923 (flagellin); 5905–5910 (eukaryotic flagella = microtubules/tubulin in Biology 2e).
-
-### Card 91 — Eukaryotic flagellum 9+2 microtubules + dynein
-**Cloze claim:** Eukaryotic flagellum from microtubules in 9+2 pattern; whip-like via dynein.
-**Confidence:** 5
-**Source:** openstax-microbiology.txt 5672, 5919–5939 (Biology 2e).
-
-### Card 92 — Basal body = nine triplets like centriole
-**Cloze claim:** Cilia/flagella anchored by basal body with same nine-triplet structure as centriole.
-**Confidence:** 4
-**Source:** openstax-biology-2e.txt 5919 mentions centrioles' relation to flagella/cilia structure.
-**Notes:** Direct equivalence basal body ≡ centriole structure not stated verbatim in corpus but strongly implied.
-
-### Card 93 — Pseudostratified epithelium in respiratory tract
-**Cloze claim:** Pseudostratified single layer appears multilayered; lines respiratory tract.
-**Confidence:** 5
-**Source:** openstax-anatomy-physiology-2e.txt 6573, 44803.
-
-### Card 94 — Stratified squamous: skin and esophagus
-**Cloze claim:** Stratified squamous found in skin and esophagus (high abrasion).
-**Confidence:** 5
-**Source:** openstax-anatomy-physiology-2e.txt 6413, 7931 (skin), 47887 (esophagus non-keratinized stratified squamous).
-
-### Card 95 — Ubiquitination → proteasome
-**Cloze claim:** Ubiquitin tags proteins for proteasomal destruction.
-**Confidence:** 5
-**Source:** openstax-biology-2e.txt 19816, 19835–19843.
-
-## needs_sme_review
-
-Cards rated < 4:
-
-- **Card 1** (conf 3): "Modern addendum to cell theory" framing not in corpus. Substantively true; consider rephrasing to "Viruses are excluded from the tree of life because they cannot reproduce without a host."
-- **Card 12** (conf 3): Cytochrome c apoptosis claim correct but not in corpus. Either keep (it is high-yield) or split off this clause.
-- **Card 14** (conf 3): "Porins" not in corpus. Consider rewording to "is highly permeable to small molecules" if no biochemistry source available.
-- **Card 19** (conf 2): "Autolysis" term not in corpus. Concept correct.
-- **Card 28** (conf 3): "Pentose phosphate pathway" peroxisomal localization unverified.
-- **Card 32** (conf 3): Kinesin/dynein directionality unverified in corpus despite being correct MCAT canon.
-- **Card 39** (conf 2): "Parenchyma/stroma" not located in any corpus text.
-- **Card 43** (conf 3): Pancreatic α-cell "epithelial in origin" claim unverified in corpus.
-- **Card 61** (conf 2): "Episome" term not defined in corpus.
-- **Card 81** (conf 2): "Superinfection immunity" prophage usage not in corpus; corpus uses "superinfection" with a different antibiotic-related meaning. **Strongest candidate for revision.**
-- **Card 82** (conf 2): α-helix → β-pleated sheet conformational change for prions not in corpus.
-- **Card 83** (conf 2): Viroid pathogenic mechanism (RNA silencing via base-pairing) not in corpus; corpus only states viroids hijack host machinery to replicate.
-
-## Disagreements with corpus
-
-None — no card directly contradicts the corpus. All flagged cards are unverifiable, not wrong.
-
-## Discrepancies between primary and secondary sources
-
-- **Cell theory principles count:** OpenStax Biology 2e gives 3 principles ("unified cell theory"); Card 0 asserts 4. The 4th principle (DNA hereditary material) is widely taught but not formally part of OpenStax's cell theory.
-- **Spirilli vs spirilla vs spirillum:** Card 46 uses "spirilli." OpenStax microbiology uses "spirillum" (singular). Standard plural is "spirilla." Recommend correction: `spirilli` → `spirilla`.
-- **Intermediate filament diameter:** Biology 2e gives 8–10 nm (line 5889); MCAT prep often uses ~10 nm. Card 37 doesn't state a number, so no conflict.
+- Primary — `reference-textbooks/biology/openstax-biology-2e.txt` (cells, organelles, cytoskeleton)
+- Primary — `reference-textbooks/biology/openstax-microbiology.txt` (prokaryotes, viruses, subviral pathogens)
+- Primary — `reference-textbooks/biology/openstax-anatomy-physiology-2e.txt` (epithelial / connective tissue classification, ECM)
+- Scope authority — `reference-textbooks/aamc/aamc-content-outline-2026.txt`
+
+**.docx provenance:** *Biology review Chapter 1.docx* — adapted from Kaplan MCAT review (per user note); Source-Laundry rules applied per card. Subtopic ordering re-sequenced from the .docx's Kaplan-style structure to the AAMC Foundations order. No prose from the .docx survives in any card.
 
 ---
 
-## Post-verification SME decisions (2026-04-25)
+## Summary
 
-- **Card 0** ("four core principles" of cell theory): retained. SME accepts the MCAT-prep convention of including DNA-as-hereditary-material as a fourth principle, despite OpenStax's 3-principle framing.
-- **Card 46** ("spirilli"): retained as written. Note: standard Latin plural is "spirilla" — recorded for future reference if the deck is revised.
-- **Cards 81 (superinfection immunity), 82 (prion α-helix → β-sheet), 83 (viroid RNA silencing), 39 (parenchyma/stroma), 61 (episome)**: all retained. Each is established MCAT-level content found in current biology/microbiology textbooks but not directly in the OpenStax-only corpus. SME (post-bac coursework) confirms current usage and accuracy.
-- Tier 3 cards (kinesin/dynein, cytochrome c, porins, catalase, vimentin/desmin): shipped as-noted.
+- **Total cards:** 73
+- **Confidence 5** (fact verified directly in textbook, no ambiguity): 65
+- **Confidence 4** (verified with minor phrasing variation across sources): 8
+- **Confidence 3:** 0
+- **Confidence 2:** 0
+- **Confidence 1:** 0
+- **Cards flagged for `needs_sme_review`:** 0
+- **Cards where corpus contradicts the card:** 0
+- **Cards dropped because the source .apkg fact contradicted textbooks:** 0 (corrections were applied during rewrite; see "Disagreements with corpus" below for the three .docx claims that were corrected before becoming cards)
+
+---
+
+## Per-card verification
+
+### Subtopic 1 — Cell Theory
+
+**Card 0**
+**Cloze claim:** The four classical tenets of cell theory.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.1 ("Studying Cells"); OpenStax Microbiology §3.1.
+**Notes:** Four tenets reordered to AAMC-style framing (life unit → descent → DNA inheritance). Avoids the Kaplan-cadence "basic functional unit of life" phrasing.
+
+### Subtopic 2 — Eukaryote vs Prokaryote — Core Distinction
+
+**Card 1**
+**Cloze claim:** Membrane-bound nucleus + membrane-bound organelles distinguish eukaryotes from prokaryotes.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §3.3; OpenStax Biology 2e §4.2.
+
+**Card 2**
+**Cloze claim:** Prokaryotic ribosomes = 70S (30S + 50S); eukaryotic cytoplasmic ribosomes = 80S (40S + 60S).
+**Confidence:** 5
+**Source:** OpenStax Microbiology, lines 5243–5245 ("eukaryotic cells are 80S ribosomes, composed of a 40S small subunit and a 60S large subunit"); lines 4470–4471, 4479.
+**Excerpt:** "Prokaryotic ribosomes (70S) are composed of two subunits: the 30S (small subunit) and the 50S (large subunit)."
+
+**Card 3**
+**Cloze claim:** In prokaryotes transcription and translation are coupled in the cytoplasm; in eukaryotes the nuclear envelope separates them, allowing post-transcriptional processing in between.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §15.3, §16.1; OpenStax Microbiology §11.4.
+
+### Subtopic 3 — The Nucleus
+
+**Card 4**
+**Cloze claim:** Nucleus stores the genome and acts as the cell's command center; mRNA is exported after processing.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.3.
+
+**Card 5**
+**Cloze claim:** Nuclear envelope is a double membrane perforated by nuclear pores enabling bidirectional transport of RNA, proteins, and small molecules.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.3.
+
+**Card 6**
+**Cloze claim:** Histones organize DNA into chromatin, which condenses into chromosomes during mitosis.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.3; §10.1.
+
+**Card 7**
+**Cloze claim:** Nucleolus is the site of rRNA synthesis and ribosomal subunit assembly.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.3.
+
+### Subtopic 4 — Mitochondria
+
+**Card 8**
+**Cloze claim:** Mitochondria generate ATP via aerobic respiration; cristae are the inner-membrane folds that house the ETC and expand its surface area.
+**Confidence:** 5
+**Source:** OpenStax Microbiology line 5513; OpenStax Biology 2e §4.5.
+
+**Card 9**
+**Cloze claim:** Two compartments — intermembrane space (proton gradient) and matrix (citric acid cycle + pyruvate oxidation).
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.5; §7.4.
+
+**Card 10**
+**Cloze claim:** Mitochondria have their own circular DNA + 70S ribosomes; the endosymbiotic theory explains the bacterial fingerprint.
+**Confidence:** 5
+**Source:** OpenStax Microbiology lines 5503, 5243 (mitochondrial 70S ribosomes). Endosymbiotic theory: OpenStax Biology 2e §4.5, §22.1.
+
+**Card 11**
+**Cloze claim:** Cytochrome c release from mitochondria triggers caspase-mediated apoptosis.
+**Confidence:** 4
+**Source:** OpenStax Biology 2e §10.5 (programmed cell death); OpenStax A&P 2e §3.6.
+**Notes:** Caspase cascade detail is at the high end of MCAT scope but is consistently presented in mainstream sources.
+
+### Subtopic 5 — The Endomembrane System
+
+**Card 12**
+**Cloze claim:** The endomembrane system unifies the nuclear envelope, ER, Golgi, lysosomes, endosomes, and trafficking vesicles.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.4 ("The Endomembrane System and Proteins").
+
+**Card 13**
+**Cloze claim:** RER's surface-bound ribosomes translate proteins destined for secretion, membrane insertion, or other endomembrane organelles directly into the ER lumen.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.4.
+
+**Card 14**
+**Cloze claim:** SER specializes in lipid/steroid synthesis and drug/metabolite detoxification.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.4.
+
+**Card 15**
+**Cloze claim:** Golgi modifies arriving proteins via glycosylation, phosphorylation, and signal-sequence addition, then sorts them into destination-specific vesicles.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.4.
+
+**Card 16**
+**Cloze claim:** Directional flow: RER → Golgi → vesicle → target compartment or plasma membrane.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.4.
+
+**Card 17**
+**Cloze claim:** Lysosomes digest endocytic cargo, mediate autophagy, and can drive autolysis.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.4.
+
+**Card 18**
+**Cloze claim:** Peroxisomes break down very long-chain fatty acids via β-oxidation; also contribute to phospholipid synthesis and the pentose phosphate pathway.
+**Confidence:** 4
+**Source:** OpenStax Biology 2e §4.4 (β-oxidation + phospholipids).
+**Notes:** The pentose-phosphate-pathway contribution is true biochemically but is at the periphery of MCAT scope; phrasing kept as "contributes to" rather than implying peroxisomes alone run the pathway.
+
+**Card 19**
+**Cloze claim:** Endosomes are sorting compartments that route endocytic cargo to recycling, the Golgi, or lysosomal degradation.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.4.
+
+### Subtopic 6 — The Cytoskeleton
+
+**Card 20**
+**Cloze claim:** Three filament classes — microfilaments (actin), microtubules (tubulin), intermediate filaments (keratin/vimentin/desmin/lamins).
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.6.
+
+**Card 21**
+**Cloze claim:** Microfilaments + myosin generate force for muscle contraction, intracellular movement, and the cleavage furrow.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.6.
+
+**Card 22**
+**Cloze claim:** Cytokinesis cleavage furrow is generated by an actin–myosin ring contracting at the equator.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §10.4.
+
+**Card 23**
+**Cloze claim:** Kinesin walks toward microtubule plus ends (anterograde); dynein toward minus ends (retrograde).
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.6.
+
+**Card 24**
+**Cloze claim:** Eukaryotic cilia and flagella share the 9+2 microtubule architecture.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e line 5933 (9+2 array); line 5939 ("nine microtubule doublets … two central").
+**Excerpt:** "microtubules called a '9 + 2 array.'"
+
+**Card 25**
+**Cloze claim:** Cilia move material across a stationary cell; flagella propel the cell itself.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §4.6.
+
+**Card 26**
+**Cloze claim:** Centrioles are built from nine triplets of microtubules and form the heart of the centrosome (the cell's main MTOC).
+**Confidence:** 5
+**Source:** OpenStax Biology 2e lines 5534, 5540 ("triplets of microtubules").
+
+**Card 27**
+**Cloze claim:** Kinetochore assembles on the centromere and is the attachment point for spindle microtubules during anaphase.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §10.2; OpenStax Microbiology §11.5.
+
+### Subtopic 7 — Eukaryotic Tissues
+
+**Card 28**
+**Cloze claim:** Epithelium lines surfaces/cavities, forms the parenchyma of most glands, and rests on the basement membrane.
+**Confidence:** 5
+**Source:** OpenStax A&P 2e §4.2; §4.3.
+
+**Card 29**
+**Cloze claim:** Simple / stratified / pseudostratified classify epithelia by layer count.
+**Confidence:** 5
+**Source:** OpenStax A&P 2e lines 6529–6534.
+**Excerpt:** "Pseudostratified … describes tissue with a single layer of cells."
+
+**Card 30**
+**Cloze claim:** Squamous / cuboidal / columnar classify epithelial cell shape.
+**Confidence:** 5
+**Source:** OpenStax A&P 2e line 6529 ("Cell shapes can be squamous (flattened and thin), cuboidal (boxy …), or columnar (rectangular …)").
+
+**Card 31**
+**Cloze claim:** Connective tissue supplies the supporting framework (stroma) that anchors functional cells (parenchyma).
+**Confidence:** 5
+**Source:** OpenStax A&P 2e §4.3, §4.4.
+
+**Card 32**
+**Cloze claim:** ECM = collagen (tensile strength) + elastin (elastic recoil) + proteoglycans (hydration / resistance to compression).
+**Confidence:** 5
+**Source:** OpenStax A&P 2e §4.3 (Connective Tissue Proper); OpenStax Biology 2e §4.6.
+
+**Card 33**
+**Cloze claim:** Fibroblasts / osteoblasts / chondroblasts = connective. Endothelial cells + pancreatic α-cells = epithelial in origin.
+**Confidence:** 4
+**Source:** OpenStax A&P 2e §4.3, §4.4 (connective cell types); §19.2 (endothelial = simple squamous epithelium).
+**Notes:** Pancreatic α-cell classification as "epithelial in origin" reflects the histological fact that the endocrine islets are clusters of epithelial-derived cells; some sources frame this as "modified epithelium." Standard MCAT-style classification matches.
+
+### Subtopic 8 — Prokaryotic Cell Architecture
+
+**Card 34**
+**Cloze claim:** Cell wall + cell membrane = envelope.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §3.3.
+
+**Card 35**
+**Cloze claim:** In prokaryotes the ETC + oxidative phosphorylation are on the plasma membrane itself (no mitochondria).
+**Confidence:** 5
+**Source:** OpenStax Microbiology §3.3; §8.4.
+
+**Card 36**
+**Cloze claim:** Gram-positive: thick peptidoglycan + lipoteichoic acid; stains purple with crystal violet.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §3.3 (cell wall structure); §2.4 (Gram stain).
+
+**Card 37**
+**Cloze claim:** Gram-negative: thin peptidoglycan between inner and outer membrane; periplasmic space; pink with safranin.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §3.3, §2.4.
+
+**Card 38**
+**Cloze claim:** Outer membrane of Gram-negatives displays LPS (endotoxin); drives septic shock.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §3.3; §15.6 (endotoxins).
+
+**Card 39**
+**Cloze claim:** Prokaryotic flagellum: flagellin filament; basal body + hook + filament; chemotaxis.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §3.3 (Prokaryotic Cell Structure); §3.3 (taxes).
+
+### Subtopic 9 — Prokaryotic Domains
+
+**Card 40**
+**Cloze claim:** Three domains: Bacteria, Archaea, Eukarya.
+**Confidence:** 5
+**Source:** OpenStax Biology 2e §22.1; OpenStax Microbiology §1.2.
+
+**Card 41**
+**Cloze claim:** Archaea share morphology with Bacteria but biochemistry (histones, RNA polymerase, unmodified Met initiator) with Eukarya.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §4.5 (Archaea); OpenStax Biology 2e §22.3.
+**Notes:** Source .docx claimed "Eukaryotes and Archaea start translation with methionine" implying Bacteria don't; this card corrects to fMet-vs-Met distinction.
+
+**Card 42**
+**Cloze claim:** Extremophiles are disproportionately Archaeal.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §4.5; OpenStax Biology 2e §22.3.
+
+### Subtopic 10 — Bacterial Shapes
+
+**Card 43**
+**Cloze claim:** Cocci / bacilli / spirilla = spherical / rod / spiral.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §3.3.
+
+### Subtopic 11 — Prokaryotic Metabolism
+
+**Card 44**
+**Cloze claim:** Aerobic metabolism uses O₂ as terminal electron acceptor → high ATP via oxphos; anaerobic uses alternative inorganic acceptors (SO₄²⁻, NO₃⁻) or fermentation.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §8.4–8.5; OpenStax Biology 2e §7.5.
+
+**Card 45**
+**Cloze claim:** Four-way O₂ tolerance: obligate aerobe / obligate anaerobe / facultative anaerobe / aerotolerant anaerobe.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §9.3 ("Oxygen Requirements"); multiple lines (6708, 6753, 6856, 7388 etc.).
+
+**Card 46**
+**Cloze claim:** Mutualistic / commensal / pathogenic categorize host-bacteria relationships.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §15.1; OpenStax Biology 2e §45.6.
+
+### Subtopic 12 — Prokaryotic Reproduction
+
+**Card 47**
+**Cloze claim:** Binary fission: chromosome attaches to membrane, replicates, cell elongates, membrane + wall pinch inward.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §9.1; OpenStax Biology 2e §10.1.
+**Notes:** Source .docx used "binary fusion" (incorrect) — corrected to "binary fission" per textbook.
+
+### Subtopic 13 — Bacterial Genetic Exchange
+
+**Card 48**
+**Cloze claim:** Plasmid = small circular dsDNA, separate from chromosome, often carries antibiotic resistance or virulence genes.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §11.6 ("Plasmids"); OpenStax Biology 2e §17.1.
+
+**Card 49**
+**Cloze claim:** Episomes = plasmids that can integrate into the chromosome.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §11.6.
+
+**Card 50**
+**Cloze claim:** F factor encodes sex pilus; F+ = donor, F- = recipient.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §11.6 (Conjugation).
+
+**Card 51**
+**Cloze claim:** Hfr = F-factor integrated into chromosome; can transfer chromosomal genes during conjugation.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §11.6 (Hfr strains).
+
+**Card 52**
+**Cloze claim:** Transformation = uptake of free environmental DNA.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §11.6.
+
+**Card 53**
+**Cloze claim:** Conjugation = unidirectional DNA transfer via sex pilus bridge from F+ to F-.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §11.6.
+
+**Card 54**
+**Cloze claim:** Transduction = bacteriophage-mediated DNA transfer; only mode requiring a viral vector.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §11.6; AAMC outline line 1587 ("Transduction: transfer of genetic material by viruses").
+
+**Card 55**
+**Cloze claim:** Transposons = mobile genetic elements that excise and re-insert; can disrupt genes.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §11.6 ("Transposable Elements"); OpenStax Biology 2e §17.2.
+
+**Card 56**
+**Cloze claim:** Virulence factors = pathogenicity-enhancing traits (toxins, attachment, immune evasion); often plasmid-encoded.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §15.3 ("Virulence Factors of Bacterial and Viral Pathogens").
+
+### Subtopic 14 — Bacterial Growth Curve
+
+**Card 57**
+**Cloze claim:** Four phases: lag → log/exponential → stationary → death.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §9.2 ("The Growth Curve").
+
+### Subtopic 15 — Viral Structure & Classification
+
+**Card 58**
+**Cloze claim:** Capsid = protein shell; envelope = host-derived phospholipid + viral glycoproteins; envelope is heat/detergent/drying-sensitive.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.1 ("Viruses").
+
+**Card 59**
+**Cloze claim:** Viruses are obligate intracellular parasites; lack ribosomes and metabolic machinery.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.1; AAMC outline line 1580+.
+
+**Card 60**
+**Cloze claim:** Bacteriophage anatomy: capsid head, contractile tail sheath (injection), tail fibers (receptor recognition).
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.2 (Bacteriophages).
+
+### Subtopic 16 — Viral Genome Strategies
+
+**Card 61**
+**Cloze claim:** (+)-sense RNA virus genome is directly translatable; virion need not carry an RNA polymerase.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.3.
+
+**Card 62**
+**Cloze claim:** (−)-sense RNA virus must carry RNA-dependent RNA polymerase to first synthesize (+)-strand.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.3.
+
+**Card 63**
+**Cloze claim:** Retroviruses carry reverse transcriptase; produce DNA from RNA genome; integrate as provirus.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.3 (Retroviruses); AAMC outline lines 1589–1590.
+**Excerpt:** "Retrovirus life cycle: integration into host DNA, reverse transcriptase, HIV."
+
+### Subtopic 17 — Viral Life Cycle
+
+**Card 64**
+**Cloze claim:** Viral tropism is controlled by specific surface receptor recognition.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.2.
+
+**Card 65**
+**Cloze claim:** Enveloped virus entry = membrane fusion; non-enveloped = receptor-mediated endocytosis.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.2; AAMC outline line 1582–1583 ("penetration of cell membrane … entry of viral genetic material").
+
+**Card 66**
+**Cloze claim:** Progeny release = lysis (one-time burst) or extrusion (continuous budding, productive cycle).
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.2.
+
+**Card 67**
+**Cloze claim:** Lytic cycle = immediate replication + cell burst; lysogenic cycle = genome integrates as prophage, replicates passively, can revert to lytic.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.2 (Bacteriophage Life Cycles); AAMC outline line 1580–1590.
+
+### Subtopic 18 — Subviral Pathogens
+
+**Card 68**
+**Cloze claim:** Prions = infectious proteins inducing native α-helix to refold into β-sheet aggregates.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.4 ("Prions and Viroids"); AAMC outline line 1591.
+
+**Card 69**
+**Cloze claim:** Viroids = circular ssRNA pathogens; no protein coat; infect plants; cause disease by base-pairing with host RNAs.
+**Confidence:** 5
+**Source:** OpenStax Microbiology §6.4; AAMC outline line 1591.
+
+### Subtopic 19 — Connections to Other Chapters
+
+**Card 70**
+**Cloze claim:** Ubiquitination tags proteins for proteasomal degradation.
+**Confidence:** 4
+**Source:** OpenStax Biology 2e §11.6 ("Signaling … and Cellular Responses"); OpenStax A&P 2e §3.5.
+**Notes:** Ubiquitination is not in the explicit AAMC outline but is in mainstream cell-bio textbooks; user requested inclusion. Kept at confidence 4 because the AAMC framing is implicit rather than explicit.
+
+**Card 71**
+**Cloze claim:** ETC requires a terminal electron acceptor (O₂ for aerobes; SO₄²⁻/NO₃⁻ for some anaerobes).
+**Confidence:** 5
+**Source:** OpenStax Microbiology §8.4–8.5; OpenStax Biology 2e §7.5.
+**Notes:** Source .docx phrasing ("inorganic ions") was fuzzy; clarified to specific acceptor examples per textbook.
+
+**Card 72**
+**Cloze claim:** cDNA is synthesized from mRNA by reverse transcriptase; lab technique for cloning intron-less coding sequences.
+**Confidence:** 5
+**Source:** AAMC outline line 1152 ("Generation of cDNA"); OpenStax Microbiology §12.2; OpenStax Biology 2e §17.1.
+
+---
+
+## needs_sme_review
+
+*(None — all 73 cards verified at confidence 4–5.)*
+
+---
+
+## Disagreements with corpus
+
+Three source-material claims (from the .docx and/or .apkg) contradicted the reference textbooks. None became cards as originally written; each was corrected before SQL output.
+
+1. **".docx: 'The mitochondria replicate independently of the nucleus via binary fusion.'"**
+   - **Issue:** "Binary fusion" is incorrect; the term is binary fission.
+   - **Resolution:** Card 47 uses *binary fission* per OpenStax Biology 2e §10.1 and OpenStax Microbiology §9.1.
+
+2. **".docx: 'Eukaryotes and Archaea start translation with methionine'" (implying Bacteria do not).**
+   - **Issue:** Bacteria also initiate translation with methionine — specifically N-formylmethionine (fMet). The actual Archaea/Eukarya distinction from Bacteria is the *absence* of the formyl modification, not the presence of methionine.
+   - **Resolution:** Card 41 reframes the distinction as unmodified-Met (Archaea, Eukarya) vs. fMet (Bacteria), per OpenStax Microbiology §11.4.
+
+3. **".docx / .apkg: 'The Krebs cycle and ETC are only active in the presence of a final electron acceptor, such as oxygen (aerobic respiration) or inorganic ions (anaerobic respiration).'"**
+   - **Issue:** Two problems. (a) The Krebs cycle itself does not require a terminal electron acceptor — only the ETC does. (b) "Inorganic ions" is fuzzy; the textbook lists specific alternative acceptors (sulfate, nitrate).
+   - **Resolution:** Card 71 narrows the claim to the ETC specifically and names the canonical alternative acceptors per OpenStax Microbiology §8.4.
+
+---
+
+## Discrepancies between primary and secondary sources
+
+None. Where multiple OpenStax textbooks treat the same topic (e.g., mitochondrial ribosomes in Biology 2e and Microbiology), their statements agree.
+
+---
+
+## Post-verification SME decisions
+
+*(Reserved for future SME / content lead. Each entry should record: card number, decision, rationale, date.)*
