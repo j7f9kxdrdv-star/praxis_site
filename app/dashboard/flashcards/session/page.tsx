@@ -413,6 +413,14 @@ function SessionInner() {
                       {segments.map((seg, i) =>
                         seg.kind === "text" ? (
                           <span key={i}>{seg.text}</span>
+                        ) : seg.kind === "image" ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            key={i}
+                            src={seg.src}
+                            alt={seg.alt}
+                            className="block mx-auto my-4 max-h-56 sm:max-h-72 lg:max-h-80 w-auto object-contain"
+                          />
                         ) : seg.revealed ? (
                           <span key={i} className="inline-block bg-as-primary/10 text-as-primary font-bold italic px-2 py-0.5 rounded-md transition-all">
                             {seg.answer}

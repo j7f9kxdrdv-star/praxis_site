@@ -57,7 +57,47 @@ export function clozeGroupIndices(text: string): number[] {
 
 export type ClozeSegment =
   | { kind: "text"; text: string }
-  | { kind: "blank"; groupIndex: number; answer: string; hint?: string; revealed: boolean };
+  | { kind: "blank"; groupIndex: number; answer: string; hint?: string; revealed: boolean }
+  | { kind: "image"; src: string; alt: string };
+
+// Matches a self-closing or open <img> tag with src and optional alt attributes.
+// Intentionally narrow — we don't accept arbitrary HTML, only this one tag.
+// Examples: <img src="/foo.png"> · <img alt="bar" src='/foo.png' /> · <img src="..." alt="...">
+const IMG_RE =
+  /<img\s+(?=[^>]*\bsrc\s*=)[^>]*?>/gi;
+const ATTR_RE = /\b(src|alt)\s*=\s*(?:"([^"]*)"|'([^']*)')/gi;
+
+function splitTextOnImages(
+  text: string,
+): { kind: "text"; text: string }[] | { kind: "image"; src: string; alt: string }[] {
+  const out: ClozeSegment[] = [];
+  let cursor = 0;
+  IMG_RE.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = IMG_RE.exec(text)) !== null) {
+    if (m.index > cursor) {
+      out.push({ kind: "text", text: text.slice(cursor, m.index) });
+    }
+    let src = "";
+    let alt = "";
+    ATTR_RE.lastIndex = 0;
+    let a: RegExpExecArray | null;
+    while ((a = ATTR_RE.exec(m[0])) !== null) {
+      const name = a[1].toLowerCase();
+      const value = a[2] ?? a[3] ?? "";
+      if (name === "src") src = value;
+      else if (name === "alt") alt = value;
+    }
+    if (src) out.push({ kind: "image", src, alt });
+    cursor = m.index + m[0].length;
+  }
+  if (cursor < text.length) {
+    out.push({ kind: "text", text: text.slice(cursor) });
+  }
+  // Returned shape is "ClozeSegment[]" — only "text" and "image" kinds though.
+  // (Loose type signature above just keeps callers happy.)
+  return out as ClozeSegment[] as never;
+}
 
 /**
  * Build a segment list for rendering a single review item.
@@ -68,6 +108,10 @@ export type ClozeSegment =
  *
  * Non-active cN groups are always shown as their answer (Anki behavior).
  * The active group is shown as a masked blank, then revealed when the user flips.
+ *
+ * Text-kind segments can additionally contain <img src="..." alt="..."> tags;
+ * those are extracted into separate "image" segments so the renderer can mount
+ * a real <Image> element rather than rendering the tag as plain text.
  */
 export function renderClozeSegments(
   text: string,
@@ -75,15 +119,15 @@ export function renderClozeSegments(
   revealActive: boolean,
 ): ClozeSegment[] {
   const matches = findClozes(text);
-  const segs: ClozeSegment[] = [];
+  const raw: ClozeSegment[] = [];
   let cursor = 0;
 
   for (const m of matches) {
     if (m.start > cursor) {
-      segs.push({ kind: "text", text: text.slice(cursor, m.start) });
+      raw.push({ kind: "text", text: text.slice(cursor, m.start) });
     }
     if (m.groupIndex === activeGroup) {
-      segs.push({
+      raw.push({
         kind: "blank",
         groupIndex: m.groupIndex,
         answer: m.answer,
@@ -92,14 +136,25 @@ export function renderClozeSegments(
       });
     } else {
       // Non-active groups: render as their answer text inline.
-      segs.push({ kind: "text", text: m.answer });
+      raw.push({ kind: "text", text: m.answer });
     }
     cursor = m.end;
   }
   if (cursor < text.length) {
-    segs.push({ kind: "text", text: text.slice(cursor) });
+    raw.push({ kind: "text", text: text.slice(cursor) });
   }
-  return segs;
+
+  // Second pass: expand <img> tags inside text segments into image segments.
+  const out: ClozeSegment[] = [];
+  for (const seg of raw) {
+    if (seg.kind !== "text" || !seg.text.includes("<img")) {
+      out.push(seg);
+      continue;
+    }
+    const sub = splitTextOnImages(seg.text) as unknown as ClozeSegment[];
+    for (const s of sub) out.push(s);
+  }
+  return out;
 }
 
 // ─── Validation (used by seed scripts) ────────────────────────────────────────
@@ -163,10 +218,10 @@ export function validateClozeText(text: string): ClozeValidationResult {
 
 /** Strip cloze syntax for previews/listings — replaces blanks with their answers. */
 export function clozeToPlain(text: string): string {
-  return text.replace(CLOZE_RE, (_full, _n, answer) => answer);
+  return text.replace(CLOZE_RE, (_full, _n, answer) => answer).replace(IMG_RE, "");
 }
 
 /** Mask all clozes (e.g. "The ___ produces ATP via ___.") for preview chips. */
 export function clozeToMaskedPreview(text: string, mask: string = "____"): string {
-  return text.replace(CLOZE_RE, () => mask);
+  return text.replace(CLOZE_RE, () => mask).replace(IMG_RE, "");
 }
