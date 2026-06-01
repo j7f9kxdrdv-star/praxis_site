@@ -102,6 +102,10 @@ function splitTextOnImages(
 /**
  * Build a segment list for rendering a single review item.
  *
+ * Image support added 2026-05: cards may embed an <img src="..." alt="...">
+ * tag and the renderer will emit an "image" segment for the UI to mount as
+ * an <img> element. See splitTextOnImages above.
+ *
  * @param text         - source cloze text
  * @param activeGroup  - which cN group is the masked target for this item
  * @param revealActive - whether the active blank should display its answer
