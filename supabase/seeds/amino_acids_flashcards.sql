@@ -26,12 +26,13 @@
 -- All cards are CLOZE-format. Card content is ORIGINAL Praxist
 -- Prep prose written from the underlying biochemistry. Per-AA
 -- identification cards reference structure images stored at
--- /public/flashcards/amino-acids/structures/<name>.png and the
--- side-chain classification cards reference category overview
--- images at /public/flashcards/amino-acids/categories/<name>.png;
--- the cloze renderer (lib/flashcards/cloze.ts) parses the
--- inline <img src="..." alt="..."> tags into image segments
--- that mount as real <img> elements in the study UI.
+-- /public/flashcards/amino-acids/structures/<name>.png; the
+-- cloze renderer (lib/flashcards/cloze.ts) parses inline
+-- <img src="..." alt="..."> tags into image segments that
+-- mount as real <img> elements in the study UI. The side-chain
+-- classification cards are text-only — earlier versions used
+-- overview screenshots from a third-party prep book that have
+-- since been removed for copyright reasons.
 --
 -- Idempotent: re-running deletes the prior version of this
 -- deck and re-seeds. User review history attached to those
@@ -140,19 +141,19 @@ BEGIN
 
   -- ── 7. Side-Chain Classification ─────────────────────────
   (deck, 22, 'cloze',
-   'The {{c1::nonpolar, nonaromatic}} amino acids are: {{c2::glycine, alanine, valine, leucine, isoleucine, methionine, proline}}.<img src="/flashcards/amino-acids/categories/nonpolar-nonaromatic.png" alt="Nonpolar nonaromatic amino acids reference table">', 2),
+   'The {{c1::nonpolar, nonaromatic}} amino acids are: {{c2::glycine, alanine, valine, leucine, isoleucine, methionine, proline}}.', 2),
 
   (deck, 23, 'cloze',
-   'The three {{c1::aromatic}} amino acids — distinguished by their ring side chains that absorb UV light near 280 nm — are {{c2::phenylalanine, tyrosine, tryptophan}}.<img src="/flashcards/amino-acids/categories/aromatic.png" alt="Aromatic amino acids reference table">', 2),
+   'The three {{c1::aromatic}} amino acids — distinguished by their ring side chains that absorb UV light near 280 nm — are {{c2::phenylalanine, tyrosine, tryptophan}}.', 2),
 
   (deck, 24, 'cloze',
-   'The {{c1::polar uncharged}} amino acids are {{c2::serine, threonine, asparagine, glutamine, cysteine}}; their side chains carry hydrogen-bonding groups (hydroxyls, amides, or thiol) but do not ionize at physiological pH.<img src="/flashcards/amino-acids/categories/polar-uncharged.png" alt="Polar uncharged amino acids reference table">', 2),
+   'The {{c1::polar uncharged}} amino acids are {{c2::serine, threonine, asparagine, glutamine, cysteine}}; their side chains carry hydrogen-bonding groups (hydroxyls, amides, or thiol) but do not ionize at physiological pH.', 2),
 
   (deck, 25, 'cloze',
-   'The two {{c1::acidic (negatively charged at physiological pH)}} amino acids are {{c2::aspartate (Asp/D)}} and {{c2::glutamate (Glu/E)}} — each carries a side-chain carboxylate that is fully deprotonated at pH 7.4.<img src="/flashcards/amino-acids/categories/acidic.png" alt="Acidic amino acids reference table">', 2),
+   'The two {{c1::acidic (negatively charged at physiological pH)}} amino acids are {{c2::aspartate (Asp/D)}} and {{c2::glutamate (Glu/E)}} — each carries a side-chain carboxylate that is fully deprotonated at pH 7.4.', 2),
 
   (deck, 26, 'cloze',
-   'The three {{c1::basic (positively charged at physiological pH)}} amino acids are {{c2::lysine (Lys/K)}}, {{c2::arginine (Arg/R)}}, and {{c2::histidine (His/H)}}.<img src="/flashcards/amino-acids/categories/basic.png" alt="Basic amino acids reference table">', 2),
+   'The three {{c1::basic (positively charged at physiological pH)}} amino acids are {{c2::lysine (Lys/K)}}, {{c2::arginine (Arg/R)}}, and {{c2::histidine (His/H)}}.', 2),
 
   (deck, 27, 'cloze',
    '{{c1::Tyrosine}} is unique in being classified as BOTH {{c2::aromatic}} (due to its phenol ring) AND {{c2::polar uncharged}} (due to the hydroxyl group on that ring) — which is why it appears under both categories in side-chain charts.', 2),
