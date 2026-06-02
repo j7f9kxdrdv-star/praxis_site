@@ -373,13 +373,20 @@ export default function DashboardHome() {
         .select("id");
       const deckIds = (deckRows || []).map((d) => d.id);
 
+      // Page through rows to bypass Supabase's default 1000-row cap on .select()
+      const PAGE = 1000;
       let cardRows: { id: string; deck_id: string; cloze_count: number; card_type: string }[] = [];
       if (deckIds.length > 0) {
-        const { data } = await supabase
-          .from("flashcards")
-          .select("id, deck_id, cloze_count, card_type")
-          .in("deck_id", deckIds);
-        cardRows = data || [];
+        for (let from = 0; ; from += PAGE) {
+          const { data, error } = await supabase
+            .from("flashcards")
+            .select("id, deck_id, cloze_count, card_type")
+            .in("deck_id", deckIds)
+            .range(from, from + PAGE - 1);
+          if (error || !data || data.length === 0) break;
+          cardRows.push(...data);
+          if (data.length < PAGE) break;
+        }
       }
 
       let stateRows: {
@@ -389,15 +396,18 @@ export default function DashboardHome() {
         suspended: boolean;
       }[] = [];
       if (cardRows.length > 0) {
-        const { data } = await supabase
-          .from("flashcard_user_state")
-          .select("flashcard_id, cloze_index, next_review_at, suspended")
-          .eq("user_id", user.id)
-          .in(
-            "flashcard_id",
-            cardRows.map((c) => c.id)
-          );
-        stateRows = data || [];
+        const cardIds = cardRows.map((c) => c.id);
+        for (let from = 0; ; from += PAGE) {
+          const { data, error } = await supabase
+            .from("flashcard_user_state")
+            .select("flashcard_id, cloze_index, next_review_at, suspended")
+            .eq("user_id", user.id)
+            .in("flashcard_id", cardIds)
+            .range(from, from + PAGE - 1);
+          if (error || !data || data.length === 0) break;
+          stateRows.push(...data);
+          if (data.length < PAGE) break;
+        }
       }
 
       if (cancelled) return;

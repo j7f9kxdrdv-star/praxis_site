@@ -72,13 +72,26 @@ export default function FlashcardsHub() {
         return;
       }
 
-      const { data: cardRows } = await supabase
-        .from("flashcards")
-        .select("id, deck_id, cloze_count, card_type")
-        .in(
-          "deck_id",
-          deckRows.map((d) => d.id)
-        );
+      // Page through flashcards to bypass Supabase's default 1000-row cap on .select()
+      type CardRow = {
+        id: string;
+        deck_id: string;
+        cloze_count: number | null;
+        card_type: string;
+      };
+      const deckIds = deckRows.map((d) => d.id);
+      const cardRows: CardRow[] = [];
+      const PAGE = 1000;
+      for (let from = 0; ; from += PAGE) {
+        const { data: page, error } = await supabase
+          .from("flashcards")
+          .select("id, deck_id, cloze_count, card_type")
+          .in("deck_id", deckIds)
+          .range(from, from + PAGE - 1);
+        if (error || !page || page.length === 0) break;
+        cardRows.push(...(page as CardRow[]));
+        if (page.length < PAGE) break;
+      }
 
       const itemsByDeck = new Map<string, number>();
       (cardRows || []).forEach((c) => {
@@ -95,14 +108,20 @@ export default function FlashcardsHub() {
         starred: boolean;
       }[] = [];
       if (allCardIds.length > 0) {
-        const { data } = await supabase
-          .from("flashcard_user_state")
-          .select(
-            "flashcard_id, cloze_index, next_review_at, suspended, starred"
-          )
-          .eq("user_id", user.id)
-          .in("flashcard_id", allCardIds);
-        stateRows = data || [];
+        // Page through state rows too — same 1000-row default cap applies
+        for (let from = 0; ; from += PAGE) {
+          const { data, error } = await supabase
+            .from("flashcard_user_state")
+            .select(
+              "flashcard_id, cloze_index, next_review_at, suspended, starred"
+            )
+            .eq("user_id", user.id)
+            .in("flashcard_id", allCardIds)
+            .range(from, from + PAGE - 1);
+          if (error || !data || data.length === 0) break;
+          stateRows.push(...data);
+          if (data.length < PAGE) break;
+        }
       }
 
       const cardToDeck = new Map<string, string>();
