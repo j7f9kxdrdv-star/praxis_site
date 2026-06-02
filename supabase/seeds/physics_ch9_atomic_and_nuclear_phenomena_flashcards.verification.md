@@ -1,7 +1,7 @@
 # Verification — Physics Chapter 9: Atomic and Nuclear Phenomena
 
 ## Deck metadata
-- **Title:** Physics Chapter 9: Atomic and Nuclear Phenomena
+- **Title:** Atomic and Nuclear Phenomena
 - **Section:** `physics`
 - **Topic:** Physics
 - **Subtopic:** atomic and nuclear phenomena

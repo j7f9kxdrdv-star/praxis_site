@@ -16,6 +16,7 @@ BEGIN
     WHERE deck_id IN (
         SELECT id FROM flashcard_decks
         WHERE title IN (
+            'Oxidation-Reduction Reactions',
             'General Chemistry Chapter 11: Oxidation-Reduction Reactions',
             'General Chemistry Ch 11: Oxidation-Reduction Reactions',
             'General Chemistry Chapter 11 - Oxidation-Reduction Reactions',
@@ -36,7 +37,7 @@ BEGIN
         'chemistry',
         'General Chemistry',
         'oxidation reduction reactions',
-        'General Chemistry Chapter 11: Oxidation-Reduction Reactions',
+        'Oxidation-Reduction Reactions',
         'Redox fundamentals (electron transfer, OIL RIG, oxidizing and reducing agents); assigning oxidation numbers (all 8 rules); balancing redox reactions via the half-reaction (ion-electron) method in acidic and basic solution; complete vs net ionic equations and spectator ions; common reaction families (combination, decomposition, combustion, double displacement); disproportionation; redox titrations (indicator-based and potentiometric).',
         11
     )

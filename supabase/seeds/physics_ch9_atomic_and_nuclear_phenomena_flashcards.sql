@@ -16,6 +16,7 @@ BEGIN
     WHERE deck_id IN (
         SELECT id FROM flashcard_decks
         WHERE title IN (
+            'Atomic and Nuclear Phenomena',
             'Physics Chapter 9: Atomic and Nuclear Phenomena',
             'Physics Ch 9: Atomic and Nuclear Phenomena',
             'Physics Chapter 9 - Atomic and Nuclear Phenomena'
@@ -34,7 +35,7 @@ BEGIN
         'physics',
         'Physics',
         'atomic and nuclear phenomena',
-        'Physics Chapter 9: Atomic and Nuclear Phenomena',
+        'Atomic and Nuclear Phenomena',
         'The photoelectric effect (threshold frequency, photon energy E=hf, work function, max KE); absorption and emission spectra (Bohr model, IR, UV-Vis, fluorescence); nuclear forces (strong, weak), binding energy, and mass defect (E=mc^2); nuclear reactions (fusion, fission, isotopic notation); radioactive decay (alpha, beta-minus, beta-plus, gamma, electron capture); and half-life with exponential decay.',
         9
     )

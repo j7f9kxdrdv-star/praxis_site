@@ -1,7 +1,7 @@
 # Verification — General Chemistry Chapter 11: Oxidation-Reduction Reactions
 
 ## Deck metadata
-- **Title:** General Chemistry Chapter 11: Oxidation-Reduction Reactions
+- **Title:** Oxidation-Reduction Reactions
 - **Section:** `chemistry`
 - **Topic:** General Chemistry
 - **Subtopic:** oxidation reduction reactions
