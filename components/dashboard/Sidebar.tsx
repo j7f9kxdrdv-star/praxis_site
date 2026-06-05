@@ -282,11 +282,8 @@ export default function Sidebar() {
         </div>
       )}
 
-      {/* User block — links to settings */}
-      <Link
-        href="/dashboard/settings"
-        className="flex items-center gap-2.5 pl-0.5 py-1 -mx-1 px-1 rounded-md transition-colors hover:bg-[var(--color-prax-cream-card)]"
-      >
+      {/* User block — avatar + name + two separate links */}
+      <div className="flex items-center gap-2.5 pl-0.5">
         <div
           className="grid place-items-center"
           style={{
@@ -309,17 +306,30 @@ export default function Sidebar() {
             {displayName}
           </div>
           <div
-            className="mt-0.5"
+            className="mt-0.5 flex items-center gap-1"
             style={{
               fontSize: 9.5,
               letterSpacing: "0.08em",
-              color: "var(--color-prax-ink-mute)",
             }}
           >
-            Support · Settings
+            <Link
+              href="/dashboard/support"
+              className="hover:underline"
+              style={{ color: "var(--color-prax-ink-mute)" }}
+            >
+              Support
+            </Link>
+            <span style={{ color: "var(--color-prax-ink-mute)" }}>·</span>
+            <Link
+              href="/dashboard/settings"
+              className="hover:underline"
+              style={{ color: "var(--color-prax-ink-mute)" }}
+            >
+              Settings
+            </Link>
           </div>
         </div>
-      </Link>
+      </div>
     </aside>
   );
 }
