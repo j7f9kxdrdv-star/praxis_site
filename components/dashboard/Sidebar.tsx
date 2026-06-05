@@ -127,6 +127,28 @@ export default function Sidebar() {
   const days = daysUntil(profile?.mcat_test_date || null);
   const testDateLabel = formatTestDate(profile?.mcat_test_date || null);
 
+  // Admin-only nav group (appended after the static groups for admin users)
+  const visibleGroups: NavGroup[] = profile?.is_admin
+    ? [
+        ...navGroups,
+        {
+          label: "Admin",
+          items: [
+            {
+              label: "Edit Cards",
+              href: "/dashboard/admin/flashcards",
+              icon: (
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4z" />
+                </svg>
+              ),
+            },
+          ],
+        },
+      ]
+    : navGroups;
+
   return (
     <aside
       className="hidden lg:flex lg:flex-col lg:w-56 sticky top-0 h-screen px-[18px] pt-8 pb-[22px] z-10 shrink-0"
@@ -159,7 +181,7 @@ export default function Sidebar() {
 
       {/* Navigation groups */}
       <nav className="flex flex-col gap-0.5">
-        {navGroups.map((group, gi) => (
+        {visibleGroups.map((group, gi) => (
           <div key={gi} className={group.label ? "mb-[18px]" : "mb-2"}>
             {group.label && (
               <div
@@ -260,8 +282,11 @@ export default function Sidebar() {
         </div>
       )}
 
-      {/* User block */}
-      <div className="flex items-center gap-2.5 pl-0.5">
+      {/* User block — links to settings */}
+      <Link
+        href="/dashboard/settings"
+        className="flex items-center gap-2.5 pl-0.5 py-1 -mx-1 px-1 rounded-md transition-colors hover:bg-[var(--color-prax-cream-card)]"
+      >
         <div
           className="grid place-items-center"
           style={{
@@ -294,7 +319,7 @@ export default function Sidebar() {
             Support · Settings
           </div>
         </div>
-      </div>
+      </Link>
     </aside>
   );
 }

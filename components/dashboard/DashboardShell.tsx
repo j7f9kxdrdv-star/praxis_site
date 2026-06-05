@@ -17,6 +17,7 @@ interface Profile {
   study_hours_per_week: number | null;
   weak_sections: string[] | null;
   onboarding_completed: boolean;
+  is_admin: boolean;
 }
 
 interface DashboardContext {
