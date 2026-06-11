@@ -13,6 +13,7 @@ BEGIN
     WHERE deck_id IN (
         SELECT id FROM flashcard_decks
         WHERE title IN (
+            'Separations and Purifications',
             'Organic Chemistry Chapter 12: Separations and Purifications',
             'Organic Chemistry Ch 12: Separations and Purifications',
             'Organic Chemistry Chapter 12 - Separations and Purifications'
@@ -31,7 +32,7 @@ BEGIN
         'organic_chemistry',
         'Organic Chemistry',
         'separations and purifications',
-        'Organic Chemistry Chapter 12: Separations and Purifications',
+        'Separations and Purifications',
         'Solubility-based methods (extraction, washing, filtration, recrystallization), distillation (simple, vacuum, fractional), and chromatography (TLC, paper, reverse-phase, column, ion-exchange, size-exclusion, affinity, GC, GC-MS, HPLC).',
         12
     )

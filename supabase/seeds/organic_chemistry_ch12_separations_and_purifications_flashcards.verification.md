@@ -1,7 +1,7 @@
 # Verification — Organic Chemistry Chapter 12: Separations and Purifications
 
 ## Deck metadata
-- **Title:** Organic Chemistry Chapter 12: Separations and Purifications
+- **Title:** Separations and Purifications
 - **Section:** `organic_chemistry`
 - **Topic:** Organic Chemistry
 - **Chapter number:** 12
