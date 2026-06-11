@@ -18,6 +18,8 @@ interface Profile {
   weak_sections: string[] | null;
   onboarding_completed: boolean;
   is_admin: boolean;
+  daily_new_card_limit: number;
+  daily_review_limit: number;
 }
 
 interface DashboardContext {

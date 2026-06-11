@@ -69,10 +69,37 @@ const RATING_DOT: Record<Rating, string> = {
   easy: "bg-as-primary",
 };
 
+// Count how many reviews the user has already done today (since local
+// midnight) so the daily-limit caps can subtract them from the quotas.
+// A review is classified as "new" if prev_interval_days was 0 at the
+// time it was logged (i.e., the user had never seen that card before
+// this session). Otherwise it's a "review."
+async function countTodaysReviews(userId: string): Promise<{
+  newToday: number;
+  reviewsToday: number;
+}> {
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
+
+  const { data } = await supabase
+    .from("flashcard_reviews")
+    .select("prev_interval_days")
+    .eq("user_id", userId)
+    .gte("reviewed_at", startOfToday.toISOString());
+
+  let newToday = 0;
+  let reviewsToday = 0;
+  for (const r of data || []) {
+    if ((r.prev_interval_days ?? 0) === 0) newToday++;
+    else reviewsToday++;
+  }
+  return { newToday, reviewsToday };
+}
+
 function SessionInner() {
   const router = useRouter();
   const search = useSearchParams();
-  const { user } = useDashboard();
+  const { user, profile } = useDashboard();
   const rawMode = (search.get("mode") || "due") as Mode;
   const mode: Mode = ["due", "starred", "cram"].includes(rawMode) ? rawMode : "due";
 
@@ -116,7 +143,12 @@ function SessionInner() {
         stateMap.set(`${s.flashcard_id}::${s.cloze_index}`, s as UserState),
       );
 
-      const items: ReviewItem[] = [];
+      // Separate eligible items into "new" (never reviewed) and "review"
+      // (seen and due) pools so we can apply the user's daily limits to
+      // each independently. Starred and cram modes skip these caps —
+      // they're user-initiated overrides.
+      const newPool: ReviewItem[] = [];
+      const reviewPool: ReviewItem[] = [];
       const now = new Date().toISOString();
 
       cards.forEach((c) => {
@@ -129,13 +161,46 @@ function SessionInner() {
           const isDue = !s || s.next_review_at <= now;
           const isStarred = s?.starred === true;
 
-          if (mode === "due" && !isDue) continue;
-          if (mode === "starred" && !isStarred) continue;
+          if (mode === "starred") {
+            if (!isStarred) continue;
+            reviewPool.push({ card: c, clozeIndex: idx, state: s });
+            continue;
+          }
+          if (mode === "due") {
+            if (!isDue) continue;
+            (s ? reviewPool : newPool).push({
+              card: c,
+              clozeIndex: idx,
+              state: s,
+            });
+            continue;
+          }
           // mode === "cram" → include everything (incl. unseen)
-
-          items.push({ card: c, clozeIndex: idx, state: s });
+          (s ? reviewPool : newPool).push({
+            card: c,
+            clozeIndex: idx,
+            state: s,
+          });
         }
       });
+
+      let items: ReviewItem[];
+      if (mode === "due") {
+        // Apply the user's daily limits. Subtract whatever they've
+        // already reviewed today so a second session in the same day
+        // doesn't blow past the cap.
+        const newLimit = profile?.daily_new_card_limit ?? 25;
+        const reviewLimit = profile?.daily_review_limit ?? 150;
+        const { newToday, reviewsToday } = await countTodaysReviews(user.id);
+        const newQuota = Math.max(0, newLimit - newToday);
+        const reviewQuota = Math.max(0, reviewLimit - reviewsToday);
+        items = [
+          ...newPool.slice(0, newQuota),
+          ...reviewPool.slice(0, reviewQuota),
+        ];
+      } else {
+        items = [...newPool, ...reviewPool];
+      }
 
       // Shuffle
       for (let i = items.length - 1; i > 0; i--) {
@@ -147,7 +212,7 @@ function SessionInner() {
       setLoading(false);
     }
     load();
-  }, [user.id, mode]);
+  }, [user.id, mode, profile?.daily_new_card_limit, profile?.daily_review_limit]);
 
   // ─── Actions ──────────────────────────────────────────────────────────────
   const current = queue[index];
