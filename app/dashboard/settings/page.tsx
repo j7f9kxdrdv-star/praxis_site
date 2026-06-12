@@ -25,12 +25,6 @@ export default function SettingsPage() {
   const [profileSaved, setProfileSaved] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
 
-  // Daily flashcard limits state
-  const [newCardLimit, setNewCardLimit] = useState<string>("");
-  const [reviewLimit, setReviewLimit] = useState<string>("");
-  const [savingLimits, setSavingLimits] = useState(false);
-  const [limitsSaved, setLimitsSaved] = useState(false);
-  const [limitsError, setLimitsError] = useState<string | null>(null);
 
   // Password form state
   const [newPassword, setNewPassword] = useState("");
@@ -54,8 +48,6 @@ export default function SettingsPage() {
         ? String(profile.study_hours_per_week)
         : ""
     );
-    setNewCardLimit(String(profile.daily_new_card_limit ?? 25));
-    setReviewLimit(String(profile.daily_review_limit ?? 150));
   }, [profile]);
 
   async function saveProfile(e: React.FormEvent) {
@@ -91,46 +83,6 @@ export default function SettingsPage() {
     setProfileSaved(true);
     await refreshProfile();
     setTimeout(() => setProfileSaved(false), 2500);
-  }
-
-  async function saveLimits(e: React.FormEvent) {
-    e.preventDefault();
-    setSavingLimits(true);
-    setLimitsError(null);
-    setLimitsSaved(false);
-
-    const newCardNum = Number(newCardLimit);
-    const reviewNum = Number(reviewLimit);
-
-    if (!Number.isInteger(newCardNum) || newCardNum < 0) {
-      setLimitsError("New cards per day must be a whole number ≥ 0.");
-      setSavingLimits(false);
-      return;
-    }
-    if (!Number.isInteger(reviewNum) || reviewNum < 0) {
-      setLimitsError("Reviews per day must be a whole number ≥ 0.");
-      setSavingLimits(false);
-      return;
-    }
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        daily_new_card_limit: newCardNum,
-        daily_review_limit: reviewNum,
-      })
-      .eq("id", user.id);
-
-    setSavingLimits(false);
-
-    if (error) {
-      setLimitsError(error.message || "Save failed");
-      return;
-    }
-
-    setLimitsSaved(true);
-    await refreshProfile();
-    setTimeout(() => setLimitsSaved(false), 2500);
   }
 
   async function changePassword(e: React.FormEvent) {
@@ -263,77 +215,6 @@ export default function SettingsPage() {
               {savingProfile ? "Saving…" : "Save profile"}
             </button>
             {profileSaved && (
-              <span
-                className="text-[12px]"
-                style={{ color: "var(--color-prax-green)" }}
-              >
-                ✓ Saved
-              </span>
-            )}
-          </div>
-        </form>
-      </Section>
-
-      {/* ─────────── Daily flashcard limits ─────────── */}
-      <Section title="Daily flashcard limits">
-        <p
-          className="text-[13px] mb-4"
-          style={{ color: "var(--color-prax-ink-soft)" }}
-        >
-          Cap how many cards you see each day so review doesn&apos;t pile up.
-          The session picker respects these in <em>Due</em> mode (the main
-          daily study flow); <em>Cram</em> and <em>Starred</em> ignore them
-          on purpose.
-        </p>
-        <form onSubmit={saveLimits} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <TextField
-              label="New cards per day"
-              type="number"
-              value={newCardLimit}
-              onChange={setNewCardLimit}
-              placeholder="e.g. 25"
-            />
-            <TextField
-              label="Reviews per day"
-              type="number"
-              value={reviewLimit}
-              onChange={setReviewLimit}
-              placeholder="e.g. 150"
-            />
-          </div>
-          <p
-            className="text-[12px]"
-            style={{ color: "var(--color-prax-ink-mute)" }}
-          >
-            A <strong>new card</strong> is one you&apos;ve never reviewed
-            before. A <strong>review</strong> is a card you&apos;ve seen that
-            is now due to come back. Set either to 0 to pause that category
-            entirely.
-          </p>
-
-          {limitsError && (
-            <div
-              className="text-[12px]"
-              style={{ color: "var(--color-prax-red, #b94a4a)" }}
-            >
-              {limitsError}
-            </div>
-          )}
-
-          <div className="flex items-center gap-3 pt-1">
-            <button
-              type="submit"
-              disabled={savingLimits}
-              className="px-5 py-2 rounded-lg font-semibold text-[13px] disabled:opacity-50"
-              style={{
-                background: "var(--color-prax-green)",
-                color: "#fff",
-              }}
-            >
-              {savingLimits ? "Saving…" : "Save limits"}
-            </button>
-            {limitsSaved && (
               <span
                 className="text-[12px]"
                 style={{ color: "var(--color-prax-green)" }}

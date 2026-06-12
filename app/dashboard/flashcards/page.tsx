@@ -47,7 +47,7 @@ const SECTIONS: { id: string; label: string }[] = [
 
 export default function FlashcardsHub() {
   const router = useRouter();
-  const { user } = useDashboard();
+  const { user, profile, refreshProfile } = useDashboard();
   const [decks, setDecks] = useState<Deck[]>([]);
   const [totalDue, setTotalDue] = useState(0);
   const [totalUrgent, setTotalUrgent] = useState(0);
@@ -58,6 +58,9 @@ export default function FlashcardsHub() {
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+
+  // Daily limits settings modal
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -234,7 +237,29 @@ export default function FlashcardsHub() {
         eyebrow="Library · Spaced Repetition"
         title="Flashcards."
         subtitle="Review cloze and basic cards. Spaced repetition keeps recall sharp."
-        right={<ActiveNowPill />}
+        right={
+          <div className="flex items-center gap-2">
+            <ActiveNowPill />
+            <button
+              type="button"
+              onClick={() => setShowSettings(true)}
+              aria-label="Flashcard settings"
+              className="grid place-items-center rounded-full transition-colors"
+              style={{
+                width: 34,
+                height: 34,
+                background: "var(--color-prax-cream-card)",
+                border: "1px solid var(--color-prax-cream-border)",
+                color: "var(--color-prax-ink-soft)",
+              }}
+            >
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                <circle cx={12} cy={12} r={3} />
+                <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z" />
+              </svg>
+            </button>
+          </div>
+        }
       />
 
       {/* ===== EMPTY STATE ===== */}
@@ -822,6 +847,247 @@ export default function FlashcardsHub() {
           </div>
         </div>
       )}
+
+      {/* ===== FLASHCARD SETTINGS MODAL ===== */}
+      {showSettings && (
+        <FlashcardSettingsModal
+          userId={user.id}
+          initialNewLimit={profile?.daily_new_card_limit ?? 25}
+          initialReviewLimit={profile?.daily_review_limit ?? 150}
+          onClose={() => setShowSettings(false)}
+          onSaved={async () => {
+            await refreshProfile();
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+/* ─────────────── Settings modal ─────────────── */
+
+function FlashcardSettingsModal({
+  userId,
+  initialNewLimit,
+  initialReviewLimit,
+  onClose,
+  onSaved,
+}: {
+  userId: string;
+  initialNewLimit: number;
+  initialReviewLimit: number;
+  onClose: () => void;
+  onSaved: () => Promise<void>;
+}) {
+  const [newLimit, setNewLimit] = useState(String(initialNewLimit));
+  const [reviewLimit, setReviewLimit] = useState(String(initialReviewLimit));
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function save(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setSaved(false);
+
+    const newNum = Number(newLimit);
+    const reviewNum = Number(reviewLimit);
+    if (!Number.isInteger(newNum) || newNum < 0) {
+      setError("New cards per day must be a whole number ≥ 0.");
+      return;
+    }
+    if (!Number.isInteger(reviewNum) || reviewNum < 0) {
+      setError("Reviews per day must be a whole number ≥ 0.");
+      return;
+    }
+
+    setSaving(true);
+    const { error: dbError } = await supabase
+      .from("profiles")
+      .update({
+        daily_new_card_limit: newNum,
+        daily_review_limit: reviewNum,
+      })
+      .eq("id", userId);
+    setSaving(false);
+
+    if (dbError) {
+      setError(dbError.message || "Save failed");
+      return;
+    }
+
+    setSaved(true);
+    await onSaved();
+    setTimeout(() => setSaved(false), 2000);
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0"
+        style={{ background: "rgba(28, 28, 19, 0.45)" }}
+        onClick={onClose}
+      />
+      {/* Card */}
+      <div
+        className="relative rounded-t-2xl sm:rounded-2xl w-full sm:max-w-md max-h-[92vh] overflow-y-auto p-8 pb-10"
+        style={{
+          background: "var(--color-prax-cream)",
+          border: "1px solid var(--color-prax-cream-border)",
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-start justify-between mb-5">
+          <div>
+            <div
+              className="text-[10px] uppercase mb-2 font-semibold"
+              style={{
+                letterSpacing: "0.22em",
+                color: "var(--color-prax-ink-mute)",
+              }}
+            >
+              Flashcards · Daily Limits
+            </div>
+            <h3
+              className="font-serif"
+              style={{
+                fontSize: 22,
+                fontWeight: 500,
+                color: "var(--color-prax-ink)",
+                lineHeight: 1.1,
+              }}
+            >
+              Study settings
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="transition-colors"
+            style={{ color: "var(--color-prax-ink-mute)" }}
+          >
+            <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <p
+          className="text-[13px] mb-5"
+          style={{ color: "var(--color-prax-ink-soft)" }}
+        >
+          Cap how many cards your study sessions show each day. The session
+          picker respects these in <em>Due</em> mode; <em>Cram</em> and
+          <em> Starred</em> ignore them on purpose.
+        </p>
+
+        <form onSubmit={save} className="space-y-4">
+          <ModalField
+            label="New cards per day"
+            value={newLimit}
+            onChange={setNewLimit}
+            placeholder="e.g. 25"
+          />
+          <ModalField
+            label="Reviews per day"
+            value={reviewLimit}
+            onChange={setReviewLimit}
+            placeholder="e.g. 150"
+          />
+          <p
+            className="text-[12px]"
+            style={{ color: "var(--color-prax-ink-mute)" }}
+          >
+            A <strong>new card</strong> is one you&apos;ve never reviewed
+            before. A <strong>review</strong> is one you&apos;ve seen that
+            is now due. Set either to 0 to pause that category for the day.
+          </p>
+
+          {error && (
+            <div
+              className="text-[12px]"
+              style={{ color: "var(--color-prax-red, #b94a4a)" }}
+            >
+              {error}
+            </div>
+          )}
+
+          <div className="flex items-center justify-end gap-3 pt-3">
+            {saved && (
+              <span
+                className="text-[12px]"
+                style={{ color: "var(--color-prax-green)" }}
+              >
+                ✓ Saved
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 rounded-lg text-[13px] font-semibold"
+              style={{
+                background: "transparent",
+                color: "var(--color-prax-ink-soft)",
+                border: "1px solid var(--color-prax-cream-border)",
+              }}
+            >
+              Close
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-5 py-2 rounded-lg font-semibold text-[13px] disabled:opacity-50"
+              style={{
+                background: "var(--color-prax-green)",
+                color: "#fff",
+              }}
+            >
+              {saving ? "Saving…" : "Save"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function ModalField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  return (
+    <label className="block">
+      <div
+        className="text-[11px] font-semibold uppercase mb-1.5"
+        style={{
+          letterSpacing: "0.14em",
+          color: "var(--color-prax-ink-mute)",
+        }}
+      >
+        {label}
+      </div>
+      <input
+        type="number"
+        min={0}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full px-3 py-2 rounded-lg text-[14px]"
+        style={{
+          background: "var(--color-prax-cream-card)",
+          color: "var(--color-prax-ink)",
+          border: "1px solid var(--color-prax-cream-border)",
+        }}
+      />
+    </label>
   );
 }
