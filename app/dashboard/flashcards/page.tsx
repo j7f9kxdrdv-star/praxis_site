@@ -502,9 +502,13 @@ export default function FlashcardsHub() {
                     onClick={startDueSession}
                     style={praxBtnCreamOnGreen}
                   >
-                    {isCapping
-                      ? `Start Review (${projectedSession} today)`
-                      : "Start Review"}
+                    {!isCapping
+                      ? "Start Review"
+                      : projectedReview === 0
+                      ? `Start Review · ${projectedNew} new today`
+                      : projectedNew === 0
+                      ? `Start Review · ${projectedReview} review today`
+                      : `Start Review · ${projectedNew} new + ${projectedReview} review`}
                     <svg
                       width="14"
                       height="14"
@@ -525,15 +529,33 @@ export default function FlashcardsHub() {
                         color: "rgba(246,244,227,0.72)",
                       }}
                     >
-                      Your daily limits are trimming the queue: you&apos;ll see{" "}
-                      <strong style={{ color: "var(--color-prax-cream)" }}>
-                        {projectedNew} new
-                      </strong>{" "}
-                      and{" "}
-                      <strong style={{ color: "var(--color-prax-cream)" }}>
-                        {projectedReview} review
-                      </strong>{" "}
-                      card{projectedSession === 1 ? "" : "s"} today (of {totalDue} due).{" "}
+                      {dueReviewAll === 0 ? (
+                        <>
+                          You haven&apos;t built a review queue yet, so today
+                          is all{" "}
+                          <strong style={{ color: "var(--color-prax-cream)" }}>
+                            {projectedNew} new card
+                            {projectedNew === 1 ? "" : "s"}
+                          </strong>{" "}
+                          (out of {totalDue} unseen). Your review cap kicks in
+                          once you start finishing new cards and they cycle
+                          back.
+                        </>
+                      ) : (
+                        <>
+                          Your daily limits are trimming the queue: you&apos;ll
+                          see{" "}
+                          <strong style={{ color: "var(--color-prax-cream)" }}>
+                            {projectedNew} new
+                          </strong>{" "}
+                          and{" "}
+                          <strong style={{ color: "var(--color-prax-cream)" }}>
+                            {projectedReview} review
+                          </strong>{" "}
+                          card{projectedSession === 1 ? "" : "s"} today (of{" "}
+                          {totalDue} due).
+                        </>
+                      )}{" "}
                       <button
                         type="button"
                         onClick={() => setShowSettings(true)}
@@ -1069,12 +1091,14 @@ function FlashcardSettingsModal({
         <form onSubmit={save} className="space-y-4">
           <ModalField
             label="New cards per day"
+            hint="Cards you've never seen before"
             value={newLimit}
             onChange={setNewLimit}
             placeholder="e.g. 25"
           />
           <ModalField
             label="Reviews per day"
+            hint="Cards you've already studied that have come back due"
             value={reviewLimit}
             onChange={setReviewLimit}
             placeholder="e.g. 150"
@@ -1138,11 +1162,13 @@ function FlashcardSettingsModal({
 
 function ModalField({
   label,
+  hint,
   value,
   onChange,
   placeholder,
 }: {
   label: string;
+  hint?: string;
   value: string;
   onChange: (v: string) => void;
   placeholder?: string;
@@ -1150,7 +1176,7 @@ function ModalField({
   return (
     <label className="block">
       <div
-        className="text-[11px] font-semibold uppercase mb-1.5"
+        className="text-[11px] font-semibold uppercase mb-1"
         style={{
           letterSpacing: "0.14em",
           color: "var(--color-prax-ink-mute)",
@@ -1158,6 +1184,17 @@ function ModalField({
       >
         {label}
       </div>
+      {hint && (
+        <div
+          className="text-[11.5px] mb-1.5"
+          style={{
+            color: "var(--color-prax-ink-soft)",
+            fontStyle: "italic",
+          }}
+        >
+          {hint}
+        </div>
+      )}
       <input
         type="number"
         min={0}
