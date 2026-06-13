@@ -891,78 +891,8 @@ export default function FlashcardsHub() {
                   {isExpanded && (
                     <div className="mt-2 ml-4 space-y-1">
                       {sectionDecks.map((d) => (
-                        <Link
-                          key={d.id}
-                          href={`/dashboard/flashcards/${d.id}`}
-                          className="block px-4 py-3 transition-colors"
-                          style={{
-                            background: "var(--color-prax-cream-card)",
-                            border: "1px solid var(--color-prax-cream-border)",
-                            borderRadius: 10,
-                          }}
-                        >
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="flex-1 min-w-0">
-                              <div
-                                className="font-medium truncate"
-                                style={{
-                                  fontFamily: "var(--font-prax-serif)",
-                                  fontSize: 15,
-                                  color: "var(--color-prax-green)",
-                                }}
-                              >
-                                {d.title}
-                              </div>
-                              <div
-                                className="mt-0.5"
-                                style={{
-                                  fontSize: 11,
-                                  color: "var(--color-prax-ink-mute)",
-                                  fontVariantNumeric: "tabular-nums",
-                                }}
-                              >
-                                {d.topic}
-                                {d.subtopic
-                                  ? ` · ${d.subtopic.replace(/_/g, " ")}`
-                                  : ""}
-                                {" · "}
-                                {d.card_count} cards
-                                {d.reviewed_count > 0
-                                  ? ` · ${d.reviewed_count} reviewed`
-                                  : ""}
-                              </div>
-                            </div>
-                            {d.urgent_count > 0 ? (
-                              <span
-                                className="px-2.5 py-1 rounded-full whitespace-nowrap"
-                                style={{
-                                  background: "var(--color-prax-gold)",
-                                  color: "var(--color-prax-cream)",
-                                  fontSize: 10,
-                                  fontWeight: 700,
-                                  letterSpacing: "0.1em",
-                                  fontVariantNumeric: "tabular-nums",
-                                }}
-                              >
-                                {d.urgent_count} due
-                              </span>
-                            ) : d.due_count > 0 ? (
-                              <span
-                                className="px-2.5 py-1 rounded-full whitespace-nowrap"
-                                style={{
-                                  background: "var(--color-prax-green-tint)",
-                                  color: "var(--color-prax-green)",
-                                  fontSize: 10,
-                                  fontWeight: 700,
-                                  letterSpacing: "0.1em",
-                                  fontVariantNumeric: "tabular-nums",
-                                }}
-                              >
-                                {d.due_count} soon
-                              </span>
-                            ) : null}
-                          </div>
-                        </Link>
+                        <DeckCard key={d.id} deck={d} />
+
                       ))}
                     </div>
                   )}
@@ -1231,5 +1161,161 @@ function ModalField({
         }}
       />
     </label>
+  );
+}
+
+/* ─────────────── Deck card with dot + progress bar ─────────────── */
+
+function DeckCard({ deck }: { deck: Deck }) {
+  // Status: untouched (never reviewed), in-progress (started but not caught
+  // up), or caught-up (every card reviewed and nothing currently due).
+  const status: "untouched" | "in-progress" | "caught-up" =
+    deck.card_count === 0 || deck.reviewed_count === 0
+      ? "untouched"
+      : deck.reviewed_count >= deck.card_count && deck.urgent_count === 0
+      ? "caught-up"
+      : "in-progress";
+
+  const progressPct =
+    deck.card_count > 0
+      ? Math.min(
+          100,
+          Math.round((deck.reviewed_count / deck.card_count) * 100),
+        )
+      : 0;
+
+  return (
+    <Link
+      href={`/dashboard/flashcards/${deck.id}`}
+      className="block px-4 py-3 transition-colors"
+      style={{
+        background: "var(--color-prax-cream-card)",
+        border: "1px solid var(--color-prax-cream-border)",
+        borderRadius: 10,
+      }}
+    >
+      <div className="flex items-start gap-3">
+        {/* Status dot */}
+        <DeckStatusDot status={status} />
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div
+            className="font-medium truncate"
+            style={{
+              fontFamily: "var(--font-prax-serif)",
+              fontSize: 15,
+              color: "var(--color-prax-green)",
+            }}
+          >
+            {deck.title}
+          </div>
+          <div
+            className="mt-0.5"
+            style={{
+              fontSize: 11,
+              color: "var(--color-prax-ink-mute)",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            {deck.topic}
+            {deck.subtopic ? ` · ${deck.subtopic.replace(/_/g, " ")}` : ""}
+            {" · "}
+            {deck.card_count} cards
+            {deck.reviewed_count > 0 ? ` · ${deck.reviewed_count} reviewed` : ""}
+          </div>
+
+          {/* Progress bar */}
+          <div
+            className="mt-2"
+            style={{
+              height: 2,
+              background: "var(--color-prax-cream-border)",
+              borderRadius: 2,
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                width: `${progressPct}%`,
+                height: "100%",
+                background:
+                  status === "caught-up"
+                    ? "var(--color-prax-green)"
+                    : "var(--color-prax-green)",
+                transition: "width 400ms ease-out",
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function DeckStatusDot({
+  status,
+}: {
+  status: "untouched" | "in-progress" | "caught-up";
+}) {
+  // Sits inline with the deck title; 16x16 box, top-aligned with a small
+  // offset so it visually lines up with the serif capital.
+  const size = 14;
+  const wrapStyle: React.CSSProperties = {
+    width: size,
+    height: size,
+    marginTop: 4,
+    flexShrink: 0,
+  };
+
+  if (status === "untouched") {
+    return (
+      <div
+        style={{
+          ...wrapStyle,
+          borderRadius: "50%",
+          border: "1.5px solid var(--color-prax-ink-mute)",
+          opacity: 0.55,
+        }}
+      />
+    );
+  }
+
+  if (status === "in-progress") {
+    return (
+      <div
+        style={{
+          ...wrapStyle,
+          borderRadius: "50%",
+          background: "var(--color-prax-green)",
+        }}
+      />
+    );
+  }
+
+  // caught-up → filled circle with checkmark
+  return (
+    <div
+      style={{
+        ...wrapStyle,
+        borderRadius: "50%",
+        background: "var(--color-prax-green)",
+        display: "grid",
+        placeItems: "center",
+      }}
+    >
+      <svg
+        width={9}
+        height={9}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="var(--color-prax-cream)"
+        strokeWidth={3.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
   );
 }
