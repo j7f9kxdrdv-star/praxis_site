@@ -416,7 +416,7 @@ export default function FlashcardsHub() {
                 }}
               >
                 {totalDue > 0
-                  ? "Clear your queue today to keep retention strong. Urgent cards are overdue or unseen; soon-due cards land within 3 days."
+                  ? "Clear your queue today to keep retention strong. Unseen cards are new to you; due cards are scheduled for review now; soon cards land within 3 days."
                   : "Caught up. Pick a deck below to get ahead of the curve, or jump into Cram mode."}
               </div>
 
@@ -427,11 +427,19 @@ export default function FlashcardsHub() {
                     className="flex rounded-full overflow-hidden"
                     style={{ height: 8, gap: 2 }}
                   >
-                    {totalUrgent > 0 && (
+                    {unseenAll > 0 && (
                       <div
                         style={{
-                          flex: totalUrgent,
+                          flex: unseenAll,
                           background: "var(--color-prax-gold-soft)",
+                        }}
+                      />
+                    )}
+                    {dueReviewAll > 0 && (
+                      <div
+                        style={{
+                          flex: dueReviewAll,
+                          background: "rgba(212, 161, 78, 0.75)",
                         }}
                       />
                     )}
@@ -464,9 +472,21 @@ export default function FlashcardsHub() {
                           fontVariantNumeric: "tabular-nums",
                         }}
                       >
-                        {totalUrgent}
+                        {unseenAll}
                       </strong>{" "}
-                      urgent
+                      unseen
+                    </span>
+                    <span>
+                      <strong
+                        style={{
+                          color: "rgba(212, 161, 78, 0.95)",
+                          fontWeight: 700,
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {dueReviewAll}
+                      </strong>{" "}
+                      due
                     </span>
                     <span>
                       <strong
