@@ -785,17 +785,27 @@ export default function FlashcardsHub() {
                 (s, d) => s + d.card_count,
                 0
               );
-              const sectionDue = sectionDecks.reduce(
-                (s, d) => s + d.due_count,
+              const sectionReviewed = sectionDecks.reduce(
+                (s, d) => s + d.reviewed_count,
                 0
               );
               const sectionUrgent = sectionDecks.reduce(
                 (s, d) => s + d.urgent_count,
                 0
               );
-              // Mark as attention if 25%+ of cards are urgent
-              const attention =
-                totalCards > 0 && sectionUrgent / totalCards >= 0.25;
+              const sectionStatus: "untouched" | "in-progress" | "caught-up" =
+                totalCards === 0 || sectionReviewed === 0
+                  ? "untouched"
+                  : sectionReviewed >= totalCards && sectionUrgent === 0
+                  ? "caught-up"
+                  : "in-progress";
+              const sectionProgressPct =
+                totalCards > 0
+                  ? Math.min(
+                      100,
+                      Math.round((sectionReviewed / totalCards) * 100),
+                    )
+                  : 0;
 
               return (
                 <div key={section.id}>
@@ -808,29 +818,14 @@ export default function FlashcardsHub() {
                       background: isExpanded
                         ? "var(--color-prax-cream-card)"
                         : "var(--color-prax-cream-deep)",
-                      border: `1px solid ${
-                        attention
-                          ? "var(--color-prax-gold-soft)"
-                          : "var(--color-prax-cream-border)"
-                      }`,
+                      border: "1px solid var(--color-prax-cream-border)",
                       borderRadius: 14,
                       padding: "16px 22px",
                       cursor: "pointer",
                     }}
                   >
-                    {attention && (
-                      <div
-                        className="absolute"
-                        style={{
-                          top: 0,
-                          left: 22,
-                          right: 22,
-                          height: 2,
-                          background: "var(--color-prax-gold)",
-                        }}
-                      />
-                    )}
                     <div className="flex items-center gap-4">
+                      <DeckStatusDot status={sectionStatus} />
                       <div className="flex-1 min-w-0">
                         <div
                           className="font-medium"
@@ -851,25 +846,32 @@ export default function FlashcardsHub() {
                           >
                             {sectionDecks.length} deck
                             {sectionDecks.length === 1 ? "" : "s"} · {totalCards} cards
-                            {sectionDue > 0 && ` · ${sectionDue} due`}
+                            {sectionReviewed > 0
+                              ? ` · ${sectionProgressPct}% reviewed`
+                              : ""}
                           </SmallCaps>
                         )}
+                        {dataLoaded && totalCards > 0 && (
+                          <div
+                            className="mt-2"
+                            style={{
+                              height: 2,
+                              background: "var(--color-prax-cream-border)",
+                              borderRadius: 2,
+                              overflow: "hidden",
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: `${sectionProgressPct}%`,
+                                height: "100%",
+                                background: "var(--color-prax-green)",
+                                transition: "width 400ms ease-out",
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
-                      {sectionUrgent > 0 && (
-                        <div
-                          className="px-2.5 py-1 rounded-full"
-                          style={{
-                            background: "var(--color-prax-gold)",
-                            color: "var(--color-prax-cream)",
-                            fontSize: 10,
-                            fontWeight: 700,
-                            letterSpacing: "0.12em",
-                            fontVariantNumeric: "tabular-nums",
-                          }}
-                        >
-                          {sectionUrgent} URGENT
-                        </div>
-                      )}
                       <svg
                         width="16"
                         height="16"
