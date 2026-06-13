@@ -57,6 +57,13 @@ export default function FlashcardsHub() {
   const [starredCount, setStarredCount] = useState(0);
   const [dataLoaded, setDataLoaded] = useState(false);
 
+  // Used to project how many cards today's "Due Review" session will actually
+  // contain, given the user's daily caps and what they've already studied today.
+  const [unseenAll, setUnseenAll] = useState(0);
+  const [dueReviewAll, setDueReviewAll] = useState(0);
+  const [newToday, setNewToday] = useState(0);
+  const [reviewsToday, setReviewsToday] = useState(0);
+
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   // Daily limits settings modal
@@ -162,8 +169,10 @@ export default function FlashcardsHub() {
         }
       });
 
-      // Unseen items count as urgent
+      // Unseen items count as urgent. Track unseen separately so we can
+      // project today's session size against the user's daily limits.
       let totalAll = 0;
+      let unseenTotal = 0;
       deckRows.forEach((d) => {
         const total = itemsByDeck.get(d.id) || 0;
         totalAll += total;
@@ -172,8 +181,25 @@ export default function FlashcardsHub() {
         if (unseen > 0) {
           urgentByDeck.set(d.id, (urgentByDeck.get(d.id) || 0) + unseen);
           urgentAll += unseen;
+          unseenTotal += unseen;
         }
       });
+
+      // Count today's review log so the projected session size matches the
+      // running quota the session loader actually applies.
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+      const { data: todayRows } = await supabase
+        .from("flashcard_reviews")
+        .select("prev_interval_days")
+        .eq("user_id", user.id)
+        .gte("reviewed_at", startOfToday.toISOString());
+      let newDoneToday = 0;
+      let reviewsDoneToday = 0;
+      for (const r of todayRows || []) {
+        if ((r.prev_interval_days ?? 0) === 0) newDoneToday++;
+        else reviewsDoneToday++;
+      }
 
       const enriched: Deck[] = deckRows.map((d) => {
         const urgent = urgentByDeck.get(d.id) || 0;
@@ -202,10 +228,15 @@ export default function FlashcardsHub() {
       setTotalLater(laterAll);
       setTotalItems(totalAll);
       setStarredCount(starAll);
+      // urgentAll = unseen + due-reviews; split them out for the daily-limit preview
+      setUnseenAll(unseenTotal);
+      setDueReviewAll(urgentAll - unseenTotal);
+      setNewToday(newDoneToday);
+      setReviewsToday(reviewsDoneToday);
       setDataLoaded(true);
     }
     load();
-  }, [user.id]);
+  }, [user.id, profile?.daily_new_card_limit, profile?.daily_review_limit]);
 
   function decksInSection(section: string) {
     return decks.filter((d) => d.section === section);
@@ -224,6 +255,22 @@ export default function FlashcardsHub() {
   /* ─────────────── Render ─────────────── */
 
   const noDecks = dataLoaded && decks.length === 0;
+
+  // Project how many cards today's Due Review session will actually serve up,
+  // given the user's daily limits and what they've already done today.
+  const newLimit = profile?.daily_new_card_limit ?? 25;
+  const reviewLimit = profile?.daily_review_limit ?? 150;
+  const projectedNew = Math.max(
+    0,
+    Math.min(unseenAll, newLimit - newToday)
+  );
+  const projectedReview = Math.max(
+    0,
+    Math.min(dueReviewAll, reviewLimit - reviewsToday)
+  );
+  const projectedSession = projectedNew + projectedReview;
+  // Show the limit explainer only when a cap is actually trimming the queue.
+  const isCapping = projectedSession < totalDue && totalDue > 0;
 
   return (
     <div
@@ -455,7 +502,9 @@ export default function FlashcardsHub() {
                     onClick={startDueSession}
                     style={praxBtnCreamOnGreen}
                   >
-                    Start Review
+                    {isCapping
+                      ? `Start Review (${projectedSession} today)`
+                      : "Start Review"}
                     <svg
                       width="14"
                       height="14"
@@ -467,6 +516,40 @@ export default function FlashcardsHub() {
                       <path d="M5 12h14M13 6l6 6-6 6" />
                     </svg>
                   </button>
+                  {isCapping && (
+                    <div
+                      className="mt-3 max-w-[480px]"
+                      style={{
+                        fontSize: 12,
+                        lineHeight: 1.5,
+                        color: "rgba(246,244,227,0.72)",
+                      }}
+                    >
+                      Your daily limits are trimming the queue: you&apos;ll see{" "}
+                      <strong style={{ color: "var(--color-prax-cream)" }}>
+                        {projectedNew} new
+                      </strong>{" "}
+                      and{" "}
+                      <strong style={{ color: "var(--color-prax-cream)" }}>
+                        {projectedReview} review
+                      </strong>{" "}
+                      card{projectedSession === 1 ? "" : "s"} today (of {totalDue} due).{" "}
+                      <button
+                        type="button"
+                        onClick={() => setShowSettings(true)}
+                        className="underline"
+                        style={{
+                          background: "transparent",
+                          padding: 0,
+                          color: "var(--color-prax-cream)",
+                          fontSize: 12,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Adjust limits
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
