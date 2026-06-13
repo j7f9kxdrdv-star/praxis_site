@@ -1043,7 +1043,9 @@ function FlashcardSettingsModal({
 
     setSaved(true);
     await onSaved();
-    setTimeout(() => setSaved(false), 2000);
+    // Brief delay so the user registers the "✓ Saved" confirmation,
+    // then auto-close so they don't have to dismiss it themselves.
+    setTimeout(() => onClose(), 700);
   }
 
   return (
