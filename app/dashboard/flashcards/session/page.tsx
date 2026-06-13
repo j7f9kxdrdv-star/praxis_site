@@ -114,6 +114,22 @@ function SessionInner() {
   const [now, setNow] = useState(() => Date.now());
   const [done, setDone] = useState(false);
 
+  // When the queue loads empty in "due" mode, we want to explain why so
+  // the user doesn't see a generic blank screen. Two distinct causes:
+  // - "limit_reached": cards exist in the due pools but today's quota is
+  //   already spent
+  // - "nothing_due": no cards are actually due yet (caught up)
+  type EmptyReason = "limit_reached" | "nothing_due" | null;
+  const [emptyReason, setEmptyReason] = useState<EmptyReason>(null);
+  const [emptyContext, setEmptyContext] = useState<{
+    newToday: number;
+    reviewsToday: number;
+    newLimit: number;
+    reviewLimit: number;
+    poolNew: number;
+    poolReview: number;
+  } | null>(null);
+
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
@@ -209,6 +225,28 @@ function SessionInner() {
         const { newToday, reviewsToday } = await countTodaysReviews(user.id);
         const newQuota = Math.max(0, newLimit - newToday);
         const reviewQuota = Math.max(0, reviewLimit - reviewsToday);
+        // Record context so the empty state can explain why if the queue
+        // lands at zero. We classify "limit_reached" when at least one
+        // pool has cards but its quota is spent; otherwise "nothing_due".
+        const poolNew = newPool.length;
+        const poolReview = reviewPool.length;
+        const newTrimmed = poolNew > 0 && newQuota === 0;
+        const reviewTrimmed = poolReview > 0 && reviewQuota === 0;
+        if (poolNew + poolReview === 0) {
+          setEmptyReason("nothing_due");
+        } else if (newTrimmed || reviewTrimmed) {
+          setEmptyReason("limit_reached");
+        } else {
+          setEmptyReason(null);
+        }
+        setEmptyContext({
+          newToday,
+          reviewsToday,
+          newLimit,
+          reviewLimit,
+          poolNew,
+          poolReview,
+        });
         items = [
           ...newPool.slice(0, newQuota),
           ...reviewPool.slice(0, reviewQuota),
@@ -382,18 +420,61 @@ function SessionInner() {
   }
 
   if (queue.length === 0) {
+    // For "due" mode, give the user a contextual explanation + a way to
+    // unblock themselves. For starred/cram, fall back to the original
+    // generic empty message — those modes don't have daily caps applied.
+    const isLimitReached = mode === "due" && emptyReason === "limit_reached";
+    const isNothingDue = mode === "due" && emptyReason === "nothing_due";
+    const ctx = emptyContext;
+
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 text-center">
         <p className="text-as-primary font-headline text-xl mb-2">
-          {MODE_TITLES[mode]}
+          {isLimitReached
+            ? "You've hit today's limit"
+            : isNothingDue
+            ? "Caught up for today"
+            : MODE_TITLES[mode]}
         </p>
-        <p className="text-as-outline text-sm mb-6">{MODE_EMPTY[mode]}</p>
-        <Link
-          href="/dashboard/flashcards"
-          className="inline-block bg-as-primary text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-xl"
-        >
-          Back to Decks
-        </Link>
+        <p className="text-as-outline text-sm mb-6 max-w-md mx-auto leading-relaxed">
+          {isLimitReached && ctx ? (
+            <>
+              You&apos;ve done <strong>{ctx.newToday} of {ctx.newLimit}</strong>{" "}
+              new cards and <strong>{ctx.reviewsToday} of {ctx.reviewLimit}</strong>{" "}
+              reviews today. Spaced repetition works best when you stop here and
+              come back tomorrow — but you can push past the cap with Cram Mode
+              if you want to keep going.
+            </>
+          ) : isNothingDue ? (
+            <>
+              Nothing is due right now. New cards land based on your spaced-
+              repetition schedule — review more cards today to introduce new
+              ones, or come back later as cards cycle back.
+            </>
+          ) : (
+            MODE_EMPTY[mode]
+          )}
+        </p>
+        <div className="flex flex-col sm:flex-row gap-2.5 justify-center max-w-md mx-auto">
+          {(isLimitReached || isNothingDue) && (
+            <Link
+              href="/dashboard/flashcards/session?mode=cram"
+              className="inline-block bg-as-primary text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-xl"
+            >
+              Cram Mode
+            </Link>
+          )}
+          <Link
+            href="/dashboard/flashcards"
+            className={`inline-block text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-xl ${
+              isLimitReached || isNothingDue
+                ? "bg-as-surface-container-low text-as-primary"
+                : "bg-as-primary text-white"
+            }`}
+          >
+            {isLimitReached ? "Adjust Limits" : "Back to Decks"}
+          </Link>
+        </div>
       </div>
     );
   }
