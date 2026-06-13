@@ -132,11 +132,26 @@ function SessionInner() {
       }
       const cards = cardRows as Card[];
 
-      const { data: stateRows } = await supabase
-        .from("flashcard_user_state")
-        .select("flashcard_id, cloze_index, starred, suspended, interval_days, ease_factor, reps, lapses, next_review_at, last_rating, last_reviewed_at")
-        .eq("user_id", user.id)
-        .in("flashcard_id", cards.map((c) => c.id));
+      // Fetch every state row this user has. The previous
+      // .in("flashcard_id", cards.map((c) => c.id)) clause produced an
+      // ~80KB URL once the library grew past ~1k cards, which PostgREST
+      // silently truncated — many state rows got dropped, the session
+      // misclassified seen cards as "new," and the daily-limit projection
+      // came out wrong. .eq("user_id") is selective enough on its own.
+      // Also page through results to clear the default 1000-row cap.
+      type SessionStateRow = UserState;
+      const stateRows: SessionStateRow[] = [];
+      const STATE_PAGE = 1000;
+      for (let from = 0; ; from += STATE_PAGE) {
+        const { data, error } = await supabase
+          .from("flashcard_user_state")
+          .select("flashcard_id, cloze_index, starred, suspended, interval_days, ease_factor, reps, lapses, next_review_at, last_rating, last_reviewed_at")
+          .eq("user_id", user.id)
+          .range(from, from + STATE_PAGE - 1);
+        if (error || !data || data.length === 0) break;
+        stateRows.push(...(data as SessionStateRow[]));
+        if (data.length < STATE_PAGE) break;
+      }
 
       const stateMap = new Map<string, UserState>();
       (stateRows || []).forEach((s) =>

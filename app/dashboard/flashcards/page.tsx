@@ -110,7 +110,14 @@ export default function FlashcardsHub() {
         itemsByDeck.set(c.deck_id, (itemsByDeck.get(c.deck_id) || 0) + items);
       });
 
-      const allCardIds = (cardRows || []).map((c) => c.id);
+      // Fetch every state row this user has. We previously also filtered by
+      // .in("flashcard_id", allCardIds), but with ~2,200 cards in the library
+      // that IN clause produced an ~80KB URL that PostgREST silently
+      // truncated, causing many state rows to be dropped and decks to look
+      // "untouched" on this page while the deck detail page (which only
+      // filters by the small per-deck card list) showed accurate counts.
+      // The .eq("user_id") is selective enough on its own — each user only
+      // has state rows for cards they've actually touched.
       let stateRows: {
         flashcard_id: string;
         cloze_index: number;
@@ -118,21 +125,17 @@ export default function FlashcardsHub() {
         suspended: boolean;
         starred: boolean;
       }[] = [];
-      if (allCardIds.length > 0) {
-        // Page through state rows too — same 1000-row default cap applies
-        for (let from = 0; ; from += PAGE) {
-          const { data, error } = await supabase
-            .from("flashcard_user_state")
-            .select(
-              "flashcard_id, cloze_index, next_review_at, suspended, starred"
-            )
-            .eq("user_id", user.id)
-            .in("flashcard_id", allCardIds)
-            .range(from, from + PAGE - 1);
-          if (error || !data || data.length === 0) break;
-          stateRows.push(...data);
-          if (data.length < PAGE) break;
-        }
+      for (let from = 0; ; from += PAGE) {
+        const { data, error } = await supabase
+          .from("flashcard_user_state")
+          .select(
+            "flashcard_id, cloze_index, next_review_at, suspended, starred"
+          )
+          .eq("user_id", user.id)
+          .range(from, from + PAGE - 1);
+        if (error || !data || data.length === 0) break;
+        stateRows.push(...data);
+        if (data.length < PAGE) break;
       }
 
       const cardToDeck = new Map<string, string>();

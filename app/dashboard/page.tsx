@@ -389,6 +389,11 @@ export default function DashboardHome() {
         }
       }
 
+      // Fetch every state row this user has. The previous .in("flashcard_id",
+      // cardIds) filter produced an URL larger than PostgREST allowed when
+      // the library grew past ~1k cards, which silently truncated the
+      // result set and caused the dashboard counters to under-report
+      // reviewed cards. .eq("user_id") is selective enough on its own.
       let stateRows: {
         flashcard_id: string;
         cloze_index: number;
@@ -396,13 +401,11 @@ export default function DashboardHome() {
         suspended: boolean;
       }[] = [];
       if (cardRows.length > 0) {
-        const cardIds = cardRows.map((c) => c.id);
         for (let from = 0; ; from += PAGE) {
           const { data, error } = await supabase
             .from("flashcard_user_state")
             .select("flashcard_id, cloze_index, next_review_at, suspended")
             .eq("user_id", user.id)
-            .in("flashcard_id", cardIds)
             .range(from, from + PAGE - 1);
           if (error || !data || data.length === 0) break;
           stateRows.push(...data);
