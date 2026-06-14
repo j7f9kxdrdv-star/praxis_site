@@ -17,6 +17,7 @@
  *     "botanical" — Laurel wreath SVG flanking the card.
  *     "halo"      — Soft radial glow + concentric rings centered on card.
  *     "glyphs"    — Tiled Greek letter pattern (λ Ψ φ Ω). Default flashcards.
+ *     "elements"  — Tiled element-symbol pattern (C H Na Mg Fe O). Practice.
  *     "stack"     — Ghosted paper cards behind active one.
  *     "contour"   — Topographic ellipses radiating from center.
  *
@@ -36,6 +37,7 @@ export type BgVariant =
   | "botanical"
   | "halo"
   | "glyphs"
+  | "elements"
   | "stack"
   | "contour";
 
@@ -60,6 +62,7 @@ export default function MolecularBg({
     botanical: 1,
     halo: 1,
     glyphs: 1,
+    elements: 1,
     stack: 1,
     contour: 1,
   };
@@ -100,6 +103,7 @@ export default function MolecularBg({
       {variant === "botanical" && <BotanicalTreatment />}
       {variant === "halo" && <HaloTreatment />}
       {variant === "glyphs" && <GlyphsTreatment />}
+      {variant === "elements" && <ElementsTreatment />}
       {variant === "stack" && <StackTreatment />}
       {variant === "contour" && <ContourTreatment />}
     </div>
@@ -712,6 +716,108 @@ function GlyphsTreatment() {
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#prax-glyphs)" />
+    </svg>
+  );
+}
+
+/** Treatment D-element: Tiled element-symbol pattern (C H Na Mg Fe O P K) —
+ * practice / questions hub default. Mirrors the GlyphsTreatment scatter and
+ * opacity ramp so the watermark feels like a sibling to the Greek-letter
+ * pattern used on Flashcards, but reads as chemistry at a glance. */
+function ElementsTreatment() {
+  return (
+    <svg
+      className="absolute inset-0 h-full w-full"
+      preserveAspectRatio="xMidYMid slice"
+      style={{ userSelect: "none" }}
+    >
+      <defs>
+        <pattern
+          id="prax-elements"
+          x="0"
+          y="0"
+          width="220"
+          height="220"
+          patternUnits="userSpaceOnUse"
+        >
+          <text
+            x="10"
+            y="50"
+            fontFamily="var(--font-fraunces), Fraunces, serif"
+            fontSize="40"
+            fill="rgba(0,54,48,.07)"
+          >
+            C
+          </text>
+          <text
+            x="80"
+            y="105"
+            fontFamily="var(--font-fraunces), Fraunces, serif"
+            fontSize="34"
+            fill="rgba(0,54,48,.055)"
+            fontStyle="italic"
+          >
+            Na
+          </text>
+          <text
+            x="170"
+            y="60"
+            fontFamily="var(--font-fraunces), Fraunces, serif"
+            fontSize="26"
+            fill="rgba(0,54,48,.05)"
+          >
+            H
+          </text>
+          <text
+            x="40"
+            y="170"
+            fontFamily="var(--font-fraunces), Fraunces, serif"
+            fontSize="30"
+            fill="rgba(0,54,48,.05)"
+            fontStyle="italic"
+          >
+            Mg
+          </text>
+          <text
+            x="150"
+            y="160"
+            fontFamily="var(--font-fraunces), Fraunces, serif"
+            fontSize="24"
+            fill="rgba(0,54,48,.045)"
+          >
+            Fe
+          </text>
+          <text
+            x="120"
+            y="200"
+            fontFamily="var(--font-fraunces), Fraunces, serif"
+            fontSize="22"
+            fill="rgba(0,54,48,.04)"
+            fontStyle="italic"
+          >
+            O
+          </text>
+          <text
+            x="190"
+            y="115"
+            fontFamily="var(--font-fraunces), Fraunces, serif"
+            fontSize="20"
+            fill="rgba(0,54,48,.04)"
+          >
+            K
+          </text>
+          <text
+            x="0"
+            y="115"
+            fontFamily="var(--font-fraunces), Fraunces, serif"
+            fontSize="22"
+            fill="rgba(0,54,48,.045)"
+          >
+            P
+          </text>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#prax-elements)" />
     </svg>
   );
 }
