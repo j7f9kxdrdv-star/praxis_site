@@ -56,6 +56,13 @@ export default function PracticeHub() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Most recent unfinished session, if any (for the Resume card)
+  const [resumable, setResumable] = useState<{
+    id: string;
+    current_index: number;
+    total_questions: number;
+  } | null>(null);
+
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   // Builder modal state
@@ -122,10 +129,24 @@ export default function PracticeHub() {
         .eq("user_id", user.id)
         .lte("next_review_date", today);
 
+      // Most recent unfinished session → drives the Resume card.
+      const { data: openSession } = await supabase
+        .from("practice_sessions")
+        .select("id, current_index, total_questions")
+        .eq("user_id", user.id)
+        .eq("status", "in_progress")
+        .order("last_active_at", { ascending: false, nullsFirst: false })
+        .order("started_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
       setQuestions(qRows);
       setLatestCorrect(correctMap);
       setFlaggedCount(flaggedSet.size);
       setDueCount(reviewCount || 0);
+      setResumable(
+        openSession && openSession.total_questions > 0 ? openSession : null
+      );
       setDataLoaded(true);
     }
     load();
@@ -209,6 +230,11 @@ export default function PracticeHub() {
         session_type: sessionType,
         total_questions: selectedIds.length,
         status: "in_progress",
+        // Persist the ordered question list + mode on the row so the
+        // session survives a full browser close and can be resumed.
+        question_ids: selectedIds,
+        mode: mode ?? null,
+        last_active_at: new Date().toISOString(),
       })
       .select("id")
       .single();
@@ -403,6 +429,57 @@ export default function PracticeHub() {
           subtitle="Sharpen recall under timed pressure. Build a custom session or pull a quick ten."
           right={<ActiveNowPill />}
         />
+
+        {/* ─────────── RESUME BANNER ─────────── */}
+        {resumable && (
+          <button
+            onClick={() =>
+              router.push(`/dashboard/practice/session/${resumable.id}`)
+            }
+            className="w-full text-left mb-6 flex items-center gap-4 transition-colors"
+            style={{
+              background: "var(--color-prax-cream-card)",
+              border: "1px solid var(--color-prax-green)",
+              borderRadius: 14,
+              padding: "16px 20px",
+            }}
+          >
+            <div
+              className="grid place-items-center rounded-full shrink-0"
+              style={{
+                width: 38,
+                height: 38,
+                background: "var(--color-prax-green)",
+                color: "var(--color-prax-cream)",
+              }}
+            >
+              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 3l14 9-14 9V3z" />
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <SmallCaps style={{ color: "var(--color-prax-green)" }}>
+                Resume your session
+              </SmallCaps>
+              <div
+                className="mt-1"
+                style={{
+                  fontFamily: "var(--font-prax-serif)",
+                  fontSize: 17,
+                  color: "var(--color-prax-green)",
+                }}
+              >
+                Pick up at question {Math.min(resumable.current_index + 1, resumable.total_questions)} of {resumable.total_questions}
+              </div>
+            </div>
+            <span
+              className="shrink-0 font-semibold"
+              style={{ fontSize: 12, color: "var(--color-prax-green)" }}
+            >
+              Continue →
+            </span>
+          </button>
+        )}
 
         {/* ─────────── EMPTY STATE ─────────── */}
         {noQuestions && (

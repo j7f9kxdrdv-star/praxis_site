@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
+import MathText from "@/components/MathText";
 
 interface Passage {
   id: string;
@@ -25,6 +26,12 @@ interface Question {
 }
 
 type SessionState = "answering" | "feedback" | "complete";
+
+/* MCAT-style exam palette (copyright-safe lookalike — no AAMC assets/marks) */
+const C_BANNER = "#1670b8";
+const C_TOOL = "#2f7dc0";
+const C_FOOT = "#14528a";
+const C_ACCENT = "#1670b8";
 
 export default function PracticeSession() {
   const params = useParams();
@@ -54,15 +61,36 @@ export default function PracticeSession() {
   // Navigation overlay
   const [showNav, setShowNav] = useState(false);
 
-  // Strikethrough state per question
+  // Strikethrough + highlight tools
   const [strikethroughs, setStrikethroughs] = useState<Record<number, Set<string>>>({});
   const [strikethroughMode, setStrikethroughMode] = useState(false);
+  const [highlightMode, setHighlightMode] = useState(false);
+
+  // Pause/resume bookkeeping
+  const [pausing, setPausing] = useState(false);
+
+  // Refs so progress-persistence reads live values without stale closures
+  const elapsedRef = useRef(0);
+  const currentIndexRef = useRef(0);
+  const flaggedRef = useRef<Set<number>>(new Set());
+  const modeRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
+  useEffect(() => {
+    flaggedRef.current = flagged;
+  }, [flagged]);
 
   // Timer effect
   useEffect(() => {
     if (timerRunning) {
       timerRef.current = setInterval(() => {
-        setElapsedSeconds((prev) => prev + 1);
+        setElapsedSeconds((prev) => {
+          const n = prev + 1;
+          elapsedRef.current = n;
+          return n;
+        });
       }, 1000);
     }
     return () => {
@@ -77,16 +105,56 @@ export default function PracticeSession() {
     return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
   }
 
-  // Load questions
+  // ── Persist resume state to the session row ──
+  const persistProgress = useCallback(
+    async (indexOverride?: number) => {
+      await supabase
+        .from("practice_sessions")
+        .update({
+          current_index: indexOverride ?? currentIndexRef.current,
+          elapsed_seconds: elapsedRef.current,
+          flagged_indices: Array.from(flaggedRef.current),
+          last_active_at: new Date().toISOString(),
+        })
+        .eq("id", sessionId);
+    },
+    [sessionId]
+  );
+
+  // ── Load (fresh start OR resume) ──
   useEffect(() => {
     async function load() {
-      const stored = sessionStorage.getItem(`session_${sessionId}`);
-      if (!stored) {
+      const { data: sess } = await supabase
+        .from("practice_sessions")
+        .select(
+          "question_ids, status, current_index, elapsed_seconds, flagged_indices, mode"
+        )
+        .eq("id", sessionId)
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (!sess) {
+        router.push("/dashboard/practice");
+        return;
+      }
+      if (sess.status === "completed") {
         router.push("/dashboard/practice");
         return;
       }
 
-      const questionIds: string[] = JSON.parse(stored);
+      // Question order: prefer the DB column (survives a browser close);
+      // fall back to sessionStorage for sessions created before the migration.
+      let questionIds: string[] = Array.isArray(sess.question_ids)
+        ? (sess.question_ids as string[])
+        : [];
+      if (questionIds.length === 0) {
+        const stored = sessionStorage.getItem(`session_${sessionId}`);
+        if (stored) questionIds = JSON.parse(stored);
+      }
+      if (questionIds.length === 0) {
+        router.push("/dashboard/practice");
+        return;
+      }
 
       const { data } = await supabase
         .from("questions")
@@ -117,13 +185,54 @@ export default function PracticeSession() {
         }
       }
 
+      // Reconstruct prior answers (so resume shows progress + correct count)
+      const { data: attempts } = await supabase
+        .from("question_attempts")
+        .select("question_id, selected_answer, is_correct")
+        .eq("user_id", user.id)
+        .eq("session_id", sessionId);
+
+      const answeredSet = new Set<string>();
+      const restored = (attempts || []).map((a) => {
+        answeredSet.add(a.question_id);
+        const q = ordered.find((qq) => qq.id === a.question_id);
+        return {
+          questionId: a.question_id,
+          selected: a.selected_answer as string,
+          correct: q?.correct_answer ?? "",
+          isCorrect: a.is_correct as boolean,
+        };
+      });
+
+      // Restore timer / flags / mode
+      const elapsed = sess.elapsed_seconds || 0;
+      setElapsedSeconds(elapsed);
+      elapsedRef.current = elapsed;
+      const fl = new Set<number>(
+        Array.isArray(sess.flagged_indices) ? (sess.flagged_indices as number[]) : []
+      );
+      setFlagged(fl);
+      flaggedRef.current = fl;
+      modeRef.current = sess.mode ?? null;
+      setResults(restored);
       setQuestions(ordered);
+
+      // Resume at the first unanswered question (intuitive "continue").
+      const firstUnanswered = ordered.findIndex((q) => !answeredSet.has(q.id));
+      if (firstUnanswered === -1) {
+        // Everything answered already — go straight to results.
+        setSessionState("complete");
+        setLoading(false);
+        return;
+      }
+      setCurrentIndex(firstUnanswered);
+      currentIndexRef.current = firstUnanswered;
       setLoading(false);
       setQuestionStartTime(Date.now());
     }
 
     load();
-  }, [sessionId, router]);
+  }, [sessionId, router, user.id]);
 
   const currentQuestion = questions[currentIndex];
 
@@ -132,8 +241,7 @@ export default function PracticeSession() {
 
     const isCorrect = selectedAnswer === currentQuestion.correct_answer;
     const timeSpent = Math.round((Date.now() - questionStartTime) / 1000);
-    const isReviewMode =
-      sessionStorage.getItem(`session_${sessionId}_mode`) === "review";
+    const isReviewMode = modeRef.current === "review";
 
     await supabase.from("question_attempts").insert({
       user_id: user.id,
@@ -203,7 +311,9 @@ export default function PracticeSession() {
 
     setSessionState("feedback");
     setTimerRunning(false);
-  }, [selectedAnswer, currentQuestion, questionStartTime, user.id, sessionId]);
+    // Save elapsed/flags now that this question is recorded.
+    persistProgress();
+  }, [selectedAnswer, currentQuestion, questionStartTime, user.id, sessionId, persistProgress]);
 
   function goToQuestion(idx: number) {
     setCurrentIndex(idx);
@@ -213,6 +323,7 @@ export default function PracticeSession() {
     setShowNav(false);
     setStrikethroughMode(false);
     setTimerRunning(true);
+    persistProgress(idx);
   }
 
   async function nextQuestion() {
@@ -228,6 +339,9 @@ export default function PracticeSession() {
           status: "completed",
           correct_count: correctCount,
           completed_at: new Date().toISOString(),
+          elapsed_seconds: elapsedRef.current,
+          current_index: currentIndex,
+          last_active_at: new Date().toISOString(),
         })
         .eq("id", sessionId);
 
@@ -259,19 +373,30 @@ export default function PracticeSession() {
       return;
     }
 
-    setCurrentIndex((prev) => prev + 1);
+    const nextIdx = currentIndex + 1;
+    setCurrentIndex(nextIdx);
     setSelectedAnswer(null);
     setSessionState("answering");
     setQuestionStartTime(Date.now());
     setStrikethroughMode(false);
     setTimerRunning(true);
+    persistProgress(nextIdx);
   }
+
+  // ── Pause & exit: save and return to the hub ──
+  const pauseAndExit = useCallback(async () => {
+    setPausing(true);
+    setTimerRunning(false);
+    await persistProgress();
+    router.push("/dashboard/practice");
+  }, [persistProgress, router]);
 
   function toggleFlag() {
     setFlagged((prev) => {
       const next = new Set(prev);
       if (next.has(currentIndex)) next.delete(currentIndex);
       else next.add(currentIndex);
+      flaggedRef.current = next;
       return next;
     });
   }
@@ -286,13 +411,33 @@ export default function PracticeSession() {
     });
   }
 
+  // ── Highlight selected text (yellow) when highlight mode is on ──
+  function handleHighlight() {
+    if (!highlightMode) return;
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
+    try {
+      const range = sel.getRangeAt(0);
+      const mark = document.createElement("mark");
+      mark.style.background = "#fde68a";
+      mark.style.color = "inherit";
+      range.surroundContents(mark);
+      sel.removeAllRanges();
+    } catch {
+      // Selection crossed element boundaries — ignore.
+    }
+  }
+
   // Loading state
   if (loading) {
     return (
-      <div className="fixed inset-0 z-[200] bg-[#4a5d8a] flex items-center justify-center">
+      <div
+        className="fixed inset-0 z-[200] flex items-center justify-center"
+        style={{ background: C_BANNER }}
+      >
         <div className="text-center">
           <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-sm text-white/80">Loading your exam...</p>
+          <p className="text-sm text-white/80">Loading your exam…</p>
         </div>
       </div>
     );
@@ -303,7 +448,7 @@ export default function PracticeSession() {
     const allResults = results;
     const correctCount = allResults.filter((r) => r.isCorrect).length;
     const total = allResults.length;
-    const pct = Math.round((correctCount / total) * 100);
+    const pct = total > 0 ? Math.round((correctCount / total) * 100) : 0;
 
     return (
       <div className="fixed inset-0 z-[200] bg-as-surface flex items-center justify-center p-4">
@@ -384,13 +529,20 @@ export default function PracticeSession() {
   return (
     <div className="fixed inset-0 z-[200] flex flex-col bg-[#e8e8e8] font-sans text-[14px]">
       {/* ===== TOP BAR ===== */}
-      <div className="bg-[#4a5d8a] text-white px-4 py-1.5 flex items-center justify-between text-xs shrink-0">
+      <div
+        className="text-white px-4 py-2 flex items-center justify-between text-xs shrink-0"
+        style={{ background: C_BANNER }}
+      >
         <div className="flex items-center gap-2">
-          <span className="font-semibold">Praxist Prep — Practice Exam</span>
+          <span className="font-semibold text-[14px]">Praxist Prep</span>
+          <span className="text-white/70">— Practice Exam</span>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-white/70">Timer:</span>
+        <div className="flex items-center gap-5">
+          <div className="flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 2" strokeLinecap="round" />
+            </svg>
             <button
               onClick={() => setTimerRunning(!timerRunning)}
               className="hover:text-white/80 transition-colors"
@@ -402,19 +554,43 @@ export default function PracticeSession() {
               {formatTime(elapsedSeconds)}
             </span>
           </div>
-          <span className="text-white/70">
-            {currentIndex + 1} of {questions.length}
-          </span>
+          <div className="flex items-center gap-1.5 text-white/85">
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z" />
+              <path d="M14 3v5h5" />
+            </svg>
+            <span>
+              {currentIndex + 1} of {questions.length}
+            </span>
+          </div>
         </div>
       </div>
 
       {/* ===== TOOLBAR ===== */}
-      <div className="bg-[#6b7db5] text-white px-4 py-1 flex items-center justify-between text-xs shrink-0">
-        <div className="flex items-center gap-4">
+      <div
+        className="text-white px-4 py-1 flex items-center justify-between text-xs shrink-0"
+        style={{ background: C_TOOL, borderTop: "1px solid #5a9bd0" }}
+      >
+        <div className="flex items-center gap-3">
           <button
-            onClick={() => setStrikethroughMode(!strikethroughMode)}
+            onClick={() => {
+              setHighlightMode((v) => !v);
+              setStrikethroughMode(false);
+            }}
+            className={`flex items-center gap-1.5 px-2 py-0.5 rounded transition-colors ${
+              highlightMode ? "bg-white/25" : "hover:bg-white/10"
+            }`}
+          >
+            <span className="w-3 h-3 rounded-sm border border-yellow-200" style={{ background: "#f5d21a" }} />
+            Highlight
+          </button>
+          <button
+            onClick={() => {
+              setStrikethroughMode((v) => !v);
+              setHighlightMode(false);
+            }}
             className={`flex items-center gap-1 px-2 py-0.5 rounded transition-colors ${
-              strikethroughMode ? "bg-white/20" : "hover:bg-white/10"
+              strikethroughMode ? "bg-white/25" : "hover:bg-white/10"
             }`}
           >
             <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -427,7 +603,7 @@ export default function PracticeSession() {
         <button
           onClick={toggleFlag}
           className={`flex items-center gap-1 px-2 py-0.5 rounded transition-colors ${
-            flagged.has(currentIndex) ? "bg-yellow-500/30 text-yellow-200" : "hover:bg-white/10"
+            flagged.has(currentIndex) ? "bg-yellow-500/30 text-yellow-100" : "hover:bg-white/10"
           }`}
         >
           <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill={flagged.has(currentIndex) ? "currentColor" : "none"} stroke="currentColor" strokeWidth={2}>
@@ -442,11 +618,11 @@ export default function PracticeSession() {
       <div className="flex-1 flex overflow-hidden">
         {/* LEFT PANEL — Passage or instructions */}
         <div className="w-1/2 bg-white border-r border-[#ccc] overflow-y-auto">
-          <div className="p-6">
+          <div className="p-6" onMouseUp={handleHighlight}>
             {hasPassage ? (
               <>
                 {passages[currentQuestion.passage_id!].title && (
-                  <p className="text-xs font-bold uppercase tracking-wider text-[#4a5d8a] mb-3">
+                  <p className="text-xs font-bold uppercase tracking-wider text-[#1670b8] mb-3">
                     {passages[currentQuestion.passage_id!].title}
                   </p>
                 )}
@@ -455,22 +631,25 @@ export default function PracticeSession() {
                 </div>
               </>
             ) : (
-              <p className="text-[14px] font-bold text-[#333]">
-                Questions {currentIndex + 1} - {questions.length} do not refer to a passage and are independent of each other.
-              </p>
+              <div className="h-full flex items-center justify-center text-center">
+                <p className="text-[13px] text-[#888] max-w-[260px] leading-relaxed">
+                  These questions are not based on a passage and are
+                  independent of each other.
+                </p>
+              </div>
             )}
           </div>
         </div>
 
         {/* RIGHT PANEL — Question + Answers */}
         <div className="w-1/2 bg-white overflow-y-auto">
-          <div className="p-6">
+          <div className="p-6" onMouseUp={handleHighlight}>
             <h2 className="font-bold text-[14px] text-[#333] mb-4">
               Question {currentIndex + 1}
             </h2>
 
             <p className="text-[14px] text-[#333] leading-relaxed mb-6">
-              {currentQuestion.question_text}
+              <MathText text={currentQuestion.question_text} />
             </p>
 
             {/* Answer choices */}
@@ -482,7 +661,7 @@ export default function PracticeSession() {
                 const isStruckThrough = currentStrikethroughs.has(option.label);
 
                 let indicatorIcon = null;
-                let textColor = "text-[#333]";
+                const textColor = "text-[#333]";
 
                 if (showFeedback) {
                   if (isCorrect) {
@@ -503,14 +682,14 @@ export default function PracticeSession() {
                       if (sessionState === "feedback") return;
                       if (strikethroughMode) {
                         toggleStrikethrough(option.label);
-                      } else {
+                      } else if (!highlightMode) {
                         setSelectedAnswer(option.label);
                       }
                     }}
                     disabled={sessionState === "feedback"}
                     className={`w-full text-left flex items-start gap-2.5 py-2 px-1 transition-colors ${
                       sessionState === "answering" && !strikethroughMode
-                        ? "hover:bg-[#f0f0f0] cursor-pointer"
+                        ? "hover:bg-[#eef3f9] cursor-pointer"
                         : sessionState === "answering" && strikethroughMode
                         ? "hover:bg-yellow-50 cursor-pointer"
                         : "cursor-default"
@@ -529,7 +708,7 @@ export default function PracticeSession() {
                           : showFeedback && isSelected && !isCorrect
                           ? "border-red-500"
                           : isSelected
-                          ? "border-[#4a5d8a] bg-[#4a5d8a]"
+                          ? "border-[#1670b8] bg-[#1670b8]"
                           : "border-[#999]"
                       }`}
                     >
@@ -549,7 +728,8 @@ export default function PracticeSession() {
                           : ""
                       }`}
                     >
-                      <strong>{option.label}.</strong> {option.text.split(" — ")[0]}
+                      <strong>{option.label}.</strong>{" "}
+                      <MathText text={option.text.split(" — ")[0]} />
                     </span>
                   </button>
                 );
@@ -561,7 +741,8 @@ export default function PracticeSession() {
               <button
                 onClick={submitAnswer}
                 disabled={!selectedAnswer}
-                className="mt-6 px-6 py-2 bg-[#4a5d8a] text-white text-sm font-semibold rounded hover:bg-[#3d4f75] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="mt-6 px-6 py-2 text-white text-sm font-semibold rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                style={{ background: C_ACCENT }}
               >
                 Submit Answer
               </button>
@@ -602,7 +783,13 @@ export default function PracticeSession() {
 
                 {/* Main explanation — show only content before the first (Choice X) block */}
                 <div className="text-[13px] text-[#333] leading-relaxed pb-4">
-                  <p>{currentQuestion.explanation?.split(/\n\n?\(Choice [A-D]\)/)[0].trim()}</p>
+                  <p>
+                    <MathText
+                      text={currentQuestion.explanation
+                        ?.split(/\n\n?\(Choice [A-D]\)/)[0]
+                        .trim()}
+                    />
+                  </p>
                 </div>
 
                 {/* Per-choice breakdown — incorrect answers only */}
@@ -626,7 +813,7 @@ export default function PracticeSession() {
                         <strong className="text-red-600">
                           Choice {option.label}:
                         </strong>{" "}
-                        {cleanAnswer}
+                        <MathText text={cleanAnswer} />
                       </p>
                     );
                   })}
@@ -659,7 +846,8 @@ export default function PracticeSession() {
                 {/* Next question button */}
                 <button
                   onClick={nextQuestion}
-                  className="mt-4 px-6 py-2 bg-[#4a5d8a] text-white text-sm font-semibold rounded hover:bg-[#3d4f75] transition-colors"
+                  className="mt-4 px-6 py-2 text-white text-sm font-semibold rounded transition-colors"
+                  style={{ background: C_ACCENT }}
                 >
                   {currentIndex + 1 >= questions.length
                     ? "See Results"
@@ -673,7 +861,10 @@ export default function PracticeSession() {
       </div>
 
       {/* ===== BOTTOM BAR ===== */}
-      <div className="bg-[#4a5d8a] text-white px-4 py-1.5 flex items-center justify-between text-xs shrink-0">
+      <div
+        className="text-white px-4 py-1.5 flex items-center justify-between text-xs shrink-0"
+        style={{ background: C_FOOT }}
+      >
         <div className="flex items-center gap-2">
           <button
             onClick={() =>
@@ -693,6 +884,18 @@ export default function PracticeSession() {
             </svg>
             Periodic Table
           </button>
+          <button
+            onClick={pauseAndExit}
+            disabled={pausing}
+            className="flex items-center gap-1.5 hover:bg-white/10 px-2 py-0.5 rounded transition-colors disabled:opacity-50"
+            title="Save your progress and exit; resume later from Practice"
+          >
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <rect x="6" y="5" width="4" height="14" rx="1" />
+              <rect x="14" y="5" width="4" height="14" rx="1" />
+            </svg>
+            {pausing ? "Saving…" : "Pause & exit"}
+          </button>
         </div>
 
         <div className="flex items-center gap-2">
@@ -704,7 +907,7 @@ export default function PracticeSession() {
               <rect x="3" y="3" width="18" height="18" rx="2" />
               <path d="M3 9h18M9 3v18" />
             </svg>
-            Navigation
+            Review Screen
           </button>
 
           {currentIndex + 1 < questions.length && sessionState === "answering" && (
@@ -737,8 +940,11 @@ export default function PracticeSession() {
       {showNav && (
         <div className="fixed inset-0 z-[300] flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden">
-            <div className="bg-[#4a5d8a] text-white px-4 py-2 flex items-center justify-between">
-              <span className="font-semibold text-sm">Question Navigation</span>
+            <div
+              className="text-white px-4 py-2 flex items-center justify-between"
+              style={{ background: C_FOOT }}
+            >
+              <span className="font-semibold text-sm">Review Screen</span>
               <button
                 onClick={() => setShowNav(false)}
                 className="hover:bg-white/10 p-1 rounded"
@@ -764,7 +970,7 @@ export default function PracticeSession() {
                       disabled={isAnswered}
                       className={`relative w-full aspect-square rounded flex items-center justify-center text-sm font-semibold transition-colors ${
                         isCurrent
-                          ? "bg-[#4a5d8a] text-white"
+                          ? "bg-[#1670b8] text-white"
                           : isAnswered
                           ? "bg-[#ccc] text-white cursor-not-allowed"
                           : "bg-[#f0f0f0] text-[#333] hover:bg-[#ddd]"
@@ -780,7 +986,7 @@ export default function PracticeSession() {
               </div>
               <div className="flex items-center gap-4 text-xs text-[#666] border-t pt-3">
                 <div className="flex items-center gap-1.5">
-                  <span className="w-3 h-3 rounded bg-[#4a5d8a]" />
+                  <span className="w-3 h-3 rounded bg-[#1670b8]" />
                   Current
                 </div>
                 <div className="flex items-center gap-1.5">
