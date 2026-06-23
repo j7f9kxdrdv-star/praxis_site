@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
 import MathText from "@/components/MathText";
+import QuestionFigure from "@/components/QuestionFigure";
 
 interface Passage {
   id: string;
@@ -23,6 +24,8 @@ interface Question {
   correct_answer: string;
   explanation: string;
   difficulty: string;
+  figure_svg?: string | null;
+  figure_url?: string | null;
 }
 
 type SessionState = "answering" | "feedback" | "complete";
@@ -651,6 +654,12 @@ export default function PracticeSession() {
             <p className="text-[14px] text-[#333] leading-relaxed mb-6">
               <MathText text={currentQuestion.question_text} />
             </p>
+
+            {/* Optional figure (inline original SVG, or hosted image), between stem and choices */}
+            <QuestionFigure
+              svg={currentQuestion.figure_svg}
+              url={currentQuestion.figure_url}
+            />
 
             {/* Answer choices */}
             <div className="space-y-2">
