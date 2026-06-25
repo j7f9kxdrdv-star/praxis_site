@@ -225,7 +225,10 @@ export default function FlashcardsHub() {
       });
 
       setDecks(enriched);
-      setTotalDue(urgentAll + soonAll + laterAll);
+      // "Cards due" = the now-actionable queue (unseen + due). NOT soon/later:
+      // a reviewed card just reschedules from "due" -> "soon/later", so including
+      // them froze the headline. The full library total lives in totalItems.
+      setTotalDue(urgentAll);
       setTotalUrgent(urgentAll);
       setTotalSoon(soonAll);
       setTotalLater(laterAll);
