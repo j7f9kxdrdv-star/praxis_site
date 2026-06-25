@@ -416,11 +416,7 @@ export default function StudyPage() {
                 </svg>
                 Exit
               </Link>
-              <span className="justify-self-center font-headline text-base text-as-primary tabular-nums">
-                <span className="text-as-primary">{index + 1}</span>
-                <span className="text-as-outline/60 mx-1.5">/</span>
-                <span className="text-as-outline">{queue.length}</span>
-              </span>
+              <span className="justify-self-center" aria-hidden="true" />
               <button
                 onClick={toggleStar}
                 aria-label={starred ? "Unstar card" : "Star card"}
