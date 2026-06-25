@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import { useDashboard } from "./DashboardShell";
 
 interface NavItem {
@@ -111,7 +112,13 @@ function formatTestDate(dateStr: string | null): string | null {
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { profile, user } = useDashboard();
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.push("/login");
+  }
 
   const initial =
     (profile?.first_name?.[0] ||
@@ -327,6 +334,22 @@ export default function Sidebar() {
             >
               Settings
             </Link>
+            <span style={{ color: "var(--color-prax-ink-mute)" }}>·</span>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="hover:underline cursor-pointer"
+              style={{
+                color: "var(--color-prax-ink-mute)",
+                background: "none",
+                border: "none",
+                padding: 0,
+                font: "inherit",
+                letterSpacing: "0.08em",
+              }}
+            >
+              Log out
+            </button>
           </div>
         </div>
       </div>
