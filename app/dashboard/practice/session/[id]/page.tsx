@@ -51,7 +51,9 @@ export default function PracticeSession() {
     { questionId: string; selected: string; correct: string; isCorrect: boolean }[]
   >([]);
   const [loading, setLoading] = useState(true);
-  const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
+  // Per-question "time spent" is derived from the pause-aware session timer
+  // (delta since the question opened), so paused seconds are never counted.
+  const [lastQuestionSeconds, setLastQuestionSeconds] = useState(0);
 
   // Timer
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
@@ -74,6 +76,8 @@ export default function PracticeSession() {
 
   // Refs so progress-persistence reads live values without stale closures
   const elapsedRef = useRef(0);
+  // Pause-aware baseline: value of elapsedRef when the current question opened.
+  const questionStartElapsedRef = useRef(0);
   const currentIndexRef = useRef(0);
   const flaggedRef = useRef<Set<number>>(new Set());
   const modeRef = useRef<string | null>(null);
@@ -231,7 +235,7 @@ export default function PracticeSession() {
       setCurrentIndex(firstUnanswered);
       currentIndexRef.current = firstUnanswered;
       setLoading(false);
-      setQuestionStartTime(Date.now());
+      questionStartElapsedRef.current = elapsedRef.current;
     }
 
     load();
@@ -243,7 +247,10 @@ export default function PracticeSession() {
     if (!selectedAnswer || !currentQuestion) return;
 
     const isCorrect = selectedAnswer === currentQuestion.correct_answer;
-    const timeSpent = Math.round((Date.now() - questionStartTime) / 1000);
+    // Active (unpaused) seconds on this question = how much the pause-aware
+    // session timer advanced since the question opened.
+    const timeSpent = Math.max(0, elapsedRef.current - questionStartElapsedRef.current);
+    setLastQuestionSeconds(timeSpent);
     const isReviewMode = modeRef.current === "review";
 
     await supabase.from("question_attempts").insert({
@@ -254,6 +261,28 @@ export default function PracticeSession() {
       is_correct: isCorrect,
       time_spent_seconds: timeSpent,
     });
+
+    // Credit today's activity as soon as a question is answered. The streak is
+    // "days you studied," so it should count even if the set isn't finished.
+    const today = new Date().toISOString().split("T")[0];
+    const { data: todayActivity } = await supabase
+      .from("daily_activity")
+      .select("id, questions_completed")
+      .eq("user_id", user.id)
+      .eq("activity_date", today)
+      .maybeSingle();
+    if (todayActivity) {
+      await supabase
+        .from("daily_activity")
+        .update({ questions_completed: (todayActivity.questions_completed || 0) + 1 })
+        .eq("id", todayActivity.id);
+    } else {
+      await supabase.from("daily_activity").insert({
+        user_id: user.id,
+        activity_date: today,
+        questions_completed: 1,
+      });
+    }
 
     if (!isCorrect) {
       await supabase.from("review_schedule").upsert(
@@ -316,13 +345,13 @@ export default function PracticeSession() {
     setTimerRunning(false);
     // Save elapsed/flags now that this question is recorded.
     persistProgress();
-  }, [selectedAnswer, currentQuestion, questionStartTime, user.id, sessionId, persistProgress]);
+  }, [selectedAnswer, currentQuestion, user.id, sessionId, persistProgress]);
 
   function goToQuestion(idx: number) {
     setCurrentIndex(idx);
     setSelectedAnswer(null);
     setSessionState("answering");
-    setQuestionStartTime(Date.now());
+    questionStartElapsedRef.current = elapsedRef.current;
     setShowNav(false);
     setStrikethroughMode(false);
     setTimerRunning(true);
@@ -348,30 +377,8 @@ export default function PracticeSession() {
         })
         .eq("id", sessionId);
 
-      const today = new Date().toISOString().split("T")[0];
-      const { data: existing } = await supabase
-        .from("daily_activity")
-        .select("*")
-        .eq("user_id", user.id)
-        .eq("activity_date", today)
-        .single();
-
-      if (existing) {
-        await supabase
-          .from("daily_activity")
-          .update({
-            questions_completed:
-              existing.questions_completed + questions.length,
-          })
-          .eq("id", existing.id);
-      } else {
-        await supabase.from("daily_activity").insert({
-          user_id: user.id,
-          activity_date: today,
-          questions_completed: questions.length,
-        });
-      }
-
+      // daily_activity is now credited per-answered-question in submitAnswer,
+      // so there's nothing to record here at completion time.
       setSessionState("complete");
       return;
     }
@@ -380,7 +387,7 @@ export default function PracticeSession() {
     setCurrentIndex(nextIdx);
     setSelectedAnswer(null);
     setSessionState("answering");
-    setQuestionStartTime(Date.now());
+    questionStartElapsedRef.current = elapsedRef.current;
     setStrikethroughMode(false);
     setTimerRunning(true);
     persistProgress(nextIdx);
@@ -837,7 +844,7 @@ export default function PracticeSession() {
                     </svg>
                     <div>
                       <p className="font-semibold text-[#333]">Time Spent</p>
-                      <p>{Math.floor((Date.now() - questionStartTime) / 60000)} mins, {Math.floor(((Date.now() - questionStartTime) / 1000) % 60)} secs</p>
+                      <p>{Math.floor(lastQuestionSeconds / 60)} mins, {lastQuestionSeconds % 60} secs</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
