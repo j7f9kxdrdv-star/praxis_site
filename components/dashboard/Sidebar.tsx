@@ -305,9 +305,9 @@ export default function Sidebar() {
         >
           {initial}
         </div>
-        <div>
+        <div className="min-w-0 flex-1">
           <div
-            className="text-[12px] font-semibold leading-[1.1]"
+            className="text-[12px] font-semibold leading-[1.1] truncate"
             style={{ color: "var(--color-prax-ink)" }}
           >
             {displayName}
@@ -334,24 +334,28 @@ export default function Sidebar() {
             >
               Settings
             </Link>
-            <span style={{ color: "var(--color-prax-ink-mute)" }}>·</span>
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="hover:underline cursor-pointer"
-              style={{
-                color: "var(--color-prax-ink-mute)",
-                background: "none",
-                border: "none",
-                padding: 0,
-                font: "inherit",
-                letterSpacing: "0.08em",
-              }}
-            >
-              Log out
-            </button>
           </div>
         </div>
+        <button
+          type="button"
+          onClick={handleLogout}
+          aria-label="Log out"
+          title="Log out"
+          className="shrink-0 grid place-items-center rounded-md cursor-pointer transition-colors hover:bg-[var(--color-prax-cream-card)]"
+          style={{
+            width: 28,
+            height: 28,
+            color: "var(--color-prax-ink-mute)",
+            background: "none",
+            border: "none",
+          }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M15 17l5-5-5-5" />
+            <path d="M20 12H9" />
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+          </svg>
+        </button>
       </div>
     </aside>
   );
