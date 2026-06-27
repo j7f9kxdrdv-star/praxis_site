@@ -588,7 +588,10 @@ export default function DashboardHome() {
       // Unseen items are treated as urgent
       const unseen = Math.max(0, totalItems - seen.size);
       urgent += unseen;
-      const totalDue = urgent + soon + later;
+      // "Cards due" = the now-actionable queue (unseen + due now), matching the
+      // Flashcards page headline. "soon"/"later" are scheduled ahead, not due
+      // yet — shown in the bar below but excluded from the headline count.
+      const totalDue = urgent;
 
       setFlashcards({
         totalDue,
