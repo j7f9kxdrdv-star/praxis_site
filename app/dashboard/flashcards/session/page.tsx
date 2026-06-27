@@ -69,6 +69,10 @@ const RATING_DOT: Record<Rating, string> = {
   easy: "bg-as-primary",
 };
 
+// When a card is rated "Again", re-insert it this many cards ahead so it
+// comes back later in the SAME session (or at the end if fewer remain).
+const REQUEUE_GAP = 3;
+
 // Count how many reviews the user has already done today (since local
 // midnight) so the daily-limit caps can subtract them from the quotas.
 // A review is classified as "new" if prev_interval_days was 0 at the
@@ -326,7 +330,37 @@ function SessionInner() {
     }));
     setHistory((h) => [...h, rating]);
     setSubmitting(false);
-    advance();
+
+    if (rating === "again") {
+      // Bring a wrong card back later this session so you keep seeing it until
+      // you get it right, instead of waiting for a future session. Carry the
+      // just-saved schedule onto the re-queued copy so a later pass builds on
+      // the lapsed state rather than the original.
+      const requeuedState: UserState = {
+        flashcard_id: current.card.id,
+        cloze_index: current.clozeIndex,
+        starred: current.state?.starred ?? false,
+        suspended: false,
+        interval_days: sched.intervalDays,
+        ease_factor: current.state?.ease_factor ?? 2.5,
+        reps: sched.reps,
+        lapses: sched.lapses,
+        next_review_at: sched.nextReviewAt.toISOString(),
+        last_rating: rating,
+        last_reviewed_at: new Date().toISOString(),
+      };
+      const requeued: ReviewItem = { ...current, state: requeuedState };
+      setRevealed(false);
+      setQueue((q) => {
+        const next = [...q];
+        const insertAt = Math.min(index + 1 + REQUEUE_GAP, next.length);
+        next.splice(insertAt, 0, requeued);
+        return next;
+      });
+      setIndex((i) => i + 1);
+    } else {
+      advance();
+    }
   }
 
   async function toggleStar() {
@@ -489,7 +523,7 @@ function SessionInner() {
           <h1 className="font-headline text-3xl mb-3">{stats.reviewed} cards reviewed</h1>
           <p className="text-sm text-white/70">
             {stats.again > 0
-              ? `${stats.again} marked Again — they'll come back in ~10 minutes.`
+              ? `${stats.again} marked Again — they came back this session until you got them right.`
               : "Clean run. Cards rescheduled per your ratings."}
           </p>
         </div>
@@ -512,7 +546,6 @@ function SessionInner() {
   }
 
   // ─── Active study UI ──────────────────────────────────────────────────────
-  const progressPct = Math.round((index / queue.length) * 100);
   const starred = current?.state?.starred ?? false;
   const intervalDays = current?.state?.interval_days ?? 0;
   const elapsedSec = Math.floor((now - sessionStart) / 1000);
@@ -548,14 +581,6 @@ function SessionInner() {
               >
                 {starred ? "★" : "☆"}
               </button>
-            </div>
-
-            {/* Progress strip */}
-            <div className="h-1 w-full bg-as-surface-container rounded-full overflow-hidden mb-6">
-              <div
-                className="h-full bg-as-primary rounded-full transition-all duration-300"
-                style={{ width: `${progressPct}%` }}
-              />
             </div>
 
             {/* Card */}
@@ -649,38 +674,6 @@ function SessionInner() {
                   </button>
                 </div>
               )}
-            </div>
-
-            {/* Queue minimap — visual map of the whole session queue */}
-            <div className="mt-8 pt-6 border-t border-as-outline-variant/20">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-as-outline">
-                  Session Map
-                </span>
-                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-as-outline tabular-nums">
-                  {queue.length - index} remaining
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-1">
-                {queue.map((_, i) => {
-                  const reviewed = i < history.length;
-                  const isCurrent = i === index;
-                  const dotColor = reviewed
-                    ? RATING_DOT[history[i]]
-                    : isCurrent
-                    ? "bg-as-primary"
-                    : "bg-as-outline-variant/40";
-                  return (
-                    <span
-                      key={i}
-                      className={`rounded-full transition-all ${dotColor} ${
-                        isCurrent ? "w-3 h-3 ring-2 ring-as-primary/30 ring-offset-1 ring-offset-as-surface-container-low" : "w-1.5 h-1.5"
-                      }`}
-                      title={`Card ${i + 1}${reviewed ? ` · ${history[i]}` : isCurrent ? " · current" : ""}`}
-                    />
-                  );
-                })}
-              </div>
             </div>
           </div>
 
