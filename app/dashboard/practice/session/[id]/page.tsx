@@ -251,7 +251,6 @@ export default function PracticeSession() {
     // session timer advanced since the question opened.
     const timeSpent = Math.max(0, elapsedRef.current - questionStartElapsedRef.current);
     setLastQuestionSeconds(timeSpent);
-    const isReviewMode = modeRef.current === "review";
 
     await supabase.from("question_attempts").insert({
       user_id: user.id,
@@ -285,6 +284,7 @@ export default function PracticeSession() {
     }
 
     if (!isCorrect) {
+      // Missed → (re)schedule it for Smart Review (due tomorrow).
       await supabase.from("review_schedule").upsert(
         {
           user_id: user.id,
@@ -298,37 +298,17 @@ export default function PracticeSession() {
         },
         { onConflict: "user_id,question_id" }
       );
-    } else if (isReviewMode) {
-      const { data: schedule } = await supabase
+    } else {
+      // Correct → no longer a weak spot, so drop it from Smart Review. Runs in
+      // ANY mode (not just review), so getting a question right anywhere clears
+      // it. Harmless no-op if it was never scheduled. The attempt is still
+      // recorded above, so accuracy/history stay intact — only the review queue
+      // changes.
+      await supabase
         .from("review_schedule")
-        .select("*")
+        .delete()
         .eq("user_id", user.id)
-        .eq("question_id", currentQuestion.id)
-        .single();
-
-      if (schedule) {
-        const newCount = schedule.review_count + 1;
-        let newInterval: number;
-        if (newCount === 1) newInterval = 3;
-        else if (newCount === 2) newInterval = 7;
-        else
-          newInterval = Math.round(
-            schedule.interval_days * Number(schedule.ease_factor)
-          );
-
-        const nextDate = new Date(Date.now() + newInterval * 86400000)
-          .toISOString()
-          .split("T")[0];
-
-        await supabase
-          .from("review_schedule")
-          .update({
-            next_review_date: nextDate,
-            interval_days: newInterval,
-            review_count: newCount,
-          })
-          .eq("id", schedule.id);
-      }
+        .eq("question_id", currentQuestion.id);
     }
 
     setResults((prev) => [
