@@ -16,12 +16,20 @@ import {
 interface Attempt {
   is_correct: boolean;
   created_at: string;
+  question_id: string;
   questions: { section: string; subtopic: string; difficulty: string } | null;
 }
 
 interface DailyActivity {
   activity_date: string;
   questions_completed: number;
+}
+
+interface FlashReview {
+  flashcard_id: string;
+  cloze_index: number;
+  rating: "again" | "hard" | "medium" | "easy";
+  reviewed_at: string;
 }
 
 type Period = "7d" | "30d" | "all" | "custom";
@@ -136,13 +144,145 @@ function DonutRing({ pct, label }: { pct: number; label: string }) {
   );
 }
 
+/* ─────────── Performance panel ─────────── */
+
+function PerfPanel({
+  title,
+  period,
+  pct,
+  stats,
+  breakdownLabel,
+  bars,
+  empty,
+  emptyText,
+}: {
+  title: string;
+  period: string;
+  pct: number;
+  stats: { value: string; label: string }[];
+  breakdownLabel: string;
+  bars: { label: string; count: number; pct: number; color: string }[];
+  empty: boolean;
+  emptyText: string;
+}) {
+  return (
+    <PraxCard variant="secondary" className="flex flex-col">
+      <div className="flex items-center justify-between mb-5">
+        <SmallCaps>{title}</SmallCaps>
+        <SmallCaps style={{ color: "var(--color-prax-ink-soft)" }}>
+          {period}
+        </SmallCaps>
+      </div>
+      {empty ? (
+        <div
+          className="italic text-center py-8"
+          style={{
+            fontFamily: "var(--font-prax-serif)",
+            fontSize: 13,
+            color: "var(--color-prax-ink-mute)",
+          }}
+        >
+          {emptyText}
+        </div>
+      ) : (
+        <>
+          <div className="flex items-center gap-5">
+            <DonutRing pct={pct} label="First-Try" />
+            <div className="flex-1 space-y-3">
+              {stats.map((s) => (
+                <div key={s.label}>
+                  <div
+                    style={{
+                      fontFamily: "var(--font-prax-serif)",
+                      fontSize: 20,
+                      lineHeight: 1,
+                      color: "var(--color-prax-green)",
+                      fontVariantNumeric: "tabular-nums lining-nums",
+                    }}
+                  >
+                    {s.value}
+                  </div>
+                  <SmallCaps style={{ marginTop: 3 }}>{s.label}</SmallCaps>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div
+            className="mt-5 pt-5"
+            style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
+          >
+            <SmallCaps
+              style={{
+                color: "var(--color-prax-ink-soft)",
+                marginBottom: 14,
+                display: "block",
+              }}
+            >
+              {breakdownLabel}
+            </SmallCaps>
+            <div className="space-y-4">
+              {bars.map((b) => (
+                <div key={b.label}>
+                  <div className="flex justify-between items-baseline mb-1.5">
+                    <div
+                      style={{
+                        fontFamily: "var(--font-prax-sans)",
+                        fontSize: 12.5,
+                        fontWeight: 500,
+                        color: "var(--color-prax-ink)",
+                      }}
+                    >
+                      {b.label}
+                    </div>
+                    <div
+                      style={{
+                        fontFamily: "var(--font-prax-serif)",
+                        fontSize: 16,
+                        color: "var(--color-prax-green)",
+                        fontVariantNumeric: "tabular-nums lining-nums",
+                      }}
+                    >
+                      {b.count.toLocaleString()}
+                      <span
+                        style={{
+                          fontSize: 12,
+                          color: "var(--color-prax-ink-mute)",
+                        }}
+                      >
+                        {" "}
+                        · {b.pct}%
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    className="rounded-full overflow-hidden"
+                    style={{
+                      height: 5,
+                      background: "var(--color-prax-cream-card)",
+                    }}
+                  >
+                    <div
+                      className="h-full rounded-full transition-all duration-1000"
+                      style={{ width: `${b.pct}%`, background: b.color }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+    </PraxCard>
+  );
+}
+
 /* ─────────── Page ─────────── */
 
 export default function AnalyticsPage() {
   const { user } = useDashboard();
   const [allAttempts, setAllAttempts] = useState<Attempt[]>([]);
+  const [allReviews, setAllReviews] = useState<FlashReview[]>([]);
   const [, setActivity] = useState<DailyActivity[]>([]);
-  const [streak, setStreak] = useState(0);
   const [, setLessonsCompleted] = useState(0);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<Period>("30d");
@@ -159,13 +299,13 @@ export default function AnalyticsPage() {
       const [
         { data: attempts },
         { data: act },
-        { data: streakData },
         { data: progress },
+        { data: reviews },
       ] = await Promise.all([
         supabase
           .from("question_attempts")
           .select(
-            "is_correct, created_at, questions(section, subtopic, difficulty)"
+            "is_correct, created_at, question_id, questions(section, subtopic, difficulty)"
           )
           .eq("user_id", user.id),
         supabase
@@ -174,36 +314,22 @@ export default function AnalyticsPage() {
           .eq("user_id", user.id)
           .order("activity_date"),
         supabase
-          .from("daily_activity")
-          .select("activity_date")
-          .eq("user_id", user.id)
-          .order("activity_date", { ascending: false })
-          .limit(60),
-        supabase
           .from("lesson_progress")
           .select("id")
           .eq("user_id", user.id)
           .eq("completed", true),
+        supabase
+          .from("flashcard_reviews")
+          .select("flashcard_id, cloze_index, rating, reviewed_at")
+          .eq("user_id", user.id)
+          .order("reviewed_at", { ascending: false })
+          .limit(5000),
       ]);
 
       setAllAttempts((attempts as unknown as Attempt[]) || []);
       setActivity(act || []);
       setLessonsCompleted(progress?.length || 0);
-
-      // Streak
-      if (streakData && streakData.length > 0) {
-        let s = 0;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        for (let i = 0; i < streakData.length; i++) {
-          const actDate = new Date(streakData[i].activity_date + "T00:00:00");
-          const expected = new Date(today);
-          expected.setDate(expected.getDate() - i);
-          if (actDate.getTime() === expected.getTime()) s++;
-          else break;
-        }
-        setStreak(s);
-      }
+      setAllReviews((reviews as unknown as FlashReview[]) || []);
 
       setLoading(false);
     }
@@ -307,6 +433,111 @@ export default function AnalyticsPage() {
   }, [filtered]);
 
   const weakestTopic = subtopicStats[0];
+
+  // ── Flashcard recall stats (from review history) ──
+  const flashStats = useMemo(() => {
+    const inPeriod = (iso: string): boolean => {
+      if (period === "all") return true;
+      const d = new Date(iso);
+      if (period === "custom") {
+        if (!customFrom || !customTo) return true;
+        return (
+          d >= new Date(customFrom + "T00:00:00") &&
+          d <= new Date(customTo + "T23:59:59")
+        );
+      }
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - (period === "7d" ? 7 : 30));
+      return d >= cutoff;
+    };
+
+    const counts = { again: 0, hard: 0, medium: 0, easy: 0 };
+    let total = 0;
+
+    // "First-try" = the first time a card is seen in a study session. A card
+    // re-queued after "Again" recurs within minutes, so a gap larger than
+    // SESSION_GAP_MS marks a genuine new look. First-look is computed over the
+    // FULL chronological history (so a period boundary can't turn a same-session
+    // repeat into a false first look); only in-period first looks are tallied.
+    const SESSION_GAP_MS = 30 * 60 * 1000;
+    const lastSeen = new Map<string, number>();
+    const chron = [...allReviews].sort(
+      (a, b) =>
+        new Date(a.reviewed_at).getTime() - new Date(b.reviewed_at).getTime()
+    );
+    let firstTryTotal = 0;
+    let firstTryCorrect = 0;
+
+    chron.forEach((r) => {
+      const key = `${r.flashcard_id}:${r.cloze_index}`;
+      const t = new Date(r.reviewed_at).getTime();
+      const prev = lastSeen.get(key);
+      const isFirstLook = prev === undefined || t - prev > SESSION_GAP_MS;
+      lastSeen.set(key, t);
+
+      if (!inPeriod(r.reviewed_at)) return;
+      total++;
+      counts[r.rating]++;
+      if (isFirstLook) {
+        firstTryTotal++;
+        if (r.rating !== "again") firstTryCorrect++;
+      }
+    });
+
+    return {
+      total,
+      counts,
+      againCount: counts.again,
+      firstTryTotal,
+      firstTryCorrect,
+      firstTryPct:
+        firstTryTotal > 0
+          ? Math.round((firstTryCorrect / firstTryTotal) * 100)
+          : null,
+    };
+  }, [allReviews, period, customFrom, customTo]);
+
+  // ── Question first-try accuracy (first attempt per question) ──
+  const qStats = useMemo(() => {
+    const inPeriod = (ms: number): boolean => {
+      if (period === "all") return true;
+      if (period === "custom") {
+        if (!customFrom || !customTo) return true;
+        return (
+          ms >= new Date(customFrom + "T00:00:00").getTime() &&
+          ms <= new Date(customTo + "T23:59:59").getTime()
+        );
+      }
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() - (period === "7d" ? 7 : 30));
+      return ms >= cutoff.getTime();
+    };
+    // Earliest attempt per question over full history; a question's first-try
+    // is tallied only if that first attempt falls inside the selected period.
+    const firstByQ = new Map<string, { at: number; correct: boolean }>();
+    allAttempts.forEach((a) => {
+      if (!a.question_id) return;
+      const t = new Date(a.created_at).getTime();
+      const cur = firstByQ.get(a.question_id);
+      if (!cur || t < cur.at)
+        firstByQ.set(a.question_id, { at: t, correct: a.is_correct });
+    });
+    let firstTryTotal = 0;
+    let firstTryCorrect = 0;
+    firstByQ.forEach((v) => {
+      if (!inPeriod(v.at)) return;
+      firstTryTotal++;
+      if (v.correct) firstTryCorrect++;
+    });
+    return {
+      firstTryTotal,
+      firstTryCorrect,
+      firstTryPct:
+        firstTryTotal > 0
+          ? Math.round((firstTryCorrect / firstTryTotal) * 100)
+          : null,
+    };
+  }, [allAttempts, period, customFrom, customTo]);
 
   // Weekly accuracy chart
   const { chartPoints, chartWeekLabels } = useMemo(() => {
@@ -494,10 +725,10 @@ export default function AnalyticsPage() {
 
       {/* ── Top bento — Accuracy / Questions / Score Estimate ── */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-6">
-        {/* Overall Accuracy */}
+        {/* Overall Question Accuracy */}
         <PraxCard variant="secondary">
           <div className="flex justify-between items-start mb-3">
-            <SmallCaps>Overall Accuracy</SmallCaps>
+            <SmallCaps>Overall Question Accuracy</SmallCaps>
             <svg
               className="opacity-60"
               width="18"
@@ -548,10 +779,10 @@ export default function AnalyticsPage() {
           </div>
         </PraxCard>
 
-        {/* Questions Done */}
+        {/* Overall Flashcard Accuracy */}
         <PraxCard variant="secondary">
           <div className="flex justify-between items-start mb-3">
-            <SmallCaps>Questions Done</SmallCaps>
+            <SmallCaps>Overall Flashcard Accuracy</SmallCaps>
             <svg
               className="opacity-60"
               width="18"
@@ -561,35 +792,46 @@ export default function AnalyticsPage() {
               stroke="var(--color-prax-green)"
               strokeWidth={1.6}
             >
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
+              <polygon points="12 2 2 7 12 12 22 7 12 2" />
+              <polyline points="2 17 12 22 22 17" />
+              <polyline points="2 12 12 17 22 12" />
             </svg>
           </div>
-          <div
-            className="leading-none font-medium"
-            style={{
-              fontFamily: "var(--font-prax-serif)",
-              fontSize: 48,
-              color: "var(--color-prax-green)",
-              fontVariantNumeric: "tabular-nums lining-nums",
-            }}
-          >
-            {totalQuestions.toLocaleString()}
+          <div className="flex items-baseline gap-1">
+            <div
+              className="leading-none font-medium"
+              style={{
+                fontFamily: "var(--font-prax-serif)",
+                fontSize: 48,
+                color: "var(--color-prax-green)",
+                fontVariantNumeric: "tabular-nums lining-nums",
+              }}
+            >
+              {flashStats.firstTryTotal > 0 ? flashStats.firstTryPct : "—"}
+            </div>
+            {flashStats.firstTryTotal > 0 && (
+              <div
+                style={{
+                  fontFamily: "var(--font-prax-serif)",
+                  fontSize: 22,
+                  color: "var(--color-prax-ink-soft)",
+                  fontStyle: "italic",
+                }}
+              >
+                %
+              </div>
+            )}
           </div>
           <div
             className="mt-3"
             style={{
               fontSize: 11.5,
-              color:
-                streak > 0
-                  ? "var(--color-prax-gold)"
-                  : "var(--color-prax-ink-mute)",
-              fontWeight: streak > 0 ? 600 : 400,
+              color: "var(--color-prax-ink-mute)",
+              fontVariantNumeric: "tabular-nums",
             }}
           >
-            {streak > 0
-              ? `${streak}-day study streak`
-              : "Start a session to build your streak"}
+            {flashStats.firstTryCorrect} of {flashStats.firstTryTotal} on first
+            try
           </div>
         </PraxCard>
 
@@ -702,6 +944,91 @@ export default function AnalyticsPage() {
             </div>
           </div>
         </PraxCard>
+      </div>
+
+      {/* ── Performance panels (Questions | Flashcards) ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+        <PerfPanel
+          title="Questions"
+          period={periodLabel}
+          pct={qStats.firstTryPct ?? 0}
+          stats={[
+            {
+              value: `${qStats.firstTryCorrect}/${qStats.firstTryTotal}`,
+              label: "Correct on first try",
+            },
+            { value: totalQuestions.toLocaleString(), label: "Total attempts" },
+          ]}
+          breakdownLabel="By difficulty"
+          bars={diffStats.map((d, i) => ({
+            label: d.label,
+            count: d.correct,
+            pct: d.accuracy,
+            color:
+              i === 0
+                ? "var(--color-prax-green)"
+                : i === 1
+                ? "var(--color-prax-green-soft)"
+                : "var(--color-prax-gold)",
+          }))}
+          empty={qStats.firstTryTotal === 0}
+          emptyText="Answer questions to see your first-try accuracy."
+        />
+        <PerfPanel
+          title="Flashcards"
+          period={periodLabel}
+          pct={flashStats.firstTryPct ?? 0}
+          stats={[
+            {
+              value: `${flashStats.firstTryCorrect}/${flashStats.firstTryTotal}`,
+              label: "Passed on first look",
+            },
+            { value: flashStats.total.toLocaleString(), label: "Total reviews" },
+          ]}
+          breakdownLabel="Grade breakdown"
+          bars={[
+            {
+              label: "Again",
+              count: flashStats.counts.again,
+              pct:
+                flashStats.total > 0
+                  ? Math.round((flashStats.counts.again / flashStats.total) * 100)
+                  : 0,
+              color: "var(--color-prax-gold)",
+            },
+            {
+              label: "Hard",
+              count: flashStats.counts.hard,
+              pct:
+                flashStats.total > 0
+                  ? Math.round((flashStats.counts.hard / flashStats.total) * 100)
+                  : 0,
+              color: "var(--color-prax-ink-soft)",
+            },
+            {
+              label: "Medium",
+              count: flashStats.counts.medium,
+              pct:
+                flashStats.total > 0
+                  ? Math.round(
+                      (flashStats.counts.medium / flashStats.total) * 100
+                    )
+                  : 0,
+              color: "var(--color-prax-green-soft)",
+            },
+            {
+              label: "Easy",
+              count: flashStats.counts.easy,
+              pct:
+                flashStats.total > 0
+                  ? Math.round((flashStats.counts.easy / flashStats.total) * 100)
+                  : 0,
+              color: "var(--color-prax-green)",
+            },
+          ]}
+          empty={flashStats.total === 0}
+          emptyText="Study flashcards to see your recall analytics."
+        />
       </div>
 
       {/* ── Accuracy Over Time chart ── */}
@@ -1149,8 +1476,8 @@ export default function AnalyticsPage() {
         </PraxCard>
       </div>
 
-      {/* ── Subject Mastery + Intensity Analysis ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+      {/* ── Subject Mastery ── */}
+      <div className="mb-6">
         {/* Subject Mastery */}
         <PraxCard variant="secondary">
           <div className="flex items-center justify-between mb-5">
@@ -1259,71 +1586,6 @@ export default function AnalyticsPage() {
               })()}
             </div>
           )}
-        </PraxCard>
-
-        {/* Intensity Analysis (Difficulty) */}
-        <PraxCard variant="secondary" className="flex flex-col">
-          <div className="flex items-center justify-between mb-5">
-            <SmallCaps>Intensity Analysis</SmallCaps>
-            <SmallCaps style={{ color: "var(--color-prax-ink-soft)" }}>
-              By difficulty
-            </SmallCaps>
-          </div>
-
-          {diffStats.every((d) => d.total === 0) ? (
-            <div
-              className="italic text-center py-8"
-              style={{
-                fontFamily: "var(--font-prax-serif)",
-                fontSize: 13,
-                color: "var(--color-prax-ink-mute)",
-              }}
-            >
-              Complete practice sessions to see difficulty breakdown.
-            </div>
-          ) : (
-            <div className="flex items-center justify-around py-2">
-              {diffStats.map((d) => (
-                <DonutRing key={d.label} pct={d.accuracy} label={d.label} />
-              ))}
-            </div>
-          )}
-
-          <div
-            className="mt-auto pt-5 flex items-start gap-3"
-            style={{
-              borderTop: "1px solid var(--color-prax-cream-border)",
-              marginTop: 16,
-            }}
-          >
-            <div
-              className="rounded-full shrink-0 mt-1"
-              style={{
-                width: 5,
-                height: 5,
-                background:
-                  diffStats[2]?.accuracy < 60 && diffStats[2]?.total > 0
-                    ? "var(--color-prax-gold)"
-                    : "var(--color-prax-green-soft)",
-              }}
-            />
-            <div>
-              <SmallCaps style={{ marginBottom: 4 }}>Stamina Note</SmallCaps>
-              <p
-                style={{
-                  fontSize: 11.5,
-                  lineHeight: 1.55,
-                  color: "var(--color-prax-ink-soft)",
-                }}
-              >
-                {diffStats[2]?.accuracy < 60 && diffStats[2]?.total > 0
-                  ? `Hard question accuracy is ${diffStats[2].accuracy}%. Schedule difficult drills during your highest-energy study block.`
-                  : diffStats[2]?.total > 0
-                  ? `Strong performance on hard questions at ${diffStats[2].accuracy}%. Keep up the high-difficulty practice.`
-                  : "Attempt harder difficulty questions to see your intensity breakdown."}
-              </p>
-            </div>
-          </div>
         </PraxCard>
       </div>
 
