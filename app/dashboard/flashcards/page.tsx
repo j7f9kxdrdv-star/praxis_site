@@ -62,7 +62,7 @@ export default function FlashcardsHub() {
   const [unseenAll, setUnseenAll] = useState(0);
   const [dueReviewAll, setDueReviewAll] = useState(0);
   const [newToday, setNewToday] = useState(0);
-  const [reviewsToday, setReviewsToday] = useState(0);
+  const [, setReviewsToday] = useState(0);
 
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
@@ -194,15 +194,24 @@ export default function FlashcardsHub() {
       startOfToday.setHours(0, 0, 0, 0);
       const { data: todayRows } = await supabase
         .from("flashcard_reviews")
-        .select("prev_interval_days")
+        .select("flashcard_id, cloze_index, prev_interval_days")
         .eq("user_id", user.id)
         .gte("reviewed_at", startOfToday.toISOString());
-      let newDoneToday = 0;
-      let reviewsDoneToday = 0;
+      // Count UNIQUE cards, not review rows (an "Again" re-queue logs a row
+      // each time). A card is "new today" if any of its reviews today started
+      // from a zero interval; every other reviewed card is a "review."
+      const newCardKeys = new Set<string>();
+      const seenCardKeys = new Set<string>();
       for (const r of todayRows || []) {
-        if ((r.prev_interval_days ?? 0) === 0) newDoneToday++;
-        else reviewsDoneToday++;
+        const key = `${r.flashcard_id}::${r.cloze_index}`;
+        seenCardKeys.add(key);
+        if ((r.prev_interval_days ?? 0) === 0) newCardKeys.add(key);
       }
+      const newDoneToday = newCardKeys.size;
+      let reviewsDoneToday = 0;
+      seenCardKeys.forEach((k) => {
+        if (!newCardKeys.has(k)) reviewsDoneToday++;
+      });
 
       const enriched: Deck[] = deckRows.map((d) => {
         const urgent = urgentByDeck.get(d.id) || 0;
@@ -265,18 +274,10 @@ export default function FlashcardsHub() {
   // Project how many cards today's Due Review session will actually serve up,
   // given the user's daily limits and what they've already done today.
   const newLimit = profile?.daily_new_card_limit ?? 25;
-  const reviewLimit = profile?.daily_review_limit ?? 150;
-  const projectedNew = Math.max(
-    0,
-    Math.min(unseenAll, newLimit - newToday)
-  );
-  const projectedReview = Math.max(
-    0,
-    Math.min(dueReviewAll, reviewLimit - reviewsToday)
-  );
-  const projectedSession = projectedNew + projectedReview;
-  // Show the limit explainer only when a cap is actually trimming the queue.
-  const isCapping = projectedSession < totalDue && totalDue > 0;
+  // Due reviews are never capped; only new-card introduction is soft-throttled.
+  const projectedNew = Math.max(0, Math.min(unseenAll, newLimit - newToday));
+  // The only thing that can trim the projected session is the new-card cap.
+  const isCapping = projectedNew < unseenAll && totalDue > 0;
 
   return (
     <div
@@ -530,11 +531,7 @@ export default function FlashcardsHub() {
                   >
                     {!isCapping
                       ? "Start Review"
-                      : projectedReview === 0
-                      ? `Start Review · ${projectedNew} new today`
-                      : projectedNew === 0
-                      ? `Start Review · ${projectedReview} review today`
-                      : `Start Review · ${projectedNew} new + ${projectedReview} review`}
+                      : `Start Review · ${projectedNew} new today`}
                     <svg
                       width="14"
                       height="14"
@@ -555,33 +552,22 @@ export default function FlashcardsHub() {
                         color: "rgba(246,244,227,0.72)",
                       }}
                     >
-                      {dueReviewAll === 0 ? (
+                      Today introduces{" "}
+                      <strong style={{ color: "var(--color-prax-cream)" }}>
+                        {projectedNew} new card{projectedNew === 1 ? "" : "s"}
+                      </strong>{" "}
+                      (your daily new-card target)
+                      {dueReviewAll > 0 ? (
                         <>
-                          You haven&apos;t built a review queue yet, so today
-                          is all{" "}
+                          {" "}
+                          plus all{" "}
                           <strong style={{ color: "var(--color-prax-cream)" }}>
-                            {projectedNew} new card
-                            {projectedNew === 1 ? "" : "s"}
-                          </strong>{" "}
-                          (out of {totalDue} unseen). Your review cap kicks in
-                          once you start finishing new cards and they cycle
-                          back.
+                            {dueReviewAll} due review
+                            {dueReviewAll === 1 ? "" : "s"}
+                          </strong>
                         </>
-                      ) : (
-                        <>
-                          Your daily limits are trimming the queue: you&apos;ll
-                          see{" "}
-                          <strong style={{ color: "var(--color-prax-cream)" }}>
-                            {projectedNew} new
-                          </strong>{" "}
-                          and{" "}
-                          <strong style={{ color: "var(--color-prax-cream)" }}>
-                            {projectedReview} review
-                          </strong>{" "}
-                          card{projectedSession === 1 ? "" : "s"} today (of{" "}
-                          {totalDue} due).
-                        </>
-                      )}{" "}
+                      ) : null}
+                      . Reviews are never capped.{" "}
                       <button
                         type="button"
                         onClick={() => setShowSettings(true)}

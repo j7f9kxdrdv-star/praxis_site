@@ -87,17 +87,26 @@ async function countTodaysReviews(userId: string): Promise<{
 
   const { data } = await supabase
     .from("flashcard_reviews")
-    .select("prev_interval_days")
+    .select("flashcard_id, cloze_index, prev_interval_days")
     .eq("user_id", userId)
     .gte("reviewed_at", startOfToday.toISOString());
 
-  let newToday = 0;
-  let reviewsToday = 0;
+  // Count UNIQUE cards, not review rows — an "Again" re-queue logs a new row
+  // each time, so counting rows massively over-counts a struggled card. A card
+  // is "new today" if any of its reviews today started from a zero interval
+  // (its first-ever exposure); every other reviewed card is a "review."
+  const newCards = new Set<string>();
+  const seenCards = new Set<string>();
   for (const r of data || []) {
-    if ((r.prev_interval_days ?? 0) === 0) newToday++;
-    else reviewsToday++;
+    const key = `${r.flashcard_id}::${r.cloze_index}`;
+    seenCards.add(key);
+    if ((r.prev_interval_days ?? 0) === 0) newCards.add(key);
   }
-  return { newToday, reviewsToday };
+  let reviewsToday = 0;
+  seenCards.forEach((k) => {
+    if (!newCards.has(k)) reviewsToday++;
+  });
+  return { newToday: newCards.size, reviewsToday };
 }
 
 function SessionInner() {
@@ -136,7 +145,6 @@ function SessionInner() {
     newToday: number;
     reviewsToday: number;
     newLimit: number;
-    reviewLimit: number;
     poolNew: number;
     poolReview: number;
   } | null>(null);
@@ -232,20 +240,19 @@ function SessionInner() {
         // already reviewed today so a second session in the same day
         // doesn't blow past the cap.
         const newLimit = profile?.daily_new_card_limit ?? 25;
-        const reviewLimit = profile?.daily_review_limit ?? 150;
         const { newToday, reviewsToday } = await countTodaysReviews(user.id);
+        // Due reviews are NEVER capped — clearing your due queue is the whole
+        // point of spaced repetition. Only NEW-card introduction is soft-
+        // throttled per day so future review load stays sane.
         const newQuota = Math.max(0, newLimit - newToday);
-        const reviewQuota = Math.max(0, reviewLimit - reviewsToday);
-        // Record context so the empty state can explain why if the queue
-        // lands at zero. We classify "limit_reached" when at least one
-        // pool has cards but its quota is spent; otherwise "nothing_due".
         const poolNew = newPool.length;
         const poolReview = reviewPool.length;
-        const newTrimmed = poolNew > 0 && newQuota === 0;
-        const reviewTrimmed = poolReview > 0 && reviewQuota === 0;
         if (poolNew + poolReview === 0) {
+          // Genuinely caught up — nothing due right now.
           setEmptyReason("nothing_due");
-        } else if (newTrimmed || reviewTrimmed) {
+        } else if (poolReview === 0 && newQuota === 0) {
+          // All due reviews cleared AND today's new-card target reached — a
+          // soft "keep going?" moment, never a hard wall.
           setEmptyReason("limit_reached");
         } else {
           setEmptyReason(null);
@@ -254,14 +261,10 @@ function SessionInner() {
           newToday,
           reviewsToday,
           newLimit,
-          reviewLimit,
           poolNew,
           poolReview,
         });
-        items = [
-          ...newPool.slice(0, newQuota),
-          ...reviewPool.slice(0, reviewQuota),
-        ];
+        items = [...newPool.slice(0, newQuota), ...reviewPool];
       } else {
         items = [...newPool, ...reviewPool];
       }
@@ -482,7 +485,7 @@ function SessionInner() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 text-center">
         <p className="text-as-primary font-headline text-xl mb-2">
           {isLimitReached
-            ? "You've hit today's limit"
+            ? "You're all caught up"
             : isNothingDue
             ? "Caught up for today"
             : MODE_TITLES[mode]}
@@ -490,11 +493,13 @@ function SessionInner() {
         <p className="text-as-outline text-sm mb-6 max-w-md mx-auto leading-relaxed">
           {isLimitReached && ctx ? (
             <>
-              You&apos;ve done <strong>{ctx.newToday} of {ctx.newLimit}</strong>{" "}
-              new cards and <strong>{ctx.reviewsToday} of {ctx.reviewLimit}</strong>{" "}
-              reviews today. Spaced repetition works best when you stop here and
-              come back tomorrow — but you can push past the cap with Cram Mode
-              if you want to keep going.
+              You&apos;ve cleared today&apos;s due reviews and started{" "}
+              <strong>{ctx.newToday}</strong> new card
+              {ctx.newToday === 1 ? "" : "s"}
+              {ctx.reviewsToday > 0 ? <> ({ctx.reviewsToday} reviews)</> : null}.
+              Spaced repetition works best if you take a break here — but
+              nothing&apos;s stopping you. Keep going with more new cards if
+              you&apos;re on a roll.
             </>
           ) : isNothingDue ? (
             <>
@@ -512,7 +517,7 @@ function SessionInner() {
               href="/dashboard/flashcards/session?mode=cram"
               className="inline-block bg-as-primary text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-xl"
             >
-              Cram Mode
+              Keep going
             </Link>
           )}
           <Link
@@ -523,7 +528,7 @@ function SessionInner() {
                 : "bg-as-primary text-white"
             }`}
           >
-            {isLimitReached ? "Adjust Limits" : "Back to Decks"}
+            {isLimitReached ? "Done for today" : "Back to Decks"}
           </Link>
         </div>
       </div>
