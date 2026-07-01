@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo, Suspense } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
@@ -112,7 +112,14 @@ function SessionInner() {
   const [revealed, setRevealed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [stats, setStats] = useState({ reviewed: 0, again: 0 });
+  // Progress is tracked per UNIQUE card (flashcard id + cloze index), not per
+  // rating, so a card re-queued after "Again" never inflates the counts. A card
+  // is "done" only once it earns a passing grade; recall % is first-try accuracy
+  // (cards passed on the first attempt ÷ unique cards attempted).
+  const seenRef = useRef<Set<string>>(new Set());
+  const firstTryOkRef = useRef<Set<string>>(new Set());
+  const doneRef = useRef<Set<string>>(new Set());
+  const [stats, setStats] = useState({ done: 0, attempted: 0, firstTryCorrect: 0 });
   const [history, setHistory] = useState<Rating[]>([]);
   const [sessionStart] = useState(() => Date.now());
   const [now, setNow] = useState(() => Date.now());
@@ -324,10 +331,20 @@ function SessionInner() {
       new_interval_days: sched.intervalDays,
     });
 
-    setStats((s) => ({
-      reviewed: s.reviewed + 1,
-      again: s.again + (rating === "again" ? 1 : 0),
-    }));
+    // Count each unique card once. "Done" = cards that reached a passing grade;
+    // an "Again" re-queues the same card but never re-counts it. First-try
+    // accuracy only credits cards passed on their very first attempt.
+    const cardKey = `${current.card.id}:${current.clozeIndex}`;
+    const firstAttempt = !seenRef.current.has(cardKey);
+    const passed = rating !== "again";
+    seenRef.current.add(cardKey);
+    if (passed) doneRef.current.add(cardKey);
+    if (firstAttempt && passed) firstTryOkRef.current.add(cardKey);
+    setStats({
+      done: doneRef.current.size,
+      attempted: seenRef.current.size,
+      firstTryCorrect: firstTryOkRef.current.size,
+    });
     setHistory((h) => [...h, rating]);
     setSubmitting(false);
 
@@ -514,16 +531,17 @@ function SessionInner() {
   }
 
   if (done) {
+    const missed = stats.attempted - stats.firstTryCorrect;
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
         <div className="bg-as-primary text-white rounded-[2rem] p-8 text-center mb-6">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-2">
             {MODE_TITLES[mode]} · Complete
           </p>
-          <h1 className="font-headline text-3xl mb-3">{stats.reviewed} cards reviewed</h1>
+          <h1 className="font-headline text-3xl mb-3">{stats.done} cards reviewed</h1>
           <p className="text-sm text-white/70">
-            {stats.again > 0
-              ? `${stats.again} marked Again — they came back this session until you got them right.`
+            {missed > 0
+              ? `${missed} marked Again — they came back this session until you got them right.`
               : "Clean run. Cards rescheduled per your ratings."}
           </p>
         </div>
@@ -550,8 +568,8 @@ function SessionInner() {
   const intervalDays = current?.state?.interval_days ?? 0;
   const elapsedSec = Math.floor((now - sessionStart) / 1000);
   const elapsedLabel = `${Math.floor(elapsedSec / 60)}:${String(elapsedSec % 60).padStart(2, "0")}`;
-  const accuracyPct = stats.reviewed > 0
-    ? Math.round(((stats.reviewed - stats.again) / stats.reviewed) * 100)
+  const accuracyPct = stats.attempted > 0
+    ? Math.round((stats.firstTryCorrect / stats.attempted) * 100)
     : null;
 
   return (
@@ -700,7 +718,7 @@ function SessionInner() {
               </p>
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <p className="font-headline text-2xl text-as-primary tabular-nums">{stats.reviewed}</p>
+                  <p className="font-headline text-2xl text-as-primary tabular-nums">{stats.done}</p>
                   <p className="text-[9px] font-bold uppercase tracking-widest text-as-outline mt-0.5">Done</p>
                 </div>
                 <div>
