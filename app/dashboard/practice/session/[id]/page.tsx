@@ -516,6 +516,13 @@ export default function PracticeSession() {
     return null;
   }
 
+  // Main explanation = everything before the first per-choice "(Choice X)" block.
+  // Per-choice blocks are space-separated (not newline-separated), so split on the
+  // tag itself rather than requiring a preceding newline.
+  const mainExplanation = currentQuestion.explanation
+    ?.split(/\s*\(Choice [A-D]\)/)[0]
+    ?.trim();
+
   return (
     <div className="fixed inset-0 z-[200] flex flex-col bg-[#e8e8e8] font-sans text-[14px]">
       {/* ===== TOP BAR ===== */}
@@ -777,37 +784,44 @@ export default function PracticeSession() {
                   </p>
                 </div>
 
-                {/* Main explanation — show only content before the first (Choice X) block */}
-                <div className="text-[13px] text-[#333] leading-relaxed pb-4">
-                  <p>
-                    <MathText
-                      text={currentQuestion.explanation
-                        ?.split(/\n\n?\(Choice [A-D]\)/)[0]
-                        .trim()}
-                    />
-                  </p>
-                </div>
+                {/* Main explanation — content before the first (Choice X) block */}
+                {mainExplanation && (
+                  <div className="text-[13px] text-[#333] leading-relaxed pb-4">
+                    <p>
+                      <MathText text={mainExplanation} />
+                    </p>
+                  </div>
+                )}
 
-                {/* Per-choice breakdown — incorrect answers only */}
+                {/* Per-choice breakdown — every choice, color-coded by correctness */}
                 <div className="space-y-2 pb-4">
                   {currentQuestion.options.map((option) => {
                     const isCorrect = option.label === currentQuestion.correct_answer;
 
-                    // Skip the correct answer — already explained at the top
-                    if (isCorrect) return null;
-
                     const perAnswer = getPerAnswerExplanation(option.label);
                     if (!perAnswer) return null;
 
-                    // Strip leading "This is incorrect." or "This is incorrect " prefix
+                    // Strip the boilerplate lead-in ("This is incorrect."/"is correct:")
+                    // so the choice label reads cleanly, then re-capitalize the remainder.
                     const cleanAnswer = perAnswer
-                      .replace(/^This is incorrect[.,]?\s*/i, "")
+                      .replace(
+                        isCorrect
+                          ? /^(this\s+)?is correct[:.,]?\s*/i
+                          : /^this is incorrect[.,]?\s*/i,
+                        ""
+                      )
+                      .replace(/^([a-z])/, (c) => c.toUpperCase())
                       .trim();
+
+                    // Nothing left after stripping the boilerplate (e.g. a block
+                    // that was only "is correct.") — skip the empty line.
+                    if (!cleanAnswer) return null;
 
                     return (
                       <p key={option.label} className="text-[13px] text-[#333] leading-relaxed">
-                        <strong className="text-red-600">
-                          Choice {option.label}:
+                        <strong className={isCorrect ? "text-green-700" : "text-red-600"}>
+                          Choice {option.label}
+                          {isCorrect ? " (correct)" : ""}:
                         </strong>{" "}
                         <MathText text={cleanAnswer} />
                       </p>
