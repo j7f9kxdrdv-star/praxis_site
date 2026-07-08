@@ -645,9 +645,9 @@ export default function PracticeSession() {
               Question {currentIndex + 1}
             </h2>
 
-            <p className="text-[14px] text-[#333] leading-relaxed mb-6">
+            <div className="text-[14px] text-[#333] leading-relaxed mb-6">
               <MathText text={currentQuestion.question_text} />
-            </p>
+            </div>
 
             {/* Optional figure (inline original SVG, or hosted image), between stem and choices */}
             <QuestionFigure
@@ -787,9 +787,7 @@ export default function PracticeSession() {
                 {/* Main explanation — content before the first (Choice X) block */}
                 {mainExplanation && (
                   <div className="text-[13px] text-[#333] leading-relaxed pb-4">
-                    <p>
-                      <MathText text={mainExplanation} />
-                    </p>
+                    <MathText text={mainExplanation} />
                   </div>
                 )}
 
