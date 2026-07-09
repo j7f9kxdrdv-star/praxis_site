@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
+import { countTodaysReviews } from "@/lib/flashcards/quota";
 import {
   PageHeader,
   ActiveNowPill,
@@ -62,7 +63,7 @@ export default function FlashcardsHub() {
   const [unseenAll, setUnseenAll] = useState(0);
   const [dueReviewAll, setDueReviewAll] = useState(0);
   const [newToday, setNewToday] = useState(0);
-  const [, setReviewsToday] = useState(0);
+  const [reviewsToday, setReviewsToday] = useState(0);
 
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
@@ -188,30 +189,10 @@ export default function FlashcardsHub() {
         }
       });
 
-      // Count today's review log so the projected session size matches the
-      // running quota the session loader actually applies.
-      const startOfToday = new Date();
-      startOfToday.setHours(0, 0, 0, 0);
-      const { data: todayRows } = await supabase
-        .from("flashcard_reviews")
-        .select("flashcard_id, cloze_index, prev_interval_days")
-        .eq("user_id", user.id)
-        .gte("reviewed_at", startOfToday.toISOString());
-      // Count UNIQUE cards, not review rows (an "Again" re-queue logs a row
-      // each time). A card is "new today" if any of its reviews today started
-      // from a zero interval; every other reviewed card is a "review."
-      const newCardKeys = new Set<string>();
-      const seenCardKeys = new Set<string>();
-      for (const r of todayRows || []) {
-        const key = `${r.flashcard_id}::${r.cloze_index}`;
-        seenCardKeys.add(key);
-        if ((r.prev_interval_days ?? 0) === 0) newCardKeys.add(key);
-      }
-      const newDoneToday = newCardKeys.size;
-      let reviewsDoneToday = 0;
-      seenCardKeys.forEach((k) => {
-        if (!newCardKeys.has(k)) reviewsDoneToday++;
-      });
+      // Count today's study log so the projected session size matches the
+      // running quota the session loader actually applies (shared helper).
+      const { newToday: newDoneToday, reviewsToday: reviewsDoneToday } =
+        await countTodaysReviews(user.id);
 
       const enriched: Deck[] = deckRows.map((d) => {
         const urgent = urgentByDeck.get(d.id) || 0;
@@ -274,10 +255,14 @@ export default function FlashcardsHub() {
   // Project how many cards today's Due Review session will actually serve up,
   // given the user's daily limits and what they've already done today.
   const newLimit = profile?.daily_new_card_limit ?? 25;
-  // Due reviews are never capped; only new-card introduction is soft-throttled.
+  const reviewLimit = profile?.daily_review_limit ?? 150;
+  // Both new-card introductions and due reviews are throttled per day.
   const projectedNew = Math.max(0, Math.min(unseenAll, newLimit - newToday));
-  // The only thing that can trim the projected session is the new-card cap.
-  const isCapping = projectedNew < unseenAll && totalDue > 0;
+  const projectedReview = Math.max(0, Math.min(dueReviewAll, reviewLimit - reviewsToday));
+  // The session is "capped" if either category has more waiting than today's
+  // remaining quota will actually serve.
+  const isCapping =
+    totalDue > 0 && (projectedNew < unseenAll || projectedReview < dueReviewAll);
 
   return (
     <div
@@ -531,7 +516,7 @@ export default function FlashcardsHub() {
                   >
                     {!isCapping
                       ? "Start Review"
-                      : `Start Review · ${projectedNew} new today`}
+                      : `Start Review · ${projectedNew + projectedReview} today`}
                     <svg
                       width="14"
                       height="14"
@@ -552,22 +537,15 @@ export default function FlashcardsHub() {
                         color: "rgba(246,244,227,0.72)",
                       }}
                     >
-                      Today introduces{" "}
+                      Today serves{" "}
                       <strong style={{ color: "var(--color-prax-cream)" }}>
                         {projectedNew} new card{projectedNew === 1 ? "" : "s"}
                       </strong>{" "}
-                      (your daily new-card target)
-                      {dueReviewAll > 0 ? (
-                        <>
-                          {" "}
-                          plus all{" "}
-                          <strong style={{ color: "var(--color-prax-cream)" }}>
-                            {dueReviewAll} due review
-                            {dueReviewAll === 1 ? "" : "s"}
-                          </strong>
-                        </>
-                      ) : null}
-                      . Reviews are never capped.{" "}
+                      and{" "}
+                      <strong style={{ color: "var(--color-prax-cream)" }}>
+                        {projectedReview} review{projectedReview === 1 ? "" : "s"}
+                      </strong>{" "}
+                      (your daily targets).{" "}
                       <button
                         type="button"
                         onClick={() => setShowSettings(true)}

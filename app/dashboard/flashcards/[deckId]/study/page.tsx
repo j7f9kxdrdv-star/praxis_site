@@ -7,6 +7,7 @@ import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
 import { renderClozeSegments } from "@/lib/flashcards/cloze";
 import { nextSchedule, previewLabel, type Rating } from "@/lib/flashcards/scheduler";
+import { countTodaysReviews } from "@/lib/flashcards/quota";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -74,7 +75,7 @@ export default function StudyPage() {
   const params = useParams<{ deckId: string }>();
   const router = useRouter();
   const search = useSearchParams();
-  const { user } = useDashboard();
+  const { user, profile } = useDashboard();
   const filter = search.get("filter") || "due"; // due | all | starred
 
   const [deck, setDeck] = useState<Deck | null>(null);
@@ -95,6 +96,9 @@ export default function StudyPage() {
   const [sessionStart] = useState(() => Date.now());
   const [now, setNow] = useState(() => Date.now());
   const [done, setDone] = useState(false);
+  // True when the deck has due cards but today's daily new/review quota trimmed
+  // them all away — so the empty state can explain the cap, not imply it's done.
+  const [cappedOut, setCappedOut] = useState(false);
 
   // Tick the elapsed clock once per second
   useEffect(() => {
@@ -139,8 +143,12 @@ export default function StudyPage() {
         stateMap.set(`${s.flashcard_id}::${s.cloze_index}`, s as UserState),
       );
 
-      // Build review items
-      const allItems: ReviewItem[] = [];
+      // Build review items. In "due" mode, split into new (unseen) and review
+      // (seen & due) pools so the user's GLOBAL daily limits apply here too —
+      // opening one deck shouldn't dump every unseen card at once past the cap.
+      const newPool: ReviewItem[] = [];
+      const reviewPool: ReviewItem[] = [];
+      const passthrough: ReviewItem[] = []; // "all" / "starred" ignore the caps
       const now = new Date().toISOString();
 
       cards.forEach((c) => {
@@ -152,26 +160,52 @@ export default function StudyPage() {
 
           const isDue = !s || s.next_review_at <= now;
           const isStarred = s?.starred === true;
+          const item: ReviewItem = { card: c, clozeIndex: idx, state: s };
 
-          if (filter === "due" && !isDue) continue;
-          if (filter === "starred" && !isStarred) continue;
-          // filter === "all" → include everything
-
-          allItems.push({ card: c, clozeIndex: idx, state: s });
+          if (filter === "starred") {
+            if (isStarred) passthrough.push(item);
+            continue;
+          }
+          if (filter === "all") {
+            passthrough.push(item);
+            continue;
+          }
+          // filter === "due"
+          if (!isDue) continue;
+          (s ? reviewPool : newPool).push(item);
         }
       });
 
-      // Shuffle for variety (keeps cloze siblings non-adjacent)
-      for (let i = allItems.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [allItems[i], allItems[j]] = [allItems[j], allItems[i]];
+      let items: ReviewItem[];
+      if (filter === "due") {
+        // Daily limits are GLOBAL across all decks; subtract what the user has
+        // already studied today so a single deck can't exceed the day's quota.
+        const newLimit = profile?.daily_new_card_limit ?? 25;
+        const reviewLimit = profile?.daily_review_limit ?? 150;
+        const { newToday, reviewsToday } = await countTodaysReviews(user.id);
+        const newQuota = Math.max(0, newLimit - newToday);
+        const reviewQuota = Math.max(0, reviewLimit - reviewsToday);
+        items = [
+          ...newPool.slice(0, newQuota),
+          ...reviewPool.slice(0, reviewQuota),
+        ];
+        setCappedOut(items.length === 0 && newPool.length + reviewPool.length > 0);
+      } else {
+        items = passthrough;
+        setCappedOut(false);
       }
 
-      setQueue(allItems);
+      // Shuffle for variety (keeps cloze siblings non-adjacent)
+      for (let i = items.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+
+      setQueue(items);
       setLoading(false);
     }
     load();
-  }, [params.deckId, user.id, filter]);
+  }, [params.deckId, user.id, filter, profile?.daily_new_card_limit, profile?.daily_review_limit]);
 
   // ─── Actions ───────────────────────────────────────────────────────────────
 
@@ -389,9 +423,13 @@ export default function StudyPage() {
   if (queue.length === 0) {
     return (
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 text-center">
-        <p className="text-as-primary font-headline text-xl mb-2">Nothing to review</p>
+        <p className="text-as-primary font-headline text-xl mb-2">
+          {cappedOut ? "Caught up for today" : "Nothing to review"}
+        </p>
         <p className="text-as-outline text-sm mb-6">
-          {filter === "due"
+          {cappedOut
+            ? "You've reached today's new-card / review limit. More unlock tomorrow — or use Cram to keep going now."
+            : filter === "due"
             ? "No cards are due in this deck right now."
             : filter === "starred"
             ? "You haven't starred any cards in this deck."

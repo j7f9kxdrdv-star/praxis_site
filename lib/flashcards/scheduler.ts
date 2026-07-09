@@ -4,22 +4,25 @@
 // Inputs: current interval (days) + user rating.
 // Outputs: new interval (days) and the absolute next_review_at.
 //
-// Behavior:
+// Behavior (intentionally gentle — shorter intervals, more frequent review):
 //   Again  → 10 minutes (sub-day re-show; resets reps/lapses).
-//   Hard   → max(1, current * 1.2), capped at 60d.
-//   Medium → max(1, current * 1.5), capped at 60d.
+//   Hard   → max(1, current * 1.4), capped at 60d.
+//   Medium → max(1, current * 1.8), capped at 60d.
 //   Easy   → max(1, current * 2.5), capped at 90d.
-//   First-ever review (current = 0) gets sensible seed values.
+//   First review OR a card that just lapsed (Again dropped it below 1 day)
+//   re-seeds from the first-review values below, so the three grades stay
+//   DISTINCT instead of all flooring to 1 day right after a miss.
 
 export type Rating = "again" | "hard" | "medium" | "easy";
 
 const TEN_MINUTES_IN_DAYS = 10 / (60 * 24);
 
-// First-review seeds (when prior interval is 0)
+// Seed intervals for a first-ever review, and for a card re-learning after a
+// lapse (any interval below 1 day, which only "Again" produces).
 const FIRST_INTERVAL: Record<Rating, number> = {
   again: TEN_MINUTES_IN_DAYS,
   hard: 1,
-  medium: 2.5,
+  medium: 3,
   easy: 5,
 };
 
@@ -31,11 +34,11 @@ const CAPS: Record<Rating, number> = {
   easy: 90,
 };
 
-// Multipliers applied to existing interval
+// Multipliers applied to an existing (>= 1 day) interval
 const MULTIPLIERS: Record<Rating, number> = {
   again: 0,
-  hard: 1.2,
-  medium: 1.5,
+  hard: 1.4,
+  medium: 1.8,
   easy: 2.5,
 };
 
@@ -60,10 +63,14 @@ export function nextSchedule(input: ScheduleInput, now: Date = new Date()): Sche
   const { rating, intervalDays, reps, lapses } = input;
 
   let newInterval: number;
-  if (intervalDays <= 0) {
-    newInterval = FIRST_INTERVAL[rating];
-  } else if (rating === "again") {
+  if (rating === "again") {
     newInterval = TEN_MINUTES_IN_DAYS;
+  } else if (intervalDays < 1) {
+    // New card (interval 0) OR a card that just lapsed to a sub-day interval
+    // via "Again". Re-seed from the first-review values so Hard/Medium/Easy
+    // produce visibly different next-review dates instead of all multiplying a
+    // ~10-minute interval and flooring to a flat 1 day.
+    newInterval = FIRST_INTERVAL[rating];
   } else {
     newInterval = Math.max(1, intervalDays * MULTIPLIERS[rating]);
   }

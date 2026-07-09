@@ -7,6 +7,7 @@ import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
 import { renderClozeSegments } from "@/lib/flashcards/cloze";
 import { nextSchedule, previewLabel, type Rating } from "@/lib/flashcards/scheduler";
+import { countTodaysReviews } from "@/lib/flashcards/quota";
 
 // Cross-deck session: due | starred | cram
 // Mirrors the per-deck study page but loads cards from EVERY deck the user has access to.
@@ -73,42 +74,6 @@ const RATING_DOT: Record<Rating, string> = {
 // comes back later in the SAME session (or at the end if fewer remain).
 const REQUEUE_GAP = 3;
 
-// Count how many reviews the user has already done today (since local
-// midnight) so the daily-limit caps can subtract them from the quotas.
-// A review is classified as "new" if prev_interval_days was 0 at the
-// time it was logged (i.e., the user had never seen that card before
-// this session). Otherwise it's a "review."
-async function countTodaysReviews(userId: string): Promise<{
-  newToday: number;
-  reviewsToday: number;
-}> {
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-
-  const { data } = await supabase
-    .from("flashcard_reviews")
-    .select("flashcard_id, cloze_index, prev_interval_days")
-    .eq("user_id", userId)
-    .gte("reviewed_at", startOfToday.toISOString());
-
-  // Count UNIQUE cards, not review rows — an "Again" re-queue logs a new row
-  // each time, so counting rows massively over-counts a struggled card. A card
-  // is "new today" if any of its reviews today started from a zero interval
-  // (its first-ever exposure); every other reviewed card is a "review."
-  const newCards = new Set<string>();
-  const seenCards = new Set<string>();
-  for (const r of data || []) {
-    const key = `${r.flashcard_id}::${r.cloze_index}`;
-    seenCards.add(key);
-    if ((r.prev_interval_days ?? 0) === 0) newCards.add(key);
-  }
-  let reviewsToday = 0;
-  seenCards.forEach((k) => {
-    if (!newCards.has(k)) reviewsToday++;
-  });
-  return { newToday: newCards.size, reviewsToday };
-}
-
 function SessionInner() {
   const router = useRouter();
   const search = useSearchParams();
@@ -145,6 +110,7 @@ function SessionInner() {
     newToday: number;
     reviewsToday: number;
     newLimit: number;
+    reviewLimit: number;
     poolNew: number;
     poolReview: number;
   } | null>(null);
@@ -240,19 +206,22 @@ function SessionInner() {
         // already reviewed today so a second session in the same day
         // doesn't blow past the cap.
         const newLimit = profile?.daily_new_card_limit ?? 25;
+        const reviewLimit = profile?.daily_review_limit ?? 150;
         const { newToday, reviewsToday } = await countTodaysReviews(user.id);
-        // Due reviews are NEVER capped — clearing your due queue is the whole
-        // point of spaced repetition. Only NEW-card introduction is soft-
-        // throttled per day so future review load stays sane.
+        // Both categories are throttled per day per the user's settings,
+        // subtracting whatever they've already studied today so a second
+        // session in the same day doesn't blow past either cap.
         const newQuota = Math.max(0, newLimit - newToday);
+        const reviewQuota = Math.max(0, reviewLimit - reviewsToday);
         const poolNew = newPool.length;
         const poolReview = reviewPool.length;
+        const servedNew = Math.min(poolNew, newQuota);
+        const servedReview = Math.min(poolReview, reviewQuota);
         if (poolNew + poolReview === 0) {
           // Genuinely caught up — nothing due right now.
           setEmptyReason("nothing_due");
-        } else if (poolReview === 0 && newQuota === 0) {
-          // All due reviews cleared AND today's new-card target reached — a
-          // soft "keep going?" moment, never a hard wall.
+        } else if (servedNew + servedReview === 0) {
+          // Cards exist in the due pools but today's quotas are already spent.
           setEmptyReason("limit_reached");
         } else {
           setEmptyReason(null);
@@ -261,10 +230,11 @@ function SessionInner() {
           newToday,
           reviewsToday,
           newLimit,
+          reviewLimit,
           poolNew,
           poolReview,
         });
-        items = [...newPool.slice(0, newQuota), ...reviewPool];
+        items = [...newPool.slice(0, newQuota), ...reviewPool.slice(0, reviewQuota)];
       } else {
         items = [...newPool, ...reviewPool];
       }
@@ -493,13 +463,11 @@ function SessionInner() {
         <p className="text-as-outline text-sm mb-6 max-w-md mx-auto leading-relaxed">
           {isLimitReached && ctx ? (
             <>
-              You&apos;ve cleared today&apos;s due reviews and started{" "}
-              <strong>{ctx.newToday}</strong> new card
-              {ctx.newToday === 1 ? "" : "s"}
-              {ctx.reviewsToday > 0 ? <> ({ctx.reviewsToday} reviews)</> : null}.
-              Spaced repetition works best if you take a break here — but
-              nothing&apos;s stopping you. Keep going with more new cards if
-              you&apos;re on a roll.
+              You&apos;ve hit today&apos;s limits — <strong>{ctx.newToday}</strong> new
+              card{ctx.newToday === 1 ? "" : "s"} and <strong>{ctx.reviewsToday}</strong>{" "}
+              review{ctx.reviewsToday === 1 ? "" : "s"} studied. Spaced repetition works
+              best if you stop here, but nothing&apos;s stopping you — Cram mode ignores
+              the daily caps.
             </>
           ) : isNothingDue ? (
             <>
