@@ -799,13 +799,14 @@ export default function PracticeSession() {
                     const perAnswer = getPerAnswerExplanation(option.label);
                     if (!perAnswer) return null;
 
-                    // Strip the boilerplate lead-in ("This is incorrect."/"is correct:")
-                    // so the choice label reads cleanly, then re-capitalize the remainder.
+                    // Strip the boilerplate lead-in ("is correct:"/"is incorrect:",
+                    // with or without a leading "This") so the choice label reads
+                    // cleanly, then re-capitalize the remainder.
                     const cleanAnswer = perAnswer
                       .replace(
                         isCorrect
                           ? /^(this\s+)?is correct[:.,]?\s*/i
-                          : /^this is incorrect[.,]?\s*/i,
+                          : /^(this\s+)?is incorrect[:.,]?\s*/i,
                         ""
                       )
                       .replace(/^([a-z])/, (c) => c.toUpperCase())
