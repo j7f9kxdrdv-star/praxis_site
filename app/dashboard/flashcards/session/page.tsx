@@ -123,15 +123,29 @@ function SessionInner() {
   // ─── Load cross-deck queue ────────────────────────────────────────────────
   useEffect(() => {
     async function load() {
-      const { data: cardRows } = await supabase
-        .from("flashcards")
-        .select("id, card_type, front_text, back_text, cloze_text, cloze_count, explanation, deck_id");
+      // Page through the ENTIRE card library. Without an explicit range,
+      // PostgREST silently caps this at 1000 rows. Once the bank grew past
+      // that, later decks were never fetched at all: their cards became
+      // invisible to Due/Cram sessions, so the "new" pool looked empty even
+      // with thousands of unseen cards remaining, and the session would
+      // wrongly report "all caught up" the moment the review cap was hit.
+      const cards: Card[] = [];
+      const CARD_PAGE = 1000;
+      for (let from = 0; ; from += CARD_PAGE) {
+        const { data, error } = await supabase
+          .from("flashcards")
+          .select("id, card_type, front_text, back_text, cloze_text, cloze_count, explanation, deck_id")
+          .order("id", { ascending: true })
+          .range(from, from + CARD_PAGE - 1);
+        if (error || !data || data.length === 0) break;
+        cards.push(...(data as Card[]));
+        if (data.length < CARD_PAGE) break;
+      }
 
-      if (!cardRows || cardRows.length === 0) {
+      if (cards.length === 0) {
         setLoading(false);
         return;
       }
-      const cards = cardRows as Card[];
 
       // Fetch every state row this user has. The previous
       // .in("flashcard_id", cards.map((c) => c.id)) clause produced an
