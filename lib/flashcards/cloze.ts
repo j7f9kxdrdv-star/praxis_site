@@ -210,6 +210,24 @@ export function validateClozeText(text: string): ClozeValidationResult {
     }
   }
 
+  // Nested cloze tokens ({{...{{...}}...}}) break the flat, non-greedy renderer —
+  // it closes on the first "}}", mangling both the answer and the trailing text.
+  // Detect any point where brace-pair depth exceeds 1.
+  let depth = 0;
+  for (let i = 0; i < text.length - 1; i++) {
+    if (text[i] === "{" && text[i + 1] === "{") {
+      depth++;
+      i++;
+      if (depth >= 2) {
+        errors.push("Nested cloze tokens are not supported ({{ ... {{ ... }} ... }}).");
+        break;
+      }
+    } else if (text[i] === "}" && text[i + 1] === "}") {
+      depth--;
+      i++;
+    }
+  }
+
   return {
     valid: errors.length === 0,
     errors,

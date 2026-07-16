@@ -49,3 +49,4 @@ next-env.d.ts
 # preclude redistribution in a commercial repository.
 reference-textbooks/
 reference-textbooks
+flashcard-leak-report.json
