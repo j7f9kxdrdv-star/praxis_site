@@ -189,8 +189,8 @@ BEGIN
      '{{c1::Citrate synthase}} is allosterically inhibited by {{c2::ATP}}, {{c2::NADH}}, citrate, and succinyl-CoA — all signals that energy or downstream products are abundant.',
      2),
     (deck, 33, 'cloze',
-     '{{c1::Isocitrate dehydrogenase}} (rate-limiting) is inhibited by {{c2::ATP and NADH}}, and activated by {{c2::ADP and NAD⁺}}, the energy-deficient state.',
-     2),
+     '{{c1::Isocitrate dehydrogenase}}, the rate-limiting enzyme of the {{c2::citric acid cycle}}, is inhibited by {{c3::ATP and NADH}} and activated by {{c3::ADP and NAD⁺}} (signals of an energy-deficient state).',
+     3),
     (deck, 34, 'cloze',
      'The {{c1::α-ketoglutarate dehydrogenase complex}} is inhibited by its own products ({{c2::succinyl-CoA and NADH}}) plus ATP, and activated by {{c2::ADP and Ca²⁺}}.',
      2);
