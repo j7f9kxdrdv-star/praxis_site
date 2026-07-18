@@ -186,8 +186,8 @@ BEGIN
     -- ── TCA Regulation ──────────────────────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 32, 'cloze',
-     '{{c1::Citrate synthase}} is allosterically inhibited by {{c2::ATP}}, {{c2::NADH}}, citrate, and succinyl-CoA — all signals that energy or downstream products are abundant.',
-     2),
+     '{{c1::Citrate synthase}}, the enzyme that begins the {{c2::citric acid cycle}}, is allosterically inhibited by {{c3::ATP}}, {{c3::NADH}}, {{c1::citrate}}, and succinyl-CoA — all signals that energy or downstream products are abundant.',
+     3),
     (deck, 33, 'cloze',
      '{{c1::Isocitrate dehydrogenase}}, the rate-limiting enzyme of the {{c2::citric acid cycle}}, is inhibited by {{c3::ATP and NADH}} and activated by {{c3::ADP and NAD⁺}} (signals of an energy-deficient state).',
      3),
