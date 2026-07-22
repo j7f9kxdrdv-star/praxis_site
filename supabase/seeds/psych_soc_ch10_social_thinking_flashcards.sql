@@ -195,7 +195,16 @@ BEGIN
         2),
     (deck, 45, 'cloze',
         '{{c1::Institutional discrimination}} — discrimination {{c2::built into the structure}} of an organization or society, affecting entire groups regardless of any individual''s prejudice.',
-        2);
+        2),
+    (deck, 46, 'cloze',
+        '{{c1::Foraging}} is the animal behavior of searching for, capturing, and consuming food resources in the environment.',
+        1),
+    (deck, 47, 'cloze',
+        '{{c1::Implicit personality theory}} is the set of assumptions a person holds about how different personality traits and behaviors tend to occur together in others.',
+        1),
+    (deck, 48, 'cloze',
+        'A reliance on {{c1::central traits}} is the tendency to organize impressions of others around the characteristics that matter most to the perceiver.',
+        1);
 
-    RAISE NOTICE 'Seeded deck % with 46 cards.', deck;
+    RAISE NOTICE 'Seeded deck % with 49 cards.', deck;
 END $$;
