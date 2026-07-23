@@ -8,6 +8,8 @@ import { supabase } from "@/lib/supabase";
 import { renderClozeSegments } from "@/lib/flashcards/cloze";
 import { nextSchedule, previewLabel, type Rating } from "@/lib/flashcards/scheduler";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
+import StudySurface from "@/components/flashcards/StudySurface";
+import RotateGate from "@/components/flashcards/RotateGate";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -487,148 +489,30 @@ export default function StudyPage() {
     : null;
 
   return (
-    <div className="relative z-[1] min-h-[calc(100vh-3.5rem)] lg:min-h-screen flex flex-col">
-      <div className="w-full max-w-2xl lg:max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-4 sm:py-8 lg:my-auto">
+    <RotateGate>
+    <div className="relative z-[1] lg:min-h-screen flex flex-col">
+      <div className="w-full lg:max-w-7xl mx-auto pl-[max(env(safe-area-inset-left),0.75rem)] pr-[max(env(safe-area-inset-right),0.75rem)] py-0 lg:px-10 lg:py-8 lg:my-auto">
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 lg:gap-10">
 
-          {/* ═══════════ LEFT COLUMN — card workspace ═══════════ */}
-          <div className="flex flex-col">
-
-            {/* Top bar */}
-            <div className="grid grid-cols-3 items-center mb-4">
-              <Link
-                href={`/dashboard/flashcards/${params.deckId}`}
-                className="justify-self-start inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-as-outline hover:text-as-primary transition-colors"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                  <path d="M6 18L18 6M6 6l12 12" strokeLinecap="round" />
-                </svg>
-                Exit
-              </Link>
-              <span className="justify-self-center" aria-hidden="true" />
-              <button
-                onClick={toggleStar}
-                aria-label={starred ? "Unstar card" : "Star card"}
-                className={`justify-self-end text-xl transition-transform hover:scale-110 ${starred ? "text-amber-500" : "text-as-outline hover:text-as-primary"}`}
-              >
-                {starred ? "★" : "☆"}
-              </button>
-            </div>
-
-            {/* Card with library-style double border + layered shadow */}
-            <div
-              className="relative rounded-[2rem] p-[1.5px] bg-gradient-to-br from-as-outline-variant/40 via-as-primary/10 to-as-outline-variant/40 shadow-[0_30px_60px_-20px_rgba(0,54,48,0.18),0_8px_24px_-12px_rgba(0,54,48,0.12)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_40px_70px_-20px_rgba(0,54,48,0.22),0_12px_30px_-12px_rgba(0,54,48,0.15)]"
-            >
-              <button
-                onClick={flip}
-                className="relative w-full flex items-center justify-center bg-as-surface-container-lowest rounded-[calc(2rem-1.5px)] p-8 sm:p-12 lg:p-14 text-center min-h-[320px] lg:min-h-[420px] lg:max-h-[480px] hover:bg-white transition-colors group"
-              >
-                <div className="w-full max-w-3xl mx-auto">
-          {current?.card.card_type === "cloze" ? (
-            <p className="font-headline text-xl sm:text-2xl text-as-primary leading-relaxed">
-              {segments.map((seg, i) =>
-                seg.kind === "text" ? (
-                  <span key={i}>{seg.text}</span>
-                ) : seg.kind === "image" ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    key={i}
-                    src={seg.src}
-                    alt={seg.alt}
-                    className="block mx-auto my-4 max-h-56 sm:max-h-72 lg:max-h-80 w-auto object-contain"
-                  />
-                ) : seg.revealed ? (
-                  <span
-                    key={i}
-                    className="inline-block bg-as-primary/10 text-as-primary font-bold italic px-2 py-0.5 rounded-md transition-all"
-                  >
-                    {seg.answer}
-                  </span>
-                ) : (
-                  <span
-                    key={i}
-                    className="inline-block bg-as-primary/15 text-transparent font-bold rounded-md px-2 py-0.5 select-none"
-                    title={seg.hint || ""}
-                  >
-                    {/* preserve width; render answer as transparent so spacing matches */}
-                    {seg.answer}
-                  </span>
-                ),
-              )}
-              {!revealed &&
-                segments.some(
-                  (s) => s.kind === "blank" && s.hint,
-                ) && (
-                  <span className="block mt-4 text-xs text-as-outline italic">
-                    Hint:{" "}
-                    {segments
-                      .filter((s) => s.kind === "blank" && s.hint)
-                      .map((s) => (s.kind === "blank" ? s.hint : ""))
-                      .join(" · ")}
-                  </span>
-                )}
-            </p>
-          ) : (
-            <div>
-              <p className="font-headline text-xl sm:text-2xl text-as-primary leading-relaxed mb-4">
-                {current?.card.front_text}
-              </p>
-              {revealed && backText && (
-                <div className="pt-4 mt-4 border-t border-as-outline-variant/20">
-                  <p className="text-sm sm:text-base text-as-on-surface-variant leading-relaxed">
-                    {backText}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {revealed && current?.card.explanation && (
-            <p className="mt-5 text-xs text-as-outline italic leading-relaxed">
-              {current.card.explanation}
-            </p>
-          )}
-
-                </div>
-              </button>
-            </div>
-
-            {/* Action bar — only rating buttons after reveal */}
-            <div className="mt-6 min-h-[3.5rem]">
-              {revealed && (
-                <div className="space-y-3">
-                  <div className="grid grid-cols-4 gap-2 sm:gap-3">
-                    {(
-                      [
-                        { rating: "again" as Rating, label: "Again", key: "1" },
-                        { rating: "hard" as Rating, label: "Hard", key: "2" },
-                        { rating: "medium" as Rating, label: "Medium", key: "3" },
-                        { rating: "easy" as Rating, label: "Easy", key: "4" },
-                      ]
-                    ).map(({ rating, label, key }) => (
-                      <button
-                        key={rating}
-                        onClick={() => submitRating(rating)}
-                        disabled={submitting}
-                        className="flex flex-col items-center gap-0.5 py-4 rounded-2xl text-xs font-bold uppercase tracking-wider bg-as-primary text-white hover:bg-as-primary-container transition-colors disabled:opacity-50 shadow-[0_8px_24px_-12px_rgba(0,54,48,0.4)]"
-                      >
-                        <span>{label}</span>
-                        <span className="text-[9px] font-medium opacity-70 normal-case tracking-normal">
-                          {previewLabel(intervalDays, rating)} · {key}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                  <button
-                    onClick={suspendCard}
-                    className="w-full text-[10px] font-bold uppercase tracking-widest text-as-outline hover:text-as-primary py-2"
-                  >
-                    Suspend this card
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* ═══════════ LEFT — card workspace (landscape-first) ═══════════ */}
+          <StudySurface
+            exitHref={`/dashboard/flashcards/${params.deckId}`}
+            starred={starred}
+            onToggleStar={toggleStar}
+            progress={{ done: stats.done, total: Math.max(stats.done + Math.max(0, queue.length - index), stats.done, 1) }}
+            cardType={current?.card.card_type ?? "cloze"}
+            segments={segments}
+            frontText={current?.card.front_text ?? null}
+            backText={backText}
+            explanation={current?.card.explanation ?? null}
+            hint={segments.filter((s) => s.kind === "blank" && s.hint).map((s) => (s.kind === "blank" ? s.hint : "")).join(" · ") || undefined}
+            revealed={revealed}
+            onFlip={flip}
+            intervalDays={intervalDays}
+            submitting={submitting}
+            onRate={submitRating}
+            onSuspend={suspendCard}
+          />
 
           {/* ═══════════ RIGHT COLUMN — session context panel ═══════════ */}
           <aside className="hidden lg:flex flex-col gap-5 lg:sticky lg:top-8 self-start">
@@ -739,5 +623,6 @@ export default function StudyPage() {
         </div>
       </div>
     </div>
+    </RotateGate>
   );
 }

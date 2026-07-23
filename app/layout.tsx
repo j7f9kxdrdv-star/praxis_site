@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Serif_Display, Inter, Newsreader, Manrope, Fraunces, Instrument_Serif, Be_Vietnam_Pro } from "next/font/google";
 import "./globals.css";
 import {
@@ -9,6 +9,7 @@ import {
   DEFAULT_OG_IMAGE,
 } from "@/lib/seo";
 import { isLive } from "@/lib/launch-mode";
+import ServiceWorkerRegister from "@/components/pwa/ServiceWorkerRegister";
 
 const dmSerif = DM_Serif_Display({
   variable: "--font-dm-serif",
@@ -67,6 +68,19 @@ export const metadata: Metadata = {
   },
   description: DEFAULT_DESCRIPTION,
   applicationName: SITE_NAME,
+  appleWebApp: {
+    capable: true,
+    title: "Praxist",
+    statusBarStyle: "default",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+  },
   keywords: [
     "MCAT prep",
     "MCAT tutoring",
@@ -107,6 +121,18 @@ export const metadata: Metadata = {
         },
       }
     : { index: false, follow: false },
+};
+
+/**
+ * Viewport + theme color. `viewportFit: "cover"` lets content extend under the
+ * iPhone notch/home-indicator when installed; theme color tints the status bar
+ * and task switcher to the brand green.
+ */
+export const viewport: Viewport = {
+  themeColor: "#003630",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -152,6 +178,7 @@ export default function RootLayout({
           }}
         />
         {children}
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
