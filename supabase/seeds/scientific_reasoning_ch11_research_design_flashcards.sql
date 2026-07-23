@@ -193,5 +193,15 @@ BEGIN
         '{{c1::Statistical significance}} means the result is {{c2::unlikely to be due to chance}}; {{c1::clinical significance}} means the change is {{c2::large enough to matter in real-world practice}} — an intervention should demonstrate both.',
         2);
 
-    RAISE NOTICE 'Seeded deck % with 38 cards.', deck;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 38, 'cloze',
+     'A scientific hypothesis is not generated at random but is derived from {{c1::existing theory, prior findings, and observations}}.',
+     1),
+    (deck, 39, 'cloze',
+     'Descriptive qualitative and survey designs that cannot establish causation include {{c1::questionnaires, interviews, and focus groups}} plus {{c2::case studies and ethnographic (naturalistic) observation}}.',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with 40 cards.', deck;
 END $$;

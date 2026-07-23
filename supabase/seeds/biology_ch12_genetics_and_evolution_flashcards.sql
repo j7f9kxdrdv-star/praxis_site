@@ -322,5 +322,24 @@ BEGIN
      'The {{c1::molecular clock}} model uses the accumulated rate of {{c2::neutral mutations}} in homologous DNA or protein sequences to estimate how long ago two species diverged.',
      2);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 71;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 71, 'cloze',
+     'Mitochondria come almost entirely from the {{c1::egg}}, so mitochondrial DNA is inherited from the {{c1::mother}} — {{c2::extranuclear (cytoplasmic)}} inheritance that does not follow Mendelian ratios.',
+     2),
+    (deck, 72, 'cloze',
+     'The Y chromosome carries very few genes — chiefly {{c1::SRY}}, which triggers male development — so most X-linked genes have no Y counterpart, making males {{c2::hemizygous}}.',
+     2),
+    (deck, 73, 'cloze',
+     'In population genetics, a {{c1::polymorphism}} is the presence of {{c2::two or more}} common alleles or phenotypes in a population.',
+     2),
+    (deck, 74, 'cloze',
+     'A {{c1::balanced polymorphism}} is maintained by {{c1::heterozygote advantage}} — e.g., sickle-cell trait stays common because it confers malaria resistance.',
+     1),
+    (deck, 75, 'cloze',
+     'A population {{c1::bottleneck}} is a sudden, often disaster-driven collapse in population size that sharply reduces allelic variation — an extreme form of {{c2::genetic drift}}.',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 76;
 END $$;

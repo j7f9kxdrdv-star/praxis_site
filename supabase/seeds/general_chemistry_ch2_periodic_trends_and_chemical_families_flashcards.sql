@@ -119,17 +119,17 @@ BEGIN
 
   -- ── 4. Effective Nuclear Charge ──────────────────────────
   (deck, 13, 'cloze',
-   '{{c1::Effective nuclear charge (Z_eff)}} is the net positive charge actually experienced by an atom''s outermost electrons after accounting for {{c2::shielding}} by the inner-shell electrons — formally Z_eff ≈ {{c3::Z − S}}, where S is the shielding constant.', 3),
+   '{{c1::Effective nuclear charge (Zeff)}} is the net positive charge actually experienced by an atom''s outermost electrons after accounting for {{c2::shielding}} by the inner-shell electrons — formally Zeff ≈ {{c3::Z − S}}, where S is the shielding constant.', 3),
 
   (deck, 14, 'cloze',
-   'Z_eff {{c1::increases}} from left to right across a period (more protons added with negligible new shielding) but stays roughly {{c2::constant}} down a group (each added shell provides new shielding that cancels the added nuclear charge).', 2),
+   'Zeff {{c1::increases}} from left to right across a period (more protons added with negligible new shielding) but stays roughly {{c2::constant}} down a group (each added shell provides new shielding that cancels the added nuclear charge).', 2),
 
   -- ── 5. Atomic Radius ─────────────────────────────────────
   (deck, 15, 'cloze',
    'The {{c1::atomic radius}} of an element is defined as {{c2::half the distance}} between the nuclei of two like atoms in contact — typically measured from bond lengths in a diatomic molecule or a metallic / ionic crystal.', 2),
 
   (deck, 16, 'cloze',
-   'Atomic radius {{c1::decreases}} from left to right across a period (rising Z_eff pulls the same outer shell tighter) and {{c2::increases}} from top to bottom in a group (each new period adds an electron shell at a larger principal quantum number).', 2),
+   'Atomic radius {{c1::decreases}} from left to right across a period (rising Zeff pulls the same outer shell tighter) and {{c2::increases}} from top to bottom in a group (each new period adds an electron shell at a larger principal quantum number).', 2),
 
   -- ── 6. Ionic Radius ──────────────────────────────────────
   (deck, 17, 'cloze',
@@ -143,7 +143,7 @@ BEGIN
    '{{c1::Ionization energy}} is the energy required to remove one electron from a gaseous atom or ion in its ground state; because pulling a negative electron away from a positive nucleus always requires input of energy, ionization is an {{c2::endothermic}} process.', 2),
 
   (deck, 20, 'cloze',
-   'Ionization energy {{c1::increases}} from left to right across a period (rising Z_eff binds the valence electron more tightly) and {{c2::decreases}} from top to bottom in a group (valence electron is farther from the nucleus and more shielded).', 2),
+   'Ionization energy {{c1::increases}} from left to right across a period (rising Zeff binds the valence electron more tightly) and {{c2::decreases}} from top to bottom in a group (valence electron is farther from the nucleus and more shielded).', 2),
 
   (deck, 21, 'cloze',
    'Successive ionization energies always rise: {{c1::IE₁ < IE₂ < IE₃}}, because each subsequent electron is being removed from a progressively more positive cation. A particularly large jump between IEₙ and IEₙ₊₁ signals that the (n+1)ᵗʰ electron is being pulled from a {{c2::noble-gas core}} — a useful diagnostic for counting the element''s valence electrons.', 2),

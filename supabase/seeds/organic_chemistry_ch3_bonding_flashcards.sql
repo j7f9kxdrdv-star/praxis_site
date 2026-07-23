@@ -49,7 +49,7 @@ BEGIN
 
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 0, 'cloze',
-        'An electron in an atom is described by four quantum numbers: {{c1::principal (n)}}, {{c1::azimuthal (l)}}, {{c1::magnetic (m_l)}}, and {{c1::spin (m_s)}}.',
+        'An electron in an atom is described by four quantum numbers: {{c1::principal (n)}}, {{c1::azimuthal (l)}}, {{c1::magnetic (mₗ)}}, and {{c1::spin (mₛ)}}.',
         1),
     (deck, 1, 'cloze',
         'The {{c1::principal quantum number (n)}} corresponds to the {{c2::energy level (shell)}} and is essentially a measure of orbital {{c3::size}}; smaller n means lower energy and closer to the nucleus.',
@@ -58,10 +58,10 @@ BEGIN
         'The {{c1::azimuthal quantum number (l)}} describes the {{c2::subshell shape}} and ranges from {{c3::0 to n − 1}}; values 0, 1, 2, 3 correspond to the {{c4::s, p, d, and f}} subshells.',
         4),
     (deck, 3, 'cloze',
-        'The {{c1::magnetic quantum number (m_l)}} describes the {{c2::orientation of the orbital}} within a subshell and ranges from {{c3::−l to +l}}.',
+        'The {{c1::magnetic quantum number (mₗ)}} describes the {{c2::orientation of the orbital}} within a subshell and ranges from {{c3::−l to +l}}.',
         3),
     (deck, 4, 'cloze',
-        'The {{c1::spin quantum number (m_s)}} indicates the electron''s spin direction, with only two possible values: {{c2::+1/2 or −1/2}}.',
+        'The {{c1::spin quantum number (mₛ)}} indicates the electron''s spin direction, with only two possible values: {{c2::+1/2 or −1/2}}.',
         2),
     (deck, 5, 'cloze',
         'The {{c1::s orbital}} is {{c2::spherical and centered on the nucleus}}; the {{c1::p orbital}} has {{c2::two lobes (dumbbell-shaped) with a node at the nucleus}}; the {{c1::d orbital}} has {{c2::four lobes (clover-shaped, except the donut-around-axis variant)}} with two nodes.',

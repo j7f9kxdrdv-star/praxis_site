@@ -202,5 +202,42 @@ BEGIN
         '{{c1::Globalization}} merges separate nations into a single sociocultural entity, driven by communication technology and economic interdependence; {{c1::urbanization}} is the {{c2::growth of dense urban populations}} fueled by rural-to-city migration.',
         2);
 
-    RAISE NOTICE 'Seeded deck % with 48 cards.', deck;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 48, 'cloze',
+     'Beyond the {{c1::nuclear}} family (two parents and their children), other family forms include {{c2::extended, single-parent, blended, cohabiting, and same-sex-parent}} families.',
+     2),
+    (deck, 49, 'cloze',
+     'Culture shock is the {{c1::disorientation and anxiety}} felt when immersed in an unfamiliar culture; the same feeling on returning to one''s own culture is {{c2::reverse}} culture shock.',
+     2),
+    (deck, 50, 'cloze',
+     'Michels''s {{c1::iron law of oligarchy}} holds that every large bureaucratic organization inevitably comes to be run by a small ruling {{c2::elite}}, as power concentrates at the top.',
+     2),
+    (deck, 51, 'cloze',
+     'Kinship arises through {{c1::consanguinity (shared blood/descent) or affinity (marriage)}}; descent may be {{c2::patrilineal, matrilineal, or bilateral}}.',
+     2),
+    (deck, 52, 'cloze',
+     'Marriage within one''s own social group is {{c1::endogamy}}, whereas marriage outside one''s group is {{c1::exogamy}}.',
+     1),
+    (deck, 53, 'cloze',
+     'Widely shared culture spread through media to a mainstream audience is {{c1::popular (mass)}} culture, contrasted with {{c1::high}} culture, associated with social elites.',
+     1),
+    (deck, 54, 'cloze',
+     'In {{c1::Malthusian}} theory, population grows {{c2::exponentially}} while food supply grows only {{c2::linearly}}, so positive checks (famine, disease, war) eventually cap it.',
+     2),
+    (deck, 55, 'cloze',
+     'Because immigrant status frequently combines with racial and ethnic minority status, holding both compounds disadvantage — an instance of {{c1::intersectionality}}.',
+     1),
+    (deck, 56, 'cloze',
+     'Sustained social movements succeed less through shared grievances than through {{c1::resource mobilization}} — organizing money, people, leadership, and networks.',
+     1),
+    (deck, 57, 'cloze',
+     'Social movements pursue their goals through tactics such as {{c1::boycotts, strikes, and civil disobedience}}.',
+     1),
+    (deck, 58, 'cloze',
+     'Globalization''s rapid economic and cultural integration can provoke backlash and social change, including {{c1::civil unrest and transnational terrorism}}.',
+     1);
+
+    RAISE NOTICE 'Seeded deck % with 59 cards.', deck;
 END $$;

@@ -364,5 +364,15 @@ BEGIN
   (deck, 84, 'cloze',
    'Early social development follows a predictable trajectory. Infants first display {{c1::stranger anxiety}} (fear of unfamiliar individuals), then {{c2::separation anxiety}} (distress when parted from a caregiver). Toddlers begin {{c3::parallel play}} — playing alongside other children without much interaction. Social orientation broadly shifts from {{c4::parent → self → other}} over the early years.', 4);
 
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 85, 'cloze',
+     'Beyond DNA sequence, differences in {{c1::regulatory}} genes shape behavior and development by setting {{c2::when, where, and how much}} other genes get expressed.',
+     2),
+    (deck, 86, 'cloze',
+     'Because mature CNS neurons rarely regenerate on their own, {{c1::stem-cell}} therapy aims to replace those lost with new, functional neurons.',
+     1);
+
   RAISE NOTICE 'Seeded deck % with % cards.', deck, (SELECT COUNT(*) FROM flashcards WHERE deck_id = deck);
 END $$;

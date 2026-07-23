@@ -294,5 +294,12 @@ BEGIN
      'After {{c1::babbling}} and first words around age 1, toddlers reach {{c2::telegraphic (two-word)}} speech near age 2.',
      2);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 76;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 76, 'cloze',
+     'IQ extremes: the low end is {{c1::intellectual disability}} (IQ about 70 or below plus deficits in adaptive functioning); the high end is {{c2::giftedness}} (IQ 130 or higher).',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 77;
 END $$;

@@ -304,5 +304,12 @@ BEGIN
      'The situational approach, advanced by {{c1::Mischel}} in the person-situation debate, holds that behavior shifts so much across settings that stable traits alone poorly predict it.',
      1);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 78;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 78, 'cloze',
+     '{{c1::Gender-schema theory}} proposes that children absorb their culture''s expectations about males and females and then use them to interpret experiences and {{c2::guide their own behavior}}.',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 79;
 END $$;

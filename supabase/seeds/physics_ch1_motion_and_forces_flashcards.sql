@@ -165,7 +165,7 @@ BEGIN
    'A {{c1::force}} is any push or pull that can cause an object to accelerate. Force is a {{c2::vector}}, and its SI unit is the {{c3::newton (N) = kg·m/s²}}.', 3),
 
   (deck, 23, 'cloze',
-   'Newton''s law of universal gravitation: every pair of masses attracts each other with a force {{c1::F_g = Gm₁m₂/r²}}, where {{c2::G = 6.67 × 10⁻¹¹ N·m²/kg²}} is the universal gravitational constant and r is the distance between the centers of the two masses.', 2),
+   'Newton''s law of universal gravitation: every pair of masses attracts each other with a force {{c1::Fg = Gm₁m₂/r²}}, where {{c2::G = 6.67 × 10⁻¹¹ N·m²/kg²}} is the universal gravitational constant and r is the distance between the centers of the two masses.', 2),
 
   (deck, 24, 'cloze',
    '{{c1::Mass}} quantifies an object''s {{c2::inertia}} — its resistance to acceleration — and is a {{c3::scalar}} with SI unit the {{c4::kilogram}}. Mass is independent of location. {{c5::Weight}}, by contrast, is the gravitational force on that mass; it is a {{c3::vector}} measured in {{c6::newtons}}.', 6),
@@ -190,13 +190,13 @@ BEGIN
    'In Newtonian physics, {{c1::mass}} is the measure of an object''s {{c2::inertia}} — its resistance to a change in velocity. The greater the mass, the larger the force required to produce a given acceleration.', 2),
 
   (deck, 31, 'cloze',
-   'Newton''s first law (the law of {{c1::inertia}}) states that an object maintains its current state of motion — at rest if at rest, in constant velocity if moving — unless a {{c2::net external force}} changes it. Equivalently, {{c3::F_net = 0 implies a = 0}}.', 3),
+   'Newton''s first law (the law of {{c1::inertia}}) states that an object maintains its current state of motion — at rest if at rest, in constant velocity if moving — unless a {{c2::net external force}} changes it. Equivalently, {{c3::Fnet = 0 implies a = 0}}.', 3),
 
   (deck, 32, 'cloze',
-   'Newton''s second law states that the net force on an object equals its mass times its acceleration: {{c1::F_net = ma}}. Because F and a are both vectors, they always point in the {{c2::same direction}}.', 2),
+   'Newton''s second law states that the net force on an object equals its mass times its acceleration: {{c1::Fnet = ma}}. Because F and a are both vectors, they always point in the {{c2::same direction}}.', 2),
 
   (deck, 33, 'cloze',
-   'Newton''s third law: when object A exerts a force on object B, object B simultaneously exerts an equal-magnitude {{c1::opposite-direction}} force back on A — mathematically, {{c2::F_AB = −F_BA}}. These two forces act on {{c3::different objects}} and cannot cancel each other out.', 3),
+   'Newton''s third law: when object A exerts a force on object B, object B simultaneously exerts an equal-magnitude {{c1::opposite-direction}} force back on A — mathematically, {{c2::FAB = −FBA}}. These two forces act on {{c3::different objects}} and cannot cancel each other out.', 3),
 
   -- ── 11. Kinematic Equations & Linear Motion ──────────────
   (deck, 34, 'cloze',
@@ -238,7 +238,7 @@ BEGIN
    'Even when an object moves at constant speed in a circle, its direction is constantly changing, so it must be accelerating. This {{c1::centripetal acceleration}} has magnitude {{c2::aₐ = v²/r}} and always points {{c3::toward the center}} of the circular path.', 3),
 
   (deck, 46, 'cloze',
-   'In any circular motion, the net inward force is called the {{c1::centripetal force}}. This is not a separate kind of force — it is whatever actual force (gravity, tension, normal, friction, electromagnetic) happens to be directed toward the center of the circle. Its magnitude is {{c2::F_c = mv²/r}}.', 2),
+   'In any circular motion, the net inward force is called the {{c1::centripetal force}}. This is not a separate kind of force — it is whatever actual force (gravity, tension, normal, friction, electromagnetic) happens to be directed toward the center of the circle. Its magnitude is {{c2::Fc = mv²/r}}.', 2),
 
   (deck, 47, 'cloze',
    '{{c1::Uniform circular motion}} is the special case where speed is constant. The tangential force is then {{c2::zero}} (no change in speed), while the centripetal force is what continually redirects the velocity toward the center.', 2),
@@ -258,6 +258,13 @@ BEGIN
 
   (deck, 52, 'cloze',
    'By standard convention, torques producing {{c1::counterclockwise}} rotation are taken as {{c2::positive}}, and torques producing {{c1::clockwise}} rotation are taken as {{c2::negative}}. In rotational equilibrium, the positive and negative torques cancel exactly.', 2);
+
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 53, 'cloze',
+     'In a {{c1::uniform}} field, an object''s {{c2::center of mass}} and {{c2::center of gravity}} coincide at a single point.',
+     2);
 
   RAISE NOTICE 'Seeded deck % with % cards.', deck, (SELECT COUNT(*) FROM flashcards WHERE deck_id = deck);
 END $$;

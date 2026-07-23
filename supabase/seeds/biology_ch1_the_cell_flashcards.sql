@@ -309,5 +309,15 @@ BEGIN
   (deck, 72, 'cloze',
    '{{c1::cDNA}} (complementary DNA) is synthesized in vitro from a mature {{c2::mRNA}} template using the enzyme {{c2::reverse transcriptase}} — a technique that lets molecular biologists clone the protein-coding sequence of a gene without its introns.', 2);
 
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 73, 'cloze',
+     'From smallest to largest: a virus (~{{c1::20–200 nm}}) is smaller than a bacterium (~{{c2::1–10 µm}}), which is smaller than a eukaryotic cell (~{{c3::10–100 µm}}).',
+     3),
+    (deck, 74, 'cloze',
+     'A virus''s genetic material may be either {{c1::DNA or RNA}}, and either {{c2::single-stranded or double-stranded}} — unlike cellular organisms, which use only one form.',
+     2);
+
   RAISE NOTICE 'Seeded deck % with % cards.', deck, (SELECT COUNT(*) FROM flashcards WHERE deck_id = deck);
 END $$;

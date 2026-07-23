@@ -258,5 +258,18 @@ BEGIN
      'Quick rule: the more electron density that is pulled {{c1::away from}} a proton, the more deshielded it becomes, and the further {{c2::downfield}} it appears on the spectrum.',
      2);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 51;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 51, 'cloze',
+     'A mass spectrometer ionizes a sample in the {{c1::gas}} phase and separates the resulting ions by their {{c2::mass-to-charge ratio (m/z)}}.',
+     2),
+    (deck, 52, 'cloze',
+     'In a mass spectrum, the vertical axis shows {{c1::relative abundance}} and the horizontal axis shows {{c2::m/z}}.',
+     2),
+    (deck, 53, 'cloze',
+     'The {{c1::molecular-ion (parent)}} peak is the intact, unfragmented ion and gives the compound''s mass; the {{c2::base}} peak is the tallest (most abundant) peak, set to 100%.',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 54;
 END $$;

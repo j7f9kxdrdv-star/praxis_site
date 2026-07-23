@@ -174,5 +174,12 @@ BEGIN
         '{{c1::LGBTQ individuals}} face healthcare barriers due to {{c2::prejudice and discrimination}}; {{c3::low-income Americans}} are less likely to be insured and experience late or reduced access to care.',
         3);
 
-    RAISE NOTICE 'Seeded deck % with 41 cards.', deck;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 41, 'cloze',
+     '{{c1::Spatial inequality}} concentrates exposure to {{c2::crime and violence}} in disadvantaged neighborhoods, worsening residents'' health and long-term outcomes.',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with 42 cards.', deck;
 END $$;

@@ -279,5 +279,15 @@ BEGIN
      'Long-term potentiation is thought to be the synaptic mechanism that transforms {{c1::short-term memory into long-term memory}}.',
      1);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 70;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 70, 'cloze',
+     'A worker paid per dozen items assembled is on a {{c1::fixed-ratio}} schedule, whereas a slot-machine gambler is on a {{c1::variable-ratio}} schedule — the most resistant to {{c2::extinction}}.',
+     2),
+    (deck, 71, 'cloze',
+     'A hospital patient who may take another painkiller dose only once per hour follows a {{c1::fixed-interval}} schedule; refreshing social media for new posts reflects a {{c1::variable-interval}} schedule.',
+     1);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 72;
 END $$;

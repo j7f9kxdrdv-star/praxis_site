@@ -282,5 +282,12 @@ BEGIN
   (deck, 60, 'cloze',
    '{{c1::Menopause}} occurs when the aging ovaries become unresponsive to FSH and LH; estrogen and progesterone fall, the endometrium atrophies and menstruation stops, and — with negative feedback lost — FSH and {{c2::LH}} blood levels actually rise.', 2);
 
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 61, 'cloze',
+     'The {{c1::ovum}} supplies essentially all of the zygote''s cytoplasm and organelles, including its mitochondria, while the {{c1::sperm}} supplies essentially only a haploid nucleus.',
+     1);
+
   RAISE NOTICE 'Seeded deck % with % cards.', deck, (SELECT COUNT(*) FROM flashcards WHERE deck_id = deck);
 END $$;

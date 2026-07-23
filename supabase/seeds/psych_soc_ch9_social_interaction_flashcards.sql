@@ -171,5 +171,21 @@ BEGIN
      'Beyond vocalizations, animal communication also relies on {{c1::body language, visual displays, and scents (pheromones)}}, and can occur between humans and animals.',
      1);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 38;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 38, 'cloze',
+     'A {{c1::dyad}} (two members) is intimate but unstable, collapsing if either leaves; a {{c1::triad}} (three) is more stable because the third can {{c2::mediate or form a coalition}}.',
+     2),
+    (deck, 39, 'cloze',
+     '{{c1::Role exit}} is disengaging from an identity-defining position and re-establishing oneself in a new one; the concept comes from sociologist Helen {{c2::Ebaugh}}.',
+     2),
+    (deck, 40, 'cloze',
+     'Gendered display rules socialize women to {{c1::express emotions more openly}} and men to {{c1::suppress}} them.',
+     1),
+    (deck, 41, 'cloze',
+     'On average, women are more accurate than men at {{c1::decoding others'' nonverbal emotional cues}}.',
+     1);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 42;
 END $$;

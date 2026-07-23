@@ -157,10 +157,10 @@ BEGIN
      'A lens''s power P = {{c1::1/f}} (f in meters) is measured in units called {{c2::diopters (D)}}.',
      2),
     (deck, 31, 'cloze',
-     'For thin lenses placed close together, their powers (in diopters) combine as P_total = {{c1::P₁ + P₂ + …}}.',
+     'For thin lenses placed close together, their powers (in diopters) combine as Ptotal = {{c1::P₁ + P₂ + …}}.',
      1),
     (deck, 32, 'cloze',
-     'For lenses in combination, total magnification is found by {{c1::multiplying}} the individual magnifications: m_total = {{c1::m₁ × m₂ × …}}.',
+     'For lenses in combination, total magnification is found by {{c1::multiplying}} the individual magnifications: mtotal = {{c1::m₁ × m₂ × …}}.',
      1),
     (deck, 33, 'cloze',
      'A lens too thick to be treated as "thin" requires the {{c1::lensmaker''s equation}} to find its focal length.',
@@ -262,5 +262,12 @@ BEGIN
      'Sending light through a polarizing filter lowers its {{c1::intensity}} but leaves its {{c1::wavelength}} unchanged.',
      1);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 62;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 62, 'cloze',
+     'In thin-film interference, reflection off a medium of {{c1::higher}} refractive index causes a {{c1::180° (half-wavelength)}} phase shift in the reflected ray.',
+     1);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 63;
 END $$;

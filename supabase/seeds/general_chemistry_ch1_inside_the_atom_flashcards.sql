@@ -168,7 +168,7 @@ BEGIN
 
   -- ── 11. Rydberg Formula ──────────────────────────────────
   (deck, 25, 'cloze',
-   'The {{c1::Rydberg formula for energy}} predicts the photon energy of a hydrogen electron transition: {{c2::E = Rₕ(1/nᵢ² − 1/n_f²)}}, where nᵢ and n_f are the initial and final principal quantum numbers.', 2),
+   'The {{c1::Rydberg formula for energy}} predicts the photon energy of a hydrogen electron transition: {{c2::E = Rₕ(1/nᵢ² − 1/nf²)}}, where nᵢ and nf are the initial and final principal quantum numbers.', 2),
 
   (deck, 26, 'cloze',
    'The {{c1::Rydberg formula for wavelength}} predicts the photon wavelength of a hydrogen transition: {{c2::1/λ = Rₕ(1/n₁² − 1/n₂²)}}, with n₁ < n₂.', 2),

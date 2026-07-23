@@ -234,5 +234,12 @@ BEGIN
      'Strong {{c1::social support}} buffers the impact of stress and is linked to stronger immune function and greater longevity.',
      1);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 56;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 56, 'cloze',
+     'Chronic stress impairs cognitive functions like {{c1::memory, attention, and decision-making}}, and raises the risk of {{c2::anxiety and depression}}.',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 57;
 END $$;

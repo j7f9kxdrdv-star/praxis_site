@@ -131,5 +131,12 @@ BEGIN
         'In water, soaps self-assemble into {{c1::micelles}} — spherical structures with {{c2::polar heads facing outward}} and {{c3::nonpolar tails facing inward}}, dissolving grease in the hydrophobic interior.',
         3);
 
-    RAISE NOTICE 'Seeded deck % with 26 cards.', deck;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 26, 'cloze',
+     'The {{c1::Hell–Volhard–Zelinskii (HVZ)}} reaction halogenates a carboxylic acid at its α-carbon using {{c2::Br₂ and catalytic PBr₃}}, giving an α-halo carboxylic acid.',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with 27 cards.', deck;
 END $$;

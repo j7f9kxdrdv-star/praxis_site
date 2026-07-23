@@ -314,5 +314,18 @@ BEGIN
      'Stem-cell developmental potential descends from {{c1::totipotent}} (whole organism, placenta included) to {{c1::pluripotent}} (all three germ layers) to {{c1::multipotent}} (a few related cell types).',
      1);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 82;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 82, 'cloze',
+     'An {{c1::expression vector}} places a cloned gene downstream of a {{c2::promoter}}, so a host cell transcribes and translates it to make recombinant protein (e.g., human insulin).',
+     2),
+    (deck, 83, 'cloze',
+     'DNA technology''s practical applications span forensics, agriculture, and pharmaceuticals — namely {{c1::DNA fingerprinting, GMO crops, and recombinant protein production}}.',
+     1),
+    (deck, 84, 'cloze',
+     'In {{c1::Hershey–Chase}}, bacteriophage DNA was radiolabeled with {{c2::³²P}} while the protein coat was labeled with {{c2::³⁵S}}; only DNA entered bacteria, identifying it as the genetic material.',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 85;
 END $$;

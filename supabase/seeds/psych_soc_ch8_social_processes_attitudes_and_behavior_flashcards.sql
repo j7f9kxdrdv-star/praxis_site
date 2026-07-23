@@ -245,5 +245,12 @@ BEGIN
      'Attitude change depends on three kinds of factors: characteristics of the {{c1::message, the source, and the target audience}}.',
      1);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 59;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 59, 'cloze',
+     'Attitudes best predict behavior when the attitude is {{c1::strong}}, {{c1::specific to the behavior}}, and {{c1::salient/accessible}}, and when {{c2::situational (social) pressures}} are weak.',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 60;
 END $$;

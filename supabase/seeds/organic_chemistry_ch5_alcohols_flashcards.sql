@@ -139,5 +139,12 @@ BEGIN
         'The conjugated ring system of quinones (including ubiquinone) provides {{c1::resonance stabilization}} that lowers the energy barrier for {{c2::electron transfer}}, which is why nature uses them as redox carriers.',
         2);
 
-    RAISE NOTICE 'Seeded deck % with 26 cards.', deck;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 26, 'cloze',
+     'An alcohol''s –OH can be protected as a {{c1::silyl ether (TMS/TBS)}} — inert to Grignards/oxidants — then deprotected with {{c2::fluoride ion (F⁻, TBAF)}}.',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with 27 cards.', deck;
 END $$;

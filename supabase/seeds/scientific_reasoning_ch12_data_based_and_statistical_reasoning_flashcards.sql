@@ -210,5 +210,12 @@ BEGIN
         '{{c1::Correlation does not imply causation}} — to argue causation from an observed correlation, evaluate {{c2::Hill''s criteria}} (temporality, dose-response, plausibility, etc., from Ch 11).',
         2);
 
-    RAISE NOTICE 'Seeded deck % with 42 cards.', deck;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 42, 'cloze',
+     '{{c1::Random error}} is unpredictable, non-directional variation that lowers precision (reliability) but averages out over many measurements, unlike {{c1::systematic error}}, which shifts results consistently in one direction.',
+     1);
+
+    RAISE NOTICE 'Seeded deck % with 43 cards.', deck;
 END $$;

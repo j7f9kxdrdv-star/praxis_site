@@ -307,5 +307,15 @@ BEGIN
      'In metabolic acidosis, respiratory rate increases to {{c1::blow off CO₂}}, shifting the bicarbonate equilibrium {{c2::left}} and reducing free H⁺ — a respiratory compensation for the pH drop.',
      2);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 66;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 66, 'cloze',
+     'To find a hydrolyzing salt''s pH, obtain the reactive ion''s ionization constant from {{c1::Ka × Kb = Kw}}, then solve its weak-acid or weak-base equilibrium.',
+     1),
+    (deck, 67, 'cloze',
+     'Sodium acetate dissolves in water to give a {{c1::basic}} solution because acetate ion hydrolyzes, producing {{c1::OH⁻}}.',
+     1);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 68;
 END $$;

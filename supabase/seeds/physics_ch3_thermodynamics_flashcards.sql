@@ -192,7 +192,7 @@ BEGIN
      'Statistically, entropy is greater for a macrostate with a larger number of accessible {{c1::microstates}}.',
      1),
     (deck, 42, 'cloze',
-     'For a reversible process, the entropy change is {{c1::ΔS = Q_rev/T}}, where Q_rev is the heat exchanged reversibly and T is the {{c2::absolute}} temperature.',
+     'For a reversible process, the entropy change is {{c1::ΔS = Qrev/T}}, where Qrev is the heat exchanged reversibly and T is the {{c2::absolute}} temperature.',
      2),
     (deck, 43, 'cloze',
      'Every real, natural process is {{c1::irreversible}}; only an idealized, infinitely slow (quasi-static) change — like a very gradual phase change — approaches being {{c1::reversible}}.',
@@ -201,5 +201,12 @@ BEGIN
      'For a reversible process, the total entropy change of the universe (system plus surroundings) equals {{c1::zero}}.',
      1);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 45;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 45, 'cloze',
+     'For a gas, molar heat capacity Cp (constant pressure) is {{c1::greater than}} Cv (constant volume) because some added heat does {{c1::expansion work (PΔV)}} rather than raising temperature.',
+     1);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 46;
 END $$;

@@ -332,5 +332,15 @@ BEGIN
      '{{c1::Medial rotation}} rotates the long axis of a limb toward the midline; {{c1::lateral rotation}} rotates it away from the midline.',
      1);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 75;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 75, 'cloze',
+     'Contracting skeletal muscles compress the blood vessels running through them; their one-way valves block backflow, so this pump raises {{c1::venous return}}.',
+     1),
+    (deck, 76, 'cloze',
+     'The skeleton protects internal organs: the {{c1::cranium}} surrounds the brain, while the {{c2::rib cage}} shields the heart and lungs.',
+     2);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 77;
 END $$;

@@ -95,7 +95,7 @@ BEGIN
 
   -- ── 3. Gravitational Potential Energy ────────────────────
   (deck,  5, 'cloze',
-   'Gravitational potential energy near Earth''s surface is {{c1::U_g = mgh}}, where m is mass, g is the acceleration due to gravity (≈ 9.8 m/s²), and h is the {{c2::height above a chosen reference level}} (called the datum).', 2),
+   'Gravitational potential energy near Earth''s surface is {{c1::Ug = mgh}}, where m is mass, g is the acceleration due to gravity (≈ 9.8 m/s²), and h is the {{c2::height above a chosen reference level}} (called the datum).', 2),
 
   (deck,  6, 'cloze',
    'Gravitational potential energy is always {{c1::relative to a chosen reference level}} — the datum. The choice of datum is arbitrary, because only differences in PE between two heights are physically meaningful (ΔU = mgΔh is independent of where you set zero).', 1),
@@ -139,7 +139,7 @@ BEGIN
    'When only {{c1::conservative}} forces do work on a system, mechanical energy is conserved: {{c2::ΔE = ΔK + ΔU = 0}}. Equivalently, K + U has the same value at every point in the motion — any decrease in one form shows up as an increase in the other.', 2),
 
   (deck, 18, 'cloze',
-   'When {{c1::non-conservative}} forces act, mechanical energy is generally lost. The work done by non-conservative forces equals the {{c2::change in total mechanical energy}}: W_nc = ΔE = ΔK + ΔU (typically negative when friction or drag dissipates energy).', 2),
+   'When {{c1::non-conservative}} forces act, mechanical energy is generally lost. The work done by non-conservative forces equals the {{c2::change in total mechanical energy}}: Wnc = ΔE = ΔK + ΔU (typically negative when friction or drag dissipates energy).', 2),
 
   (deck, 19, 'cloze',
    'Conservation of {{c1::mechanical}} energy is a special case requiring no non-conservative forces. The broader principle — the {{c2::first law of thermodynamics}} — states that {{c3::total energy (mechanical + thermal + chemical + …)}} of an isolated system is always conserved, even when mechanical energy alone is not.', 3),
@@ -178,10 +178,10 @@ BEGIN
 
   -- ── 11. Work-Energy Theorem ──────────────────────────────
   (deck, 30, 'cloze',
-   'The {{c1::work-energy theorem}} states that the net work done on an object by all forces equals its change in kinetic energy: {{c2::W_net = ΔK = K_f − K_i}}. This holds regardless of which kinds of forces are involved — conservative or non-conservative.', 2),
+   'The {{c1::work-energy theorem}} states that the net work done on an object by all forces equals its change in kinetic energy: {{c2::Wnet = ΔK = Kf − Ki}}. This holds regardless of which kinds of forces are involved — conservative or non-conservative.', 2),
 
   (deck, 31, 'cloze',
-   'The work-energy theorem (W_net = ΔK) relates net work to {{c1::kinetic energy only}} — not potential, not total mechanical energy. By contrast, the broader energy-conservation principle (ΔE = W_nc when E = K + U) relates non-conservative work to {{c2::total mechanical}} energy.', 2),
+   'The work-energy theorem (Wnet = ΔK) relates net work to {{c1::kinetic energy only}} — not potential, not total mechanical energy. By contrast, the broader energy-conservation principle (ΔE = Wnc when E = K + U) relates non-conservative work to {{c2::total mechanical}} energy.', 2),
 
   -- ── 12. P-V Work, Simple Machines, Efficiency ────────────
   (deck, 32, 'cloze',
@@ -200,10 +200,10 @@ BEGIN
    'The six classical simple machines are the {{c1::inclined plane, wedge, screw, lever, wheel-and-axle, and pulley}}. Each provides {{c2::mechanical advantage}} by trading reduced force for increased distance.', 2),
 
   (deck, 37, 'cloze',
-   '{{c1::Mechanical advantage}} of a simple machine is the ratio of the output force it produces to the input force applied: {{c2::MA = F_out / F_in}}. A machine with MA = 5 lets you produce a 5 N output by applying only 1 N at the input.', 2),
+   '{{c1::Mechanical advantage}} of a simple machine is the ratio of the output force it produces to the input force applied: {{c2::MA = Fout / Fin}}. A machine with MA = 5 lets you produce a 5 N output by applying only 1 N at the input.', 2),
 
   (deck, 38, 'cloze',
-   'Simple machines do not create energy — they only redistribute it. For an ideal (frictionless) machine, the work done by the input equals the work done by the output: {{c1::F_in × d_in = F_out × d_out}}. So a higher mechanical advantage always comes with a longer input-distance trade-off.', 1),
+   'Simple machines do not create energy — they only redistribute it. For an ideal (frictionless) machine, the work done by the input equals the work done by the output: {{c1::Fin × din = Fout × dout}}. So a higher mechanical advantage always comes with a longer input-distance trade-off.', 1),
 
   (deck, 39, 'cloze',
    'For a frictionless inclined plane of length L and height h, the mechanical advantage is {{c1::MA = L/h}} (equivalently, 1/sin θ where θ is the incline angle). A gentler incline (smaller θ, longer L for a given h) gives larger mechanical advantage.', 1),
@@ -215,7 +215,7 @@ BEGIN
    'In a pulley system, the mechanical advantage equals the number of {{c1::rope segments directly supporting the load}}. A two-rope system halves the required effort (MA = 2); a four-rope system quarters it (MA = 4). The effort distance increases by the same factor.', 1),
 
   (deck, 42, 'cloze',
-   'The {{c1::efficiency}} of a real machine is the ratio of its useful work output to the work input, usually expressed as a percentage: {{c2::Efficiency = (W_out / W_in) × 100%}}. For an ideal frictionless machine, efficiency = 100%; real machines are always less.', 2),
+   'The {{c1::efficiency}} of a real machine is the ratio of its useful work output to the work input, usually expressed as a percentage: {{c2::Efficiency = (Wout / Win) × 100%}}. For an ideal frictionless machine, efficiency = 100%; real machines are always less.', 2),
 
   (deck, 43, 'cloze',
    'Real machines fall short of 100% efficiency because some input energy is lost to {{c1::non-conservative forces}} — friction in joints and bearings, deformation of cables, drag in surrounding air. The lost energy is converted to {{c2::heat (and sometimes sound)}}, leaving the system unable to do useful work.', 2);

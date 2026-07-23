@@ -215,5 +215,15 @@ BEGIN
      'By definition, the standard free energy of formation ΔG°f of an element in its standard state equals {{c1::zero}}.',
      1);
 
-    RAISE NOTICE 'Seeded deck % with % cards.', deck, 50;
+
+    -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────
+    INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
+    (deck, 50, 'cloze',
+     'On a pressure–temperature phase diagram, the {{c1::triple point}} is the single P,T at which {{c1::solid, liquid, and gas}} coexist in equilibrium.',
+     1),
+    (deck, 51, 'cloze',
+     'On a P–T phase diagram, the liquid–gas boundary terminates at the {{c1::critical point}}, beyond which the substance becomes a {{c1::supercritical fluid}} that no pressure can liquefy.',
+     1);
+
+    RAISE NOTICE 'Seeded deck % with % cards.', deck, 52;
 END $$;
