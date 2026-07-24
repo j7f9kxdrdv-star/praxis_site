@@ -318,12 +318,28 @@ export default function AnalyticsPage() {
           .select("id")
           .eq("user_id", user.id)
           .eq("completed", true),
-        supabase
-          .from("flashcard_reviews")
-          .select("flashcard_id, cloze_index, rating, reviewed_at")
-          .eq("user_id", user.id)
-          .order("reviewed_at", { ascending: false })
-          .limit(5000),
+        // Page through the FULL review history. A single query caps at 1000
+        // rows and the old `.limit(5000)` dropped everything older than the
+        // most recent 5000 — which broke the "full chronological history"
+        // first-look math and undercounted all-time totals for heavy users.
+        // Order by time then unique `id` so pages are stable.
+        (async () => {
+          const all: FlashReview[] = [];
+          const PAGE = 1000;
+          for (let from = 0; ; from += PAGE) {
+            const { data, error } = await supabase
+              .from("flashcard_reviews")
+              .select("flashcard_id, cloze_index, rating, reviewed_at")
+              .eq("user_id", user.id)
+              .order("reviewed_at", { ascending: false })
+              .order("id", { ascending: false })
+              .range(from, from + PAGE - 1);
+            if (error || !data) break;
+            all.push(...(data as unknown as FlashReview[]));
+            if (data.length < PAGE) break;
+          }
+          return { data: all };
+        })(),
       ]);
 
       setAllAttempts((attempts as unknown as Attempt[]) || []);

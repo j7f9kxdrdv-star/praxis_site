@@ -259,10 +259,15 @@ export default function FlashcardsHub() {
   // Both new-card introductions and due reviews are throttled per day.
   const projectedNew = Math.max(0, Math.min(unseenAll, newLimit - newToday));
   const projectedReview = Math.max(0, Math.min(dueReviewAll, reviewLimit - reviewsToday));
+  // How many cards a "Start Review" session would actually serve right now.
+  const servedToday = projectedNew + projectedReview;
   // The session is "capped" if either category has more waiting than today's
   // remaining quota will actually serve.
   const isCapping =
     totalDue > 0 && (projectedNew < unseenAll || projectedReview < dueReviewAll);
+  // Both daily limits are fully spent — there's cards due, but none can be
+  // served until the limits refresh at midnight.
+  const limitReached = totalDue > 0 && servedToday === 0;
 
   return (
     <div
@@ -508,7 +513,7 @@ export default function FlashcardsHub() {
                 </div>
               )}
 
-              {totalDue > 0 && (
+              {totalDue > 0 && !limitReached && (
                 <div className="mt-7">
                   <button
                     onClick={startDueSession}
@@ -516,7 +521,7 @@ export default function FlashcardsHub() {
                   >
                     {!isCapping
                       ? "Start Review"
-                      : `Start Review · ${projectedNew + projectedReview} today`}
+                      : `Start Review · ${servedToday} left today`}
                     <svg
                       width="14"
                       height="14"
@@ -537,15 +542,17 @@ export default function FlashcardsHub() {
                         color: "rgba(246,244,227,0.72)",
                       }}
                     >
-                      Today serves{" "}
+                      You&rsquo;ve studied{" "}
                       <strong style={{ color: "var(--color-prax-cream)" }}>
-                        {projectedNew} new card{projectedNew === 1 ? "" : "s"}
+                        {newToday} of {newLimit} new
                       </strong>{" "}
                       and{" "}
                       <strong style={{ color: "var(--color-prax-cream)" }}>
-                        {projectedReview} review{projectedReview === 1 ? "" : "s"}
+                        {reviewsToday} of {reviewLimit} reviews
                       </strong>{" "}
-                      (your daily targets).{" "}
+                      today, so this session serves the {projectedNew} new and{" "}
+                      {projectedReview} review{projectedReview === 1 ? "" : "s"} you
+                      have left. Your full limits refresh at midnight.{" "}
                       <button
                         type="button"
                         onClick={() => setShowSettings(true)}
@@ -562,6 +569,72 @@ export default function FlashcardsHub() {
                       </button>
                     </div>
                   )}
+                </div>
+              )}
+
+              {limitReached && (
+                <div className="mt-7">
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 9,
+                      padding: "11px 20px",
+                      borderRadius: 999,
+                      border: "1px solid rgba(246,244,227,0.35)",
+                      background: "rgba(246,244,227,0.08)",
+                      color: "var(--color-prax-cream)",
+                      fontSize: 13,
+                      fontWeight: 600,
+                      letterSpacing: 0.2,
+                    }}
+                  >
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.4"
+                    >
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                    Daily limit reached
+                  </div>
+                  <div
+                    className="mt-3 max-w-[480px]"
+                    style={{
+                      fontSize: 12,
+                      lineHeight: 1.5,
+                      color: "rgba(246,244,227,0.72)",
+                    }}
+                  >
+                    You&rsquo;ve studied{" "}
+                    <strong style={{ color: "var(--color-prax-cream)" }}>
+                      {newToday} new
+                    </strong>{" "}
+                    and{" "}
+                    <strong style={{ color: "var(--color-prax-cream)" }}>
+                      {reviewsToday} reviews
+                    </strong>{" "}
+                    today. The {totalDue} cards still waiting are held until
+                    tomorrow by your daily limits ({newLimit} new / {reviewLimit}{" "}
+                    review). Want to keep going now?{" "}
+                    <button
+                      type="button"
+                      onClick={() => setShowSettings(true)}
+                      className="underline"
+                      style={{
+                        background: "transparent",
+                        padding: 0,
+                        color: "var(--color-prax-cream)",
+                        fontSize: 12,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Raise your limits
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
