@@ -20,6 +20,7 @@ interface Profile {
   is_admin: boolean;
   daily_new_card_limit: number;
   daily_review_limit: number;
+  weekly_question_goal: number | null;
 }
 
 interface DashboardContext {

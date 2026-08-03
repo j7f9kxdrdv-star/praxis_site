@@ -144,7 +144,8 @@ export default function PracticeSession() {
         router.push("/dashboard/practice");
         return;
       }
-      if (sess.status === "completed") {
+      // Anything not still open (completed, or abandoned/aged out) sends you back to the hub.
+      if (sess.status !== "in_progress") {
         router.push("/dashboard/practice");
         return;
       }

@@ -20,6 +20,9 @@ export default function SettingsPage() {
   const [lastName, setLastName] = useState("");
   const [mcatDate, setMcatDate] = useState("");
   const [studyHours, setStudyHours] = useState<string>("");
+  const [weeklyGoal, setWeeklyGoal] = useState<string>("");
+  // Their actual recent pace, shown as a hint so the goal they pick is grounded.
+  const [recentPace, setRecentPace] = useState<number | null>(null);
 
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
@@ -48,7 +51,31 @@ export default function SettingsPage() {
         ? String(profile.study_hours_per_week)
         : ""
     );
+    setWeeklyGoal(
+      profile.weekly_question_goal !== null &&
+        profile.weekly_question_goal !== undefined
+        ? String(profile.weekly_question_goal)
+        : ""
+    );
   }, [profile]);
+
+  // Last 7 days of practice, to suggest a realistic goal.
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      const since = new Date();
+      since.setDate(since.getDate() - 7);
+      const { count } = await supabase
+        .from("question_attempts")
+        .select("*", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .gte("created_at", since.toISOString());
+      if (active) setRecentPace(count ?? 0);
+    })();
+    return () => {
+      active = false;
+    };
+  }, [user.id]);
 
   async function saveProfile(e: React.FormEvent) {
     e.preventDefault();
@@ -63,6 +90,16 @@ export default function SettingsPage() {
       return;
     }
 
+    const weeklyGoalNum = weeklyGoal.trim() === "" ? null : Number(weeklyGoal);
+    if (
+      weeklyGoalNum !== null &&
+      (!Number.isInteger(weeklyGoalNum) || weeklyGoalNum < 1 || weeklyGoalNum > 2000)
+    ) {
+      setProfileError("Weekly question goal must be a whole number between 1 and 2000.");
+      setSavingProfile(false);
+      return;
+    }
+
     const { error } = await supabase
       .from("profiles")
       .update({
@@ -70,6 +107,7 @@ export default function SettingsPage() {
         last_name: lastName.trim() || null,
         mcat_test_date: mcatDate.trim() || null,
         study_hours_per_week: studyHoursNum,
+        weekly_question_goal: weeklyGoalNum,
       })
       .eq("id", user.id);
 
@@ -191,6 +229,25 @@ export default function SettingsPage() {
               onChange={setStudyHours}
               placeholder="e.g. 15"
             />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <TextField
+                label="Weekly question goal"
+                type="number"
+                value={weeklyGoal}
+                onChange={setWeeklyGoal}
+                placeholder="e.g. 100"
+              />
+              <div
+                className="mt-1.5 text-[12px]"
+                style={{ color: "var(--color-prax-ink-mute)" }}
+              >
+                {recentPace === null
+                  ? "Drives the progress ring on your dashboard."
+                  : `You answered ${recentPace} question${recentPace === 1 ? "" : "s"} in the last 7 days. Pick a target that stretches you a little.`}
+              </div>
+            </div>
           </div>
 
           {profileError && (

@@ -62,6 +62,7 @@ export default function PracticeHub() {
     current_index: number;
     total_questions: number;
   } | null>(null);
+  const [discarding, setDiscarding] = useState(false);
 
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
@@ -129,12 +130,17 @@ export default function PracticeHub() {
         .eq("user_id", user.id)
         .lte("next_review_date", today);
 
-      // Most recent unfinished session → drives the Resume card.
+      // Most recent unfinished session → drives the Resume card. Sessions untouched for a
+      // week are treated as abandoned and no longer surface: a stale one you were never
+      // going to finish just nags forever (users had zombie sessions up to 46 days old).
+      const staleCutoff = new Date();
+      staleCutoff.setDate(staleCutoff.getDate() - 7);
       const { data: openSession } = await supabase
         .from("practice_sessions")
         .select("id, current_index, total_questions")
         .eq("user_id", user.id)
         .eq("status", "in_progress")
+        .gte("last_active_at", staleCutoff.toISOString())
         .order("last_active_at", { ascending: false, nullsFirst: false })
         .order("started_at", { ascending: false })
         .limit(1)
@@ -254,6 +260,26 @@ export default function PracticeHub() {
     router.push(`/dashboard/practice/session/${session.id}`);
   }
 
+  // Let the user clear an unfinished session they don't intend to return to, instead of
+  // leaving the Resume banner nagging them indefinitely.
+  async function discardResumable() {
+    if (!resumable || discarding) return;
+    setDiscarding(true);
+    const { error } = await supabase
+      .from("practice_sessions")
+      .update({ status: "abandoned" })
+      .eq("id", resumable.id)
+      .eq("user_id", user.id);
+    setDiscarding(false);
+    if (!error) setResumable(null);
+  }
+
+  // Sessions have to be finishable in one sitting. Completion rates across all users:
+  // 1-10 q -> 93% finished, 11-25 q -> 100%, 26-50 q -> 20%, 51-100 q -> 8%, 100+ q -> 0%.
+  // Uncapped section / review launches produced 40-421 question sessions that nobody
+  // completed, which then sat "in progress" forever and nagged the hub's Resume banner.
+  const MAX_SESSION_QUESTIONS = 20;
+
   async function startQuick10() {
     setLoading(true);
     const pool = standalone.filter((q) => latestCorrect.get(q.id) === undefined);
@@ -283,7 +309,7 @@ export default function PracticeHub() {
       return;
     }
     await createSession(
-      reviews.map((r) => r.question_id),
+      reviews.slice(0, MAX_SESSION_QUESTIONS).map((r) => r.question_id),
       "weak_areas",
       "review"
     );
@@ -302,7 +328,10 @@ export default function PracticeHub() {
       alert("No flagged questions yet. Flag questions you want to revisit during a session.");
       return;
     }
-    const unique = Array.from(new Set(flagged.map((f) => f.question_id)));
+    const unique = Array.from(new Set(flagged.map((f) => f.question_id))).slice(
+      0,
+      MAX_SESSION_QUESTIONS
+    );
     await createSession(unique, "weak_areas", "flagged");
   }
 
@@ -317,7 +346,10 @@ export default function PracticeHub() {
       return;
     }
     const shuffled = [...pool].sort(() => Math.random() - 0.5);
-    await createSession(shuffled.map((q) => q.id), "by_section");
+    await createSession(
+      shuffled.slice(0, MAX_SESSION_QUESTIONS).map((q) => q.id),
+      "by_section"
+    );
   }
 
   async function startTopicSession(sectionId: string, topicName: string) {
@@ -334,7 +366,10 @@ export default function PracticeHub() {
       return;
     }
     const shuffled = [...pool].sort(() => Math.random() - 0.5);
-    await createSession(shuffled.map((q) => q.id), "by_section");
+    await createSession(
+      shuffled.slice(0, MAX_SESSION_QUESTIONS).map((q) => q.id),
+      "by_section"
+    );
   }
 
   /* ─────────────── Builder helpers ─────────────── */
@@ -432,11 +467,8 @@ export default function PracticeHub() {
 
         {/* ─────────── RESUME BANNER ─────────── */}
         {resumable && (
-          <button
-            onClick={() =>
-              router.push(`/dashboard/practice/session/${resumable.id}`)
-            }
-            className="w-full text-left mb-6 flex items-center gap-4 transition-colors"
+          <div
+            className="w-full mb-6 flex items-center gap-4"
             style={{
               background: "var(--color-prax-cream-card)",
               border: "1px solid var(--color-prax-green)",
@@ -444,41 +476,65 @@ export default function PracticeHub() {
               padding: "16px 20px",
             }}
           >
-            <div
-              className="grid place-items-center rounded-full shrink-0"
-              style={{
-                width: 38,
-                height: 38,
-                background: "var(--color-prax-green)",
-                color: "var(--color-prax-cream)",
-              }}
+            <button
+              onClick={() =>
+                router.push(`/dashboard/practice/session/${resumable.id}`)
+              }
+              className="flex-1 min-w-0 text-left flex items-center gap-4 transition-colors"
+              style={{ background: "transparent", padding: 0 }}
             >
-              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 3l14 9-14 9V3z" />
-              </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <SmallCaps style={{ color: "var(--color-prax-green)" }}>
-                Resume your session
-              </SmallCaps>
               <div
-                className="mt-1"
+                className="grid place-items-center rounded-full shrink-0"
                 style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 17,
-                  color: "var(--color-prax-green)",
+                  width: 38,
+                  height: 38,
+                  background: "var(--color-prax-green)",
+                  color: "var(--color-prax-cream)",
                 }}
               >
-                Pick up at question {Math.min(resumable.current_index + 1, resumable.total_questions)} of {resumable.total_questions}
+                <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 3l14 9-14 9V3z" />
+                </svg>
               </div>
-            </div>
-            <span
-              className="shrink-0 font-semibold"
-              style={{ fontSize: 12, color: "var(--color-prax-green)" }}
+              <div className="flex-1 min-w-0">
+                <SmallCaps style={{ color: "var(--color-prax-green)" }}>
+                  Resume your session
+                </SmallCaps>
+                <div
+                  className="mt-1"
+                  style={{
+                    fontFamily: "var(--font-prax-serif)",
+                    fontSize: 17,
+                    color: "var(--color-prax-green)",
+                  }}
+                >
+                  Pick up at question {Math.min(resumable.current_index + 1, resumable.total_questions)} of {resumable.total_questions}
+                </div>
+              </div>
+              <span
+                className="shrink-0 font-semibold hidden sm:inline"
+                style={{ fontSize: 12, color: "var(--color-prax-green)" }}
+              >
+                Continue →
+              </span>
+            </button>
+            <button
+              onClick={discardResumable}
+              disabled={discarding}
+              aria-label="Discard this unfinished session"
+              className="shrink-0 underline"
+              style={{
+                background: "transparent",
+                padding: "6px 2px",
+                fontSize: 12,
+                color: "var(--color-prax-ink-mute)",
+                cursor: discarding ? "default" : "pointer",
+                opacity: discarding ? 0.5 : 1,
+              }}
             >
-              Continue →
-            </span>
-          </button>
+              {discarding ? "Discarding…" : "Discard"}
+            </button>
+          </div>
         )}
 
         {/* ─────────── EMPTY STATE ─────────── */}

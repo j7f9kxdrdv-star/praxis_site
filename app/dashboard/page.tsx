@@ -612,8 +612,10 @@ export default function DashboardHome() {
 
   /* -------------------------------------------------------- */
 
-  // Weekly goal: rolling target of 50 q/week (placeholder until settings)
-  const weeklyGoal = 50;
+  // Weekly goal: the user's own target, set in Settings. This used to be hardcoded at 50,
+  // which meant anyone studying regularly sat pinned at 100% forever and the ring stopped
+  // telling them anything.
+  const weeklyGoal = profile?.weekly_question_goal ?? 100;
   const weeklyGoalPct = Math.min(
     100,
     Math.round((stats.questionsThisWeek / weeklyGoal) * 100)
