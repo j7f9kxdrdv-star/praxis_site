@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
 import { renderClozeSegments } from "@/lib/flashcards/cloze";
-import { nextSchedule, previewLabel, type Rating } from "@/lib/flashcards/scheduler";
+import { nextSchedule, previewLabel, EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
 import StudySurface from "@/components/flashcards/StudySurface";
 import RotateGate from "@/components/flashcards/RotateGate";
@@ -164,6 +164,12 @@ function SessionInner() {
           .from("flashcard_user_state")
           .select("flashcard_id, cloze_index, starred, suspended, interval_days, ease_factor, reps, lapses, next_review_at, last_rating, last_reviewed_at")
           .eq("user_id", user.id)
+          // Stable order is REQUIRED for correct pagination: without it
+          // Postgres may return pages in shifting physical order (rows move
+          // when updated), silently dropping state rows — dropped rows made
+          // already-studied cards reappear as "new" and re-seed on grading.
+          .order("flashcard_id", { ascending: true })
+          .order("cloze_index", { ascending: true })
           .range(from, from + STATE_PAGE - 1);
         if (error || !data || data.length === 0) break;
         stateRows.push(...(data as SessionStateRow[]));
@@ -291,7 +297,8 @@ function SessionInner() {
     const prevInterval = current.state?.interval_days ?? 0;
     const reps = current.state?.reps ?? 0;
     const lapses = current.state?.lapses ?? 0;
-    const sched = nextSchedule({ rating, intervalDays: prevInterval, reps, lapses });
+    const prevEase = current.state?.ease_factor ?? EASE_DEFAULT;
+    const sched = nextSchedule({ rating, intervalDays: prevInterval, easeFactor: prevEase, reps, lapses });
 
     await supabase.from("flashcard_user_state").upsert(
       {
@@ -301,7 +308,7 @@ function SessionInner() {
         starred: current.state?.starred ?? false,
         suspended: false,
         interval_days: sched.intervalDays,
-        ease_factor: current.state?.ease_factor ?? 2.5,
+        ease_factor: sched.easeFactor,
         reps: sched.reps,
         lapses: sched.lapses,
         last_rating: rating,
@@ -348,7 +355,7 @@ function SessionInner() {
         starred: current.state?.starred ?? false,
         suspended: false,
         interval_days: sched.intervalDays,
-        ease_factor: current.state?.ease_factor ?? 2.5,
+        ease_factor: sched.easeFactor,
         reps: sched.reps,
         lapses: sched.lapses,
         next_review_at: sched.nextReviewAt.toISOString(),
@@ -555,6 +562,7 @@ function SessionInner() {
   // ─── Active study UI ──────────────────────────────────────────────────────
   const starred = current?.state?.starred ?? false;
   const intervalDays = current?.state?.interval_days ?? 0;
+  const easeFactor = current?.state?.ease_factor ?? EASE_DEFAULT;
   const elapsedSec = Math.floor((now - sessionStart) / 1000);
   const elapsedLabel = `${Math.floor(elapsedSec / 60)}:${String(elapsedSec % 60).padStart(2, "0")}`;
   const accuracyPct = stats.attempted > 0
@@ -582,6 +590,7 @@ function SessionInner() {
             revealed={revealed}
             onFlip={flip}
             intervalDays={intervalDays}
+            easeFactor={easeFactor}
             submitting={submitting}
             onRate={submitRating}
             onSuspend={suspendCard}
@@ -653,7 +662,7 @@ function SessionInner() {
                         <span className="font-bold uppercase tracking-wider text-as-outline">{r}</span>
                       </span>
                       <span className="font-headline text-as-primary tabular-nums">
-                        {previewLabel(intervalDays, r)}
+                        {previewLabel(intervalDays, easeFactor, r)}
                       </span>
                     </div>
                   ))}

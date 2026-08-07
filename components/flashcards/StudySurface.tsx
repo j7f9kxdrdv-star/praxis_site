@@ -35,6 +35,8 @@ export interface StudySurfaceProps {
   onFlip: () => void;
 
   intervalDays: number;
+  /** Per-card ease factor, for accurate interval previews on the grade buttons. */
+  easeFactor: number;
   submitting: boolean;
   onRate: (rating: Rating) => void;
   onSuspend: () => void;
@@ -61,6 +63,7 @@ export default function StudySurface({
   revealed,
   onFlip,
   intervalDays,
+  easeFactor,
   submitting,
   onRate,
   onSuspend,
@@ -178,7 +181,7 @@ export default function StudySurface({
                 >
                   <span>{label}</span>
                   <span className="text-[9px] font-medium opacity-80 normal-case tracking-normal">
-                    {previewLabel(intervalDays, rating)} · {key}
+                    {previewLabel(intervalDays, easeFactor, rating)} · {key}
                   </span>
                 </button>
               ))}

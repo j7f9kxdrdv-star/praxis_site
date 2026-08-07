@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
 import { renderClozeSegments } from "@/lib/flashcards/cloze";
-import { nextSchedule, previewLabel, type Rating } from "@/lib/flashcards/scheduler";
+import { nextSchedule, previewLabel, EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
 import StudySurface from "@/components/flashcards/StudySurface";
 import RotateGate from "@/components/flashcards/RotateGate";
@@ -234,7 +234,8 @@ export default function StudyPage() {
     const prevInterval = current.state?.interval_days ?? 0;
     const reps = current.state?.reps ?? 0;
     const lapses = current.state?.lapses ?? 0;
-    const sched = nextSchedule({ rating, intervalDays: prevInterval, reps, lapses });
+    const prevEase = current.state?.ease_factor ?? EASE_DEFAULT;
+    const sched = nextSchedule({ rating, intervalDays: prevInterval, easeFactor: prevEase, reps, lapses });
 
     // Upsert state
     await supabase.from("flashcard_user_state").upsert(
@@ -245,7 +246,7 @@ export default function StudyPage() {
         starred: current.state?.starred ?? false,
         suspended: false,
         interval_days: sched.intervalDays,
-        ease_factor: current.state?.ease_factor ?? 2.5,
+        ease_factor: sched.easeFactor,
         reps: sched.reps,
         lapses: sched.lapses,
         last_rating: rating,
@@ -293,7 +294,7 @@ export default function StudyPage() {
         starred: current.state?.starred ?? false,
         suspended: false,
         interval_days: sched.intervalDays,
-        ease_factor: current.state?.ease_factor ?? 2.5,
+        ease_factor: sched.easeFactor,
         reps: sched.reps,
         lapses: sched.lapses,
         next_review_at: sched.nextReviewAt.toISOString(),
@@ -482,6 +483,7 @@ export default function StudyPage() {
 
   const starred = current?.state?.starred ?? false;
   const intervalDays = current?.state?.interval_days ?? 0;
+  const easeFactor = current?.state?.ease_factor ?? EASE_DEFAULT;
   const elapsedSec = Math.floor((now - sessionStart) / 1000);
   const elapsedLabel = `${Math.floor(elapsedSec / 60)}:${String(elapsedSec % 60).padStart(2, "0")}`;
   const accuracyPct = stats.attempted > 0
@@ -509,6 +511,7 @@ export default function StudyPage() {
             revealed={revealed}
             onFlip={flip}
             intervalDays={intervalDays}
+            easeFactor={easeFactor}
             submitting={submitting}
             onRate={submitRating}
             onSuspend={suspendCard}
@@ -582,7 +585,7 @@ export default function StudyPage() {
                         <span className="font-bold uppercase tracking-wider text-as-outline">{r}</span>
                       </span>
                       <span className="font-headline text-as-primary tabular-nums">
-                        {previewLabel(intervalDays, r)}
+                        {previewLabel(intervalDays, easeFactor, r)}
                       </span>
                     </div>
                   ))}

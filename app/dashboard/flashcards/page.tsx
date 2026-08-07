@@ -99,6 +99,7 @@ export default function FlashcardsHub() {
           .from("flashcards")
           .select("id, deck_id, cloze_count, card_type")
           .in("deck_id", deckIds)
+          .order("id", { ascending: true })
           .range(from, from + PAGE - 1);
         if (error || !page || page.length === 0) break;
         cardRows.push(...(page as CardRow[]));
@@ -133,6 +134,8 @@ export default function FlashcardsHub() {
             "flashcard_id, cloze_index, next_review_at, suspended, starred"
           )
           .eq("user_id", user.id)
+          .order("flashcard_id", { ascending: true })
+          .order("cloze_index", { ascending: true })
           .range(from, from + PAGE - 1);
         if (error || !data || data.length === 0) break;
         stateRows.push(...data);
