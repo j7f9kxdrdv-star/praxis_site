@@ -176,7 +176,7 @@ BEGIN
      'By the second law of thermodynamics, ΔSuniv (system + surroundings) is {{c1::positive (> 0)}} for a spontaneous process and {{c2::zero}} at equilibrium.',
      2),
     (deck, 38, 'cloze',
-     'For a given substance, the entropy of its phases follows {{c1::S(gas) > S(liquid) > S(solid)}}, reflecting greater freedom of particle motion.',
+     'Ranked from highest to lowest entropy, the phases of a substance are {{c1::gas > liquid > solid}}.',
      1),
     (deck, 39, 'cloze',
      'A system''s entropy tends to increase when a solid {{c1::dissolves}}, when a substance is {{c2::heated}}, and when a reaction yields more moles of {{c3::gas}}.',

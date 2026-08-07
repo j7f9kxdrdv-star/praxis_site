@@ -91,6 +91,11 @@
 | 81 | Portal Systems | The hypophyseal portal system carries blood from a primary capillary plexus in the ▁▁ to a | 2 | 5 |
 
 ## Notes / editorial decisions
-- **Dropped for accuracy:** the source deck's *renal portal system* card — humans lack a true renal portal system (comparative-anatomy feature of fish/birds/reptiles).
+- ~~**Dropped for accuracy:** the source deck's *renal portal system* card — humans lack a true renal portal system (comparative-anatomy feature of fish/birds/reptiles).~~
+  **CORRECTED (Ch7 question-set pre-flight):** this drop was wrong and has been reversed. It conflated two different structures. The *comparative-anatomy* renal portal system (venous, draining the hindlimbs) is indeed absent in humans, but OpenStax A&P 2e explicitly classes the human glomerulus → efferent arteriole → peritubular arrangement as a renal portal system, and as the only arterial one of the three:
+  - `openstax-anatomy-physiology-2e.txt:31903` — "The human body has three portal systems: two venous (hypophyseal and hepatic) and one arterial (renal)."
+  - `openstax-anatomy-physiology-2e.txt:52533` — "Since a capillary bed (the glomerulus) drains into a vessel that in turn forms a second capillary bed, the definition of a portal system is met. This is the only portal system in which an arteriole is found between the first and second capillary beds."
+
+  Two renal-portal cards were appended to the live deck via `supabase/fixes/fix_ch7_renal_portal_cards.sql`. The Ch7 question set treats the renal portal system as in-scope and textbook-verified.
 - **AAMC gaps filled:** endothelial cells; erythrocyte destruction (spleen); role in thermoregulation (cutaneous vasodilation/constriction); capillary flow velocity vs total cross-sectional area; three CO₂ transport forms.
 - **Leak red-team + originality + cloze_count** verified per-card by an adversarial pass (see workflow transcript).

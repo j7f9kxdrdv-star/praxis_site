@@ -76,7 +76,7 @@ BEGIN
         '{{c1::Saponification}} is the base-catalyzed hydrolysis of {{c2::triglycerides}} by NaOH or KOH, producing {{c3::glycerol plus fatty-acid carboxylate salts (soap)}}.',
         3),
     (deck, 9, 'cloze',
-        '{{c1::Anhydrides}} are the condensation dimers of two carboxylic acids (loss of water); {{c2::symmetric anhydrides}} swap "acid" for "anhydride" in the parent name, while {{c3::asymmetric anhydrides}} list both parent acids alphabetically before "anhydride."',
+        'Two carboxylic acids condense with loss of {{c1::water}} to form an {{c2::anhydride}}; if the two halves differ, the parent names are listed {{c3::alphabetically}}.',
         3);
 
     -- ============================================================

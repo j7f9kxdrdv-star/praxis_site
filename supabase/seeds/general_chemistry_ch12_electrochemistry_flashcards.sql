@@ -252,7 +252,7 @@ BEGIN
     -- ── EMF Equation ────────────────────────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 51, 'cloze',
-     'The standard cell EMF is calculated as {{c1::E°cell = E°cathode − E°anode}}, using reduction potentials for both electrodes (do NOT flip the anode sign).',
+     'The standard cell EMF (electromotive force) is calculated as {{c1::E°cell = E°cathode − E°anode}}, using reduction potentials for both electrodes (do NOT flip the anode sign).',
      1),
     (deck, 52, 'cloze',
      'For a {{c1::galvanic}} cell, the species with the more {{c2::positive}} reduction potential is reduced — it serves as the cathode; the other species is oxidized at the anode.',

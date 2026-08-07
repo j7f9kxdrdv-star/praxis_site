@@ -281,7 +281,7 @@ BEGIN
      'In the well-fed state, the liver derives most of its energy from {{c1::amino acids}}; in the fasting state, it uses {{c1::fatty acids}}.',
      1),
     (deck, 59, 'cloze',
-     'In the fed state, insulin drives glucose uptake and {{c1::triacylglycerol synthesis}} in adipose tissue; in fasting, HSL activates and adipose releases {{c2::free fatty acids}} into circulation.',
+     'In the fed state, insulin drives glucose uptake and {{c1::triacylglycerol synthesis}} in adipose tissue; in fasting, hormone-sensitive lipase activates and adipose releases {{c2::free fatty acids}} into circulation.',
      2),
     (deck, 60, 'cloze',
      'In the fed state, adipose tissue accumulates fatty acids released from circulating {{c1::VLDL and chylomicrons}} by {{c2::lipoprotein lipase}}, then re-esterifies them into TAGs for storage.',

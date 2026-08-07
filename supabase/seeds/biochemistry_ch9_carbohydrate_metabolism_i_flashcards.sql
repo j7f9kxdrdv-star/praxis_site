@@ -224,7 +224,7 @@ BEGIN
      'Pyruvate carboxylase (pyruvate → oxaloacetate) is allosterically activated by {{c1::acetyl-CoA}}, a signal of ample fuel.',
      1),
     (deck, 52, 'cloze',
-     'PEPCK converts oxaloacetate to phosphoenolpyruvate and is transcriptionally induced by the counter-regulatory hormones {{c1::glucagon and cortisol}}.',
+     'PEPCK (phosphoenolpyruvate carboxykinase) converts oxaloacetate to phosphoenolpyruvate and is transcriptionally induced by the counter-regulatory hormones {{c1::glucagon and cortisol}}.',
      1),
     (deck, 53, 'cloze',
      'Because pyruvate kinase is irreversible, gluconeogenesis routes pyruvate through the intermediate {{c1::oxaloacetate}} before forming PEP.',

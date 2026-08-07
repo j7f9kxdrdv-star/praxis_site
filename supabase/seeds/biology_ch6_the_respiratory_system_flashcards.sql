@@ -187,7 +187,7 @@ BEGIN
      'Automatic breathing originates in the {{c1::medulla oblongata}}, whose respiratory-center neurons discharge in a repeating pattern that {{c2::drives the respiratory muscles to contract}}, setting the basic rhythm of ventilation.',
      2),
     (deck, 37, 'cloze',
-     'Automatic breathing needs no conscious effort because respiratory centers in the {{c1::medulla oblongata}} set its basic rhythm: the {{c2::ventral respiratory group (VRG)}} generates the pace by driving the diaphragm and external intercostals to contract, while the {{c3::dorsal respiratory group (DRG)}} integrates lung stretch-receptor and peripheral chemoreceptor input to fine-tune that rhythm.',
+     'Automatic breathing needs no conscious effort because respiratory centers in the {{c1::medulla oblongata}} set its basic rhythm: the {{c2::ventral respiratory group (VRG)}} generates the pace by driving the diaphragm and external intercostals to contract, while the {{c2::dorsal respiratory group (DRG)}} integrates lung stretch-receptor and peripheral chemoreceptor input to fine-tune that rhythm.',
      3),
     (deck, 38, 'cloze',
      'Breathing runs by default under {{c1::autonomic (involuntary)}} control from the medullary respiratory center, but cortical areas grant {{c2::voluntary (somatic)}} override — letting you hold your breath or speak — until rising CO2 forces the {{c1::autonomic (involuntary)}} system to seize control again.',
