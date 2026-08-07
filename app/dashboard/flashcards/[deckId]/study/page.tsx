@@ -136,7 +136,7 @@ export default function StudyPage() {
       // Pull state for these cards
       const { data: stateRows } = await supabase
         .from("flashcard_user_state")
-        .select("flashcard_id, cloze_index, starred, suspended, interval_days, ease_factor, reps, lapses, next_review_at")
+        .select("flashcard_id, cloze_index, starred, suspended, interval_days, ease_factor, reps, lapses, next_review_at, last_rating")
         .eq("user_id", user.id)
         .in("flashcard_id", cards.map((c) => c.id));
 
@@ -235,7 +235,14 @@ export default function StudyPage() {
     const reps = current.state?.reps ?? 0;
     const lapses = current.state?.lapses ?? 0;
     const prevEase = current.state?.ease_factor ?? EASE_DEFAULT;
-    const sched = nextSchedule({ rating, intervalDays: prevInterval, easeFactor: prevEase, reps, lapses });
+    const sched = nextSchedule({
+      rating,
+      intervalDays: prevInterval,
+      easeFactor: prevEase,
+      reps,
+      lapses,
+      lastRating: (current.state?.last_rating as Rating | null | undefined) ?? null,
+    });
 
     // Upsert state
     await supabase.from("flashcard_user_state").upsert(
@@ -484,6 +491,7 @@ export default function StudyPage() {
   const starred = current?.state?.starred ?? false;
   const intervalDays = current?.state?.interval_days ?? 0;
   const easeFactor = current?.state?.ease_factor ?? EASE_DEFAULT;
+  const lastRating = (current?.state?.last_rating as Rating | null | undefined) ?? null;
   const elapsedSec = Math.floor((now - sessionStart) / 1000);
   const elapsedLabel = `${Math.floor(elapsedSec / 60)}:${String(elapsedSec % 60).padStart(2, "0")}`;
   const accuracyPct = stats.attempted > 0
@@ -512,6 +520,7 @@ export default function StudyPage() {
             onFlip={flip}
             intervalDays={intervalDays}
             easeFactor={easeFactor}
+            lastRating={lastRating}
             submitting={submitting}
             onRate={submitRating}
             onSuspend={suspendCard}
@@ -585,7 +594,7 @@ export default function StudyPage() {
                         <span className="font-bold uppercase tracking-wider text-as-outline">{r}</span>
                       </span>
                       <span className="font-headline text-as-primary tabular-nums">
-                        {previewLabel(intervalDays, easeFactor, r)}
+                        {previewLabel(intervalDays, easeFactor, lastRating, r)}
                       </span>
                     </div>
                   ))}

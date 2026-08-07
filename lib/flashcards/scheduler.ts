@@ -97,6 +97,17 @@ export interface ScheduleInput {
   reps: number;
   /** Lapse count so far. */
   lapses: number;
+  /**
+   * The card's stored last_rating. When it is "again", this pass is the
+   * post-lapse recheck (usually the 10-minute re-show), which is answered
+   * from short-term memory and proves little — so the card is scheduled for
+   * a NEXT-DAY confirmation instead of resuming its full spacing, and its
+   * banked strength does not grow off the echo-pass. Growth resumes at that
+   * next-day review. (Mikko's ask, 2026-08-07: "if you get it wrong you
+   * should see it the next day for reinforcement." Anki's relearning
+   * graduation works the same way.)
+   */
+  lastRating?: Rating | null;
 }
 
 export interface ScheduleOutput {
@@ -143,6 +154,22 @@ export function nextSchedule(input: ScheduleInput, now: Date = new Date()): Sche
     };
   }
 
+  // Post-lapse confirmation: a learned card whose previous grade was "again"
+  // is being rechecked minutes after seeing the answer. Keep its (already
+  // halved) strength, and show it again TOMORROW — the genuine retention
+  // test. Hard/Medium confirm at 1 day; Easy earns 2. Normal growth resumes
+  // when the next-day review is passed (lastRating is then no longer again).
+  if (learned && input.lastRating === "again") {
+    const confirmDays = rating === "easy" ? 2 : 1;
+    return {
+      intervalDays,
+      nextReviewAt: new Date(now.getTime() + confirmDays * DAY_MS),
+      easeFactor,
+      reps: reps + 1,
+      lapses,
+    };
+  }
+
   let strength: number;
   if (!learned) {
     strength = FIRST_INTERVAL[rating];
@@ -169,11 +196,18 @@ export function nextSchedule(input: ScheduleInput, now: Date = new Date()): Sche
 /**
  * Label for the rating buttons: how long until the card would be SEEN again.
  * Note this is show-time, not strength — "Again" on a mature card halves its
- * strength but still re-shows in 10 minutes, so the label must read "10m".
+ * strength but still re-shows in 10 minutes, so the label must read "10m";
+ * likewise a post-lapse recheck shows next-day confirmation labels (1d/1d/2d)
+ * rather than the full-spacing ladder, so pass the card's stored lastRating.
  */
-export function previewLabel(intervalDays: number, easeFactor: number, rating: Rating): string {
+export function previewLabel(
+  intervalDays: number,
+  easeFactor: number,
+  lastRating: Rating | null | undefined,
+  rating: Rating,
+): string {
   const epoch = new Date(0);
-  const next = nextSchedule({ rating, intervalDays, easeFactor, reps: 0, lapses: 0 }, epoch);
+  const next = nextSchedule({ rating, intervalDays, easeFactor, reps: 0, lapses: 0, lastRating }, epoch);
   const days = (next.nextReviewAt.getTime() - epoch.getTime()) / DAY_MS;
   if (days < 1) return `${Math.round(days * 24 * 60)}m`;
   if (days < 30) return `${Math.round(days)}d`;
