@@ -67,7 +67,7 @@ BEGIN
      'A volume V of fluid with density ρ has weight Fg = {{c1::ρVg}}, where g is the gravitational acceleration.',
      1),
     (deck, 5, 'cloze',
-     'Specific gravity, SG = {{c1::ρ/ρ_water}}, is {{c1::dimensionless}}.',
+     'Specific gravity, SG = {{c1::ρ / ρ of water}}, is {{c1::dimensionless}}.',
      1),
     (deck, 6, 'cloze',
      'For a force F applied perpendicular to area A, the pressure is P = {{c1::F/A}}.',

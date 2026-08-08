@@ -183,7 +183,7 @@ BEGIN
     -- ── Formal Charge ───────────────────────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 31, 'cloze',
-     '{{c1::Formal charge}} = V – Nnonbonding – ½·Nbonding, where V is the atom''s neutral valence electron count, Nnonbonding is its lone-pair electron count, and Nbonding is its shared electron count.',
+     '{{c1::Formal charge}} = V − (lone-pair electrons) − ½·(bonding electrons), where V is the atom''s neutral valence electron count.',
      1),
     (deck, 32, 'cloze',
      'The sum of the formal charges of all atoms in a molecule or ion equals the overall {{c1::charge}} of that molecule or ion.',

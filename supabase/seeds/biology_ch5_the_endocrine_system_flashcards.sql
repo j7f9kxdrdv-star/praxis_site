@@ -269,7 +269,7 @@ BEGIN
      'When blood pressure drops, {{c1::juxtaglomerular}} cells of the kidney release {{c2::renin}}, which cleaves angiotensinogen into angiotensin I.',
      2),
     (deck, 78, 'cloze',
-     'In the lungs, {{c1::ACE (angiotensin-converting enzyme)}} converts angiotensin I into {{c2::angiotensin II}}, the active signaling peptide.',
+     'In the lungs, {{c1::ACE (angiotensin-converting enzyme)}} converts {{c2::angiotensin I}} into {{c2::angiotensin II}}, the active signaling peptide.',
      2),
     (deck, 79, 'cloze',
      'Angiotensin II drives the {{c1::adrenal cortex}} to release {{c2::aldosterone}}, raising blood pressure.',
