@@ -133,7 +133,7 @@ BEGIN
      'Total internal reflection occurs only when light travels from a {{c1::higher}}-index medium toward a {{c1::lower}}-index medium and strikes the boundary beyond the {{c2::critical angle}}.',
      2),
     (deck, 24, 'cloze',
-     'For light going from a higher-index medium (n₁) toward a lower-index one (n₂), the critical angle obeys {{c1::sin θ_c = n₂/n₁}}.',
+     'For light going from a higher-index medium (n₁) toward a lower-index one (n₂), the critical angle θ obeys {{c1::sin θ = n₂/n₁}}.',
      1);
 
     -- ── Lenses & the Thin-Lens Equation ───────────────────────────────

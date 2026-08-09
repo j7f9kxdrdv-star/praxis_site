@@ -52,7 +52,7 @@ BEGIN
         'General Chemistry',
         'electrochemistry',
         'Electrochemistry',
-        'Electrochemical cell fundamentals (anode, cathode, electron and current flow); galvanic vs electrolytic cell comparison; electrode polarity; the Daniell cell as the canonical galvanic example; the salt bridge; cell diagram notation; concentration cells; rechargeable batteries (lead-acid, Ni-Cd, NiMH); electrolysis applications including molten NaCl and electroplating; Faraday''s constant and the electrodeposition equation; reduction potentials and the standard hydrogen electrode; the EMF equation (E°cell = E°cathode − E°anode); the link between EMF and thermodynamics (ΔG° = −nFE°cell = −RT ln Keq); the Nernst equation; and isoelectric focusing as a biochemistry application of electromigration.',
+        'Electrochemical cell fundamentals (anode, cathode, electron and current flow); galvanic vs electrolytic cell comparison; electrode polarity; the Daniell cell as the canonical galvanic example; the salt bridge; cell diagram notation; concentration cells; rechargeable batteries (lead-acid, Ni-Cd, NiMH); electrolysis applications including molten NaCl and electroplating; Faraday''s constant and the electrodeposition equation; reduction potentials and the standard hydrogen electrode; the EMF equation (E°(cell) = E°(cathode) − E°(anode)); the link between EMF and thermodynamics (ΔG° = −nFE°(cell) = −RT ln Keq); the Nernst equation; and isoelectric focusing as a biochemistry application of electromigration.',
         12
     )
     RETURNING id INTO deck;
@@ -252,7 +252,7 @@ BEGIN
     -- ── EMF Equation ────────────────────────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 51, 'cloze',
-     'The standard cell EMF (electromotive force) is calculated as {{c1::E°cell = E°cathode − E°anode}}, using reduction potentials for both electrodes (do NOT flip the anode sign).',
+     'The standard cell EMF (electromotive force) is calculated as {{c1::E°(cell) = E°(cathode) − E°(anode)}}, using reduction potentials for both electrodes (do NOT flip the anode sign).',
      1),
     (deck, 52, 'cloze',
      'For a {{c1::galvanic}} cell, the species with the more {{c2::positive}} reduction potential is reduced — it serves as the cathode; the other species is oxidized at the anode.',
@@ -267,13 +267,13 @@ BEGIN
     -- ── EMF vs Thermodynamics ───────────────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 55, 'cloze',
-     'The fundamental link between thermodynamics and electrochemistry is {{c1::ΔG° = −nFE°cell}}, where n is moles of electrons transferred and F is Faraday''s constant.',
+     'The fundamental link between thermodynamics and electrochemistry is {{c1::ΔG° = −nFE°(cell)}}, where n is moles of electrons transferred and F is Faraday''s constant.',
      1),
     (deck, 56, 'cloze',
-     'Galvanic cells have {{c1::negative ΔG°}} and {{c1::positive E°cell}} (spontaneous); electrolytic cells have {{c1::positive ΔG°}} and {{c1::negative E°cell}} (nonspontaneous).',
+     'Galvanic cells have {{c1::negative ΔG°}} and {{c1::positive E°(cell)}} (spontaneous); electrolytic cells have {{c1::positive ΔG°}} and {{c1::negative E°(cell)}} (nonspontaneous).',
      1),
     (deck, 57, 'cloze',
-     'The {{c1::n}} in ΔG° = −nFE°cell represents the number of {{c2::electrons}} transferred per balanced redox equation; balancing the half-reactions correctly is essential for the right value of n.',
+     'The {{c1::n}} in ΔG° = −nFE°(cell) represents the number of {{c2::electrons}} transferred per balanced redox equation; balancing the half-reactions correctly is essential for the right value of n.',
      2),
     (deck, 58, 'cloze',
      'When conditions differ from standard, use {{c1::ΔG = ΔG° + RT ln Q}} to calculate the actual (non-standard) free-energy change for the cell reaction.',
@@ -291,10 +291,10 @@ BEGIN
      'In the Nernst equation, as products accumulate Q increases, the {{c1::log Q}} term becomes more positive, and the actual cell EMF {{c2::decreases}} below E° — toward zero at equilibrium.',
      2),
     (deck, 62, 'cloze',
-     'ΔG° = −nFE°cell = {{c1::−RT ln Keq}}, so E°cell and Keq are linked: large Keq → large positive E°.',
+     'ΔG° = −nFE°(cell) = {{c1::−RT ln Keq}}, so E°(cell) and Keq are linked: large Keq → large positive E°.',
      1),
     (deck, 63, 'cloze',
-     'When {{c1::Keq > 1}}, E°cell is {{c2::positive}}; when Keq < 1, E°cell is {{c2::negative}}; when Keq = 1, E°cell equals {{c2::zero}}.',
+     'When {{c1::Keq > 1}}, E°(cell) is {{c2::positive}}; when Keq < 1, E°(cell) is {{c2::negative}}; when Keq = 1, E°(cell) equals {{c2::zero}}.',
      2);
 
     RAISE NOTICE 'Seeded deck % with % cards.', deck, 64;

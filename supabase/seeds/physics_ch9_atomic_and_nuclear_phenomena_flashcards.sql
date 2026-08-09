@@ -36,7 +36,7 @@ BEGIN
         'Physics',
         'atomic and nuclear phenomena',
         'Atomic and Nuclear Phenomena',
-        'The photoelectric effect (threshold frequency, photon energy E=hf, work function, max KE); absorption and emission spectra (Bohr model, IR, UV-Vis, fluorescence); nuclear forces (strong, weak), binding energy, and mass defect (E=mc^2); nuclear reactions (fusion, fission, isotopic notation); radioactive decay (alpha, beta-minus, beta-plus, gamma, electron capture); and half-life with exponential decay.',
+        'The photoelectric effect (threshold frequency, photon energy E=hf, work function, max KE); absorption and emission spectra (Bohr model, IR, UV-Vis, fluorescence); nuclear forces (strong, weak), binding energy, and mass defect (E=mc²); nuclear reactions (fusion, fission, isotopic notation); radioactive decay (alpha, beta-minus, beta-plus, gamma, electron capture); and half-life with exponential decay.',
         9
     )
     RETURNING id INTO deck;
@@ -188,10 +188,10 @@ BEGIN
         'Half-life relates to the decay constant by {{c1::t½ = 0.693 / λ}} (equivalently, ln 2 ÷ λ).',
         1),
     (deck, 37, 'cloze',
-        'The number of nuclei remaining at time t is {{c1::n(t) = n₀ · e^(−λt)}}, where n₀ is the {{c2::starting number}} and λ is the {{c3::decay constant}}.',
+        'The number of nuclei remaining at time t is {{c1::n(t) = n₀ · exp(−λt)}}, where n₀ is the {{c2::starting number}} and λ is the {{c3::decay constant}}.',
         3),
     (deck, 38, 'cloze',
-        'After n half-lives, the fraction of the original sample remaining is {{c1::(½)^n}} — so {{c2::¼}} remains after 2 half-lives and {{c3::⅛}} remains after 3.',
+        'After n half-lives, the fraction of the original sample remaining is {{c1::(½)ⁿ}} — so {{c2::¼}} remains after 2 half-lives and {{c3::⅛}} remains after 3.',
         3),
     (deck, 39, 'cloze',
         'After roughly {{c1::7 to 8 half-lives}}, a radioactive sample is considered effectively fully decayed — {{c2::less than 1%}} of the original sample remains.',

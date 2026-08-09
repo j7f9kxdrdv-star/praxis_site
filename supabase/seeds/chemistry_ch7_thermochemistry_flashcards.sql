@@ -104,7 +104,7 @@ BEGIN
      'The standard enthalpy of formation of a pure element in its most stable standard state is {{c1::zero (0 kJ/mol)}}.',
      1),
     (deck, 17, 'cloze',
-     'The standard enthalpy of a reaction is found from tabulated formation enthalpies: ΔH°rxn = Σ ΔH°f({{c1::products}}) − Σ ΔH°f({{c1::reactants}}).',
+     'The standard enthalpy of a reaction is found from tabulated formation enthalpies: ΔH°ᵣₓₙ = Σ ΔH°f({{c1::products}}) − Σ ΔH°f({{c1::reactants}}).',
      1);
 
     -- ── Calorimetry & Heat Capacity ───────────────────────────────────
@@ -155,7 +155,7 @@ BEGIN
      'Bond dissociation energy — the energy to break one mole of a bond in the {{c1::gas}} phase — is always {{c2::positive}}.',
      2),
     (deck, 32, 'cloze',
-     'Using bond energies, ΔHrxn ≈ Σ(bonds {{c1::broken}}) − Σ(bonds {{c1::formed}}).',
+     'Using bond energies, ΔHᵣₓₙ ≈ Σ(bonds {{c1::broken}}) − Σ(bonds {{c1::formed}}).',
      1),
     (deck, 33, 'cloze',
      'Breaking a chemical bond {{c1::takes in energy (endothermic)}}, while forming a bond {{c1::gives off energy (exothermic)}}.',
@@ -173,7 +173,7 @@ BEGIN
      'On the molecular scale, a system''s entropy rises as the number of accessible {{c1::microstates}} increases.',
      1),
     (deck, 37, 'cloze',
-     'By the second law of thermodynamics, ΔSuniv (system + surroundings) is {{c1::positive (> 0)}} for a spontaneous process and {{c2::zero}} at equilibrium.',
+     'By the second law of thermodynamics, ΔSᵤₙᵢᵥ (system + surroundings) is {{c1::positive (> 0)}} for a spontaneous process and {{c2::zero}} at equilibrium.',
      2),
     (deck, 38, 'cloze',
      'Ranked from highest to lowest entropy, the phases of a substance are {{c1::gas > liquid > solid}}.',
@@ -185,7 +185,7 @@ BEGIN
      'The third law of thermodynamics states that a pure, perfect {{c1::crystalline solid}} has {{c2::zero entropy (S = 0) at 0 K}}.',
      2),
     (deck, 41, 'cloze',
-     'The standard entropy change of a reaction is ΔS°rxn = {{c1::Σ nS°(products) − Σ nS°(reactants)}}, where n are the stoichiometric coefficients.',
+     'The standard entropy change of a reaction is ΔS°ᵣₓₙ = {{c1::Σ nS°(products) − Σ nS°(reactants)}}, where n are the stoichiometric coefficients.',
      1);
 
     -- ── Gibbs Free Energy & Spontaneity ───────────────────────────────
@@ -209,7 +209,7 @@ BEGIN
      'When both ΔH and ΔS are positive, a reaction is spontaneous only at {{c1::high}} temperatures.',
      1),
     (deck, 48, 'cloze',
-     'The standard free energy change of reaction is ΔG°rxn = {{c1::Σ ΔG°f(products) − Σ ΔG°f(reactants)}}.',
+     'The standard free energy change of reaction is ΔG°ᵣₓₙ = {{c1::Σ ΔG°f(products) − Σ ΔG°f(reactants)}}.',
      1),
     (deck, 49, 'cloze',
      'By definition, the standard free energy of formation ΔG°f of an element in its standard state equals {{c1::zero}}.',

@@ -101,7 +101,7 @@ BEGIN
      '{{c1::Stereoisomers}} share the same molecular formula and connectivity but differ in the spatial arrangement of their atoms.',
      1),
     (deck, 10, 'cloze',
-     'A molecule with n {{c1::chiral centers}} can have up to {{c2::2^n}} stereoisomers; an aldohexose with 4 chiral centers thus has 16 total.',
+     'A molecule with n {{c1::chiral centers}} can have up to {{c2::2ⁿ}} stereoisomers; an aldohexose with 4 chiral centers thus has 16 total.',
      2),
     (deck, 11, 'cloze',
      'A molecule is {{c1::optically active}} if it has at least one chiral center; achiral molecules cannot rotate plane-polarized light.',

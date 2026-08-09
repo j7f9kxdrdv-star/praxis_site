@@ -129,7 +129,7 @@ BEGIN
      '{{c1::Ultraviolet-visible (UV-Vis) spectroscopy}} measures the absorption of UV/visible light, which excites {{c2::electrons}} from filled molecular orbitals into empty antibonding orbitals.',
      2),
     (deck, 17, 'cloze',
-     'A UV-Vis spectrum is plotted as {{c1::absorbance}} on the y-axis vs {{c2::wavelength (nm)}} on the x-axis; the λ_max is the wavelength at which the molecule absorbs most strongly.',
+     'A UV-Vis spectrum is plotted as {{c1::absorbance}} on the y-axis vs {{c2::wavelength (nm)}} on the x-axis; the λₘₐₓ is the wavelength at which the molecule absorbs most strongly.',
      2),
     (deck, 18, 'cloze',
      'For a molecule to absorb UV light, it must contain {{c1::π electrons}} or {{c1::nonbonding (lone pair) electrons}} that can be promoted to higher-energy antibonding orbitals.',
@@ -156,10 +156,10 @@ BEGIN
     -- ── UV and Conjugation ──────────────────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 24, 'cloze',
-     'Increased {{c1::conjugation}} (longer chains of alternating single and double bonds) lowers the HOMO-LUMO energy gap, pushing λ_max toward {{c2::longer}} wavelengths (red shift).',
+     'Increased {{c1::conjugation}} (longer chains of alternating single and double bonds) lowers the HOMO-LUMO energy gap, pushing λₘₐₓ toward {{c2::longer}} wavelengths (red shift).',
      2),
     (deck, 25, 'cloze',
-     'The wavelength of maximum absorbance (λ_max) of a conjugated system tells you the {{c1::extent of conjugation}}: longer conjugated chains have larger λ_max values.',
+     'The wavelength of maximum absorbance (λₘₐₓ) of a conjugated system tells you the {{c1::extent of conjugation}}: longer conjugated chains have larger λₘₐₓ values.',
      1);
 
     -- ── NMR Fundamentals ────────────────────────────────────────
