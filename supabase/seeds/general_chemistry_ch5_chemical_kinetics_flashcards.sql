@@ -90,7 +90,7 @@ BEGIN
   (deck, 16, 'cloze',
    'The half-life of a {{c1::first}}-order reaction is {{c2::independent of}} the starting concentration, whereas half-lives for other reaction orders do depend on reactant concentration.', 2),
   (deck, 17, 'cloze',
-   'Half-life behavior distinguishes the orders: a first-order t₁/₂ is {{c1::independent of concentration}}, a second-order t₁/₂ {{c2::lengthens as reactant is consumed}}, and a zero-order t₁/₂ {{c3::shortens as reactant is consumed}} (it grows with higher initial concentration).', 3),
+   'Half-life behavior distinguishes the orders: a first-order t½ is {{c1::independent of concentration}}, a second-order t½ {{c2::lengthens as reactant is consumed}}, and a zero-order t½ {{c3::shortens as reactant is consumed}} (it grows with higher initial concentration).', 3),
   (deck, 18, 'cloze',
    'Radioactive decay is the classic {{c1::first-order}} process: the disintegration rate is proportional to the amount of isotope present (rate = k[A]), which is why its {{c2::half-life is constant}}, independent of how much sample remains.', 2),
 

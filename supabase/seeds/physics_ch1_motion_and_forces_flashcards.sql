@@ -165,7 +165,7 @@ BEGIN
    'A {{c1::force}} is any push or pull that can cause an object to accelerate. Force is a {{c2::vector}}, and its SI unit is the {{c3::newton (N) = kg·m/s²}}.', 3),
 
   (deck, 23, 'cloze',
-   'Newton''s law of universal gravitation: every pair of masses attracts each other with a force {{c1::Fg = Gm₁m₂/r²}}, where {{c2::G = 6.67 × 10⁻¹¹ N·m²/kg²}} is the universal gravitational constant and r is the distance between the centers of the two masses.', 2),
+   'Newton''s law of universal gravitation: every pair of masses attracts each other with a force {{c1::F(g) = Gm₁m₂/r²}}, where {{c2::G = 6.67 × 10⁻¹¹ N·m²/kg²}} is the universal gravitational constant and r is the distance between the centers of the two masses.', 2),
 
   (deck, 24, 'cloze',
    '{{c1::Mass}} quantifies an object''s {{c2::inertia}} — its resistance to acceleration — and is a {{c3::scalar}} with SI unit the {{c4::kilogram}}. Mass is independent of location. {{c5::Weight}}, by contrast, is the gravitational force on that mass; it is a {{c3::vector}} measured in {{c6::newtons}}.', 6),
@@ -190,10 +190,10 @@ BEGIN
    'In Newtonian physics, {{c1::mass}} is the measure of an object''s {{c2::inertia}} — its resistance to a change in velocity. The greater the mass, the larger the force required to produce a given acceleration.', 2),
 
   (deck, 31, 'cloze',
-   'Newton''s first law (the law of {{c1::inertia}}) states that an object maintains its current state of motion — at rest if at rest, in constant velocity if moving — unless a {{c2::net external force}} changes it. Equivalently, {{c3::Fnet = 0 implies a = 0}}.', 3),
+   'Newton''s first law (the law of {{c1::inertia}}) states that an object maintains its current state of motion — at rest if at rest, in constant velocity if moving — unless a {{c2::net external force}} changes it. Equivalently, {{c3::F(net) = 0 implies a = 0}}.', 3),
 
   (deck, 32, 'cloze',
-   'Newton''s second law states that the net force on an object equals its mass times its acceleration: {{c1::Fnet = ma}}. Because F and a are both vectors, they always point in the {{c2::same direction}}.', 2),
+   'Newton''s second law states that the net force on an object equals its mass times its acceleration: {{c1::F(net) = ma}}. Because F and a are both vectors, they always point in the {{c2::same direction}}.', 2),
 
   (deck, 33, 'cloze',
    'Newton''s third law: when object A exerts a force on object B, object B simultaneously exerts an equal-magnitude {{c1::opposite-direction}} force back on A — mathematically, {{c2::FAB = −FBA}}. These two forces act on {{c3::different objects}} and cannot cancel each other out.', 3),

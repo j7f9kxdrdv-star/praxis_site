@@ -186,7 +186,7 @@ BEGIN
      '{{c1::LCAT (lecithin-cholesterol acyltransferase)}} circulates in the blood and attaches a fatty acid to cholesterol, forming soluble {{c2::cholesteryl esters}} that pack neatly inside HDL.',
      2),
     (deck, 33, 'cloze',
-     '{{c1::CETP (cholesteryl ester transfer protein)}} transfers cholesteryl esters from HDL to other lipoproteins like IDL — converting IDL into {{c2::LDL}} in the process.',
+     '{{c1::CETP (cholesteryl ester transfer protein)}} transfers cholesteryl esters from HDL to other lipoproteins like IDL, converting IDL into {{c2::LDL}} in the process.',
      2),
     (deck, 34, 'cloze',
      '{{c1::Free fatty acids}} released from adipose tissue are too hydrophobic to dissolve in blood plasma; they are carried bound to the protein {{c2::albumin}}.',
