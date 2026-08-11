@@ -188,7 +188,7 @@ BEGIN
         '{{c1::Ethnocentrism}} — judging another culture by the standards of one''s own; {{c1::cultural relativism}} — judging a culture {{c2::on its own terms}}, in the context of its own values and norms.',
         2),
     (deck, 43, 'cloze',
-        '{{c1::Discrimination}} is a {{c2::behavior}} that treats individuals differently based on group membership; importantly, {{c3::prejudice does not always lead to discrimination}} (and discrimination can occur without conscious prejudice).',
+        '{{c1::Discrimination}} is a {{c2::behavior}} treating individuals differently by group membership; prejudice does {{c3::not always}} lead to it, and it can occur without prejudice.',
         3),
     (deck, 44, 'cloze',
         '{{c1::Individual discrimination}} — one person treating another unfairly based on {{c2::group membership}}.',

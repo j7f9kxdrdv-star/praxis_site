@@ -78,8 +78,8 @@ BEGIN
 
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 8, 'cloze',
-        'In nucleophilic addition to a carbonyl, the {{c1::nucleophile attacks the carbonyl carbon}}, pushing the {{c2::π electrons up onto the oxygen}} to form an alkoxide intermediate.',
-        2),
+        'When a nucleophile adds to an aldehyde or ketone, it attacks the {{c2::carbonyl carbon}} first, pushing the π electrons up onto the {{c3::oxygen}} to form an {{c1::alkoxide}} intermediate.',
+        3),
     (deck, 9, 'cloze',
         'When there is {{c1::no good leaving group}} on the substrate, the carbonyl cannot reform — instead the alkoxide intermediate is {{c2::protonated}} to give an {{c3::alcohol}}.',
         3),
