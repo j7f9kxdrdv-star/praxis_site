@@ -200,7 +200,7 @@ BEGIN
    'The six classical simple machines are the {{c1::inclined plane, wedge, screw, lever, wheel-and-axle, and pulley}}. Each provides {{c2::mechanical advantage}} by trading reduced force for increased distance.', 2),
 
   (deck, 37, 'cloze',
-   '{{c1::Mechanical advantage}} of a simple machine is the ratio of the output force it produces to the input force applied: {{c2::MA = Fout / Fin}}. A machine with MA = 5 lets you produce a 5 N output by applying only 1 N at the input.', 2),
+   '{{c1::Mechanical advantage}} of a simple machine is the ratio of the output force it produces to the input force applied: {{c2::MA = Fout / Fin}}.', 2),
 
   (deck, 38, 'cloze',
    'Simple machines do not create energy — they only redistribute it. For an ideal (frictionless) machine, the work done by the input equals the work done by the output: {{c1::Fin × din = Fout × dout}}. So a higher mechanical advantage always comes with a longer input-distance trade-off.', 1),

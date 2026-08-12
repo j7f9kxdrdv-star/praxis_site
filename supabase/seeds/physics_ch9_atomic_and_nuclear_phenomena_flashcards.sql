@@ -188,7 +188,7 @@ BEGIN
         'Half-life relates to the decay constant by {{c1::t½ = 0.693 / λ}} (equivalently, ln 2 ÷ λ).',
         1),
     (deck, 37, 'cloze',
-        'The number of nuclei remaining at time t is {{c1::n(t) = n₀ · exp(−λt)}}, where n₀ is the {{c2::starting number}} and λ is the {{c3::decay constant}}.',
+        'The number of nuclei remaining at time t is {{c1::n(t) = n₀ · e^(−λt)}}, where n₀ is the {{c2::starting number}} and λ is the {{c3::decay constant}}.',
         3),
     (deck, 38, 'cloze',
         'After n half-lives, the fraction of the original sample remaining is {{c1::(½)ⁿ}} — so {{c2::¼}} remains after 2 half-lives and {{c3::⅛}} remains after 3.',

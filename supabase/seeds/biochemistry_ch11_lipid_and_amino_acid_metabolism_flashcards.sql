@@ -147,7 +147,7 @@ BEGIN
      'IDL becomes {{c1::LDL}} by picking up {{c2::cholesteryl esters}} from HDL — a transfer facilitated by cholesteryl ester transfer protein (CETP).',
      2),
     (deck, 23, 'cloze',
-     '{{c1::LDL (low-density lipoprotein)}} delivers {{c2::cholesterol}} to peripheral tissues for membrane and steroid biosynthesis; high circulating LDL is the classic atherosclerosis risk factor.',
+     '{{c1::LDL (low-density lipoprotein)}} delivers {{c2::cholesterol}} to peripheral tissues for membrane and steroid biosynthesis; high circulating levels are the classic atherosclerosis risk factor.',
      2),
     (deck, 24, 'cloze',
      '{{c1::HDL (high-density lipoprotein)}} performs {{c2::reverse cholesterol transport}}: it picks up excess cholesterol from peripheral tissues and blood vessels and returns it to the liver.',

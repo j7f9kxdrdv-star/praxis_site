@@ -119,7 +119,7 @@ BEGIN
 
   -- ── 3. Central vs Peripheral Nervous System ──────────────
   (deck,  8, 'cloze',
-   'The nervous system divides into two anatomical components. The {{c1::central nervous system (CNS)}} consists of the {{c2::brain and spinal cord}}; the {{c3::peripheral nervous system (PNS)}} consists of all nerve tissue outside the CNS.', 3),
+   'The nervous system divides into two anatomical components. The {{c1::central nervous system (CNS)}} consists of the {{c2::brain and spinal cord}}; the {{c3::peripheral nervous system (PNS)}} consists of all nerve tissue outside it.', 3),
 
   (deck,  9, 'cloze',
    'The peripheral nervous system contains {{c1::31}} pairs of {{c2::spinal}} nerves (emanating from the spinal cord) and {{c1::12}} pairs of {{c3::cranial}} nerves (emanating directly from the brain).', 3),
@@ -198,7 +198,7 @@ BEGIN
    '{{c1::Regional cerebral blood flow (rCBF)}} measures patterns of neural activity by tracking {{c2::increased blood flow}} to active brain regions. The technique relies on the assumption that regions engaged in a cognitive task require more blood — a principle that also underlies the fMRI BOLD signal.', 2),
 
   (deck, 32, 'cloze',
-   'Four key brain imaging techniques: {{c1::CT (CAT scan)}} uses multiple x-rays to build cross-sectional images of tissue; {{c2::PET}} uses a radioactive sugar to image metabolic uptake; {{c3::MRI}} uses magnetic fields and hydrogen-atom signals to image structure; {{c4::fMRI}} extends MRI by tracking the BOLD blood-oxygen signal to reveal regional activity in real time.', 4),
+   'Four key brain imaging techniques: {{c1::CT (CAT scan)}} uses multiple x-rays to build cross-sectional images of tissue; {{c2::PET}} uses a radioactive sugar to image metabolic uptake; {{c3::MRI}} uses magnetic fields and hydrogen-atom signals to image structure; {{c4::fMRI}} extends it by tracking the BOLD blood-oxygen signal to reveal regional activity in real time.', 4),
 
   -- ── 11. Thalamus and Hypothalamus ────────────────────────
   (deck, 33, 'cloze',

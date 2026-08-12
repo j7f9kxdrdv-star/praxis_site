@@ -196,7 +196,7 @@ BEGIN
     -- ── Chemoreceptor Regulation ────────────────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 39, 'cloze',
-     'Under normal conditions, the drive to breathe tracks blood {{c1::CO2}}, not {{c2::O2}} — because CO2 crossing the blood-brain barrier raises {{c3::H+}} (lowering pH), and that acidity is what the {{c4::central}} chemoreceptors of the brainstem actually sense. Peripheral chemoreceptors only ramp up ventilation for O2 once arterial oxygen falls to roughly {{c5::60 mm Hg}} or lower.',
+     'Under normal conditions, the drive to breathe tracks blood {{c1::CO2}}, not {{c2::O2}} — because it crosses the blood-brain barrier and raises {{c3::H+}} (lowering pH), and that acidity is what the {{c4::central}} chemoreceptors of the brainstem actually sense. Peripheral chemoreceptors only ramp up ventilation for O2 once arterial oxygen falls to roughly {{c5::60 mm Hg}} or lower.',
      5),
     (deck, 40, 'cloze',
      'When PaCO2 climbs, dissolved CO2 crosses the blood-brain barrier and lowers CSF pH; {{c1::central chemoreceptors}} in the medulla actually track this {{c2::H+ (falling pH)}} rather than CO2 itself, and drive the respiratory center to {{c3::increase}} rate and depth — venting CO2 until blood levels fall back to baseline (negative feedback).',

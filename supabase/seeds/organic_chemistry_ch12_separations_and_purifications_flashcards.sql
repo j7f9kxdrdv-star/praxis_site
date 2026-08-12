@@ -173,7 +173,7 @@ BEGIN
         'Pairing GC with {{c1::mass spectrometry (GC-MS)}} adds {{c2::molecular weight and fragmentation data}} to retention time, enabling structural identification of unknown components in a mixture.',
         2),
     (deck, 39, 'cloze',
-        '{{c1::High-performance liquid chromatography (HPLC)}} was originally defined by its {{c2::high operating pressure}}; modern HPLC is distinguished instead by {{c3::computer-controlled solvent gradients}} and {{c4::sophisticated detectors}}.',
+        '{{c1::High-performance liquid chromatography (HPLC)}} was originally defined by its {{c2::high operating pressure}}; the modern form is distinguished instead by {{c3::computer-controlled solvent gradients}} and {{c4::sophisticated detectors}}.',
         4),
     (deck, 40, 'cloze',
         'HPLC achieves high resolution on very {{c1::small sample sizes}}, which is critical for analyzing {{c2::trace components}} in pharmaceutical and biological samples.',

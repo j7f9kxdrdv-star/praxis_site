@@ -260,7 +260,7 @@ BEGIN
      'To supply raw material for making fuel, cortisol drives catabolism of {{c1::glycogen}}, {{c2::stored triglycerides}}, and {{c3::muscle proteins}}.',
      3),
     (deck, 75, 'cloze',
-     'Along the HPA axis, the hypothalamus releases {{c1::CRH (corticotropin-releasing hormone)}}, which drives the anterior pituitary to secrete {{c2::ACTH (adrenocorticotropic hormone)}}; ACTH then signals the adrenal cortex''s zona fasciculata to release the glucocorticoid {{c3::cortisol}}.',
+     'Along the HPA axis, the hypothalamus releases {{c1::CRH (corticotropin-releasing hormone)}}, which drives the anterior pituitary to secrete {{c2::ACTH (adrenocorticotropic hormone)}}; this hormone then signals the adrenal cortex''s zona fasciculata to release the glucocorticoid {{c3::cortisol}}.',
      3),
     (deck, 76, 'cloze',
      'In the distal nephron, the mineralocorticoid {{c1::aldosterone}} defends blood pressure by driving reabsorption of {{c2::Na+}} (water follows), while the negative luminal electrochemical gradient this creates favors secretion of {{c3::K+ and H+}} into the forming urine.',

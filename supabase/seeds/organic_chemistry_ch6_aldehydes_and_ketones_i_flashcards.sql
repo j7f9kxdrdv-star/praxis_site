@@ -69,7 +69,7 @@ BEGIN
         '{{c1::Aldehydes}} are more reactive toward nucleophiles than {{c2::ketones}} for two reasons: {{c3::less steric hindrance and fewer electron-donating alkyl groups stabilizing the partial positive charge}}.',
         3),
     (deck, 7, 'cloze',
-        '{{c1::Primary alcohols}} oxidize to {{c2::aldehydes}} only when using {{c3::PCC}} (stronger oxidizers overoxidize to carboxylic acids); {{c1::secondary alcohols}} oxidize to {{c2::ketones}} with PCC, Na₂Cr₂O₇, CrO₃, or KMnO₄.',
+        '{{c1::Primary alcohols}} oxidize to {{c2::aldehydes}} only when using {{c3::PCC}} (stronger oxidizers overoxidize to carboxylic acids); {{c1::secondary alcohols}} oxidize to {{c2::ketones}} with mild or strong oxidizers alike.',
         3);
 
     -- ============================================================

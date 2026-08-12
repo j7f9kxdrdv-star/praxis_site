@@ -83,7 +83,7 @@ BEGIN
 
   -- ── 1. IUPAC Framework ───────────────────────────────────
   (deck,  0, 'cloze',
-   '{{c1::IUPAC nomenclature}} is the systematic naming convention used in organic chemistry; a properly assigned IUPAC name maps uniquely to one molecular structure, so the name itself encodes the molecule''s {{c2::connectivity, functional groups, and substituent positions}}.', 2),
+   '{{c1::IUPAC nomenclature}} is the systematic naming convention used in organic chemistry; a properly assigned name maps uniquely to one molecular structure, so the name itself encodes the molecule''s {{c2::connectivity, functional groups, and substituent positions}}.', 2),
 
   (deck,  1, 'cloze',
    'Every IUPAC name follows the pattern {{c1::prefix}} – {{c2::parent chain}} – {{c3::suffix}}: the prefix lists the substituents (in alphabetical order with locants), the parent chain names the longest carbon chain, and the suffix encodes the highest-priority functional group.', 3),

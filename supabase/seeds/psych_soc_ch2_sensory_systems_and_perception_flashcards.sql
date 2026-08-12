@@ -137,7 +137,7 @@ BEGIN
    'The {{c1::threshold of conscious perception}} is the higher intensity required for a stimulus to be consciously noticed. Stimuli that exceed the absolute threshold (and thus reach the CNS) but fall short of conscious perception are called {{c2::subliminal}} — they are processed by the brain but never reach awareness.', 2),
 
   (deck, 11, 'cloze',
-   'The {{c1::difference threshold}} — also called the {{c1::just noticeable difference (JND)}} — is the smallest magnitude difference between two stimuli that an observer can reliably detect. {{c2::Weber''s law}} generalizes the finding: the JND is a {{c3::constant proportion}} of the original stimulus magnitude (not a fixed absolute amount) across most of the perceptible range.', 3),
+   'The {{c1::difference threshold}} — also called the {{c1::just noticeable difference (JND)}} — is the smallest magnitude difference between two stimuli that an observer can reliably detect. {{c2::Weber''s law}} generalizes the finding: this threshold is a {{c3::constant proportion}} of the original stimulus magnitude (not a fixed absolute amount) across most of the perceptible range.', 3),
 
   (deck, 12, 'cloze',
    '{{c1::Discrimination testing}} is the experimental method used to measure the JND. A baseline stimulus is presented, then varied by progressively larger amounts until the participant reports noticing a change. The smallest reliably noticed change is recorded as the {{c2::just noticeable difference}} for that baseline.', 2),

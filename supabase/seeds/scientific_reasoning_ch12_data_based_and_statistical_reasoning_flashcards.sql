@@ -180,7 +180,7 @@ BEGIN
         '{{c1::Bar charts}} display {{c2::categorical}} data, while {{c1::histograms}} display {{c2::numerical (continuous)}} data and are especially useful for showing a {{c3::distribution}}.',
         3),
     (deck, 34, 'cloze',
-        'A {{c1::box plot}} shows the {{c2::median, Q1, Q3, and range}}: the box spans Q1 to Q3 with the median as a line inside, and the whiskers extend to the {{c3::extreme values within 1.5 × IQR}} (outliers plotted separately).',
+        'A {{c1::box plot}} shows the {{c2::median, Q1, Q3, and range}}: the box marks the central spread with a line inside, and the whiskers extend to the {{c3::extreme values within 1.5 × IQR}} (outliers plotted separately).',
         3),
     (deck, 35, 'cloze',
         'A {{c1::line graph}} shows the relationship between {{c2::two continuous variables}} and may be linear, parabolic, exponential, or logarithmic in shape.',

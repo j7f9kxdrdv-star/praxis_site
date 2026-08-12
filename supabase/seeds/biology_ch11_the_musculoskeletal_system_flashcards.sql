@@ -233,7 +233,7 @@ BEGIN
     -- ── Energy Reserves + Oxygen Debt ───────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 46, 'cloze',
-     '{{c1::Creatine phosphate}} is built up at rest by transferring a phosphate group from ATP to creatine; during exertion, the reaction reverses to rapidly regenerate {{c2::ATP}} from ADP.',
+     '{{c1::Creatine phosphate}} is built up at rest by transferring a phosphate group onto creatine; during exertion, the reaction reverses to rapidly regenerate {{c2::ATP}} from ADP.',
      2),
     (deck, 47, 'cloze',
      'During exercise, muscle uses {{c1::myoglobin}}-bound oxygen to sustain aerobic metabolism; once the oxygen is depleted, fibers switch to {{c2::anaerobic}} metabolism.',

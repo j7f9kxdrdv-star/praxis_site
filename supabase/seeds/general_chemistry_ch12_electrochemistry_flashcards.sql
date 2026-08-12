@@ -87,7 +87,7 @@ BEGIN
      '{{c1::Galvanic (voltaic) cells}} house spontaneous redox reactions (ΔG < 0, EMF > 0) and release energy; {{c1::electrolytic cells}} house nonspontaneous reactions (ΔG > 0, EMF < 0) and require external energy input.',
      1),
     (deck, 8, 'cloze',
-     'In any electrochemical cell, {{c1::ΔG}} and {{c1::EMF}} always have opposite signs: ΔG < 0 (favorable) ↔ EMF > 0; ΔG > 0 (unfavorable) ↔ EMF < 0.',
+     'In any electrochemical cell, {{c1::ΔG}} and {{c1::EMF}} always have opposite signs: a favorable reaction has the former negative and the latter positive.',
      1),
     (deck, 9, 'cloze',
      'A {{c1::concentration cell}} is a special type of galvanic cell where the two electrodes are made of the {{c2::same material}}, and the EMF arises from a {{c3::concentration gradient}}.',

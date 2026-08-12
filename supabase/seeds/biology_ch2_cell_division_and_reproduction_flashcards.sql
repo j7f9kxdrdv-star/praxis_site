@@ -182,7 +182,7 @@ BEGIN
    'Chromosomal sex is determined by the {{c1::23rd}} chromosome pair — {{c2::XX}} in females, {{c2::XY}} in males. Because ova carry only the {{c3::X}} chromosome and sperm can carry either {{c3::X or Y}}, it is the sperm that determines the chromosomal sex of the offspring.', 3),
 
   (deck, 30, 'cloze',
-   'The {{c1::SRY gene}} on the Y chromosome encodes a transcription factor that drives the indifferent fetal gonad toward testicular development; absent SRY, the default developmental pathway is {{c2::ovarian}}.', 2),
+   'The {{c1::SRY gene}} on the Y chromosome encodes a transcription factor that drives the indifferent fetal gonad toward testicular development; without it, the default developmental pathway is {{c2::ovarian}}.', 2),
 
   (deck, 31, 'cloze',
    'Males are {{c1::hemizygous}} for most X-linked genes — they carry only one copy — so an X-linked recessive allele is fully expressed in any male who inherits it. Females, with two X chromosomes, may be heterozygous {{c2::carriers}} who do not express the trait but can pass it to their sons.', 2),
@@ -280,7 +280,7 @@ BEGIN
 
   -- ── 16. Menopause ────────────────────────────────────────
   (deck, 60, 'cloze',
-   '{{c1::Menopause}} occurs when the aging ovaries become unresponsive to FSH and LH; estrogen and progesterone fall, the endometrium atrophies and menstruation stops, and — with negative feedback lost — FSH and {{c2::LH}} blood levels actually rise.', 2);
+   '{{c1::Menopause}} occurs when the aging ovaries become unresponsive to pituitary gonadotropins; estrogen and progesterone fall, the endometrium atrophies and menstruation stops, and — with negative feedback lost — FSH and {{c2::LH}} blood levels actually rise.', 2);
 
 
     -- ── AAMC coverage gap-fill (2026-07-22) ──────────────────────────────

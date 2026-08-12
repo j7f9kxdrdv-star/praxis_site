@@ -219,7 +219,7 @@ BEGIN
      '{{c1::Complex II (succinate-CoQ oxidoreductase)}} is identical to TCA step 6 — it transfers electrons from {{c2::FADH₂}} to coenzyme Q and does {{c3::not}} pump protons.',
      3),
     (deck, 41, 'cloze',
-     'Because Complex II does not pump protons, electrons that enter via {{c1::FADH₂}} skip Complex I and contribute fewer protons to the gradient — yielding ~{{c2::1.5 ATP}} per FADH₂ vs ~2.5 ATP per NADH.',
+     'Because Complex II does not pump protons, electrons that enter via {{c1::FADH₂}} skip Complex I and contribute fewer protons to the gradient — yielding ~{{c2::1.5 ATP}} each vs ~2.5 ATP per NADH.',
      2);
 
     -- ── ETC Complexes III & IV ──────────────────────────────────
@@ -243,7 +243,7 @@ BEGIN
      'The {{c1::glycerol-3-phosphate shuttle}} transfers cytosolic NADH electrons to mitochondrial {{c2::FADH₂}}, which enters at Complex II — yielding only ~{{c3::1.5 ATP}} per cytosolic NADH.',
      3),
     (deck, 47, 'cloze',
-     'The {{c1::malate-aspartate shuttle}} (preferred by cardiac muscle) transfers cytosolic NADH electrons to mitochondrial {{c2::NADH}}, which enters at Complex I — yielding the full ~{{c3::2.5 ATP}}.',
+     'The {{c1::malate-aspartate shuttle}} (preferred by cardiac muscle) transfers cytosolic reducing equivalents to mitochondrial {{c2::NADH}}, which enters at Complex I — yielding the full ~{{c3::2.5 ATP}}.',
      3);
 
     -- ── ATP Synthase & Proton Motive Force ──────────────────────
@@ -267,7 +267,7 @@ BEGIN
      'Each {{c1::NADH}} that enters at Complex I yields ~{{c2::2.5 ATP}}; each {{c1::FADH₂}} that enters at Complex II yields ~{{c2::1.5 ATP}}.',
      2),
     (deck, 53, 'cloze',
-     '{{c1::Glycolysis}} yields {{c2::2 ATP}} directly (substrate-level phosphorylation) plus {{c2::2 NADH}}, contributing ~7 ATP when those cytosolic NADH eventually feed the ETC via shuttles.',
+     '{{c1::Glycolysis}} yields {{c2::2 ATP}} directly (substrate-level phosphorylation) plus {{c2::2 NADH}}, contributing ~7 more when those cytosolic carriers eventually feed the ETC via shuttles.',
      2),
     (deck, 54, 'cloze',
      'The {{c1::PDH complex}} (2 turns per glucose) produces {{c2::2 NADH}} → ~5 ATP from the ETC.',

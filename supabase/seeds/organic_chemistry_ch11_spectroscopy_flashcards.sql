@@ -126,7 +126,7 @@ BEGIN
     -- ── UV-Vis Spectroscopy Fundamentals ────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 16, 'cloze',
-     '{{c1::Ultraviolet-visible (UV-Vis) spectroscopy}} measures the absorption of UV/visible light, which excites {{c2::electrons}} from filled molecular orbitals into empty antibonding orbitals.',
+     '{{c1::Ultraviolet-visible (UV-Vis) spectroscopy}} measures light absorption by a sample, which excites {{c2::electrons}} from filled molecular orbitals into empty antibonding orbitals.',
      2),
     (deck, 17, 'cloze',
      'A UV-Vis spectrum is plotted as {{c1::absorbance}} on the y-axis vs {{c2::wavelength (nm)}} on the x-axis; the λₘₐₓ is the wavelength at which the molecule absorbs most strongly.',
@@ -144,7 +144,7 @@ BEGIN
      'The {{c1::HOMO}} (Highest Occupied Molecular Orbital) is the highest-energy orbital containing electrons; the {{c1::LUMO}} (Lowest Unoccupied Molecular Orbital) is the lowest-energy empty orbital.',
      1),
     (deck, 21, 'cloze',
-     'In UV absorption, an electron is promoted from the {{c1::HOMO}} to the {{c1::LUMO}}; the photon energy must exactly match the HOMO-LUMO energy gap.',
+     'In UV absorption, an electron is promoted from the {{c1::HOMO}} to the {{c1::LUMO}}; the photon energy must exactly match the energy gap between the two.',
      1),
     (deck, 22, 'cloze',
      'A {{c1::smaller}} HOMO-LUMO energy gap means the molecule can absorb a {{c2::longer}} wavelength (lower-energy) photon — and the absorbance shifts toward the visible range.',
@@ -201,7 +201,7 @@ BEGIN
     -- ── 1H NMR: Equivalence + Integration ───────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 35, 'cloze',
-     '{{c1::¹H NMR (proton NMR)}} is the most common variant; medical MRI uses the same proton-NMR principle as a non-invasive diagnostic tool.',
+     '{{c1::¹H NMR (proton NMR)}} is the most common variant; medical MRI uses the same principle as a non-invasive diagnostic tool.',
      1),
     (deck, 36, 'cloze',
      'Protons that share the same magnetic environment are {{c1::chemically equivalent}} and produce a single combined peak — even if there are many such protons.',

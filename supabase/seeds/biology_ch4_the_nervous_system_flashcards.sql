@@ -105,7 +105,7 @@ BEGIN
     -- ── CNS vs PNS Overview ──────────────────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 12, 'cloze',
-     'The {{c1::central nervous system (CNS)}} consists of the brain and spinal cord; the {{c2::peripheral nervous system (PNS)}} is everything else — the nerves connecting the CNS to the rest of the body.',
+     'The {{c1::central nervous system (CNS)}} consists of the brain and spinal cord; the {{c2::peripheral nervous system (PNS)}} is everything else — the nerves connecting it to the rest of the body.',
      2),
     (deck, 13, 'cloze',
      'The PNS splits into the {{c1::somatic}} nervous system, which controls voluntary movements, and the {{c2::autonomic}} nervous system, which controls involuntary functions like heart rate and digestion.',

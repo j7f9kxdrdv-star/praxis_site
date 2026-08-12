@@ -186,7 +186,7 @@ BEGIN
      'In {{c1::acidic}} solution, balance oxygen with {{c2::H₂O}} and balance hydrogen with {{c2::H⁺}} on the side needing them.',
      2),
     (deck, 31, 'cloze',
-     'In {{c1::basic}} solution, balance oxygen with {{c2::H₂O}} and hydrogen with {{c2::OH⁻}} — alternatively, balance as if acidic and then add OH⁻ to both sides to neutralize H⁺.',
+     'In {{c1::basic}} solution, balance oxygen with {{c2::H₂O}} and hydrogen with {{c2::OH⁻}} — alternatively, balance as if acidic and then neutralize the H⁺ on both sides.',
      2),
     (deck, 32, 'cloze',
      'The available species for balancing depends on solution conditions: free {{c1::H⁺}} is plentiful in acidic solution; in basic solution, you must use {{c1::OH⁻}} instead.',

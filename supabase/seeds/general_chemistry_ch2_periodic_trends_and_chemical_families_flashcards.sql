@@ -146,7 +146,7 @@ BEGIN
    'Ionization energy {{c1::increases}} from left to right across a period (rising Zeff binds the valence electron more tightly) and {{c2::decreases}} from top to bottom in a group (valence electron is farther from the nucleus and more shielded).', 2),
 
   (deck, 21, 'cloze',
-   'Successive ionization energies always rise: {{c1::IE₁ < IE₂ < IE₃}}, because each subsequent electron is being removed from a progressively more positive cation. A particularly large jump between IEₙ and IEₙ₊₁ signals that the (n+1)ᵗʰ electron is being pulled from a {{c2::noble-gas core}} — a useful diagnostic for counting the element''s valence electrons.', 2),
+   'Successive ionization energies follow the pattern {{c1::IE₁ < IE₂ < IE₃}}, because each subsequent electron is being removed from a progressively more positive cation. A particularly large jump between consecutive values signals that the (n+1)ᵗʰ electron is being pulled from a {{c2::noble-gas core}} — a useful diagnostic for counting the element''s valence electrons.', 2),
 
   -- ── 8. Electron Affinity ─────────────────────────────────
   (deck, 22, 'cloze',
