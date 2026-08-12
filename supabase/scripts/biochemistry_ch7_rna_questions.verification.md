@@ -100,3 +100,49 @@ in transcription; both appear as calibrated distractors. Chapter running total: 
 16. [A/medium/S3/1B] spliceosome blockade intermediate prediction
 17. [D/easy/S2/1B] combinatorial exon isoform expansion
 18. [B/hard/S3/1B] shared peptide splicing evidence
+
+---
+
+## Batch 3 of 4: 18 questions (translation + targeting and PTMs)
+
+Slices: ribosome structure and sites / initiation prokaryotic versus eukaryotic / elongation,
+the ribozyme, termination, energy, coupling / signal sequence and post-translational modification.
+
+- Answer letters: A 4 . B 4 . C 5 . D 5
+- Difficulty: easy 4 . hard 6 . medium 8
+- Cognitive skills: skill 1 3 . skill 2 8 . skill 3 2 . skill 4 5
+- Roman numeral items: 2
+- Distractor categories: adjacent_fact 8 . misconception 14 . partial_truth 11 . process_step_confusion 9 . reversed_relationship 10 . scale_unit_error 2
+
+Exact quota match on all axes (letters 4/4/5/5, easy 4 / medium 8 / hard 6, skills
+S1 3 / S2 8 / S3 2 / S4 5, Roman 2). This batch deliberately carries S4 5 / S2 8, completing the
+ledger rebalance recorded in the batch 1 notes; the chapter remains on track for
+S1 12 / S2 37 / S3 9 / S4 14. ONE pre-ship replacement: drafted Q3 duplicated the crown-jewel
+stripped-subunit ribozyme item (an off-brief slice substitution, the same failure mode as
+batch 1); the replacement keys tRNA traffic through the A/P/E sites with identical pinned
+metadata (A/medium/S2, same distractor categories). Four other flagged sound-alike pairs were
+eyeballed and kept: each keys a different discriminating step (processed-message features versus
+coupling rationale; Shine-Dalgarno mechanism versus system inference; signal-swap localization
+versus cleavage shortening). The crown jewel (Q10) keys the evidence inference; batch 1's
+recognition-level rRNA item is untouched. Chapter running total: 54 of 72.
+
+### Question log, batch 3
+
+1. [B/easy/S1/1B] reconstituting ribosomes from subunits
+2. [C/medium/S1/RN/1B] subunit division of labor
+3. [A/medium/S2/1B] Labeled tRNA itinerary through sites
+4. [D/hard/S4/1B] elongation snapshot residue count
+5. [C/medium/S2/1B] Shine Dalgarno ribosome positioning
+6. [A/medium/S2/1B] cap directed small subunit recruitment
+7. [D/easy/S1/1B] ribosomal subunit assembly order
+8. [B/hard/S2/1B] diagnostic features of initiation systems
+9. [C/medium/S2/1B] peptidyl transfer intermediate state
+10. [C/hard/S3/1B] stripped subunit ribozyme evidence
+11. [D/easy/S2/1B] release factor water addition
+12. [B/hard/S4/1B] elongation GTP cost counting
+13. [A/medium/S4/1B] nascent transcript ribosome loading
+14. [D/hard/S4/1B] signal peptide deletion swap predictions
+15. [A/medium/S4/1B] mature secreted protein shortening
+16. [C/easy/S2/RN/1B] covalent sugar maturation mark
+17. [B/medium/S2/1B] blocked prenyl anchor consequence
+18. [D/hard/S3/1B] chaperone dilution refolding interpretation
