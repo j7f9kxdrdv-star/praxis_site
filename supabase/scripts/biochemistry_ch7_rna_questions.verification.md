@@ -146,3 +146,58 @@ recognition-level rRNA item is untouched. Chapter running total: 54 of 72.
 16. [C/easy/S2/RN/1B] covalent sugar maturation mark
 17. [B/medium/S2/1B] blocked prenyl anchor consequence
 18. [D/hard/S3/1B] chaperone dilution refolding interpretation
+
+---
+
+## Batch 4 of 4: 18 questions (operons + eukaryotic regulation). CHAPTER COMPLETE.
+
+Slices: operon anatomy and the polycistronic message / the lac operon / trp, CAP and control
+classification / eukaryotic machinery-level regulation / amplification and small-RNA silencing.
+
+- Answer letters: A 5 . B 4 . C 4 . D 5
+- Difficulty: easy 5 . hard 6 . medium 7
+- Cognitive skills: skill 1 2 . skill 2 10 . skill 3 3 . skill 4 3
+- Roman numeral items: 3
+- Distractor categories: adjacent_fact 8 . misconception 14 . partial_truth 11 . process_step_confusion 10 . reversed_relationship 10 . scale_unit_error 1
+
+Exact quota match on all axes, first pass, zero replacements needed. One tripwire fired and was
+cleared on inspection: the classification item's credited answer "an inducible operon under
+negative control" uses positive/negative control in the REGULATION sense (activator- versus
+repressor-based), which is the outline's own vocabulary, not an experimental-design key. The
+source doc's garbled polycistronic definition ships as the calibrated distractor on the
+polycistronic item, with the correct one-message-several-reading-frames logic credited.
+
+## CHAPTER TOTALS (72 questions, all four batches)
+
+- Answer letters: A 18 . B 18 . C 18 . D 18
+- Difficulty: easy 19 . hard 24 . medium 29
+- Cognitive skills: skill 1 12 . skill 2 37 . skill 3 9 . skill 4 14
+- Foundations: 1B 69 . 5D 3
+- Roman numeral items: 9
+- Distinct subtopics: 72 of 72
+
+The skill ledger landed exactly on the plan (S1 12 / S2 37 / S3 9 / S4 14) after the batch 3
+rebalance. Two pre-ship replacements chapter-wide, both the off-brief-substitution failure mode,
+both swapped with pinned metadata. Mutation-classification labels appear in zero answer choices
+across all 288 options. The Ch6 reservation contract held in both directions.
+
+### Question log, batch 4
+
+1. [D/medium/S2/1B] promoter operator functional distinction
+2. [B/easy/S1/1B] polycistronic message multiple proteins
+3. [A/hard/S2/1B] operon coordinate pathway control
+4. [B/easy/S2/1B] inducer double negative logic
+5. [D/medium/S3/1B] constitutive operator mutant diagnosis
+6. [C/medium/S2/RN/1B] lactose absent state prediction
+7. [A/hard/S4/1B] uninducible repressor expression table
+8. [C/easy/S2/1B] end product corepressor shutdown
+9. [B/medium/S2/1B] novel operon control classification
+10. [D/hard/S2/1B] cAMP independent activator variant
+11. [A/hard/S4/RN/1B] combined sugar expression prediction
+12. [C/medium/S2/1B] activator cognate element specificity
+13. [A/hard/S3/1B] enhancer position and orientation independence
+14. [D/easy/S1/1B] repressor bound distant element identification
+15. [B/medium/S2/1B] shared response element transferred to a new gene
+16. [C/hard/S4/1B] copy number output scaling
+17. [A/medium/S2/RN/1B] small RNA target fate
+18. [D/easy/S3/1B] siRNA knockdown readout
