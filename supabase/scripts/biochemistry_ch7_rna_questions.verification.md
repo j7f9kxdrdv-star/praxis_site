@@ -59,3 +59,44 @@ in the frame and hairpin items was hand-verified in audit.
 16. [A/hard/S4/5D] Hairpin prediction from sequence data
 17. [D/easy/S2/5D] Reactive sugar hydroxyl underlying catalysis
 18. [B/hard/S3/1B] Compensatory mutations localize function to shape
+
+---
+
+## Batch 2 of 4: 18 questions (transcription + mRNA processing)
+
+Slices: the polymerase at work / the promoter and its machinery / cap, tail and the mature
+message / the spliceosome and alternative splicing.
+
+- Answer letters: A 4 . B 5 . C 5 . D 4
+- Difficulty: easy 5 . hard 6 . medium 7
+- Cognitive skills: skill 1 3 . skill 2 9 . skill 3 3 . skill 4 3
+- Roman numeral items: 2
+- Distractor categories: adjacent_fact 11 . misconception 14 . partial_truth 11 . process_step_confusion 11 . reversed_relationship 7
+
+Exact quota match on all axes (letters 4/5/5/4, easy 5 / medium 7 / hard 6, skills
+S1 3 / S2 9 / S3 3 / S4 3, Roman 2), first pass, zero duplicate flags including cross-batch.
+Slice quota sums were machine-verified before launch this time. The transcript-derivation duplex
+was hand-checked base by base (complementarity, template reading order, product polarity). Errata
+handling verified: no credited answer says Pol II binds the TATA box or that helicase unwinds DNA
+in transcription; both appear as calibrated distractors. Chapter running total: 36 of 72.
+
+### Question log, batch 2
+
+1. [C/medium/S2/1B] template versus coding strand roles
+2. [B/hard/S4/1B] transcript derivation from labeled duplex
+3. [D/hard/S2/1B] antiparallel template reading direction
+4. [C/medium/S2/1B] primer independent transcription initiation
+5. [A/easy/S1/1B] polymerase intrinsic duplex melting
+6. [C/easy/S1/1B] polymerase assignment for messenger RNA
+7. [D/hard/S2/1B] inverted promoter directionality consequence
+8. [B/medium/S2/RN/1B] TBP mediated polymerase recruitment
+9. [A/medium/S3/1B] TFIID omission assembly failure
+10. [B/hard/S4/1B] TATA spacing sets start site
+11. [C/easy/S1/1B] cap shielding the nascent transcript
+12. [A/hard/S4/1B] adenosine tail lifetime data
+13. [B/easy/S2/1B] nuclear processing gates export
+14. [D/medium/S2/1B] terminal marks identify processed message
+15. [C/medium/S2/RN/1B] snRNP intron excision machinery
+16. [A/medium/S3/1B] spliceosome blockade intermediate prediction
+17. [D/easy/S2/1B] combinatorial exon isoform expansion
+18. [B/hard/S3/1B] shared peptide splicing evidence
