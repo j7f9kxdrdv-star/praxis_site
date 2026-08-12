@@ -57,3 +57,66 @@ kept. The Michaelis-Menten stem values in Q1 were recomputed for internal consis
 19. [A/easy/S1] First enzymatic step of galactose catabolism
 20. [C/hard/S3] Tracer localization of classic galactosemia
 21. [B/medium/S2] Catalytic recycling of UDP-glucose
+
+---
+
+## Batch 2 of 2: 24 questions (glycogen, gluconeogenesis, PPP). CHAPTER COMPLETE — AND THE
+## BIOCHEMISTRY BANK IS COMPLETE (12 of 12 chapters).
+
+Slices: glycogen synthesis / glycogenolysis and Von Gierke / bypass map with PC and PEPCK /
+FBPase-1, G6Pase and localization / PPP oxidative branch and red-cell vignettes / non-oxidative
+branch and the books.
+
+- Answer letters: A 6 . B 6 . C 6 . D 6
+- Difficulty: easy 6 . hard 8 . medium 10
+- Cognitive skills: skill 1 3 . skill 2 12 . skill 3 3 . skill 4 6
+- Roman numeral items: 3
+- Distractor categories: adjacent_fact 7 . misconception 18 . partial_truth 15 . process_step_confusion 18 . reversed_relationship 12 . scale_unit_error 2
+
+Exact quota match on all axes. ONE pre-ship replacement: drafted Q17 duplicated Q22's
+non-oxidative reverse-flux key (a slice I writer substituted it for its assigned item, the fifth
+occurrence of the off-brief pattern; this one was also partly plan-planted, as the slice J brief's
+ribose-demand item converged on the same fact); the replacement keys the oxidative branch's
+C1-lost-as-CO2 hexose-to-pentose arithmetic with identical pinned metadata (C/hard/S4). All other
+word-overlap flags are the chapter's inevitable shared vocabulary and key distinct steps.
+
+## CHAPTER TOTALS (45 questions, both batches)
+
+- Answer letters: A 11 . B 11 . C 12 . D 11
+- Difficulty: easy 12 . hard 15 . medium 18
+- Cognitive skills: skill 1 7 . skill 2 23 . skill 3 5 . skill 4 10
+- Roman numeral items: 6
+- Distinct subtopics: 45 of 45
+
+The arc contract held chapter-wide: zero PDH keys, zero hormone-mechanism keys (thumb litmus),
+zero Ch4-structure or Ch12-state re-keys, GLUT5 the only transporter keyed, accounting stopped at
+net 2 ATP. The Ch4 grant (glycolysis interior, glycogen machinery, bypasses, PPP) is now fully
+exercised. No lanes were reserved into the void: every deferred carbohydrate-metabolism concept
+now has a live owner somewhere in the twelve-chapter biochemistry bank.
+
+### Question log, batch 2
+
+1. [B/medium/S2] pyrophosphate hydrolysis driving force
+2. [D/hard/S2] glycogen synthase primer dependence
+3. [A/easy/S1] glycogenin tyrosine autoglucosylation
+4. [C/medium/S2] branching enzyme block transfer
+5. [C/medium/S4] phosphorylase stall producing limit dextrin
+6. [D/hard/S4] debranching dual activity product count
+7. [A/medium/S2] phosphoglucomutase glycogen glycolysis junction
+8. [B/easy/S2/RN] AMP calcium muscle phosphorylase activation
+9. [D/hard/S3] convergent final glucose release step
+10. [D/easy/S1] pyruvate carboxylase reaction package
+11. [B/medium/S2/RN] bypass enzyme to step mapping
+12. [A/hard/S2] acetyl CoA activation of pyruvate carboxylase
+13. [C/hard/S2] oxaloacetate malate exit route
+14. [B/hard/S2] reciprocal effector control at FBPase-1
+15. [D/medium/S2] glucose-6-phosphatase endoplasmic reticulum compartment
+16. [A/easy/S1] gluconeogenesis compartment span and organs
+17. [C/hard/S4] Oxidative phase carbon accounting
+18. [A/hard/S4] NADP ratio control of committed step
+19. [D/easy/S2] NADPH glutathione peroxide defense chain
+20. [B/medium/S3] oxidant stress hemolysis enzyme lesion
+21. [C/medium/S3] second oxidative NADPH step probed by substrate entry
+22. [B/medium/S2] non-oxidative branch reverse flux
+23. [C/medium/S4] transketolase and transaldolase carbon transfers
+24. [A/easy/S4/RN] pentose phosphate pathway product ledger
