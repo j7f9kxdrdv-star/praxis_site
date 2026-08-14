@@ -87,6 +87,9 @@ export default function PracticeHub() {
         const { data, error } = await supabase
           .from("questions")
           .select("id, section, topic, subtopic, difficulty, passage_id")
+          // Stable sort is REQUIRED for correct pagination; without it pages
+          // can overlap or skip, mis-stating the question totals per section.
+          .order("id", { ascending: true })
           .range(from, from + PAGE - 1);
         if (error || !data || data.length === 0) break;
         qRows.push(...(data as QuestionRow[]));

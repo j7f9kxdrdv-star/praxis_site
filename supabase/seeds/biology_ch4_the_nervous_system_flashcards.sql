@@ -186,7 +186,7 @@ BEGIN
      'A {{c1::synapse}} consists of the presynaptic terminal, the synaptic {{c2::cleft}}, and the postsynaptic membrane; most synapses use a chemical messenger rather than direct electrical contact.',
      2),
     (deck, 34, 'cloze',
-     'When the action potential reaches the synaptic terminal, voltage-gated {{c1::calcium}} channels open and Ca2+ flows into the {{c2::presynaptic}} neuron.',
+     'When the action potential reaches the synaptic terminal, voltage-gated {{c1::calcium}} channels open and the ion flows into the {{c2::presynaptic}} neuron.',
      2),
     (deck, 35, 'cloze',
      'The Ca2+ influx triggers fusion of neurotransmitter-filled {{c1::vesicles}} with the presynaptic membrane, releasing the neurotransmitter into the cleft by {{c2::exocytosis}}.',

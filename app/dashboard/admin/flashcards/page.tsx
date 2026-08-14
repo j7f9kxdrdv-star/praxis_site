@@ -78,6 +78,9 @@ export default function AdminFlashcardsPage() {
           .from("flashcards")
           .select("id, deck_id")
           .in("deck_id", deckIds)
+          // Stable sort is REQUIRED for correct pagination; unordered pages can
+          // double-count or drop cards, mis-stating each deck's card count.
+          .order("id", { ascending: true })
           .range(from, from + PAGE - 1);
         if (error || !data || data.length === 0) break;
         for (const c of data) {

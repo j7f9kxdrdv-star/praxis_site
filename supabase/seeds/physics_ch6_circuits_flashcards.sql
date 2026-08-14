@@ -192,20 +192,20 @@ BEGIN
     -- ── Circuit Meters ────────────────────────────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES
     (deck, 42, 'cloze',
-     'An {{c1::ammeter}} measures {{c1::current}} and is connected in {{c2::series}} within the circuit.',
-     2),
+     'An {{c1::ammeter}} measures {{c3::current}} and is connected in {{c2::series}} within the circuit.',
+     3),
     (deck, 43, 'cloze',
      'An ammeter must have {{c1::very low (negligible)}} resistance so it does not disturb the current it is measuring.',
      1),
     (deck, 44, 'cloze',
-     'A {{c1::voltmeter}} measures the potential difference across a component and is connected in {{c1::parallel}} with it.',
-     1),
+     'A {{c1::voltmeter}} measures the potential difference across a component and is connected in {{c2::parallel}} with it.',
+     2),
     (deck, 45, 'cloze',
      'Because it is connected in parallel with the element being measured, a voltmeter must have {{c1::very high (large)}} resistance.',
      1),
     (deck, 46, 'cloze',
-     'An ohmmeter measures resistance; unlike an ammeter or voltmeter it is {{c1::self-powered}}, and is used only when {{c1::no other current}} flows through the component.',
-     1);
+     'An ohmmeter measures resistance; unlike an ammeter or voltmeter it is {{c1::self-powered}}, and is used only when {{c2::no other current}} flows through the component.',
+     2);
 
     RAISE NOTICE 'Seeded deck % with % cards.', deck, 47;
 END $$;

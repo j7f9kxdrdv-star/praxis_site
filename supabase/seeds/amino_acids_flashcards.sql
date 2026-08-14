@@ -160,7 +160,7 @@ BEGIN
 
   -- ── 8. Special Structural Features ───────────────────────
   (deck, 28, 'cloze',
-   '{{c1::Glycine}} is the only amino acid that is {{c2::achiral}} at the α-carbon, because its side chain is just a {{c3::single hydrogen atom}} — leaving the α-carbon with two identical H substituents and therefore no stereocenter.', 3),
+   '{{c1::Glycine}} is the only amino acid that is {{c2::achiral}} at the α-carbon, because its side chain is just a {{c3::single hydrogen atom}} — leaving the α-carbon with two identical substituents and therefore no stereocenter.', 3),
 
   (deck, 29, 'cloze',
    '{{c1::Proline}} is structurally unique: its side chain {{c2::loops back to bond with the α-amino nitrogen}}, forming a five-membered ring. This rigidity introduces {{c3::kinks}} in polypeptide chains and disrupts both α-helices and β-pleated sheets.', 3),

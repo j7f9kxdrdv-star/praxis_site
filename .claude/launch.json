@@ -9,6 +9,16 @@
       "port": 3000
     },
     {
+      "name": "dev-live",
+      "runtimeExecutable": "/usr/local/bin/node",
+      "runtimeArgs": ["node_modules/.bin/next", "dev", "--port", "3001"],
+      "env": {
+        "PATH": "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin",
+        "NEXT_PUBLIC_LAUNCH_MODE": "live"
+      },
+      "port": 3001
+    },
+    {
       "name": "samson",
       "runtimeExecutable": "/bin/sh",
       "runtimeArgs": [

@@ -261,8 +261,8 @@ BEGIN
      'For an {{c1::electrolytic}} cell, the external source FORCES the species with the more {{c2::positive}} reduction potential to be oxidized — it becomes the anode (opposite of galvanic).',
      2),
     (deck, 54, 'cloze',
-     'A standard {{c1::voltmeter}} measures cell EMF but draws a small current; a {{c1::potentiometer}} draws essentially no current and gives a more accurate EMF reading.',
-     1);
+     'A standard {{c1::voltmeter}} measures cell EMF but draws a small current; a {{c2::potentiometer}} draws essentially no current and gives a more accurate EMF reading.',
+     2);
 
     -- ── EMF vs Thermodynamics ───────────────────────────────────
     INSERT INTO flashcards (deck_id, position, card_type, cloze_text, cloze_count) VALUES

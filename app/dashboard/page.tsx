@@ -382,6 +382,11 @@ export default function DashboardHome() {
             .from("flashcards")
             .select("id, deck_id, cloze_count, card_type")
             .in("deck_id", deckIds)
+            // Stable sort is REQUIRED for correct pagination: without an
+            // explicit order, PostgREST may return overlapping or missing rows
+            // across pages, which inflates the card total and therefore the
+            // "cards due" headline.
+            .order("id", { ascending: true })
             .range(from, from + PAGE - 1);
           if (error || !data || data.length === 0) break;
           cardRows.push(...data);
@@ -406,6 +411,12 @@ export default function DashboardHome() {
             .from("flashcard_user_state")
             .select("flashcard_id, cloze_index, next_review_at, suspended")
             .eq("user_id", user.id)
+            // Stable sort is REQUIRED here too. This table has no `id` column,
+            // so the primary key pair is the sort key. Unordered pages let the
+            // same row repeat while another is skipped, which shrinks the
+            // distinct "seen" set and over-reports unseen cards as due.
+            .order("flashcard_id", { ascending: true })
+            .order("cloze_index", { ascending: true })
             .range(from, from + PAGE - 1);
           if (error || !data || data.length === 0) break;
           stateRows.push(...data);

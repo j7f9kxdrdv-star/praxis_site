@@ -158,12 +158,18 @@ export default function FlashcardsHub() {
 
       stateRows.forEach((s) => {
         if (s.starred) starAll++;
-        if (s.suspended) return;
         const deckId = cardToDeck.get(s.flashcard_id);
         if (!deckId) return;
+        // Mark the card accounted-for BEFORE the suspended check. A suspended
+        // card is neither due nor unseen — the user pulled it out of rotation
+        // deliberately. Skipping it here would leave it out of `reviewedByDeck`
+        // and it would then reappear in the per-deck `total - reviewed` unseen
+        // subtraction below, which is why this page used to report more unseen
+        // cards than the dashboard (which records it as seen).
         const seen = reviewedByDeck.get(deckId) || new Set<string>();
         seen.add(`${s.flashcard_id}::${s.cloze_index}`);
         reviewedByDeck.set(deckId, seen);
+        if (s.suspended) return;
         if (s.next_review_at <= now) {
           urgentByDeck.set(deckId, (urgentByDeck.get(deckId) || 0) + 1);
           urgentAll++;
