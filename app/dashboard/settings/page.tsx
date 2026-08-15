@@ -6,7 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 
 const SUBSCRIPTION_LABELS: Record<string, string> = {
-  free: "Free",
+  free: "Early access, free until billing opens",
   practice: "Practice ($79/mo)",
   self_paced: "Self-Paced Course ($199/mo)",
 };

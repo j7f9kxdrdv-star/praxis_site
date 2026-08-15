@@ -157,7 +157,7 @@ const menuData: Record<string, MenuColumn[]> = {
         {
           icon: "⭐",
           title: "Student Stories",
-          desc: "Real experiences from real Praxis students",
+          desc: "Real experiences from real Praxist students",
           href: "#results",
         },
       ],
@@ -297,7 +297,7 @@ export default function Navigation() {
               href="/signup"
               className="rounded-full bg-coral px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-coral-dark transition-colors"
             >
-              Start Free Trial
+              Claim Early Access
             </Link>
           </div>
 
@@ -476,7 +476,7 @@ export default function Navigation() {
                   className="block rounded-full bg-coral px-5 py-2.5 text-sm font-semibold text-white text-center shadow-sm hover:bg-coral-dark transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Start Free Trial
+                  Claim Early Access
                 </Link>
               </div>
             </div>

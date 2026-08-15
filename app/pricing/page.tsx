@@ -7,12 +7,12 @@ import { SITE_NAME, SITE_URL } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Two simple MCAT prep plans: Practice ($79/mo) for unlimited questions and exams, or Self-Paced Course ($199/mo) with 1:1 mentor support. No long contracts.",
+    "Two simple MCAT prep plans: Practice ($79/mo) and Self-Paced Course ($199/mo) with 1:1 mentor support. Billing opens soon, and early access members join free.",
   alternates: { canonical: "/pricing" },
   openGraph: {
     title: "Pricing — Praxist Prep",
     description:
-      "Practice ($79/mo) or Self-Paced Course ($199/mo) with one-on-one mentor support. The most cost-effective serious MCAT prep on the market.",
+      "Practice ($79/mo) or Self-Paced Course ($199/mo) with 1:1 mentor support. Serious MCAT prep at a fraction of what a tutor costs.",
     url: "/pricing",
   },
 };
@@ -23,6 +23,13 @@ export const metadata: Metadata = {
  *
  * `hasCourseInstance` describes how the course is delivered. We model both
  * tiers as self-paced online courses with a monthly subscription offer.
+ *
+ * IMPORTANT: these prices publish to Google independently of anything a
+ * visitor reads on the page, so they must not describe billing as live while
+ * it isn't. Billing does not exist yet: signing up grants full access at no
+ * charge. Both offers are therefore marked `PreOrder` (an announced price,
+ * not a purchasable one). When billing opens, switch both to `InStock` and
+ * add `validFrom` with the date charging actually starts.
  *
  * Schema reference: https://schema.org/Course
  * Google guidance: https://developers.google.com/search/docs/appearance/structured-data/course-info
@@ -50,6 +57,7 @@ const courseSchemas = [
       category: "Subscription",
       price: "79",
       priceCurrency: "USD",
+      availability: "https://schema.org/PreOrder",
       url: `${SITE_URL}/pricing`,
     },
   },
@@ -75,6 +83,7 @@ const courseSchemas = [
       category: "Subscription",
       price: "199",
       priceCurrency: "USD",
+      availability: "https://schema.org/PreOrder",
       url: `${SITE_URL}/pricing`,
     },
   },
@@ -102,7 +111,8 @@ export default function PricingPage() {
             </h1>
             <p className="mt-4 text-base md:text-lg text-gray-600 max-w-xl mx-auto leading-relaxed">
               Premium MCAT prep at a fraction of the cost. No hidden fees, no
-              long-term contracts — cancel anytime.
+              long contracts, and free for early access members until plans
+              open.
             </p>
           </div>
         </section>
@@ -132,7 +142,7 @@ export default function PricingPage() {
                   href="/signup"
                   className="block w-full rounded-full border-2 border-navy py-3 text-sm font-semibold text-navy text-center hover:bg-navy hover:text-white transition-colors mb-8"
                 >
-                  Get Started
+                  Claim Early Access
                 </a>
 
                 <div className="border-t border-gray-200 pt-6">
@@ -187,7 +197,7 @@ export default function PricingPage() {
                   Self-Paced Course
                 </h2>
                 <p className="text-sm text-white/60 mb-6">
-                  The full Praxis experience — content, practice, and personal
+                  The full Praxist experience: content, practice, and personal
                   support.
                 </p>
 
@@ -200,7 +210,7 @@ export default function PricingPage() {
                   href="/signup"
                   className="block w-full rounded-full bg-white py-3 text-sm font-bold text-navy text-center hover:bg-cream hover:-translate-y-0.5 transition-all mb-8"
                 >
-                  Start Your Free Trial &rarr;
+                  Claim Early Access &rarr;
                 </a>
 
                 <div className="border-t border-white/12 pt-6">
@@ -244,7 +254,9 @@ export default function PricingPage() {
 
             {/* Fine print */}
             <p className="text-center text-xs text-gray-400 mt-8">
-              All plans billed monthly. Cancel anytime — no questions asked.
+              Prices shown are what plans will cost when billing opens. Early
+              access members pay nothing until then. No card on file, no
+              automatic charge.
             </p>
           </div>
         </section>
@@ -359,11 +371,11 @@ export default function PricingPage() {
               {[
                 {
                   q: "Can I switch plans later?",
-                  a: "Absolutely. You can upgrade from Essentials to Complete at any time. The difference is prorated so you only pay for what you use.",
+                  a: "Yes. Once plans are live, moving up will be a single click in your settings, with no penalty and no restart. There's nothing to switch today, since early access already includes everything.",
                 },
                 {
                   q: "Is there a free trial?",
-                  a: "Yes — the Complete plan comes with a free trial so you can experience everything before you commit.",
+                  a: "Not yet. Billing isn't open, so right now early access members use the full Complete experience at no cost, with no card on file. When paid plans launch we'll email you first, and no one is charged without choosing a plan.",
                 },
                 {
                   q: "What does 1:1 support look like?",
@@ -375,7 +387,7 @@ export default function PricingPage() {
                 },
                 {
                   q: "What's your cancellation policy?",
-                  a: "Cancel anytime, no questions asked. Your access continues through the end of your current billing period.",
+                  a: "Once billing opens you'll be able to cancel from your settings at any time, and keep access through the period you've paid for. Today there's nothing to cancel, because nothing is being charged.",
                 },
               ].map((item, i) => (
                 <details
@@ -417,15 +429,16 @@ export default function PricingPage() {
               Still Not Sure?
             </h2>
             <p className="mt-4 text-base text-white/65 max-w-lg mx-auto leading-relaxed">
-              Start with the free trial and see for yourself what makes
-              Praxis different.
+              Join early access and see for yourself what makes Praxist
+              different. Paid plans open soon; members who join now use
+              everything free until they do.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-3.5 justify-center">
               <a
                 href="/signup"
                 className="rounded-full bg-white text-navy px-10 py-3.5 text-sm font-bold hover:bg-cream hover:-translate-y-0.5 transition-all"
               >
-                Start Your Free Trial &rarr;
+                Claim Early Access &rarr;
               </a>
               <a
                 href="#"

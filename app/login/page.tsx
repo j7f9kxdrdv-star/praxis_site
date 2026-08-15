@@ -306,7 +306,7 @@ function LoginInner() {
                 href="/signup"
                 className="text-as-primary font-bold hover:underline underline-offset-4 decoration-1"
               >
-                Start free trial
+                Claim early access
               </Link>
             </p>
           </footer>

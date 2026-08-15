@@ -141,7 +141,7 @@ export default function MarketingHome() {
               className="nav-cta btn-magnetic bg-as-primary-container text-as-primary-fixed px-6 py-2 rounded-full font-label font-bold text-[9px] uppercase tracking-widest border-2 border-as-primary-container"
               href="/signup"
             >
-              Create an Account
+              Claim Early Access
             </Link>
           </div>
         </div>
@@ -380,7 +380,7 @@ export default function MarketingHome() {
                 </span>
                 <div className="relative z-10">
                   <p className="font-body text-xl md:text-2xl text-as-tertiary leading-relaxed italic mb-10">
-                    &ldquo;What set Praxis apart wasn&apos;t a score guarantee — it was
+                    &ldquo;What set Praxist apart wasn&apos;t a score guarantee. It was
                     having someone who actually picked up the phone when I was
                     spiraling before my exam. They walked me through it, calmed me
                     down, and helped me show up ready.&rdquo;
@@ -529,7 +529,7 @@ export default function MarketingHome() {
               href="/signup"
               className="btn-magnetic bg-as-primary text-as-on-primary px-16 py-6 rounded-lg font-label font-bold text-[11px] uppercase tracking-[0.3em] border-2 border-as-primary inline-block"
             >
-              Start Your Story
+              Claim Early Access
             </Link>
           </div>
         </div>

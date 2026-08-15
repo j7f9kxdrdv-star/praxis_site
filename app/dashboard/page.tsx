@@ -1413,7 +1413,8 @@ export default function DashboardHome() {
                   color: "var(--color-prax-cream)",
                 }}
               >
-                Elevate your scholarship — simulated exams and predictive analytics.
+                Early access, full access. Simulated exams and predictive
+                analytics, included at no cost.
               </div>
             </div>
             <Link
@@ -1429,7 +1430,7 @@ export default function DashboardHome() {
                 letterSpacing: "0.14em",
               }}
             >
-              Explore Plans
+              See What&rsquo;s Coming
             </Link>
           </div>
         )}

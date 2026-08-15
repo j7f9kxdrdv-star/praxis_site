@@ -12,7 +12,7 @@ interface Faq {
 const FAQS: Faq[] = [
   {
     q: "How do the flashcards work?",
-    a: "Praxis Prep uses spaced repetition — the cards you find harder come back more often, and the cards you know well are spaced out so you don't waste time on them. Each cloze card (with blanks like {{c1::answer}}) reveals one answer at a time, so every card is multiple study items in one.",
+    a: "Praxist Prep uses spaced repetition. The cards you find harder come back more often, and the cards you know well are spaced out so you don't waste time on them. Each cloze card (with blanks like {{c1::answer}}) reveals one answer at a time, so every card is multiple study items in one.",
   },
   {
     q: "Can I study on my phone?",
