@@ -533,7 +533,7 @@ export default function PracticeSession() {
       >
         <div className="flex items-center gap-2">
           <span className="font-semibold text-[14px]">Praxist Prep</span>
-          <span className="text-white/70">— Practice Exam</span>
+          <span className="text-white/70">Practice Exam</span>
         </div>
         <div className="flex items-center gap-5">
           <div className="flex items-center gap-1.5">
@@ -778,7 +778,7 @@ export default function PracticeSession() {
                 {/* Praxist Prep Solution heading */}
                 <div className="pt-4 pb-2">
                   <h3 className="font-bold text-[14px] text-[#333]">
-                    Praxist Prep — Question Solution
+                    Praxist Prep Question Solution
                   </h3>
                   <p className="text-green-700 font-bold text-[13px] mt-1">
                     Correct Answer: Choice {currentQuestion.correct_answer}

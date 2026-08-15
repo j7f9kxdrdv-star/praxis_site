@@ -699,7 +699,7 @@ export default function AnalyticsPage() {
           className="px-1"
           style={{ color: "var(--color-prax-ink-mute)", fontSize: 11 }}
         >
-          –
+          to
         </span>
         <input
           type="date"
@@ -727,7 +727,7 @@ export default function AnalyticsPage() {
       : period === "30d"
       ? "Last 30 days"
       : period === "custom" && customFrom && customTo
-      ? `${customFrom} – ${customTo}`
+      ? `${customFrom} to ${customTo}`
       : "All time";
 
   return (
@@ -905,7 +905,7 @@ export default function AnalyticsPage() {
                     color: "rgba(246,244,227,0.5)",
                   }}
                 >
-                  —
+                  to
                 </div>
                 <div
                   className="leading-none font-medium"
@@ -1313,8 +1313,8 @@ export default function AnalyticsPage() {
                 >
                   {weakestTopic.accuracy}%
                 </span>{" "}
-                — your lowest-scoring topic right now. Targeting it directly
-                will have the most leverage on your overall score.
+                is your weakest topic right now. Targeting it directly will do
+                the most for your overall score.
               </div>
               <div
                 className="mt-4 p-3.5 rounded-xl"
@@ -1620,7 +1620,7 @@ export default function AnalyticsPage() {
               Topic mastery
             </div>
             <SmallCaps style={{ marginTop: 4 }}>
-              Weakest first — your highest-leverage targets
+              Weakest first. These move your score the most
             </SmallCaps>
           </div>
           {subtopicStats.length > 0 && (

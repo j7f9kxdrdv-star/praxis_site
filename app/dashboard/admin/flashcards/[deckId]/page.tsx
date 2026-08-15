@@ -186,7 +186,7 @@ export default function AdminDeckEditPage() {
           >
             {cards.length} card{cards.length === 1 ? "" : "s"} · cloze blanks
             written as <code>&#123;&#123;c1::answer&#125;&#125;</code>. Saves
-            run live against the database — be careful.
+            run live against the database, so be careful.
           </p>
         </div>
       )}

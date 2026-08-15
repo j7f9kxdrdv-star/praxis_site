@@ -860,7 +860,7 @@ export default function DashboardHome() {
                 }}
               >
                 {focus
-                  ? `${focus.sectionLabel} — ${focus.topic.toLowerCase()}.`
+                  ? `${focus.sectionLabel}: ${focus.topic.toLowerCase()}.`
                   : isNewUser
                   ? "Begin with your first practice session."
                   : "Keep building your practice rhythm."}
@@ -1260,7 +1260,7 @@ export default function DashboardHome() {
                     color: "var(--color-prax-ink-soft)",
                   }}
                 >
-                  Weakest cluster — drill queued in today&apos;s focus.
+                  Weakest cluster. Drill queued in today&apos;s focus.
                 </div>
               </div>
             )}
@@ -1452,7 +1452,7 @@ export default function DashboardHome() {
               minWidth: 200,
             }}
           >
-            — tempered by practice —
+            tempered by practice
           </span>
         </div>
       </div>

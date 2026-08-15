@@ -10,10 +10,10 @@ import type { MetadataRoute } from "next";
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Praxist Prep — MCAT Flashcards & Practice",
+    name: "Praxist Prep: MCAT Flashcards & Practice",
     short_name: "Praxist",
     description:
-      "Study MCAT flashcards and practice questions with spaced repetition — your whole prep, on your phone.",
+      "Study MCAT flashcards and practice questions with spaced repetition. Your whole prep, on your phone.",
     id: "/dashboard",
     start_url: "/dashboard",
     scope: "/",

@@ -387,7 +387,7 @@ export async function computeMetrics(
 
   let top_priority: SubtopicMetrics | null = null;
   if (top_priority_raw) {
-    const reason = `${top_priority_raw.days_since_last_practiced} days without practice — mastery at ${top_priority_raw.mastery_score}%`;
+    const reason = `${top_priority_raw.days_since_last_practiced} days without practice, mastery at ${top_priority_raw.mastery_score}%`;
     top_priority = { ...top_priority_raw, top_priority_reason: reason };
   }
 

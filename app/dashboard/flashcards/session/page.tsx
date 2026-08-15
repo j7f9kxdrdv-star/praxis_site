@@ -493,16 +493,16 @@ function SessionInner() {
         <p className="text-as-outline text-sm mb-6 max-w-md mx-auto leading-relaxed">
           {isLimitReached && ctx ? (
             <>
-              You&apos;ve hit today&apos;s limits — <strong>{ctx.newToday}</strong> new
+              You&apos;ve hit today&apos;s limits. That&apos;s <strong>{ctx.newToday}</strong> new
               card{ctx.newToday === 1 ? "" : "s"} and <strong>{ctx.reviewsToday}</strong>{" "}
               review{ctx.reviewsToday === 1 ? "" : "s"} studied. Spaced repetition works
-              best if you stop here, but nothing&apos;s stopping you — Cram mode ignores
+              best if you stop here, but nothing&apos;s stopping you. Cram mode ignores
               the daily caps.
             </>
           ) : isNothingDue ? (
             <>
-              Nothing is due right now. New cards land based on your spaced-
-              repetition schedule — review more cards today to introduce new
+              Nothing is due right now. New cards land based on your spaced
+              repetition schedule. Review more cards today to introduce new
               ones, or come back later as cards cycle back.
             </>
           ) : (
@@ -544,7 +544,7 @@ function SessionInner() {
           <h1 className="font-headline text-3xl mb-3">{stats.done} cards reviewed</h1>
           <p className="text-sm text-white/70">
             {missed > 0
-              ? `${missed} marked Again — they came back this session until you got them right.`
+              ? `${missed} marked Again. They came back this session until you got them right.`
               : "Clean run. Cards rescheduled per your ratings."}
           </p>
         </div>

@@ -24,7 +24,7 @@ const FAQS: Faq[] = [
   },
   {
     q: "I found a mistake in a flashcard. What should I do?",
-    a: "Please tell us! Use the form below — paste the card text (or a screenshot via your reply email) and what you think the correct version should be. We aim to fix card errors within a few days.",
+    a: "Please tell us! Use the form below. Paste the card text (or a screenshot via your reply email) and what you think the correct version should be. We aim to fix card errors within a few days.",
   },
   {
     q: "How do I change my password or name?",
@@ -32,7 +32,7 @@ const FAQS: Faq[] = [
   },
   {
     q: "I need help with something else.",
-    a: "Use the form below — we read every message and reply by email, usually within one business day. If it's urgent, mention that in the subject line.",
+    a: "Use the form below. We read every message and reply by email, usually within one business day. If it's urgent, mention that in the subject line.",
   },
 ];
 
@@ -124,7 +124,7 @@ export default function SupportPage() {
           className="text-[14px]"
           style={{ color: "var(--color-prax-ink-soft)" }}
         >
-          Check the FAQ first — it covers the most common questions. If you
+          Check the FAQ first. It covers the most common questions. If you
           still need help, send us a message at the bottom of the page.
         </p>
       </div>

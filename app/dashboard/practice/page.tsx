@@ -1773,7 +1773,7 @@ function BuilderModal({
                 }}
               >
                 <strong>{matchCount}</strong> unseen question
-                {matchCount === 1 ? "" : "s"} match — you&apos;ll see{" "}
+                {matchCount === 1 ? "" : "s"} match. You&apos;ll see{" "}
                 <strong>
                   {builderCount === 0
                     ? matchCount

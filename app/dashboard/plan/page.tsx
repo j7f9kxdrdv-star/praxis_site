@@ -257,7 +257,7 @@ export default function StudyPlanPage() {
                 className="w-full sm:w-64 rounded-xl border border-as-outline-variant/15 bg-as-surface-container-lowest px-4 py-3 text-sm text-gray-900 focus:border-as-on-surface-variant focus:ring-2 focus:ring-as-on-surface-variant/20 focus:outline-none transition-colors"
               />
               <p className="text-xs text-as-outline mt-1">
-                Optional — helps us pace your studying
+                Optional. Helps us pace your studying
               </p>
             </div>
 

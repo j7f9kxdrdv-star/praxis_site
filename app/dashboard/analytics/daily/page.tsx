@@ -68,7 +68,7 @@ function ReportSection({ number, title, body }: { number: number; title: string;
           if (t.startsWith("- ") || t.startsWith("• ")) {
             return (
               <div key={i} className="flex items-start gap-2.5">
-                <span className="text-as-primary font-bold shrink-0 mt-0.5">—</span>
+                <span className="text-as-primary font-bold shrink-0 mt-0.5">•</span>
                 <span>{t.replace(/^[-•]\s+/, "")}</span>
               </div>
             );
@@ -395,10 +395,10 @@ export default function DailyReportPage() {
               {metrics && (
                 <div className="mt-4 bg-white/30 rounded-[1.25rem] p-4 text-xs text-as-on-surface-variant leading-relaxed">
                   {metrics.avg_time_seconds > 110
-                    ? `Avg ${Math.round(metrics.avg_time_seconds)}s per question — above the 110s benchmark. Focus on pacing.`
+                    ? `Avg ${Math.round(metrics.avg_time_seconds)}s per question. That is above the 110s benchmark, so focus on pacing.`
                     : metrics.avg_time_seconds < 45
-                    ? `Avg ${Math.round(metrics.avg_time_seconds)}s per question — very fast. Check you&apos;re reading questions fully.`
-                    : `Avg ${Math.round(metrics.avg_time_seconds)}s per question — within normal range.`}
+                    ? `Avg ${Math.round(metrics.avg_time_seconds)}s per question. That is very fast, so make sure you are reading questions fully.`
+                    : `Avg ${Math.round(metrics.avg_time_seconds)}s per question. That is within normal range.`}
                 </div>
               )}
             </div>
@@ -431,7 +431,7 @@ export default function DailyReportPage() {
                   {metrics?.strong.length || 0} topic{metrics?.strong.length !== 1 ? "s" : ""} solid
                 </p>
                 {metrics?.strong.length === 0 ? (
-                  <p className="text-sm text-as-outline text-center py-6">Keep building — strong topics will appear here.</p>
+                  <p className="text-sm text-as-outline text-center py-6">Keep building. Strong topics will appear here.</p>
                 ) : (
                   <div>
                     {(metrics?.strong ?? []).map((t) => (

@@ -105,7 +105,7 @@ function ReportSection({ number, title, body }: { number: number; title: string;
           if (t.startsWith("- ") || t.startsWith("• ")) {
             return (
               <div key={i} className="flex items-start gap-2.5">
-                <span className="text-as-primary font-bold shrink-0 mt-0.5">—</span>
+                <span className="text-as-primary font-bold shrink-0 mt-0.5">•</span>
                 <span>{t.replace(/^[-•]\s+/, "")}</span>
               </div>
             );
@@ -313,7 +313,7 @@ export default function WeeklyReportPage() {
   const [scoreLow, scoreHigh] = estimateScoreRange(metrics?.overall_accuracy ?? 0);
 
   const reportDateRange = metrics
-    ? `${new Date(metrics.start_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${new Date(metrics.end_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
+    ? `${new Date(metrics.start_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })} to ${new Date(metrics.end_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
     : "Last 7 days";
 
   if (loading) {
@@ -438,7 +438,7 @@ export default function WeeklyReportPage() {
               {metrics && metrics.overall_accuracy > 0 ? (
                 <div className="flex items-baseline gap-1 relative">
                   <span className="text-2xl font-bold text-white">{scoreLow}</span>
-                  <span className="text-sm text-white/50 font-serif">–</span>
+                  <span className="text-sm text-white/50 font-serif">to</span>
                   <span className="text-2xl font-bold text-white">{scoreHigh}</span>
                 </div>
               ) : (
@@ -548,9 +548,9 @@ export default function WeeklyReportPage() {
                     </p>
                     <p className="text-xs text-as-outline mt-1">
                       {metrics && metrics.avg_time_seconds > 110
-                        ? "Above 110s target — pacing needs work"
+                        ? "Above 110s target. Pacing needs work"
                         : metrics && metrics.avg_time_seconds < 45
-                        ? "Very fast — verify you&apos;re reading fully"
+                        ? "Very fast. Verify you are reading fully"
                         : "Within normal range"}
                     </p>
                   </div>
@@ -589,7 +589,7 @@ export default function WeeklyReportPage() {
               <div className="bg-as-surface-container-low rounded-[2.5rem] p-7 sm:p-8 border border-red-100">
                 <h2 className="font-headline text-xl font-bold text-as-primary mb-1">Needs Work</h2>
                 <p className="text-[11px] text-as-outline mb-5">
-                  Sorted by priority score — drill these first
+                  Sorted by priority score. Drill these first
                 </p>
                 {metrics?.struggling.length === 0 ? (
                   <p className="text-sm text-as-outline text-center py-6">No struggling topics this week.</p>
@@ -608,10 +608,10 @@ export default function WeeklyReportPage() {
               <div className="bg-as-surface-container-low rounded-[2.5rem] p-7 sm:p-8 border border-emerald-100">
                 <h2 className="font-headline text-xl font-bold text-as-primary mb-1">Strong Areas</h2>
                 <p className="text-[11px] text-as-outline mb-5">
-                  Keep these maintained — don&apos;t let them slip
+                  Keep these maintained. Don&apos;t let them slip
                 </p>
                 {metrics?.strong.length === 0 ? (
-                  <p className="text-sm text-as-outline text-center py-6">Keep building — strong topics will appear here.</p>
+                  <p className="text-sm text-as-outline text-center py-6">Keep building. Strong topics will appear here.</p>
                 ) : (
                   <div>
                     {(metrics?.strong ?? [])

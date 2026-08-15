@@ -24,7 +24,7 @@ export async function sendWaitlistWelcome(toEmail: string): Promise<void> {
     await resend.emails.send({
       from: FROM_ADDRESS,
       to: toEmail,
-      subject: "You're on the list — Praxist Prep",
+      subject: "You're on the list at Praxist Prep",
       html: WELCOME_HTML,
       text: WELCOME_TEXT,
     });
@@ -52,13 +52,13 @@ const WELCOME_HTML = `<!DOCTYPE html>
                   Thank you for signing up. You'll be the first to know the moment Praxist Prep opens its doors.
                 </p>
                 <p style="font-size:16px;line-height:1.6;color:#1a2723;margin:0 0 16px 0;">
-                  We're building something different — an MCAT prep course that meets you where you are, with the personal mentorship you'd expect from a tutor and the rigor of a structured program. No score guarantees. Just the tools, and someone in your corner.
+                  We're building something different. An MCAT prep course that meets you where you are, with the personal mentorship you'd expect from a tutor and the rigor of a structured program. No score guarantees. Just the tools, and someone in your corner.
                 </p>
                 <p style="font-size:16px;line-height:1.6;color:#1a2723;margin:0 0 32px 0;">
                   More from us soon.
                 </p>
                 <p style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:14px;color:#4a5d56;margin:0;">
-                  — Built deliberately. Tempered by practice. —
+                  Built deliberately. Tempered by practice.
                 </p>
               </td>
             </tr>
@@ -76,10 +76,10 @@ const WELCOME_TEXT = `You're on the list.
 
 Thank you for signing up. You'll be the first to know the moment Praxist Prep opens its doors.
 
-We're building something different — an MCAT prep course that meets you where you are, with the personal mentorship you'd expect from a tutor and the rigor of a structured program. No score guarantees. Just the tools, and someone in your corner.
+We're building something different. An MCAT prep course that meets you where you are, with the personal mentorship you'd expect from a tutor and the rigor of a structured program. No score guarantees. Just the tools, and someone in your corner.
 
 More from us soon.
 
-— Built deliberately. Tempered by practice. —
+Built deliberately. Tempered by practice.
 
 © Praxist Prep · You're receiving this because you joined the waitlist at praxistprep.com`;

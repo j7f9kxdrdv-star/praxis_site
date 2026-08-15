@@ -218,7 +218,7 @@ export default function DeckDetailPage() {
             </h2>
             <p className="text-sm text-as-on-primary/70">
               {dueItems > 0
-                ? `${dueItems} due now — go through them in order.`
+                ? `${dueItems} due now. Go through them in order.`
                 : totalItems === 0
                 ? "This deck has no cards yet."
                 : "Nothing due. You can still review the whole deck if you want extra practice."}

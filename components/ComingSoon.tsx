@@ -44,7 +44,7 @@ export default function ComingSoon() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error || "Could not save your email — try again.");
+        throw new Error(data?.error || "Could not save your email. Please try again.");
       }
       setStatus("success");
     } catch (err) {
@@ -296,7 +296,7 @@ export default function ComingSoon() {
                 color: "rgba(246,244,227,0.4)",
               }}
             >
-              — Built deliberately. Tempered by practice. —
+              Built deliberately. Tempered by practice.
             </div>
           </div>
         </div>

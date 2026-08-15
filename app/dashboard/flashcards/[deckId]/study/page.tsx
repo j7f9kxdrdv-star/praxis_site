@@ -438,7 +438,7 @@ export default function StudyPage() {
         </p>
         <p className="text-as-outline text-sm mb-6">
           {cappedOut
-            ? "You've reached today's new-card / review limit. More unlock tomorrow — or use Cram to keep going now."
+            ? "You've reached today's limit on new cards and reviews. More unlock tomorrow, or use Cram to keep going now."
             : filter === "due"
             ? "No cards are due in this deck right now."
             : filter === "starred"
@@ -464,7 +464,7 @@ export default function StudyPage() {
           <h1 className="font-headline text-3xl mb-3">{stats.done} cards reviewed</h1>
           <p className="text-sm text-white/70">
             {missed > 0
-              ? `${missed} marked Again — they came back this session until you got them right.`
+              ? `${missed} marked Again. They came back this session until you got them right.`
               : "Clean run. Cards rescheduled per your ratings."}
           </p>
         </div>

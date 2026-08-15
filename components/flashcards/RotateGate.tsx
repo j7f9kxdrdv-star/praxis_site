@@ -45,7 +45,7 @@ export default function RotateGate({ children }: { children: React.ReactNode }) 
         </div>
         <h2 className="font-headline text-2xl text-as-primary">Turn your phone sideways</h2>
         <p className="text-sm text-as-on-surface-variant max-w-[280px] leading-relaxed">
-          Flashcards study best in landscape — rotate your phone to begin.
+          Flashcards study best in landscape. Rotate your phone to begin.
         </p>
         <button
           type="button"

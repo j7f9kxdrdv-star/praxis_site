@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Two simple MCAT prep plans: Practice ($79/mo) and Self-Paced Course ($199/mo) with 1:1 mentor support. Billing opens soon, and early access members join free.",
   alternates: { canonical: "/pricing" },
   openGraph: {
-    title: "Pricing — Praxist Prep",
+    title: "Pricing · Praxist Prep",
     description:
       "Practice ($79/mo) or Self-Paced Course ($199/mo) with 1:1 mentor support. Serious MCAT prep at a fraction of what a tutor costs.",
     url: "/pricing",
@@ -383,7 +383,7 @@ export default function PricingPage() {
                 },
                 {
                   q: "How do the Anki cards work?",
-                  a: "We provide pre-built Anki decks covering high-yield MCAT topics. They're ready to import into the free Anki app — no setup required. Spaced repetition is one of the most effective study methods, and we've done the work of building the cards for you.",
+                  a: "We provide pre-built Anki decks covering high-yield MCAT topics. They're ready to import into the free Anki app, with no setup required. Spaced repetition is one of the most effective study methods, and we've done the work of building the cards for you.",
                 },
                 {
                   q: "What's your cancellation policy?",

@@ -38,7 +38,7 @@ const menuData: Record<string, MenuColumn[]> = {
         {
           icon: "🧪",
           title: "Science Review",
-          desc: "Bio, Biochem, Chem, Physics — high-yield content",
+          desc: "Bio, Biochem, Chem, Physics. High-yield content",
           href: "#",
         },
         {

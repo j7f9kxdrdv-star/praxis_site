@@ -93,14 +93,27 @@ export default function MarketingHome() {
         ref={navRef}
         className="fixed top-0 left-0 right-0 z-[100] transition-all duration-700 bg-transparent py-6"
       >
-        <div className="max-w-screen-2xl mx-auto px-8 grid grid-cols-3 items-center">
-          <Link href="/" className="flex items-center gap-3 justify-self-start">
+        {/*
+          Flex until lg, grid only from lg up. The centre links below are
+          `hidden lg:flex`, and a display:none grid item is removed from the
+          grid entirely -- so on a phone the three-column track put the CTA in
+          column TWO while the 32px wordmark overflowed column one, and they
+          overlapped by 40px at 375px. Flex lays out only the items that exist.
+          The wordmark and logo also step down on small screens so the two
+          groups never crowd each other.
+        */}
+        <div className="max-w-screen-2xl mx-auto px-5 sm:px-8 flex items-center justify-between gap-3 lg:grid lg:grid-cols-3">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 justify-self-start min-w-0">
             <img
               src="/logo-white.png"
               alt="Praxist Prep logo"
-              className="h-9 w-auto transition-all duration-700 nav-logo-img"
+              className="h-7 sm:h-8 lg:h-9 w-auto shrink-0 transition-all duration-700 nav-logo-img"
             />
-            <span className="font-headline font-bold text-[32px] leading-9 tracking-tight transition-all duration-700 text-as-surface-bright nav-logo-text">
+            {/*
+              Below ~330px the wordmark and the CTA cannot both fit, so the
+              logo mark carries the brand on the smallest phones (iPhone SE).
+            */}
+            <span className="hidden min-[340px]:inline font-headline font-bold text-[20px] leading-6 sm:text-[26px] sm:leading-8 lg:text-[32px] lg:leading-9 tracking-tight whitespace-nowrap transition-all duration-700 text-as-surface-bright nav-logo-text">
               Praxist Prep
             </span>
           </Link>
@@ -130,7 +143,7 @@ export default function MarketingHome() {
               Pricing
             </Link>
           </div>
-          <div className="flex items-center gap-4 justify-self-end">
+          <div className="flex items-center gap-3 sm:gap-4 justify-self-end shrink-0">
             <Link
               className="nav-cta-outline btn-magnetic border-2 border-as-surface-bright/30 text-as-surface-bright px-6 py-2 rounded-full font-label font-bold text-[9px] uppercase tracking-widest transition-all duration-500 hidden sm:inline-block"
               href="/login?next=/dashboard"
@@ -138,7 +151,7 @@ export default function MarketingHome() {
               Sign In
             </Link>
             <Link
-              className="nav-cta btn-magnetic bg-as-primary-container text-as-primary-fixed px-6 py-2 rounded-full font-label font-bold text-[9px] uppercase tracking-widest border-2 border-as-primary-container"
+              className="nav-cta btn-magnetic bg-as-primary-container text-as-primary-fixed px-4 sm:px-6 py-2 rounded-full font-label font-bold text-[9px] uppercase tracking-widest border-2 border-as-primary-container whitespace-nowrap"
               href="/signup"
             >
               Claim Early Access
@@ -181,7 +194,7 @@ export default function MarketingHome() {
             </h1>
             <p className="text-base md:text-lg max-w-lg font-light leading-relaxed mb-10 text-as-surface-bright/90 text-shadow-hero reveal-element stagger-3">
               Built by someone who&apos;s been through it. Praxist Prep gives you the
-              strategies, structure, and support to score higher — without the
+              strategies, structure, and support to score higher without the
               burnout.
             </p>
             <div className="flex flex-wrap items-center gap-10 reveal-element stagger-4">
@@ -339,7 +352,7 @@ export default function MarketingHome() {
                   We Show Up for Our Students
                 </h2>
                 <p className="text-lg md:text-xl text-as-tertiary/70 font-light leading-relaxed max-w-xl">
-                  We can&apos;t take your test for you — but we can make sure you never
+                  We can&apos;t take your test for you, but we can make sure you never
                   feel alone preparing for it. Our students tell us the difference
                   isn&apos;t just the material. It&apos;s having someone in their corner who
                   genuinely cares.

@@ -2,7 +2,9 @@ import type { ReportMetrics } from './metrics';
 
 // Shared system prompt text — referenced in generate.ts but also embedded in user prompt
 // for single-call context clarity
-const SYSTEM_PROMPT_NOTE = `You are a direct, no-fluff MCAT study coach. You write concise diagnostic reports based on structured performance data. You never invent numbers. You never use motivational language. You only reference the data you are given.`;
+const SYSTEM_PROMPT_NOTE = `You are a direct, no-fluff MCAT study coach. You write concise diagnostic reports based on structured performance data. You never invent numbers. You never use motivational language. You only reference the data you are given.
+
+WRITING STYLE, NON-NEGOTIABLE: never use an em dash or an en dash. Use a period, comma, colon, or semicolon instead, or rewrite the sentence. This applies to ranges too: write "2 to 3", never "2-3" with a dash character. Dashes read as machine-written and this report goes to a student.`;
 
 export function buildDailyPrompt(metrics: ReportMetrics): string {
   const safeMetrics = {
@@ -54,7 +56,7 @@ export function buildDailyPrompt(metrics: ReportMetrics): string {
 
 Write a daily MCAT performance report using ONLY the data below. Do not invent numbers. Do not use motivational language. Write like a coach, not a cheerleader.
 
-${metrics.total_questions < 10 ? 'NOTE: Fewer than 10 questions were answered today — data is limited and conclusions should be treated as preliminary.\n' : ''}
+${metrics.total_questions < 10 ? 'NOTE: Fewer than 10 questions were answered today. Data is limited and conclusions should be treated as preliminary.\n' : ''}
 
 Performance data (JSON):
 ${JSON.stringify(safeMetrics, null, 2)}
@@ -62,7 +64,7 @@ ${JSON.stringify(safeMetrics, null, 2)}
 Write the report with exactly these four sections:
 
 **1. Daily Summary**
-2–3 sentences. Include: accuracy percentage, number of questions answered, and the single most notable finding (top win or top concern).
+2 to 3 sentences. Include: accuracy percentage, number of questions answered, and the single most notable finding (top win or top concern).
 
 **2. Weakest Areas Today**
 List ALL subtopics with status "Struggling" or "Critical". For each, include the subtopic name, status, mastery score, and one sentence on why it matters for MCAT performance. If there are no struggling/critical subtopics, state "No struggling areas identified in today's data."
@@ -73,7 +75,7 @@ Only include this section if the avg_time_seconds is notably high (>110 seconds 
 **4. What to Focus on Next**
 One specific recommendation for the next study session. Name the exact subtopic to target, the difficulty level to work at, and why. Do not give generic advice.
 
-Maximum 350 words total. Use plain text formatting (no markdown bold, no bullet symbols beyond dashes).`;
+Maximum 350 words total. Use plain text formatting (no markdown bold, no bullet symbols beyond a plain hyphen).`;
 }
 
 export function buildWeeklyPrompt(metrics: ReportMetrics): string {
@@ -128,7 +130,7 @@ export function buildWeeklyPrompt(metrics: ReportMetrics): string {
 
 Write a weekly MCAT performance report using ONLY the data below. Do not invent numbers. Do not use motivational language. Write like a coach, not a cheerleader.
 
-${metrics.total_questions < 10 ? 'NOTE: Fewer than 10 questions were answered this week — data is limited.\n' : ''}
+${metrics.total_questions < 10 ? 'NOTE: Fewer than 10 questions were answered this week. Data is limited.\n' : ''}
 
 Performance data (JSON):
 ${JSON.stringify(safeMetrics, null, 2)}
@@ -148,7 +150,7 @@ List ALL subtopics with status "Struggling" or "Critical". For each, include: su
 Comment on the average time per question. If avg_time_seconds > 110, flag it as a pacing issue. If < 45, flag potential rushing. Otherwise note timing is acceptable. Comment on consistency (days_studied vs 7 days in the week).
 
 **5. Study Plan for Next Week**
-3–5 bullet points. Each bullet must name a specific subtopic from the data, the difficulty level to target (easy/medium/hard), and a brief rationale. Prioritize the highest-priority struggling topics. Do not give generic advice.
+3 to 5 bullet points. Each bullet must name a specific subtopic from the data, the difficulty level to target (easy/medium/hard), and a brief rationale. Prioritize the highest-priority struggling topics. Do not give generic advice.
 
-Maximum 500 words total. Use plain text formatting (no markdown bold, use dashes for bullets).`;
+Maximum 500 words total. Use plain text formatting (no markdown bold, use a plain hyphen for bullets).`;
 }

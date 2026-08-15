@@ -13,7 +13,7 @@ export const SITE_NAME = "Praxist Prep";
 export const SITE_TAGLINE = "Mentor-Led MCAT Prep";
 
 /** Default homepage title — used when no page-specific title is set. */
-export const DEFAULT_TITLE = `${SITE_NAME} — ${SITE_TAGLINE}`;
+export const DEFAULT_TITLE = `${SITE_NAME}: ${SITE_TAGLINE}`;
 
 /**
  * Default meta description. ~155 chars (Google typically truncates around 160).
