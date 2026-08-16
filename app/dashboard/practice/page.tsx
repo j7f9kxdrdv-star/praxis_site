@@ -34,10 +34,50 @@ const DIFFICULTY_OPTIONS = [
 interface QuestionRow {
   id: string;
   section: string;
+  discipline: string | null;
   topic: string | null;
   subtopic: string;
   difficulty: string;
   passage_id: string | null;
+}
+
+/*
+ * Browsing happens by SUBJECT, not by MCAT section. "Biology & Biochemistry"
+ * is one exam section but two subjects, and lumping 2,000 questions under it
+ * is not a browse. The custom-session builder still works in exam sections,
+ * because that is how the real test is organised.
+ *
+ * The list is derived from the data, so a subject appears the moment its first
+ * question lands. This map only supplies the display order and a human label;
+ * anything unlisted still shows, sorted after these, with a prettified name.
+ */
+const SUBJECT_LABELS: Record<string, string> = {
+  biology: "Biology",
+  biochemistry: "Biochemistry",
+  "general-chemistry": "General Chemistry",
+  "organic-chemistry": "Organic Chemistry",
+  physics: "Physics",
+  psychology: "Psychology",
+  sociology: "Sociology",
+  other: "Other",
+};
+
+const SUBJECT_ORDER = [
+  "biology",
+  "biochemistry",
+  "general-chemistry",
+  "organic-chemistry",
+  "physics",
+  "psychology",
+  "sociology",
+  "other",
+];
+
+function subjectLabel(id: string) {
+  return (
+    SUBJECT_LABELS[id] ||
+    id.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+  );
 }
 
 /* ─────────────── Page ─────────────── */
@@ -86,7 +126,7 @@ export default function PracticeHub() {
       for (let from = 0; ; from += PAGE) {
         const { data, error } = await supabase
           .from("questions")
-          .select("id, section, topic, subtopic, difficulty, passage_id")
+          .select("id, section, discipline, topic, subtopic, difficulty, passage_id")
           // Stable sort is REQUIRED for correct pagination; without it pages
           // can overlap or skip, mis-stating the question totals per section.
           .order("id", { ascending: true })
@@ -202,13 +242,50 @@ export default function PracticeHub() {
     };
   }
 
-  function topicsInSection(sectionId: string) {
+  /* ─────────────── Subject roll-up ─────────────── */
+
+  // Every subject that actually has questions, in SUBJECT_ORDER then A-Z.
+  // Derived from the data so a new subject needs no code change, and an empty
+  // one (Physics today) simply does not render.
+  const subjects = (() => {
+    const seen = new Set<string>();
+    standalone.forEach((q) => seen.add(q.discipline || "other"));
+    return Array.from(seen).sort((a, b) => {
+      const ia = SUBJECT_ORDER.indexOf(a);
+      const ib = SUBJECT_ORDER.indexOf(b);
+      if (ia !== -1 && ib !== -1) return ia - ib;
+      if (ia !== -1) return -1;
+      if (ib !== -1) return 1;
+      return a.localeCompare(b);
+    });
+  })();
+
+  function subjectStats(subjectId: string) {
+    const qs = standalone.filter((q) => (q.discipline || "other") === subjectId);
+    let attempted = 0;
+    let correct = 0;
+    qs.forEach((q) => {
+      const ic = latestCorrect.get(q.id);
+      if (ic === undefined) return;
+      attempted++;
+      if (ic) correct++;
+    });
+    return {
+      total: qs.length,
+      attempted,
+      correct,
+      incorrect: attempted - correct,
+      unseen: qs.length - attempted,
+    };
+  }
+
+  function topicsInSubject(subjectId: string) {
     const map = new Map<
       string,
       { total: number; attempted: number; correct: number }
     >();
     standalone
-      .filter((q) => q.section === sectionId)
+      .filter((q) => (q.discipline || "other") === subjectId)
       .forEach((q) => {
         const key = q.topic || "General";
         const entry = map.get(key) || { total: 0, attempted: 0, correct: 0 };
@@ -338,14 +415,14 @@ export default function PracticeHub() {
     await createSession(unique, "weak_areas", "flagged");
   }
 
-  async function startSectionSession(sectionId: string) {
+  async function startSubjectSession(subjectId: string) {
     setLoading(true);
     const pool = standalone
-      .filter((q) => q.section === sectionId)
+      .filter((q) => (q.discipline || "other") === subjectId)
       .filter((q) => latestCorrect.get(q.id) === undefined);
     if (pool.length === 0) {
       setLoading(false);
-      alert("You've seen every question in this section. Build a custom session to re-practice.");
+      alert("You've seen every question in this subject. Build a custom session to re-practice.");
       return;
     }
     const shuffled = [...pool].sort(() => Math.random() - 0.5);
@@ -355,12 +432,13 @@ export default function PracticeHub() {
     );
   }
 
-  async function startTopicSession(sectionId: string, topicName: string) {
+  async function startTopicSession(subjectId: string, topicName: string) {
     setLoading(true);
     const pool = standalone
       .filter(
         (q) =>
-          q.section === sectionId && (q.topic || "General") === topicName
+          (q.discipline || "other") === subjectId &&
+          (q.topic || "General") === topicName
       )
       .filter((q) => latestCorrect.get(q.id) === undefined);
     if (pool.length === 0) {
@@ -918,21 +996,24 @@ export default function PracticeHub() {
           </div>
         )}
 
-        {/* ─────────── BROWSE BY SECTION ─────────── */}
+        {/* ─────────── BROWSE BY SUBJECT ─────────── */}
         {!noQuestions && (
           <div className="mb-8">
             <SectionHeader
-              label="Browse by Section"
+              label="Browse by Subject"
               subtitle={
                 dataLoaded
-                  ? `${SECTIONS.length} MCAT sections · ${totalCount} questions`
+                  ? `${subjects.length} subject${
+                      subjects.length === 1 ? "" : "s"
+                    } · ${totalCount} questions`
                   : "Loading library…"
               }
             />
 
             <div className="space-y-3">
-              {SECTIONS.map((section) => {
-                const stats = sectionStats(section.id);
+              {subjects.map((subjectId) => {
+                const section = { id: subjectId, label: subjectLabel(subjectId) };
+                const stats = subjectStats(subjectId);
                 if (dataLoaded && stats.total === 0) return null;
 
                 const isExpanded = expandedSection === section.id;
@@ -1024,7 +1105,7 @@ export default function PracticeHub() {
                       <div className="mt-2 ml-4 space-y-1">
                         {/* "All of section" row */}
                         <button
-                          onClick={() => startSectionSession(section.id)}
+                          onClick={() => startSubjectSession(section.id)}
                           disabled={loading || stats.unseen === 0}
                           className="w-full text-left block px-4 py-3 transition-colors disabled:opacity-60"
                           style={{
@@ -1057,7 +1138,7 @@ export default function PracticeHub() {
                           </div>
                         </button>
 
-                        {topicsInSection(section.id).map((t) => (
+                        {topicsInSubject(section.id).map((t) => (
                           <TopicCard
                             key={t.name}
                             topic={t}
