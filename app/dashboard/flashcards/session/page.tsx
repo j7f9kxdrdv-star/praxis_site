@@ -9,7 +9,8 @@ import { renderClozeSegments } from "@/lib/flashcards/cloze";
 import { nextSchedule, previewLabel, EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
 import { DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
-import { creditStudyDay } from "@/lib/flashcards/activity";
+import { submitReview, type ReviewSource, type SubmittedReview } from "@/lib/flashcards/submitReview";
+import { setCardFlag } from "@/lib/flashcards/cardFlags";
 import StudySurface from "@/components/flashcards/StudySurface";
 import RotateGate from "@/components/flashcards/RotateGate";
 
@@ -102,6 +103,9 @@ function SessionInner() {
   const [sessionStart] = useState(() => Date.now());
   const [now, setNow] = useState(() => Date.now());
   const [done, setDone] = useState(false);
+  // A failed save is shown, never swallowed. The previous write path ignored
+  // errors entirely, so a student could grade a card and lose it silently.
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // When the queue loads empty in "due" mode, we want to explain why so
   // the user doesn't see a generic blank screen. Two distinct causes:
@@ -307,65 +311,31 @@ function SessionInner() {
     // whichever request won the race.
     const attemptId = crypto.randomUUID();
 
-    const prevInterval = current.state?.interval_days ?? 0;
-    const reps = current.state?.reps ?? 0;
-    const lapses = current.state?.lapses ?? 0;
-    const prevEase = current.state?.ease_factor ?? EASE_DEFAULT;
-    const sched = nextSchedule({
-      rating,
-      intervalDays: prevInterval,
-      easeFactor: prevEase,
-      reps,
-      lapses,
-      lastRating: (current.state?.last_rating as Rating | null | undefined) ?? null,
-    });
+    // The schedule is computed and written SERVER-SIDE now (V3 PR2). The two
+    // unchecked client writes this replaces could half-succeed, which is how
+    // 204 card-blanks ended up with a schedule that disagrees with their own
+    // review log. The server also credits the study day in the same
+    // transaction, so the streak can no longer drift from the reviews.
+    const source: ReviewSource =
+      mode === "due" ? "daily_review" : mode === "starred" ? "starred" : "extra_study";
 
-    await supabase.from("flashcard_user_state").upsert(
-      {
-        user_id: user.id,
-        flashcard_id: current.card.id,
-        cloze_index: current.clozeIndex,
-        starred: current.state?.starred ?? false,
-        suspended: false,
-        interval_days: sched.intervalDays,
-        ease_factor: sched.easeFactor,
-        reps: sched.reps,
-        lapses: sched.lapses,
-        last_rating: rating,
-        last_reviewed_at: new Date().toISOString(),
-        next_review_at: sched.nextReviewAt.toISOString(),
-      },
-      { onConflict: "user_id,flashcard_id,cloze_index" },
-    );
-
-    // Provenance and idempotency (V3 PR1).
-    //   source            — which surface produced the attempt. Every source
-    //                       updates the SAME memory state; this only exists so
-    //                       Daily Review capacity and analytics can tell them
-    //                       apart. "due" is the recommended queue; cram and
-    //                       starred are Extra Study.
-    //   is_first_exposure — recorded, not inferred. The old inference from
-    //                       prev_interval_days === 0 was wrong on 518 rows.
-    //   client_request_id — a stable id for THIS grading action. A retry or a
-    //                       double-tap reuses it and the unique index turns the
-    //                       second write into a no-op, instead of recording two
-    //                       different grades and letting network timing pick.
-    await supabase.from("flashcard_reviews").insert({
-      user_id: user.id,
-      flashcard_id: current.card.id,
-      cloze_index: current.clozeIndex,
-      rating,
-      prev_interval_days: prevInterval,
-      new_interval_days: sched.intervalDays,
-      source: mode === "due" ? "daily_review" : mode === "starred" ? "starred" : "extra_study",
-      is_first_exposure: !current.state,
-      client_request_id: attemptId,
-    });
-
-    // Studying flashcards counts as studying. Until now only lessons and
-    // practice questions credited the streak, so a student doing 600 cards a
-    // day still saw "Start a streak today".
-    await creditStudyDay(user.id, profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR);
+    let sched: SubmittedReview;
+    try {
+      sched = await submitReview({
+        flashcardId: current.card.id,
+        clozeIndex: current.clozeIndex,
+        rating,
+        source,
+        clientRequestId: attemptId,
+      });
+    } catch (e) {
+      // Surfaced rather than swallowed. The old path ignored write failures
+      // entirely, so a student could grade a card and have nothing saved.
+      setSaveError(e instanceof Error ? e.message : "Could not save that review.");
+      setSubmitting(false);
+      return;
+    }
+    setSaveError(null);
 
     // Count each unique card once. "Done" = cards that reached a passing grade;
     // an "Again" re-queues the same card but never re-counts it. First-try
@@ -398,7 +368,7 @@ function SessionInner() {
         ease_factor: sched.easeFactor,
         reps: sched.reps,
         lapses: sched.lapses,
-        next_review_at: sched.nextReviewAt.toISOString(),
+        next_review_at: sched.nextReviewAt,
         last_rating: rating,
         last_reviewed_at: new Date().toISOString(),
       };
@@ -419,23 +389,9 @@ function SessionInner() {
   async function toggleStar() {
     if (!current) return;
     const newStarred = !(current.state?.starred ?? false);
-    await supabase.from("flashcard_user_state").upsert(
-      {
-        user_id: user.id,
-        flashcard_id: current.card.id,
-        cloze_index: current.clozeIndex,
-        starred: newStarred,
-        suspended: current.state?.suspended ?? false,
-        interval_days: current.state?.interval_days ?? 0,
-        ease_factor: current.state?.ease_factor ?? 2.5,
-        reps: current.state?.reps ?? 0,
-        lapses: current.state?.lapses ?? 0,
-        last_rating: current.state?.last_rating ?? null,
-        last_reviewed_at: current.state?.last_reviewed_at ?? null,
-        next_review_at: current.state?.next_review_at ?? new Date().toISOString(),
-      },
-      { onConflict: "user_id,flashcard_id,cloze_index" },
-    );
+    await setCardFlag(user.id, current.card.id, current.clozeIndex, {
+      starred: newStarred,
+    });
     setQueue((q) =>
       q.map((item, i) =>
         i === index
@@ -447,23 +403,9 @@ function SessionInner() {
 
   async function suspendCard() {
     if (!current) return;
-    await supabase.from("flashcard_user_state").upsert(
-      {
-        user_id: user.id,
-        flashcard_id: current.card.id,
-        cloze_index: current.clozeIndex,
-        starred: current.state?.starred ?? false,
-        suspended: true,
-        interval_days: current.state?.interval_days ?? 0,
-        ease_factor: current.state?.ease_factor ?? 2.5,
-        reps: current.state?.reps ?? 0,
-        lapses: current.state?.lapses ?? 0,
-        last_rating: current.state?.last_rating ?? null,
-        last_reviewed_at: current.state?.last_reviewed_at ?? null,
-        next_review_at: current.state?.next_review_at ?? new Date().toISOString(),
-      },
-      { onConflict: "user_id,flashcard_id,cloze_index" },
-    );
+    await setCardFlag(user.id, current.card.id, current.clozeIndex, {
+      suspended: true,
+    });
     advance();
   }
 
@@ -617,6 +559,15 @@ function SessionInner() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 lg:gap-10">
 
           {/* ═══════════ LEFT — card workspace (landscape-first) ═══════════ */}
+          {saveError && (
+            <div
+              role="alert"
+              className="fixed top-3 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-lg text-[13px] font-medium shadow-sm"
+              style={{ background: "#7a2618", color: "#FBF8F2", maxWidth: "min(92vw, 460px)" }}
+            >
+              {saveError} Your last answer was not saved. Check your connection and grade it again.
+            </div>
+          )}
           <StudySurface
             exitHref="/dashboard/flashcards"
             starred={starred}

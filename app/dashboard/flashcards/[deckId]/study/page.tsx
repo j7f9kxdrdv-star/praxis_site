@@ -9,7 +9,8 @@ import { renderClozeSegments } from "@/lib/flashcards/cloze";
 import { nextSchedule, previewLabel, EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
 import { DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
-import { creditStudyDay } from "@/lib/flashcards/activity";
+import { submitReview, type ReviewSource, type SubmittedReview } from "@/lib/flashcards/submitReview";
+import { setCardFlag } from "@/lib/flashcards/cardFlags";
 import StudySurface from "@/components/flashcards/StudySurface";
 import RotateGate from "@/components/flashcards/RotateGate";
 
@@ -103,6 +104,7 @@ export default function StudyPage() {
   // True when the deck has due cards but today's daily new/review quota trimmed
   // them all away — so the empty state can explain the cap, not imply it's done.
   const [cappedOut, setCappedOut] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Tick the elapsed clock once per second
   useEffect(() => {
@@ -240,57 +242,26 @@ export default function StudyPage() {
     // action so a retried or double-tapped submit records once, not twice.
     const attemptId = crypto.randomUUID();
 
-    const prevInterval = current.state?.interval_days ?? 0;
-    const reps = current.state?.reps ?? 0;
-    const lapses = current.state?.lapses ?? 0;
-    const prevEase = current.state?.ease_factor ?? EASE_DEFAULT;
-    const sched = nextSchedule({
-      rating,
-      intervalDays: prevInterval,
-      easeFactor: prevEase,
-      reps,
-      lapses,
-      lastRating: (current.state?.last_rating as Rating | null | undefined) ?? null,
-    });
+    // Server-side write path (V3 PR2). Replaces two unchecked client writes
+    // that could half-succeed and leave the schedule disagreeing with the log.
+    const source: ReviewSource =
+      filter === "due" ? "daily_review" : filter === "starred" ? "starred" : "deck_all";
 
-    // Upsert state
-    await supabase.from("flashcard_user_state").upsert(
-      {
-        user_id: user.id,
-        flashcard_id: current.card.id,
-        cloze_index: current.clozeIndex,
-        starred: current.state?.starred ?? false,
-        suspended: false,
-        interval_days: sched.intervalDays,
-        ease_factor: sched.easeFactor,
-        reps: sched.reps,
-        lapses: sched.lapses,
-        last_rating: rating,
-        last_reviewed_at: new Date().toISOString(),
-        next_review_at: sched.nextReviewAt.toISOString(),
-      },
-      { onConflict: "user_id,flashcard_id,cloze_index" },
-    );
-
-    // Append review log. "due" is the recommended Daily Review queue; the
-    // "all" and "starred" filters are Extra Study, and are recorded as such so
-    // they can stop silently spending Daily Review capacity (PR4).
-    await supabase.from("flashcard_reviews").insert({
-      user_id: user.id,
-      flashcard_id: current.card.id,
-      cloze_index: current.clozeIndex,
-      rating,
-      prev_interval_days: prevInterval,
-      new_interval_days: sched.intervalDays,
-      source: filter === "due" ? "daily_review" : filter === "starred" ? "starred" : "deck_all",
-      is_first_exposure: !current.state,
-      client_request_id: attemptId,
-    });
-
-    // Studying flashcards counts as studying. Until now only lessons and
-    // practice questions credited the streak, so a student doing 600 cards a
-    // day still saw "Start a streak today".
-    await creditStudyDay(user.id, profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR);
+    let sched: SubmittedReview;
+    try {
+      sched = await submitReview({
+        flashcardId: current.card.id,
+        clozeIndex: current.clozeIndex,
+        rating,
+        source,
+        clientRequestId: attemptId,
+      });
+    } catch (e) {
+      setSaveError(e instanceof Error ? e.message : "Could not save that review.");
+      setSubmitting(false);
+      return;
+    }
+    setSaveError(null);
 
     // Count each unique card once. "Done" = cards that reached a passing grade;
     // an "Again" re-queues the same card but never re-counts it. First-try
@@ -323,7 +294,7 @@ export default function StudyPage() {
         ease_factor: sched.easeFactor,
         reps: sched.reps,
         lapses: sched.lapses,
-        next_review_at: sched.nextReviewAt.toISOString(),
+        next_review_at: sched.nextReviewAt,
         last_rating: rating,
         last_reviewed_at: new Date().toISOString(),
       };
@@ -344,23 +315,9 @@ export default function StudyPage() {
   async function toggleStar() {
     if (!current) return;
     const newStarred = !(current.state?.starred ?? false);
-    await supabase.from("flashcard_user_state").upsert(
-      {
-        user_id: user.id,
-        flashcard_id: current.card.id,
-        cloze_index: current.clozeIndex,
-        starred: newStarred,
-        suspended: current.state?.suspended ?? false,
-        interval_days: current.state?.interval_days ?? 0,
-        ease_factor: current.state?.ease_factor ?? 2.5,
-        reps: current.state?.reps ?? 0,
-        lapses: current.state?.lapses ?? 0,
-        last_rating: current.state?.last_rating ?? null,
-        last_reviewed_at: current.state?.last_reviewed_at ?? null,
-        next_review_at: current.state?.next_review_at ?? new Date().toISOString(),
-      },
-      { onConflict: "user_id,flashcard_id,cloze_index" },
-    );
+    await setCardFlag(user.id, current.card.id, current.clozeIndex, {
+      starred: newStarred,
+    });
     // Optimistic update
     setQueue((q) =>
       q.map((item, i) =>
@@ -376,23 +333,9 @@ export default function StudyPage() {
 
   async function suspendCard() {
     if (!current) return;
-    await supabase.from("flashcard_user_state").upsert(
-      {
-        user_id: user.id,
-        flashcard_id: current.card.id,
-        cloze_index: current.clozeIndex,
-        starred: current.state?.starred ?? false,
-        suspended: true,
-        interval_days: current.state?.interval_days ?? 0,
-        ease_factor: current.state?.ease_factor ?? 2.5,
-        reps: current.state?.reps ?? 0,
-        lapses: current.state?.lapses ?? 0,
-        last_rating: current.state?.last_rating ?? null,
-        last_reviewed_at: current.state?.last_reviewed_at ?? null,
-        next_review_at: current.state?.next_review_at ?? new Date().toISOString(),
-      },
-      { onConflict: "user_id,flashcard_id,cloze_index" },
-    );
+    await setCardFlag(user.id, current.card.id, current.clozeIndex, {
+      suspended: true,
+    });
     advance();
   }
 
@@ -524,6 +467,15 @@ export default function StudyPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 lg:gap-10">
 
           {/* ═══════════ LEFT — card workspace (landscape-first) ═══════════ */}
+          {saveError && (
+            <div
+              role="alert"
+              className="fixed top-3 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-lg text-[13px] font-medium shadow-sm"
+              style={{ background: "#7a2618", color: "#FBF8F2", maxWidth: "min(92vw, 460px)" }}
+            >
+              {saveError} Your last answer was not saved. Check your connection and grade it again.
+            </div>
+          )}
           <StudySurface
             exitHref={`/dashboard/flashcards/${params.deckId}`}
             starred={starred}
