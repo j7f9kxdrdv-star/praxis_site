@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
+import { DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
 import {
   PageHeader,
   ActiveNowPill,
@@ -201,7 +202,10 @@ export default function FlashcardsHub() {
       // Count today's study log so the projected session size matches the
       // running quota the session loader actually applies (shared helper).
       const { newToday: newDoneToday, reviewsToday: reviewsDoneToday } =
-        await countTodaysReviews(user.id);
+        await countTodaysReviews(
+          user.id,
+          profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR,
+        );
 
       const enriched: Deck[] = deckRows.map((d) => {
         const urgent = urgentByDeck.get(d.id) || 0;

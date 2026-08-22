@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
+import { DEFAULT_DAY_START_HOUR, studyDayKeyOffset } from "@/lib/flashcards/studyDay";
 import MolecularBg from "@/components/dashboard/MolecularBg";
 
 /* ---------------------------------------------------------------------- */
@@ -484,16 +485,15 @@ export default function DashboardHome() {
       const precisionDelta =
         thisWeekAcc !== null && lastWeekAcc !== null ? thisWeekAcc - lastWeekAcc : 0;
 
-      // Streak
+      // Streak. Walk back through study days (4am boundary), not calendar
+      // midnights, so it agrees with the day each activity row was written
+      // under. Comparing date STRINGS avoids the timezone conversion that
+      // made an evening session look like tomorrow's activity.
       let streak = 0;
       if (activity && activity.length > 0) {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const dayStart = profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR;
         for (let i = 0; i < activity.length; i++) {
-          const actDate = new Date(activity[i].activity_date + "T00:00:00");
-          const expected = new Date(today);
-          expected.setDate(expected.getDate() - i);
-          if (actDate.getTime() === expected.getTime()) streak++;
+          if (activity[i].activity_date === studyDayKeyOffset(i, new Date(), dayStart)) streak++;
           else break;
         }
       }

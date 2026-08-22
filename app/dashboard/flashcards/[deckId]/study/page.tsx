@@ -8,6 +8,8 @@ import { supabase } from "@/lib/supabase";
 import { renderClozeSegments } from "@/lib/flashcards/cloze";
 import { nextSchedule, previewLabel, EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
+import { DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
+import { creditStudyDay } from "@/lib/flashcards/activity";
 import StudySurface from "@/components/flashcards/StudySurface";
 import RotateGate from "@/components/flashcards/RotateGate";
 
@@ -184,7 +186,10 @@ export default function StudyPage() {
         // already studied today so a single deck can't exceed the day's quota.
         const newLimit = profile?.daily_new_card_limit ?? 25;
         const reviewLimit = profile?.daily_review_limit ?? 150;
-        const { newToday, reviewsToday } = await countTodaysReviews(user.id);
+        const { newToday, reviewsToday } = await countTodaysReviews(
+          user.id,
+          profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR,
+        );
         const newQuota = Math.max(0, newLimit - newToday);
         const reviewQuota = Math.max(0, reviewLimit - reviewsToday);
         items = [
@@ -231,6 +236,10 @@ export default function StudyPage() {
     if (!current || submitting) return;
     setSubmitting(true);
 
+    // See the cross-deck session for why this exists: one id per grading
+    // action so a retried or double-tapped submit records once, not twice.
+    const attemptId = crypto.randomUUID();
+
     const prevInterval = current.state?.interval_days ?? 0;
     const reps = current.state?.reps ?? 0;
     const lapses = current.state?.lapses ?? 0;
@@ -263,7 +272,9 @@ export default function StudyPage() {
       { onConflict: "user_id,flashcard_id,cloze_index" },
     );
 
-    // Append review log
+    // Append review log. "due" is the recommended Daily Review queue; the
+    // "all" and "starred" filters are Extra Study, and are recorded as such so
+    // they can stop silently spending Daily Review capacity (PR4).
     await supabase.from("flashcard_reviews").insert({
       user_id: user.id,
       flashcard_id: current.card.id,
@@ -271,7 +282,15 @@ export default function StudyPage() {
       rating,
       prev_interval_days: prevInterval,
       new_interval_days: sched.intervalDays,
+      source: filter === "due" ? "daily_review" : filter === "starred" ? "starred" : "deck_all",
+      is_first_exposure: !current.state,
+      client_request_id: attemptId,
     });
+
+    // Studying flashcards counts as studying. Until now only lessons and
+    // practice questions credited the streak, so a student doing 600 cards a
+    // day still saw "Start a streak today".
+    await creditStudyDay(user.id, profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR);
 
     // Count each unique card once. "Done" = cards that reached a passing grade;
     // an "Again" re-queues the same card but never re-counts it. First-try

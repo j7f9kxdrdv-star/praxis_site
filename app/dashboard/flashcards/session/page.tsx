@@ -8,6 +8,8 @@ import { supabase } from "@/lib/supabase";
 import { renderClozeSegments } from "@/lib/flashcards/cloze";
 import { nextSchedule, previewLabel, EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
+import { DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
+import { creditStudyDay } from "@/lib/flashcards/activity";
 import StudySurface from "@/components/flashcards/StudySurface";
 import RotateGate from "@/components/flashcards/RotateGate";
 
@@ -229,7 +231,10 @@ function SessionInner() {
         // doesn't blow past the cap.
         const newLimit = profile?.daily_new_card_limit ?? 25;
         const reviewLimit = profile?.daily_review_limit ?? 150;
-        const { newToday, reviewsToday } = await countTodaysReviews(user.id);
+        const { newToday, reviewsToday } = await countTodaysReviews(
+          user.id,
+          profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR,
+        );
         // Both categories are throttled per day per the user's settings,
         // subtracting whatever they've already studied today so a second
         // session in the same day doesn't blow past either cap.
@@ -294,6 +299,14 @@ function SessionInner() {
     if (!current || submitting) return;
     setSubmitting(true);
 
+    // One id per grading action, generated before any write. If this submit is
+    // retried the id is reused, so the unique index on
+    // (user_id, client_request_id) collapses the duplicate. Twelve pairs of
+    // reviews landed under a second apart in production, two of them carrying
+    // DIFFERENT grades, which meant the grade a card kept was decided by
+    // whichever request won the race.
+    const attemptId = crypto.randomUUID();
+
     const prevInterval = current.state?.interval_days ?? 0;
     const reps = current.state?.reps ?? 0;
     const lapses = current.state?.lapses ?? 0;
@@ -325,6 +338,18 @@ function SessionInner() {
       { onConflict: "user_id,flashcard_id,cloze_index" },
     );
 
+    // Provenance and idempotency (V3 PR1).
+    //   source            — which surface produced the attempt. Every source
+    //                       updates the SAME memory state; this only exists so
+    //                       Daily Review capacity and analytics can tell them
+    //                       apart. "due" is the recommended queue; cram and
+    //                       starred are Extra Study.
+    //   is_first_exposure — recorded, not inferred. The old inference from
+    //                       prev_interval_days === 0 was wrong on 518 rows.
+    //   client_request_id — a stable id for THIS grading action. A retry or a
+    //                       double-tap reuses it and the unique index turns the
+    //                       second write into a no-op, instead of recording two
+    //                       different grades and letting network timing pick.
     await supabase.from("flashcard_reviews").insert({
       user_id: user.id,
       flashcard_id: current.card.id,
@@ -332,7 +357,15 @@ function SessionInner() {
       rating,
       prev_interval_days: prevInterval,
       new_interval_days: sched.intervalDays,
+      source: mode === "due" ? "daily_review" : mode === "starred" ? "starred" : "extra_study",
+      is_first_exposure: !current.state,
+      client_request_id: attemptId,
     });
+
+    // Studying flashcards counts as studying. Until now only lessons and
+    // practice questions credited the streak, so a student doing 600 cards a
+    // day still saw "Start a streak today".
+    await creditStudyDay(user.id, profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR);
 
     // Count each unique card once. "Done" = cards that reached a passing grade;
     // an "Again" re-queues the same card but never re-counts it. First-try

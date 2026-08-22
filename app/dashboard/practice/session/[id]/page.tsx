@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
+import { creditStudyDay } from "@/lib/flashcards/activity";
+import { DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
 import MathText from "@/components/MathText";
 import QuestionFigure from "@/components/QuestionFigure";
 
@@ -39,7 +41,7 @@ const C_ACCENT = "#1670b8";
 export default function PracticeSession() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useDashboard();
+  const { user, profile } = useDashboard();
   const sessionId = params.id as string;
 
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -264,25 +266,9 @@ export default function PracticeSession() {
 
     // Credit today's activity as soon as a question is answered. The streak is
     // "days you studied," so it should count even if the set isn't finished.
-    const today = new Date().toISOString().split("T")[0];
-    const { data: todayActivity } = await supabase
-      .from("daily_activity")
-      .select("id, questions_completed")
-      .eq("user_id", user.id)
-      .eq("activity_date", today)
-      .maybeSingle();
-    if (todayActivity) {
-      await supabase
-        .from("daily_activity")
-        .update({ questions_completed: (todayActivity.questions_completed || 0) + 1 })
-        .eq("id", todayActivity.id);
-    } else {
-      await supabase.from("daily_activity").insert({
-        user_id: user.id,
-        activity_date: today,
-        questions_completed: 1,
-      });
-    }
+    // Was crediting the UTC date, so an evening session in US Eastern landed
+    // on tomorrow and could break a streak the student had genuinely earned.
+    await creditStudyDay(user.id, profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR);
 
     if (!isCorrect) {
       // Missed → (re)schedule it for Smart Review (due tomorrow).

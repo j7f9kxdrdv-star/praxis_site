@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { detectTimezone } from "@/lib/flashcards/studyDay";
 import type { User } from "@supabase/supabase-js";
 import Sidebar from "./Sidebar";
 import BottomTabs from "./BottomTabs";
@@ -21,6 +22,11 @@ interface Profile {
   daily_new_card_limit: number;
   daily_review_limit: number;
   weekly_question_goal: number | null;
+  /** IANA name. Null until the browser has reported one. */
+  timezone: string | null;
+  /** Local hour the study day rolls over. 4 by default, so a session running
+   *  past midnight stays on one study day. */
+  day_start_hour: number;
 }
 
 interface DashboardContext {
@@ -56,6 +62,17 @@ export default function DashboardShell({
       .eq("id", userId)
       .single();
     setProfile(data);
+
+    // Record the browser's timezone once. PR2 moves scheduling to the server,
+    // which cannot ask the client what day it is — so the profile has to carry
+    // it. Written only when it is missing or has actually changed (a student
+    // who travels), so this is not a write on every page load.
+    if (data) {
+      const tz = detectTimezone();
+      if (tz && data.timezone !== tz) {
+        await supabase.from("profiles").update({ timezone: tz }).eq("id", userId);
+      }
+    }
   }
 
   useEffect(() => {
