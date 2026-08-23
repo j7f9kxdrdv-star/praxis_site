@@ -572,7 +572,8 @@ export default function FlashcardsHub() {
                       </strong>
                       , so this session serves the {projectedNew} new and{" "}
                       {projectedReview} review card
-                      {projectedReview === 1 ? "" : "s"} you have left. These count
+                      {projectedReview === 1 ? "" : "s"}{" "}
+                      you have left. These count
                       CARDS, not taps: a card you answer again after &ldquo;Again&rdquo;
                       is still one card.{" "}
                       {extraStudyAttemptsToday > 0 ? (
@@ -819,7 +820,7 @@ export default function FlashcardsHub() {
                     lineHeight: 1.5,
                   }}
                 >
-                  Random shuffle through every card. Useful right before an exam.
+                  Study beyond today&rsquo;s recommendation. These reviews count the same.
                 </p>
               </div>
               {totalItems > 0 && (
