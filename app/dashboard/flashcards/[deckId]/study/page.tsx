@@ -400,7 +400,7 @@ export default function StudyPage() {
         </p>
         <p className="text-as-outline text-sm mb-6">
           {cappedOut
-            ? "You've reached today's limit on new cards and reviews. More unlock tomorrow, or use Cram to keep going now."
+            ? "That's today's recommended work done. More unlocks tomorrow, or use Extra Study to keep going now without spending tomorrow's allowance."
             : filter === "due"
             ? "No cards are due in this deck right now."
             : filter === "starred"

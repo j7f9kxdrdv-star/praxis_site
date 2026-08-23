@@ -14,7 +14,7 @@ import { setCardFlag } from "@/lib/flashcards/cardFlags";
 import StudySurface from "@/components/flashcards/StudySurface";
 import RotateGate from "@/components/flashcards/RotateGate";
 
-// Cross-deck session: due | starred | cram
+// Cross-deck session: due | starred | extra_study
 // Mirrors the per-deck study page but loads cards from EVERY deck the user has access to.
 
 interface Card {
@@ -48,24 +48,27 @@ interface ReviewItem {
   state: UserState | null;
 }
 
-type Mode = "due" | "starred" | "cram";
+// "cram" is kept only as a legacy URL alias. The concept is Extra Study: the
+// student choosing to work beyond today's recommendation. It is not lower
+// quality practice, and since PR4 it no longer spends Daily Review capacity.
+type Mode = "due" | "starred" | "extra_study";
 
 const MODE_TITLES: Record<Mode, string> = {
-  due: "Due Review",
+  due: "Daily Review",
   starred: "Starred Cards",
-  cram: "Cram Mode",
+  extra_study: "Extra Study",
 };
 
 const MODE_EMPTY: Record<Mode, string> = {
   due: "Nothing is due across your library right now.",
   starred: "You haven't starred any cards yet. Tap the star while studying to add some.",
-  cram: "No cards in your library yet.",
+  extra_study: "No cards in your library yet.",
 };
 
 const MODE_SUBTITLE: Record<Mode, string> = {
-  due: "All cards across every deck that need review now.",
+  due: "What Praxist recommends you study today.",
   starred: "Your bookmarked cards from across the library.",
-  cram: "Every card in your library, in random order.",
+  extra_study: "Study beyond today's recommendation. These reviews count the same.",
 };
 
 const RATING_DOT: Record<Rating, string> = {
@@ -83,8 +86,13 @@ function SessionInner() {
   const router = useRouter();
   const search = useSearchParams();
   const { user, profile } = useDashboard();
-  const rawMode = (search.get("mode") || "due") as Mode;
-  const mode: Mode = ["due", "starred", "cram"].includes(rawMode) ? rawMode : "due";
+  const rawMode = search.get("mode") || "due";
+  const mode: Mode =
+    rawMode === "cram" || rawMode === "extra_study"
+      ? "extra_study"
+      : rawMode === "starred"
+      ? "starred"
+      : "due";
 
   const [queue, setQueue] = useState<ReviewItem[]>([]);
   const [index, setIndex] = useState(0);
@@ -134,7 +142,7 @@ function SessionInner() {
       // Page through the ENTIRE card library. Without an explicit range,
       // PostgREST silently caps this at 1000 rows. Once the bank grew past
       // that, later decks were never fetched at all: their cards became
-      // invisible to Due/Cram sessions, so the "new" pool looked empty even
+      // invisible to Daily Review / Extra Study sessions, so the "new" pool looked empty even
       // with thousands of unseen cards remaining, and the session would
       // wrongly report "all caught up" the moment the review cap was hit.
       const cards: Card[] = [];
@@ -189,7 +197,7 @@ function SessionInner() {
 
       // Separate eligible items into "new" (never reviewed) and "review"
       // (seen and due) pools so we can apply the user's daily limits to
-      // each independently. Starred and cram modes skip these caps —
+      // each independently. Starred and Extra Study skip these caps:
       // they're user-initiated overrides.
       const newPool: ReviewItem[] = [];
       const reviewPool: ReviewItem[] = [];
@@ -219,7 +227,7 @@ function SessionInner() {
             });
             continue;
           }
-          // mode === "cram" → include everything (incl. unseen)
+          // mode === "extra_study" -> include everything (incl. unseen)
           (s ? reviewPool : newPool).push({
             card: c,
             clozeIndex: idx,
@@ -450,7 +458,7 @@ function SessionInner() {
 
   if (queue.length === 0) {
     // For "due" mode, give the user a contextual explanation + a way to
-    // unblock themselves. For starred/cram, fall back to the original
+    // unblock themselves. For starred / Extra Study, fall back to the original
     // generic empty message — those modes don't have daily caps applied.
     const isLimitReached = mode === "due" && emptyReason === "limit_reached";
     const isNothingDue = mode === "due" && emptyReason === "nothing_due";
@@ -468,11 +476,12 @@ function SessionInner() {
         <p className="text-as-outline text-sm mb-6 max-w-md mx-auto leading-relaxed">
           {isLimitReached && ctx ? (
             <>
-              You&apos;ve hit today&apos;s limits. That&apos;s <strong>{ctx.newToday}</strong> new
-              card{ctx.newToday === 1 ? "" : "s"} and <strong>{ctx.reviewsToday}</strong>{" "}
-              review{ctx.reviewsToday === 1 ? "" : "s"} studied. Spaced repetition works
-              best if you stop here, but nothing&apos;s stopping you. Cram mode ignores
-              the daily caps.
+              That&apos;s today&apos;s recommended work done: <strong>{ctx.newToday}</strong>{" "}
+              new card{ctx.newToday === 1 ? "" : "s"} and <strong>{ctx.reviewsToday}</strong>{" "}
+              review card{ctx.reviewsToday === 1 ? "" : "s"}. Spaced repetition works best
+              when you stop here and let the schedule do its job. If you want to keep
+              studying, Extra Study is there. It uses the same memory schedule and it
+              does not spend tomorrow&apos;s recommendation.
             </>
           ) : isNothingDue ? (
             <>
@@ -486,11 +495,13 @@ function SessionInner() {
         </p>
         <div className="flex flex-col sm:flex-row gap-2.5 justify-center max-w-md mx-auto">
           {(isLimitReached || isNothingDue) && (
+            // Secondary, not primary. Finishing the recommendation is the
+            // success state; Extra Study is a choice, not the next step.
             <Link
-              href="/dashboard/flashcards/session?mode=cram"
-              className="inline-block bg-as-primary text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-xl"
+              href="/dashboard/flashcards/session?mode=extra_study"
+              className="inline-block border-2 border-as-primary/40 text-as-primary text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-xl"
             >
-              Keep going
+              Extra Study
             </Link>
           )}
           <Link

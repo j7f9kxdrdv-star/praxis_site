@@ -247,7 +247,7 @@ export default function DeckDetailPage() {
           disabled={totalItems === 0}
           className="bg-as-surface-container-lowest rounded-xl border border-as-outline-variant/15 p-4 text-left hover:border-as-primary/30 transition-all disabled:opacity-50"
         >
-          <p className="text-[10px] font-bold uppercase tracking-widest text-as-outline mb-1">Cram Mode</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-as-outline mb-1">Extra Study</p>
           <p className="text-sm font-medium text-as-primary">All {totalItems} cards</p>
         </button>
       </div>

@@ -8,10 +8,16 @@ import { supabase } from "@/lib/supabase";
 import { DEFAULT_DAY_START_HOUR, startOfStudyDay } from "@/lib/flashcards/studyDay";
 
 export interface TodaysCounts {
-  /** Unique card-blanks introduced for the first time during this study day. */
+  /** Unique card-blanks introduced for the first time through Daily Review. */
   newToday: number;
-  /** Unique already-seen card-blanks studied during this study day. */
+  /** Unique already-seen card-blanks served through Daily Review today. */
   reviewsToday: number;
+  /** Every rating event today, both modes. Effort, not capacity. Never
+   *  subtract this from a limit: it is the number that made a 600-tap session
+   *  look like 330 to the student. */
+  attemptsToday: number;
+  /** Rating events that came from Extra Study. Reported, never charged. */
+  extraStudyAttemptsToday: number;
 }
 
 /**
@@ -29,7 +35,9 @@ export interface TodaysCounts {
  *
  * 1. The window is the study day (default 4am boundary), not local midnight,
  *    so a session running past midnight is one day's work rather than two.
- * 2. "New" now reads the RECORDED is_first_exposure flag instead of inferring
+ * 2. Extra Study no longer spends Daily Review capacity. A student who
+ *    finishes their recommended work and keeps going is not penalised for it.
+ * 3. "New" now reads the RECORDED is_first_exposure flag instead of inferring
  *    it from prev_interval_days === 0. That inference was wrong on 518 rows,
  *    each of which was billed against the daily NEW-card budget on a day it
  *    was really a review. The fallback below only fires for rows written
@@ -49,17 +57,33 @@ export async function countTodaysReviews(
   // We order by the row's unique `id` so pages don't skip or overlap.
   const newCards = new Set<string>();
   const seenCards = new Set<string>();
+  let attemptsToday = 0;
+  let extraStudyAttemptsToday = 0;
   const PAGE = 1000;
   for (let from = 0; ; from += PAGE) {
     const { data, error } = await supabase
       .from("flashcard_reviews")
-      .select("flashcard_id, cloze_index, prev_interval_days, is_first_exposure")
+      .select("flashcard_id, cloze_index, prev_interval_days, is_first_exposure, source")
       .eq("user_id", userId)
       .gte("reviewed_at", dayStart.toISOString())
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
     if (error || !data) break;
     for (const r of data) {
+      attemptsToday++;
+
+      // Only Daily Review spends Daily Review capacity. Extra Study updates
+      // the same memory state, but the student chose to do it beyond the
+      // recommended workload, so charging it against the recommendation would
+      // punish them for studying more. Rows written before provenance existed
+      // have a NULL source and are treated as Daily Review, which is what they
+      // were.
+      const isExtra = r.source === "extra_study" || r.source === "starred" || r.source === "deck_all";
+      if (isExtra) {
+        extraStudyAttemptsToday++;
+        continue;
+      }
+
       const key = `${r.flashcard_id}::${r.cloze_index}`;
       seenCards.add(key);
       const isFirst =
@@ -72,5 +96,10 @@ export async function countTodaysReviews(
   seenCards.forEach((k) => {
     if (!newCards.has(k)) reviewsToday++;
   });
-  return { newToday: newCards.size, reviewsToday };
+  return {
+    newToday: newCards.size,
+    reviewsToday,
+    attemptsToday,
+    extraStudyAttemptsToday,
+  };
 }

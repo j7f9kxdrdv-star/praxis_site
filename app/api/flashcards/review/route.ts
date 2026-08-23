@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { nextSchedule, EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
+import { DEFAULT_DAY_START_HOUR, startOfStudyDay } from "@/lib/flashcards/studyDay";
 
 /**
  * The single write path for a flashcard review.
@@ -97,12 +98,21 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid clientRequestId." }, { status: 400 });
   }
 
+  // The student's own day boundary. The server owns the study day now, so it
+  // cannot assume the default here.
+  const { data: prof } = await supabase
+    .from("profiles")
+    .select("day_start_hour")
+    .eq("id", userId)
+    .maybeSingle();
+  const dayStartHour = prof?.day_start_hour ?? DEFAULT_DAY_START_HOUR;
+
   // Load the card's CURRENT state here rather than accepting it from the
   // client. A client-supplied interval could be stale (a second tab, a phone
   // mid-session) or simply invented.
   const { data: state, error: stateErr } = await supabase
     .from("flashcard_user_state")
-    .select("interval_days, ease_factor, reps, lapses, last_rating")
+    .select("interval_days, ease_factor, reps, lapses, last_rating, last_reviewed_at, next_review_at")
     .eq("user_id", userId)
     .eq("flashcard_id", flashcardId)
     .eq("cloze_index", clozeIndex)
@@ -113,7 +123,7 @@ export async function POST(req: NextRequest) {
   }
 
   const prevInterval = Number(state?.interval_days ?? 0);
-  const sched = nextSchedule({
+  const computed = nextSchedule({
     rating,
     intervalDays: prevInterval,
     easeFactor: Number(state?.ease_factor ?? EASE_DEFAULT),
@@ -121,6 +131,45 @@ export async function POST(req: NextRequest) {
     lapses: state?.lapses ?? 0,
     lastRating: (state?.last_rating ?? null) as Rating | null,
   });
+
+  // ── The same-day evidence rule ────────────────────────────────────────
+  //
+  // Retrieving a card you saw minutes ago proves almost nothing about whether
+  // you will still know it next week. Measured against ts-fsrs 5.4.1 with its
+  // default settings: twenty Easy ratings one minute apart on a single card
+  // produce 1,222 days of stability — 48% of what YEARS of properly spaced
+  // review would earn, from nineteen minutes of tapping.
+  //
+  // So a repeat retrieval of an already-passed, matured card within the same
+  // study day is RECORDED but does not advance the schedule.
+  //
+  // This is an evidence rule, not an Extra Study penalty. It keys on elapsed
+  // time, never on which page the student was on, exactly as the spec
+  // requires: a genuine retrieval is a genuine retrieval regardless of mode.
+  //
+  // Three things it must NOT block, and does not:
+  //   . a brand-new card being learned (no state row yet);
+  //   . the 10-minute re-show after "Again" (that card's stored last_rating IS
+  //     "again", and its post-lapse confirmation is the whole point);
+  //   . a card genuinely due again today after a real interval.
+  const lastReviewedAt = state?.last_reviewed_at ? new Date(state.last_reviewed_at) : null;
+  const sameStudyDay =
+    lastReviewedAt !== null && lastReviewedAt >= startOfStudyDay(new Date(), dayStartHour);
+  const isMature = prevInterval >= 1;
+  const isPostLapseRecheck = state?.last_rating === "again";
+  const advance = !(sameStudyDay && isMature && !isPostLapseRecheck);
+
+  // When the schedule is held, write back exactly what the card already had,
+  // so the row is unchanged while the attempt is still logged.
+  const sched = advance
+    ? computed
+    : {
+        intervalDays: prevInterval,
+        easeFactor: Number(state?.ease_factor ?? EASE_DEFAULT),
+        reps: state?.reps ?? 0,
+        lapses: state?.lapses ?? 0,
+        nextReviewAt: new Date(state!.next_review_at as string),
+      };
 
   const { data, error } = await supabase.rpc("submit_flashcard_review", {
     p_flashcard_id: flashcardId,
@@ -146,6 +195,9 @@ export async function POST(req: NextRequest) {
 
   const row = Array.isArray(data) ? data[0] : data;
   return NextResponse.json({
+    // True when this retrieval was recorded but deliberately did not move the
+    // schedule, because the card was already answered earlier the same day.
+    scheduleHeld: !advance,
     intervalDays: row?.interval_days ?? sched.intervalDays,
     easeFactor: row?.ease_factor ?? sched.easeFactor,
     reps: row?.reps ?? sched.reps,

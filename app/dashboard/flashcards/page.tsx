@@ -63,7 +63,10 @@ export default function FlashcardsHub() {
   // contain, given the user's daily caps and what they've already studied today.
   const [unseenAll, setUnseenAll] = useState(0);
   const [dueReviewAll, setDueReviewAll] = useState(0);
+  const dayStartHour = profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR;
   const [newToday, setNewToday] = useState(0);
+  // Reported beside the Daily Review numbers, never subtracted from them.
+  const [extraStudyAttemptsToday, setExtraStudyAttemptsToday] = useState(0);
   const [reviewsToday, setReviewsToday] = useState(0);
 
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
@@ -201,11 +204,14 @@ export default function FlashcardsHub() {
 
       // Count today's study log so the projected session size matches the
       // running quota the session loader actually applies (shared helper).
-      const { newToday: newDoneToday, reviewsToday: reviewsDoneToday } =
-        await countTodaysReviews(
-          user.id,
-          profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR,
-        );
+      const {
+        newToday: newDoneToday,
+        reviewsToday: reviewsDoneToday,
+        extraStudyAttemptsToday: extraToday,
+      } = await countTodaysReviews(
+        user.id,
+        profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR,
+      );
 
       const enriched: Deck[] = deckRows.map((d) => {
         const urgent = urgentByDeck.get(d.id) || 0;
@@ -241,6 +247,7 @@ export default function FlashcardsHub() {
       setUnseenAll(unseenTotal);
       setDueReviewAll(urgentAll - unseenTotal);
       setNewToday(newDoneToday);
+      setExtraStudyAttemptsToday(extraToday);
       setReviewsToday(reviewsDoneToday);
       setDataLoaded(true);
     }
@@ -257,8 +264,8 @@ export default function FlashcardsHub() {
   function startStarredSession() {
     router.push(`/dashboard/flashcards/session?mode=starred`);
   }
-  function startCramSession() {
-    router.push(`/dashboard/flashcards/session?mode=cram`);
+  function startExtraStudySession() {
+    router.push(`/dashboard/flashcards/session?mode=extra_study`);
   }
 
   /* ─────────────── Render ─────────────── */
@@ -427,7 +434,7 @@ export default function FlashcardsHub() {
               >
                 {totalDue > 0
                   ? "Clear your queue today to keep retention strong. Unseen cards are new to you; due cards are scheduled for review now; soon cards land within 3 days."
-                  : "Caught up. Pick a deck below to get ahead of the curve, or jump into Cram mode."}
+                  : "Caught up. Pick a deck below to get ahead of the curve, or keep going with Extra Study."}
               </div>
 
               {/* Urgency segmented bar */}
@@ -534,7 +541,7 @@ export default function FlashcardsHub() {
                   >
                     {!isCapping
                       ? "Start Review"
-                      : `Start Review · ${servedToday} left today`}
+                      : `Start Review · ${servedToday} cards left today`}
                     <svg
                       width="14"
                       height="14"
@@ -555,17 +562,27 @@ export default function FlashcardsHub() {
                         color: "rgba(246,244,227,0.72)",
                       }}
                     >
-                      You&rsquo;ve studied{" "}
+                      Today&rsquo;s Daily Review:{" "}
                       <strong style={{ color: "var(--color-prax-cream)" }}>
-                        {newToday} of {newLimit} new
+                        {newToday} of {newLimit} new cards
                       </strong>{" "}
                       and{" "}
                       <strong style={{ color: "var(--color-prax-cream)" }}>
-                        {reviewsToday} of {reviewLimit} reviews
-                      </strong>{" "}
-                      today, so this session serves the {projectedNew} new and{" "}
-                      {projectedReview} review{projectedReview === 1 ? "" : "s"} you
-                      have left. Your full limits refresh at midnight.{" "}
+                        {reviewsToday} of {reviewLimit} review cards
+                      </strong>
+                      , so this session serves the {projectedNew} new and{" "}
+                      {projectedReview} review card
+                      {projectedReview === 1 ? "" : "s"} you have left. These count
+                      CARDS, not taps: a card you answer again after &ldquo;Again&rdquo;
+                      is still one card.{" "}
+                      {extraStudyAttemptsToday > 0 ? (
+                        <>
+                          You have also done {extraStudyAttemptsToday} Extra Study
+                          attempt{extraStudyAttemptsToday === 1 ? "" : "s"}, which do
+                          not come out of this allowance.{" "}
+                        </>
+                      ) : null}
+                      Your day resets at {dayStartHour}:00.{" "}
                       <button
                         type="button"
                         onClick={() => setShowSettings(true)}
@@ -692,7 +709,7 @@ export default function FlashcardsHub() {
         </PraxCard>
       )}
 
-      {/* ===== SECONDARY ROW: Starred + Cram ===== */}
+      {/* ===== SECONDARY ROW: Starred + Extra Study ===== */}
       {!noDecks && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
           {/* Starred */}
@@ -756,7 +773,7 @@ export default function FlashcardsHub() {
             </div>
           </PraxCard>
 
-          {/* Cram */}
+          {/* Extra Study */}
           <PraxCard variant="secondary">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
@@ -769,7 +786,7 @@ export default function FlashcardsHub() {
                       background: "var(--color-prax-green-soft)",
                     }}
                   />
-                  <SmallCaps>Cram Mode</SmallCaps>
+                  <SmallCaps>Extra Study</SmallCaps>
                 </div>
                 <div className="flex items-baseline gap-2">
                   <div
@@ -807,7 +824,7 @@ export default function FlashcardsHub() {
               </div>
               {totalItems > 0 && (
                 <button
-                  onClick={startCramSession}
+                  onClick={startExtraStudySession}
                   style={praxBtnGreenOnCream}
                   className="shrink-0"
                 >
@@ -1093,9 +1110,10 @@ function FlashcardSettingsModal({
           className="text-[13px] mb-5"
           style={{ color: "var(--color-prax-ink-soft)" }}
         >
-          Cap how many cards your study sessions show each day. The session
-          picker respects these in <em>Due</em> mode; <em>Cram</em> and
-          <em> Starred</em> ignore them on purpose.
+          Cap how many cards Daily Review recommends each day. Extra Study and
+          Starred are not capped: they are for studying beyond the
+          recommendation, and since they do not spend your Daily Review
+          allowance, using them will not shorten tomorrow&apos;s queue.
         </p>
 
         <form onSubmit={save} className="space-y-4">
