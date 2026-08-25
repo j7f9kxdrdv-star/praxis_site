@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { nextSchedule, EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
+import { EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
+import { nextFsrsSchedule, type StoredState } from "@/lib/flashcards/fsrsScheduler";
 import { DEFAULT_DAY_START_HOUR, startOfStudyDay } from "@/lib/flashcards/studyDay";
 
 /**
@@ -20,13 +21,11 @@ import { DEFAULT_DAY_START_HOUR, startOfStudyDay } from "@/lib/flashcards/studyD
  * not, then hands the computed values to a Postgres function that writes the
  * scheduling row, the review log and the study-day credit in one transaction.
  *
- * WHAT DELIBERATELY DOES NOT MOVE. The scheduling MATHS is unchanged: this
- * calls the same v2 ladder the client called. PR2 changes where the
- * computation happens, not what it computes, which is what makes the move
- * verifiable — identical inputs must produce identical schedules.
- *
- * WHEN FSRS ARRIVES (PR6) it replaces the nextSchedule call below and nothing
- * else. One file, one function, both apps.
+ * PR6 SWAPPED THE MATHS. The v2 ladder is gone from this path; scheduling is
+ * now FSRS, in lib/flashcards/fsrsScheduler.ts. That it was a one-line change
+ * here is the point of having done PR2 first: there is exactly one place in
+ * either app where a schedule is decided, so replacing the algorithm touched
+ * no client code at all.
  */
 
 interface ReviewBody {
@@ -112,7 +111,9 @@ export async function POST(req: NextRequest) {
   // mid-session) or simply invented.
   const { data: state, error: stateErr } = await supabase
     .from("flashcard_user_state")
-    .select("interval_days, ease_factor, reps, lapses, last_rating, last_reviewed_at, next_review_at")
+    // One string literal, not a concatenation: the Supabase client infers the
+    // row type from the literal, and splitting it across lines erases that.
+    .select("interval_days, ease_factor, reps, lapses, last_rating, last_reviewed_at, next_review_at, stability, difficulty, fsrs_state, learning_steps, scheduled_days")
     .eq("user_id", userId)
     .eq("flashcard_id", flashcardId)
     .eq("cloze_index", clozeIndex)
@@ -123,14 +124,24 @@ export async function POST(req: NextRequest) {
   }
 
   const prevInterval = Number(state?.interval_days ?? 0);
-  const computed = nextSchedule({
-    rating,
-    intervalDays: prevInterval,
-    easeFactor: Number(state?.ease_factor ?? EASE_DEFAULT),
-    reps: state?.reps ?? 0,
-    lapses: state?.lapses ?? 0,
-    lastRating: (state?.last_rating ?? null) as Rating | null,
-  });
+  const now = new Date();
+
+  const stored: StoredState | null = state
+    ? {
+        stability: state.stability === null ? null : Number(state.stability),
+        difficulty: state.difficulty === null ? null : Number(state.difficulty),
+        fsrsState: state.fsrs_state === null ? null : Number(state.fsrs_state),
+        learningSteps: state.learning_steps === null ? null : Number(state.learning_steps),
+        scheduledDays: state.scheduled_days === null ? null : Number(state.scheduled_days),
+        reps: state.reps ?? 0,
+        lapses: state.lapses ?? 0,
+        intervalDays: prevInterval,
+        lastReviewedAt: state.last_reviewed_at ? new Date(state.last_reviewed_at) : null,
+        nextReviewAt: state.next_review_at ? new Date(state.next_review_at) : null,
+      }
+    : null;
+
+  const computed = nextFsrsSchedule(stored, rating, now);
 
   // ── The same-day evidence rule ────────────────────────────────────────
   //
@@ -152,9 +163,9 @@ export async function POST(req: NextRequest) {
   //   . the 10-minute re-show after "Again" (that card's stored last_rating IS
   //     "again", and its post-lapse confirmation is the whole point);
   //   . a card genuinely due again today after a real interval.
-  const lastReviewedAt = state?.last_reviewed_at ? new Date(state.last_reviewed_at) : null;
+  const lastReviewedAt = stored?.lastReviewedAt ?? null;
   const sameStudyDay =
-    lastReviewedAt !== null && lastReviewedAt >= startOfStudyDay(new Date(), dayStartHour);
+    lastReviewedAt !== null && lastReviewedAt >= startOfStudyDay(now, dayStartHour);
   const isMature = prevInterval >= 1;
   const isPostLapseRecheck = state?.last_rating === "again";
   const advance = !(sameStudyDay && isMature && !isPostLapseRecheck);
@@ -164,10 +175,15 @@ export async function POST(req: NextRequest) {
   const sched = advance
     ? computed
     : {
+        ...computed,
+        // Every scheduling field reverts to what the card already had. Only
+        // reps and lapses are allowed through, because the attempt did happen.
+        stability: stored?.stability ?? computed.stability,
+        difficulty: stored?.difficulty ?? computed.difficulty,
+        fsrsState: stored?.fsrsState ?? computed.fsrsState,
+        learningSteps: stored?.learningSteps ?? computed.learningSteps,
+        scheduledDays: stored?.scheduledDays ?? computed.scheduledDays,
         intervalDays: prevInterval,
-        easeFactor: Number(state?.ease_factor ?? EASE_DEFAULT),
-        reps: state?.reps ?? 0,
-        lapses: state?.lapses ?? 0,
         nextReviewAt: new Date(state!.next_review_at as string),
       };
 
@@ -177,13 +193,18 @@ export async function POST(req: NextRequest) {
     p_rating: rating,
     p_prev_interval: prevInterval,
     p_new_interval: sched.intervalDays,
-    p_ease_factor: sched.easeFactor,
+    p_ease_factor: Number(state?.ease_factor ?? EASE_DEFAULT),
     p_reps: sched.reps,
     p_lapses: sched.lapses,
     p_next_review_at: sched.nextReviewAt.toISOString(),
     p_source: source,
     p_is_first_exposure: !state,
     p_client_request_id: clientRequestId,
+    p_stability: sched.stability,
+    p_difficulty: sched.difficulty,
+    p_fsrs_state: sched.fsrsState,
+    p_learning_steps: sched.learningSteps,
+    p_scheduled_days: sched.scheduledDays,
   });
 
   if (error) {
@@ -199,10 +220,14 @@ export async function POST(req: NextRequest) {
     // schedule, because the card was already answered earlier the same day.
     scheduleHeld: !advance,
     intervalDays: row?.interval_days ?? sched.intervalDays,
-    easeFactor: row?.ease_factor ?? sched.easeFactor,
+    // Vestigial: FSRS does not use it, but it is still returned so any
+    // client reading it keeps working until they are all updated.
+    easeFactor: row?.ease_factor ?? EASE_DEFAULT,
     reps: row?.reps ?? sched.reps,
     lapses: row?.lapses ?? sched.lapses,
     nextReviewAt: row?.next_review_at ?? sched.nextReviewAt.toISOString(),
+    stability: row?.stability ?? sched.stability,
+    difficulty: row?.difficulty ?? sched.difficulty,
     // True when this exact attempt had already been recorded, so the client
     // knows the write was collapsed rather than applied twice.
     duplicate: row?.was_duplicate ?? false,
