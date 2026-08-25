@@ -24,13 +24,23 @@ import type { Rating as AppRating } from "./scheduler";
  * before being chosen rather than taken from the library's defaults; see
  * scripts/flashcards/sim/ and the PR7 commit message.
  *
- *   RETENTION 0.75. The library ships 0.90. Simulated over 39,624 real
- *   reviews, 0.90 costs roughly a third of what a student could otherwise know
- *   on exam day, because time spent re-reviewing near-certain cards is time not
- *   spent on material they have never seen. 0.75 also happens to be what
- *   students already experience: measured recall under the v2 ladder is
- *   73.0-77.5%. So sessions feel exactly as they do now, and only the
- *   placement of the intervals changes.
+ *   RETENTION 0.90. An earlier version of this file shipped 0.75, chosen by a
+ *   simulation that maximised expected exam-day knowledge for a fixed daily
+ *   time budget. That simulation was not wrong about its own question, but it
+ *   never asked the one that decides this: where do the resulting intervals
+ *   LAND relative to the range where the model has been checked against real
+ *   students?
+ *
+ *   Measured against the log by gap length, FSRS is accurate between 2 and 14
+ *   days, within 1.5 points, and 7.5 to 7.8 points TOO HOPEFUL beyond a
+ *   fortnight. Projected across the 9,159 card-blanks students have actually
+ *   studied, a 0.75 target sends 85% of them past 14 days. The simulation was
+ *   therefore extrapolating for most of the deck, and its answer inherited the
+ *   optimism it was extrapolating through.
+ *
+ *   At 0.90, 72% of reviews stay inside the validated window and the median
+ *   card sits at 4 days, against 5 under the old ladder. It is also ts-fsrs's
+ *   own default, fitted on a public dataset vastly larger than this one.
  *
  *   MAXIMUM_INTERVAL 60. This one is load-bearing, and an earlier version of
  *   this file had it at 180 for bad reasons. FSRS-6's default decay of 0.1542
@@ -53,7 +63,7 @@ import type { Rating as AppRating } from "./scheduler";
  * one sitting come due in one sitting, forever.
  */
 
-export const RETENTION = 0.75;
+export const RETENTION = 0.90;
 export const MAXIMUM_INTERVAL = 60;
 
 export const FSRS_PARAMS: FSRSParameters = generatorParameters({
