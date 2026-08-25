@@ -741,8 +741,9 @@ WHERE s.user_id = v.user_id
   AND s.flashcard_id = v.flashcard_id
   AND s.cloze_index = v.cloze_index;
 
--- Rows still missing FSRS state after ALL parts have run. Expect this to fall
--- to zero once every part is applied; anything left is a scheduling row whose
--- review history was lost before PR5 made that impossible.
+-- Rows still missing FSRS state so far. This does NOT fall to zero after
+-- parts 1-5: 735 scheduling rows have no review history to replay, so part 6
+-- handles them separately. Expect 7443 after part 1, then 5443, 3443, 1443,
+-- and 735 after part 5.
 SELECT COUNT(*) AS still_missing
 FROM public.flashcard_user_state WHERE stability IS NULL;
