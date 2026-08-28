@@ -29,7 +29,10 @@ export const metadata: Metadata = {
  * it isn't. Billing does not exist yet: signing up grants full access at no
  * charge. Both offers are therefore marked `PreOrder` (an announced price,
  * not a purchasable one). When billing opens, switch both to `InStock` and
- * add `validFrom` with the date charging actually starts.
+ * add `validFrom` with the date charging actually starts. The date below is
+ * the TENTATIVE launch target (2026-10-13) supplied by the founder. It is
+ * machine-readable only: no visible copy names a date, deliberately, because
+ * a tentative date printed on the page reads as a promise to a student.
  *
  * Schema reference: https://schema.org/Course
  * Google guidance: https://developers.google.com/search/docs/appearance/structured-data/course-info
@@ -58,6 +61,7 @@ const courseSchemas = [
       price: "79",
       priceCurrency: "USD",
       availability: "https://schema.org/PreOrder",
+      validFrom: "2026-10-13",
       url: `${SITE_URL}/pricing`,
     },
   },
@@ -84,6 +88,7 @@ const courseSchemas = [
       price: "199",
       priceCurrency: "USD",
       availability: "https://schema.org/PreOrder",
+      validFrom: "2026-10-13",
       url: `${SITE_URL}/pricing`,
     },
   },

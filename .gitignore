@@ -50,3 +50,8 @@ next-env.d.ts
 reference-textbooks/
 reference-textbooks
 flashcard-leak-report.json
+
+# Generated Instagram images. scripts/instagram/ regenerates them from the
+# live site on demand, so tracking ~1.5MB of PNG that changes every time the
+# design does buys nothing.
+marketing/instagram/
