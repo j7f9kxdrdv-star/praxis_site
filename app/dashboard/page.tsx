@@ -37,15 +37,26 @@ interface FlashcardSummary {
   deckCount: number;
 }
 
-interface TodaysFocus {
-  section: string;
-  sectionLabel: string;
-  topic: string;
-  questionCount: number;
-  estimatedMinutes: number;
-  expectedGainPct: number;
-  altLabel: string | null;
-  altMinutes: number | null;
+/**
+ * One claim from the Tier 1 insight brief.
+ *
+ * This replaced a "Today's Focus" that ranked the student's weakest topic from
+ * as few as THREE question attempts — where the only possible accuracies are
+ * 0%, 33%, 67% and 100% — and then displayed an "expected precision gain" of
+ * +N%, computed as (85 - accuracy) x 0.15. That number was invented. It was
+ * derived from no outcome data, because none exists, and it promised a score
+ * improvement the product explicitly does not promise.
+ *
+ * Everything shown here is now computed in lib/insights and arrives with the
+ * evidence that justifies it.
+ */
+interface BriefClaim {
+  kind: string;
+  priority: number;
+  confidence: string;
+  headline: string;
+  detail: string;
+  evidence: Record<string, string | number>;
 }
 
 const SECTION_LABELS: Record<string, string> = {
@@ -330,7 +341,8 @@ export default function DashboardHome() {
     later: 0,
     deckCount: 0,
   });
-  const [focus, setFocus] = useState<TodaysFocus | null>(null);
+  const [claims, setClaims] = useState<BriefClaim[] | null>(null);
+  const [briefLoading, setBriefLoading] = useState(true);
   const [loading, setLoading] = useState(true);
 
   const firstName =
@@ -526,55 +538,14 @@ export default function DashboardHome() {
           attention: false,
         }));
         subjectList.sort((a, b) => b.percent - a.percent);
-        // Mark the lowest as attention (the weakest)
+        // Flag the least-covered subject. NOTE this is coverage, not accuracy:
+        // percent is answered/total, so a low number means untouched material,
+        // not material the student is bad at. The copy must not say otherwise.
         if (subjectList.length > 0) {
           const min = subjectList.reduce((a, b) => (b.percent < a.percent ? b : a));
           min.attention = true;
         }
         setSubjects(subjectList);
-      }
-
-      // ── Today's Focus: weakest topic by accuracy ─────────
-      if (allQuestions && allAttempts && allAttempts.length >= 5) {
-        const qById = new Map(allQuestions.map((q) => [q.id, q]));
-        type Bucket = { total: number; correct: number; section: string; topic: string };
-        const topicMap = new Map<string, Bucket>();
-        allAttempts.forEach((a) => {
-          const q = qById.get(a.question_id);
-          if (!q || !q.topic) return;
-          const key = `${q.section}::${q.topic}`;
-          const b =
-            topicMap.get(key) ||
-            ({ total: 0, correct: 0, section: q.section, topic: q.topic } as Bucket);
-          b.total++;
-          if (a.is_correct) b.correct++;
-          topicMap.set(key, b);
-        });
-        // Filter to topics with at least 3 attempts (signal vs noise)
-        const ranked = Array.from(topicMap.values())
-          .filter((b) => b.total >= 3)
-          .map((b) => ({ ...b, acc: b.correct / b.total }))
-          .sort((a, b) => a.acc - b.acc);
-
-        if (ranked.length > 0) {
-          const weakest = ranked[0];
-          const accPct = Math.round(weakest.acc * 100);
-          // Simple heuristic for expected gain
-          const expectedGainPct = Math.max(3, Math.min(12, Math.round((85 - accPct) * 0.15)));
-          const second = ranked[1];
-          setFocus({
-            section: weakest.section,
-            sectionLabel: SECTION_LABELS[weakest.section] || weakest.section,
-            topic: weakest.topic,
-            questionCount: 12,
-            estimatedMinutes: 25,
-            expectedGainPct,
-            altLabel: second
-              ? `${SECTION_LABELS[second.section] || second.section} · ${second.topic}`
-              : null,
-            altMinutes: second ? 18 : null,
-          });
-        }
       }
 
       // ── Flashcards ───────────────────────────────────────
@@ -633,10 +604,54 @@ export default function DashboardHome() {
   );
   const weeklyGoalRemaining = Math.max(0, weeklyGoal - stats.questionsThisWeek);
 
-  // Practice link with focus params
-  const practiceHref = focus
-    ? `/dashboard/practice?section=${encodeURIComponent(focus.section)}&topic=${encodeURIComponent(focus.topic)}`
-    : "/dashboard/practice";
+  // The insight brief. Fetched separately from the dashboard's own queries
+  // because it is served by an API route with its own cache, and a slow first
+  // build of it must not delay everything else on the page.
+  useEffect(() => {
+    let cancelled = false;
+    async function loadBrief() {
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (!token) return;
+        const res = await fetch("/api/insights/brief", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const brief = await res.json();
+        if (!cancelled) setClaims(Array.isArray(brief?.claims) ? brief.claims : []);
+      } catch {
+        // The brief is additive. If it cannot be built the dashboard still works.
+      } finally {
+        if (!cancelled) setBriefLoading(false);
+      }
+    }
+    loadBrief();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // The claim that leads, and where its button should send you.
+  const lead = claims?.[0] ?? null;
+  // "pace" carries its value in its detail, not its headline ("What each daily
+  // amount actually buys you"), so it reads as a stray section title in a
+  // one-line strip. It belongs on a fuller insights surface, not here.
+  const supporting = (claims ?? []).filter((c) => c.kind !== "pace").slice(1, 3);
+  const ACTION: Record<string, { href: string; label: string }> = {
+    backlog: { href: "/dashboard/flashcards/session?mode=due", label: "Start reviewing" },
+    pace: { href: "/dashboard/flashcards/session?mode=due", label: "Start reviewing" },
+    today: { href: "/dashboard/flashcards/session?mode=due", label: "Start reviewing" },
+    leech: { href: "/dashboard/flashcards", label: "See those decks" },
+    stale_deck: { href: "/dashboard/flashcards", label: "Open your decks" },
+    no_evidence: { href: "/dashboard/practice", label: "Start a practice set" },
+  };
+  const action = ACTION[lead?.kind ?? ""] ?? {
+    href: "/dashboard/practice",
+    label: "Start a practice set",
+  };
+
+  const practiceHref = "/dashboard/practice";
 
   const isNewUser = stats.totalQuestions === 0;
 
@@ -846,7 +861,6 @@ export default function DashboardHome() {
                   }}
                 >
                   Today&apos;s Focus
-                  {focus && ` · ${focus.estimatedMinutes} min · Adaptive`}
                 </div>
               </div>
               <h2
@@ -859,8 +873,10 @@ export default function DashboardHome() {
                   letterSpacing: "-0.005em",
                 }}
               >
-                {focus
-                  ? `${focus.sectionLabel}: ${focus.topic.toLowerCase()}.`
+                {lead
+                  ? lead.headline
+                  : briefLoading
+                  ? "Working out where you stand."
                   : isNewUser
                   ? "Begin with your first practice session."
                   : "Keep building your practice rhythm."}
@@ -873,29 +889,19 @@ export default function DashboardHome() {
                   lineHeight: 1.6,
                 }}
               >
-                {focus ? (
-                  <>
-                    {focus.questionCount} adaptive questions on your weakest cluster this
-                    week. Expected precision gain{" "}
-                    <strong
-                      style={{
-                        color: "var(--color-prax-cream)",
-                        fontWeight: 600,
-                      }}
-                    >
-                      +{focus.expectedGainPct}%
-                    </strong>
-                    .
-                  </>
+                {lead ? (
+                  lead.detail
+                ) : briefLoading ? (
+                  "One moment."
                 ) : isNewUser ? (
-                  "We'll start surfacing personalized drills once you've answered a few questions."
+                  "Once you have studied a little, this will tell you where you actually stand."
                 ) : (
-                  "Answer a few more questions in any section to unlock personalized drill recommendations."
+                  "Study a few more cards and this will tell you where you actually stand."
                 )}
               </div>
               <div className="flex items-center gap-4 mt-7 flex-wrap">
                 <Link
-                  href={practiceHref}
+                  href={action.href}
                   className="inline-flex items-center gap-2.5 cursor-pointer"
                   style={{
                     background: "var(--color-prax-cream)",
@@ -908,7 +914,7 @@ export default function DashboardHome() {
                     letterSpacing: "0.02em",
                   }}
                 >
-                  Start Daily Drill
+                  {action.label}
                   <svg
                     width="14"
                     height="14"
@@ -920,21 +926,15 @@ export default function DashboardHome() {
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
                 </Link>
-                {focus?.altLabel && (
+                {supporting.length > 0 && (
                   <div
                     style={{
                       fontSize: 11.5,
                       color: "rgba(246,244,227,0.6)",
+                      lineHeight: 1.7,
                     }}
                   >
-                    or{" "}
-                    <Link
-                      href="/dashboard/practice"
-                      className="underline cursor-pointer"
-                    >
-                      swap focus
-                    </Link>{" "}
-                    · {focus.altLabel} · {focus.altMinutes} min
+                    {supporting.map((c) => c.headline).join("  ·  ")}
                   </div>
                 )}
               </div>
@@ -1260,7 +1260,8 @@ export default function DashboardHome() {
                     color: "var(--color-prax-ink-soft)",
                   }}
                 >
-                  Weakest cluster. Drill queued in today&apos;s focus.
+                  Least covered so far. This tracks how much you have
+                  attempted, not how well you did.
                 </div>
               </div>
             )}
