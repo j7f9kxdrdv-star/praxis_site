@@ -247,3 +247,54 @@ export function clozeToPlain(text: string): string {
 export function clozeToMaskedPreview(text: string, mask: string = "____"): string {
   return text.replace(CLOZE_RE, () => mask).replace(IMG_RE, "");
 }
+
+// ─── Subscripts and superscripts ──────────────────────────────────────────
+//
+// Card text is plain Unicode, which cannot express most scientific notation.
+// Unicode has subscript forms for only a e h i j k l m n o p r s t u v x, so
+// K_m is writable as Kₘ but V_max, k_cat, Z_eff and K_sp are not: there are no
+// multi-character subscripts at all. Cards were therefore written flat, and
+// "W = h · fT" reads as h times f times T rather than f subscript T.
+//
+// So the notation moves into markup the renderer understands rather than
+// characters the font has to provide:
+//
+//   k_{cat}   ->  k with a subscript "cat"
+//   10^{-5}   ->  10 with a superscript "-5"
+//
+// Deliberately NOT LaTeX. The braces delimit exactly one run, there is nothing
+// to escape, and an unmatched brace renders as itself rather than swallowing
+// the rest of the card.
+
+export type Script = "sub" | "sup" | null;
+export interface TextRun {
+  text: string;
+  script: Script;
+}
+
+const SCRIPT_RE = /([_^])\{([^{}]+)\}/g;
+
+/**
+ * Split a string into runs of normal, subscript and superscript text.
+ *
+ * Always returns at least one run, so a caller can map over the result without
+ * a special case for plain text.
+ */
+export function parseScripts(input: string): TextRun[] {
+  const out: TextRun[] = [];
+  let cursor = 0;
+  SCRIPT_RE.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = SCRIPT_RE.exec(input)) !== null) {
+    if (m.index > cursor) out.push({ text: input.slice(cursor, m.index), script: null });
+    out.push({ text: m[2], script: m[1] === "_" ? "sub" : "sup" });
+    cursor = m.index + m[0].length;
+  }
+  if (cursor < input.length) out.push({ text: input.slice(cursor), script: null });
+  return out.length ? out : [{ text: input, script: null }];
+}
+
+/** The string as a reader sees it, with the markup removed. */
+export function stripScripts(input: string): string {
+  return input.replace(SCRIPT_RE, "$2");
+}

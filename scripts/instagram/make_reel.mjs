@@ -29,11 +29,11 @@ import path from "path";
 const ROOT = process.cwd();
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const W = 1080, H = 1920;
-// Total runtime, and how it is spent. A reel this short cannot afford a
-// separate title beat: the question is on screen from the first frame and
-// stays there, so every second is reading time. The last CTA_HOLD seconds swap
-// the footer to the call to vote while the question remains visible.
-const CTA_HOLD = 2.0;
+// The timer runs for the whole clip and the question is on screen from the
+// first frame, so every second is reading time. Only the footer changes: for
+// the last CTA_HOLD seconds it swaps to the call to vote, with the countdown
+// still visible beside it.
+const CTA_HOLD = 2;
 const BRAND = {
   cream: "#FBF8F2", creamCard: "#F1EADC", forest: "#1F4D3C", mint: "#86D2B6",
   ink: "#1C1B19", inkSoft: "#3A382F", muted: "#8A8578", onForest: "#DCE8E1",
@@ -42,8 +42,11 @@ const BRAND = {
 const args = process.argv.slice(2);
 const arg = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
 const only = arg("--slug");
-const seconds = Number(arg("--seconds") ?? 7);
-const COUNT_FROM = Math.max(1, Math.round(seconds - CTA_HOLD));
+const seconds = Number(arg("--seconds") ?? 10);
+// The timer counts the WHOLE clip, so a viewer can see at a glance how long
+// they have. It does not stop early to make room for the call to vote; that
+// swaps in underneath the timer for the last CTA_HOLD seconds instead.
+const COUNT_FROM = Math.max(1, Math.round(seconds));
 const outDir = arg("--out") || path.join(ROOT, "marketing", "qotd");
 const questions = JSON.parse(fs.readFileSync(path.join(ROOT, "marketing/qotd/questions.json"), "utf8"))
   .filter((q) => !only || q.slug === only);
@@ -152,8 +155,9 @@ for (const q of questions) {
   // call to vote. No separate title beat: at this length there is not a second
   // to spare that is not reading time.
   const plan = [];
-  for (let c = COUNT_FROM; c >= 1; c--) plan.push({ count: c, cta: false, hold: 1.0 });
-  plan.push({ count: null, cta: true, hold: CTA_HOLD });
+  for (let c = COUNT_FROM; c >= 1; c--) {
+    plan.push({ count: c, cta: c <= CTA_HOLD, hold: 1.0 });
+  }
 
   const list = [];
   plan.forEach((p, i) => {

@@ -40,6 +40,8 @@ const PAIRS = [
   ["prefix", "suffix"], ["stimulates", "inhibits"], ["activates", "inhibits"],
   ["intracellular", "extracellular"], ["hyperpolarization", "depolarization"],
   ["systolic", "diastolic"], ["inspiration", "expiration"],
+  ["anode", "cathode"], ["aerobic", "anaerobic"], ["donates", "accepts"],
+  ["absorbs", "releases"], ["influx", "efflux"], ["inhalation", "exhalation"],
 ];
 
 // A better rule than the list above, because it generalises: two answers that
@@ -51,6 +53,20 @@ const PREFIXES = [
   ["intra", "inter"], ["macro", "micro"], ["anti", "pro"], ["sub", "supra"],
   ["afferent", "efferent"], ["ana", "cata"], ["ecto", "endo"],
 ];
+// One answer being the other with a NEGATING prefix is the same defect by a
+// different route: anaerobic is an + aerobic, nonpolar is non + polar,
+// irreversible is ir + reversible. Like the opposing-prefix rule this needs no
+// vocabulary listed in advance, which is the point.
+const NEGATORS = ["an", "a", "non", "un", "in", "im", "ir", "il", "anti", "de", "dis"];
+function negatedPair(a, b) {
+  for (const [x, y] of [[a, b], [b, a]]) {
+    for (const n of NEGATORS) {
+      if (x.startsWith(n) && x.slice(n.length) === y && y.length >= 5) return `${n}- negation of "${y}"`;
+    }
+  }
+  return null;
+}
+
 /** Do two answers share a root but carry opposing prefixes? */
 function opposingPrefix(a, b) {
   for (const [p, q] of PREFIXES) {
@@ -118,7 +134,7 @@ for (const c of cards) {
     outer: for (let i = 0; i < entries.length; i++) {
       for (let j = i + 1; j < entries.length; j++) {
         for (const wa of entries[i][1]) for (const wb of entries[j][1]) {
-          const hit = opposingPrefix(wa, wb);
+          const hit = opposingPrefix(wa, wb) || negatedPair(wa, wb);
           if (hit) { reason = `${hit}, split across c${entries[i][0]} and c${entries[j][0]}`;
             involved = [entries[i][0], entries[j][0]]; break outer; }
         }
