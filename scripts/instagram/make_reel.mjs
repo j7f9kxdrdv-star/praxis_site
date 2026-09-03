@@ -29,7 +29,11 @@ import path from "path";
 const ROOT = process.cwd();
 const CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const W = 1080, H = 1920;
-const COUNT_FROM = 5;
+// Total runtime, and how it is spent. A reel this short cannot afford a
+// separate title beat: the question is on screen from the first frame and
+// stays there, so every second is reading time. The last CTA_HOLD seconds swap
+// the footer to the call to vote while the question remains visible.
+const CTA_HOLD = 2.0;
 const BRAND = {
   cream: "#FBF8F2", creamCard: "#F1EADC", forest: "#1F4D3C", mint: "#86D2B6",
   ink: "#1C1B19", inkSoft: "#3A382F", muted: "#8A8578", onForest: "#DCE8E1",
@@ -38,6 +42,8 @@ const BRAND = {
 const args = process.argv.slice(2);
 const arg = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
 const only = arg("--slug");
+const seconds = Number(arg("--seconds") ?? 7);
+const COUNT_FROM = Math.max(1, Math.round(seconds - CTA_HOLD));
 const outDir = arg("--out") || path.join(ROOT, "marketing", "qotd");
 const questions = JSON.parse(fs.readFileSync(path.join(ROOT, "marketing/qotd/questions.json"), "utf8"))
   .filter((q) => !only || q.slug === only);
@@ -142,10 +148,12 @@ for (const q of questions) {
   const work = path.join(outDir, `.${q.slug}_frames`);
   fs.mkdirSync(work, { recursive: true });
 
-  // read the stem, then the countdown, then the call to vote
-  const plan = [{ count: null, cta: false, hold: 3.0 }];
+  // The countdown runs from the first frame, then the footer switches to the
+  // call to vote. No separate title beat: at this length there is not a second
+  // to spare that is not reading time.
+  const plan = [];
   for (let c = COUNT_FROM; c >= 1; c--) plan.push({ count: c, cta: false, hold: 1.0 });
-  plan.push({ count: null, cta: true, hold: 2.5 });
+  plan.push({ count: null, cta: true, hold: CTA_HOLD });
 
   const list = [];
   plan.forEach((p, i) => {
@@ -159,8 +167,12 @@ for (const q of questions) {
   fs.writeFileSync(listFile, list.join("\n"));
 
   const mp4 = path.join(outDir, `${q.slug}_reel.mp4`);
+  // -t pins the runtime. The concat demuxer needs the last image repeated or
+  // it drops that frame's duration, but the repeat then inherits a duration of
+  // its own and overshoots, so the length is clamped here rather than guessed.
   execFileSync("ffmpeg", ["-y", "-f", "concat", "-safe", "0", "-i", listFile,
-    "-vf", "fps=30,format=yuv420p,fade=t=in:st=0:d=0.4",
+    "-t", String(seconds),
+    "-vf", `fps=30,format=yuv420p,fade=t=in:st=0:d=0.4,fade=t=out:st=${(seconds - 0.4).toFixed(2)}:d=0.4`,
     "-c:v", "libx264", "-preset", "slow", "-crf", "18",
     "-movflags", "+faststart", mp4], { stdio: "ignore" });
   fs.rmSync(work, { recursive: true, force: true });
