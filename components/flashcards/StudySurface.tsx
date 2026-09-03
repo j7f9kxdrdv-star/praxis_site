@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ClozeSegment } from "@/lib/flashcards/cloze";
 import { previewLabel, type Rating } from "@/lib/flashcards/scheduler";
+import RichText from "@/components/flashcards/RichText";
 
 /**
  * Presentational study surface — the card + reveal + grade controls, shared by
@@ -123,20 +124,20 @@ export default function StudySurface({
                 <p className="font-headline text-xl sm:text-2xl text-as-primary leading-relaxed">
                   {segments.map((seg, i) =>
                     seg.kind === "text" ? (
-                      <span key={i}>{seg.text}</span>
+                      <span key={i}><RichText>{seg.text}</RichText></span>
                     ) : seg.kind === "image" ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img key={i} src={seg.src} alt={seg.alt} className="block mx-auto my-4 max-h-56 sm:max-h-72 lg:max-h-80 w-auto object-contain" />
                     ) : seg.revealed ? (
                       <span key={i} className="inline-block bg-as-primary/10 text-as-primary font-bold italic px-2 py-0.5 rounded-md transition-all">
-                        {seg.answer}
+                        <RichText>{seg.answer}</RichText>
                       </span>
                     ) : (
                       <span key={i} className="inline-block bg-as-primary/15 text-transparent font-bold rounded-md px-2 py-0.5 select-none" title={seg.hint || ""}>
                         {/* Screen readers should hear a blank, not the answer.
                             The visible (transparent) text only reserves width. */}
                         <span className="sr-only">(blank)</span>
-                        <span aria-hidden="true">{seg.answer}</span>
+                        <span aria-hidden="true"><RichText>{seg.answer}</RichText></span>
                       </span>
                     ),
                   )}

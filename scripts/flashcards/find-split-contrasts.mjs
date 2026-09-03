@@ -41,6 +41,8 @@ const PAIRS = [
   ["intracellular", "extracellular"], ["hyperpolarization", "depolarization"],
   ["systolic", "diastolic"], ["inspiration", "expiration"],
   ["anode", "cathode"], ["aerobic", "anaerobic"], ["donates", "accepts"],
+  ["vein", "arteries"], ["vein", "artery"], ["veins", "arteries"],
+  ["oxygenated", "deoxygenated"], ["heat", "solutes"],
   ["absorbs", "releases"], ["influx", "efflux"], ["inhalation", "exhalation"],
 ];
 
