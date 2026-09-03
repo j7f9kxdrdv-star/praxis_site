@@ -259,12 +259,12 @@ export function clozeToMaskedPreview(text: string, mask: string = "____"): strin
 // So the notation moves into markup the renderer understands rather than
 // characters the font has to provide:
 //
-//   k_{cat}   ->  k with a subscript "cat"
-//   10^{-5}   ->  10 with a superscript "-5"
+//   k_(cat)   ->  k with a subscript "cat"
+//   10^(-5)   ->  10 with a superscript "-5"
 //
-// Deliberately NOT LaTeX. The braces delimit exactly one run, there is nothing
-// to escape, and an unmatched brace renders as itself rather than swallowing
-// the rest of the card.
+// Deliberately NOT LaTeX, and deliberately not braces either. The parens
+// delimit exactly one run, nothing needs escaping, and an unmatched paren
+// renders as itself rather than swallowing the rest of the card.
 
 export type Script = "sub" | "sup" | null;
 export interface TextRun {
@@ -272,7 +272,12 @@ export interface TextRun {
   script: Script;
 }
 
-const SCRIPT_RE = /([_^])\{([^{}]+)\}/g;
+// PARENTHESES, NOT BRACES. Braces were the first choice and they broke the
+// cloze parser: a card reading {{c1::MA = F_{out} / F_{in}}} has its answer
+// terminated at the first "}}", which now falls inside the notation, so the
+// blank swallowed "MA = F_{out} / F_{in" and left a stray "}" outside it. The
+// cloze delimiter owns braces; notation cannot also use them.
+const SCRIPT_RE = /([_^])\(([^()]+)\)/g;
 
 /**
  * Split a string into runs of normal, subscript and superscript text.

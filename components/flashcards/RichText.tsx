@@ -12,8 +12,8 @@ import { parseScripts } from "@/lib/flashcards/cloze";
  *
  * So the notation lives in markup the renderer understands:
  *
- *   MA = F_{out} / F_{in}     ->   MA = F(out) / F(in) with real subscripts
- *   10^{-5}                   ->   ten to the minus five
+ *   MA = F_(out) / F_(in)     ->   MA = F(out) / F(in) with real subscripts
+ *   10^(-5)                   ->   ten to the minus five
  *
  * Text with no markup is returned unchanged, so this is safe to wrap around
  * every string on a card whether or not it contains notation.
