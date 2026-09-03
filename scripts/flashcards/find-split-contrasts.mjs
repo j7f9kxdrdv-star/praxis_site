@@ -41,6 +41,29 @@ const PAIRS = [
   ["intracellular", "extracellular"], ["hyperpolarization", "depolarization"],
   ["systolic", "diastolic"], ["inspiration", "expiration"],
 ];
+
+// A better rule than the list above, because it generalises: two answers that
+// share a root and differ only by an opposing prefix are a contrast, whatever
+// the root is. preganglionic/postganglionic was missed by the explicit list and
+// caught by this. Each entry is a prefix pair that reverses meaning.
+const PREFIXES = [
+  ["pre", "post"], ["hyper", "hypo"], ["endo", "exo"], ["intra", "extra"],
+  ["intra", "inter"], ["macro", "micro"], ["anti", "pro"], ["sub", "supra"],
+  ["afferent", "efferent"], ["ana", "cata"], ["ecto", "endo"],
+];
+/** Do two answers share a root but carry opposing prefixes? */
+function opposingPrefix(a, b) {
+  for (const [p, q] of PREFIXES) {
+    for (const [x, y] of [[p, q], [q, p]]) {
+      if (a.startsWith(x) && b.startsWith(y)) {
+        const ra = a.slice(x.length), rb = b.slice(y.length);
+        // Require a real shared root, not two short words that happen to match.
+        if (ra.length >= 4 && ra === rb) return `${x}- / ${y}- on "${ra}"`;
+      }
+    }
+  }
+  return null;
+}
 const CLOZE = /\{\{c(\d+)::([\s\S]+?)(?:::([\s\S]+?))?\}\}/g;
 const norm = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
 
@@ -89,6 +112,20 @@ for (const c of cards) {
     const gb = [...groups.entries()].find(([, v]) => v.some((x) => x === b || x.split(" ").includes(b)));
     if (ga && gb && ga[0] !== gb[0]) { reason = `${a} / ${b} split across c${ga[0]} and c${gb[0]}`; involved = [ga[0], gb[0]]; break; }
   }
+  // (b) the same root split across groups by an opposing prefix
+  if (!reason) {
+    const entries = [...groups.entries()];
+    outer: for (let i = 0; i < entries.length; i++) {
+      for (let j = i + 1; j < entries.length; j++) {
+        for (const wa of entries[i][1]) for (const wb of entries[j][1]) {
+          const hit = opposingPrefix(wa, wb);
+          if (hit) { reason = `${hit}, split across c${entries[i][0]} and c${entries[j][0]}`;
+            involved = [entries[i][0], entries[j][0]]; break outer; }
+        }
+      }
+    }
+  }
+
   // A COUNT-WORD RULE WAS TRIED AND DROPPED. Flagging cards whose stem says
   // "two" or "three" while each item sits in its own group found 150+ cards and
   // almost all were noise: "the two cerebral hemispheres", "two enantiomers",
