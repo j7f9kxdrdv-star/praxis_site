@@ -55,3 +55,9 @@ flashcard-leak-report.json
 # live site on demand, so tracking ~1.5MB of PNG that changes every time the
 # design does buys nothing.
 marketing/instagram/
+
+# Generated question-of-the-day images and reels. questions.json and the
+# scripts that render them are tracked; the output is not, because it is
+# reproducible and a reel is a few hundred KB per question.
+marketing/qotd/*.png
+marketing/qotd/*.mp4

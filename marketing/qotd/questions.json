@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "competitive-inhibition",
+    "eyebrow": "Biochemistry: Enzyme Kinetics",
+    "stem": "Adding compound X to an enzyme assay raises the apparent K_{m} from 2 mM to 8 mM while V_{max} is unchanged. Flooding the assay with substrate fully restores the original reaction rate. Where does X most likely bind?",
+    "options": [
+      "A. The active site, reversibly",
+      "B. An allosteric site, lowering k_{cat}",
+      "C. Only the enzyme-substrate complex",
+      "D. The catalytic residue, covalently"
+    ],
+    "answer": "A",
+    "answer_text": "The active site, reversibly",
+    "explanation": "K_{m} rises, V_{max} holds, and excess substrate rescues the rate. That combination only describes competition for the active site.",
+    "distractors": [
+      "B. An allosteric inhibitor lowers V_{max} by slowing turnover. K_{m} would be unchanged, and no amount of substrate would rescue it.",
+      "C. Binding only the ES complex is uncompetitive inhibition, which lowers K_{m} AND V_{max} together. Here V_{max} did not move.",
+      "D. Covalent modification is irreversible. The enzyme is out of commission permanently, so flooding with substrate changes nothing."
+    ],
+    "teaching_point": "Read the three numbers together, not one at a time. K_{m} alone cannot tell you the mechanism; it is K_{m} moving while V_{max} stays put that rules out everything except competition."
+  },
+  {
+    "slug": "weak-acid-ka",
+    "eyebrow": "General Chemistry: Acids and Bases",
+    "stem": "A 0.10 M solution of a weak monoprotic acid has a pH of 3.0. What is the approximate K_{a} of the acid?",
+    "options": [
+      "A. 1 × 10^{-3}",
+      "B. 1 × 10^{-5}",
+      "C. 1 × 10^{-7}",
+      "D. 1 × 10^{-9}"
+    ],
+    "answer": "B",
+    "answer_text": "1 × 10^{-5}",
+    "explanation": "pH 3.0 gives [H^{+}] = 10^{-3} M. For HA ⇌ H^{+} + A^{-}, both products sit at 10^{-3}, and [HA] stays near 0.10 M. So K_{a} ≈ (10^{-3})² / 0.10 = 10^{-5}.",
+    "distractors": [
+      "A. This is [H^{+}] itself, not K_{a}. The concentration of protons is what you measured, not the equilibrium constant that produced it.",
+      "C. This is (10^{-3})² with the 0.10 M forgotten. Dividing by 0.10 moves the exponent by one, not none.",
+      "D. Off by four orders of magnitude, which would make the acid far weaker than a pH of 3.0 could produce at this concentration."
+    ],
+    "teaching_point": "Check the approximation before you trust it. Here 10^{-3} is 1% of 0.10 M, comfortably inside the 5% rule, so treating [HA] as unchanged is safe. Above 5% you would need the quadratic."
+  },
+  {
+    "slug": "parallel-power",
+    "eyebrow": "Physics: Circuits",
+    "stem": "A 4 Ω resistor and a 12 Ω resistor are connected in parallel across a battery. Which resistor dissipates more power, and by what factor?",
+    "options": [
+      "A. The 4 Ω, by a factor of 3",
+      "B. The 12 Ω, by a factor of 3",
+      "C. The 4 Ω, by a factor of 9",
+      "D. They dissipate equal power"
+    ],
+    "answer": "A",
+    "answer_text": "The 4 Ω, by a factor of 3",
+    "explanation": "Parallel means both resistors see the same voltage, so use P = V²/R. Power is then inversely proportional to resistance: 12/4 = 3. The smaller resistor dissipates three times more.",
+    "distractors": [
+      "B. This inverts the relationship. More resistance in parallel means less current through that branch, and therefore less power, not more.",
+      "C. A factor of 9 comes from squaring the ratio, which happens with P = I²R in SERIES, where current is shared and resistance is not.",
+      "D. Parallel guarantees equal voltage, not equal power. Equal power would require equal resistance."
+    ],
+    "teaching_point": "Pick the power formula that uses the quantity the circuit holds constant. Parallel holds voltage constant, so P = V²/R. Series holds current constant, so P = I²R. Choosing the wrong one is the fastest way to invert your answer."
+  }
+]
