@@ -56,6 +56,7 @@ export async function countTodaysReviews(
   // "cards still left today" after the user had already finished their limit.
   // We order by the row's unique `id` so pages don't skip or overlap.
   const newCards = new Set<string>();
+  const reviewedCards = new Set<string>();
   const seenCards = new Set<string>();
   let attemptsToday = 0;
   let extraStudyAttemptsToday = 0;
@@ -88,14 +89,25 @@ export async function countTodaysReviews(
       seenCards.add(key);
       const isFirst =
         r.is_first_exposure ?? (r.prev_interval_days ?? 0) === 0;
-      if (isFirst) newCards.add(key);
+      // A card's bucket is decided by the FIRST time it is seen today and
+      // never revisited. Rows arrive ordered by id, so the first row for a key
+      // is the earliest event of the day.
+      //
+      // The previous rule put a card in "new" if ANY of today's rows was a
+      // first exposure, which let the classification move BACKWARDS. Deleting
+      // a card's memory state mid-day makes its next appearance log as a first
+      // exposure, so a card reviewed in the morning was retroactively
+      // reclassified as new in the afternoon and silently subtracted from the
+      // review count. On 2026-09-03 that hit 24 cards and held the counter at
+      // 597 of 600 while 661 unique card-blanks had actually been studied, so
+      // the limit could never be reached and the number appeared to drift.
+      if (!newCards.has(key) && !reviewedCards.has(key)) {
+        (isFirst ? newCards : reviewedCards).add(key);
+      }
     }
     if (data.length < PAGE) break;
   }
-  let reviewsToday = 0;
-  seenCards.forEach((k) => {
-    if (!newCards.has(k)) reviewsToday++;
-  });
+  const reviewsToday = reviewedCards.size;
   return {
     newToday: newCards.size,
     reviewsToday,
