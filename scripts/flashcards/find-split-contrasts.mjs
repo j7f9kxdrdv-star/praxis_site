@@ -15,88 +15,11 @@
  *
  * Reads only. Prints a list.
  */
-import { createClient } from "@supabase/supabase-js";
+import {
+  db, PAIRS, PREFIXES, NEGATORS, negatedPair, opposingPrefix,
+  CLOZE, norm, page, visibleText, groupsOf,
+} from "./lib/contrast-vocab.mjs";
 import fs from "fs";
-
-const env = Object.fromEntries(
-  fs.readFileSync(".env.local", "utf8").split("\n")
-    .filter((l) => l.includes("=") && !l.trim().startsWith("#"))
-    .map((l) => [l.slice(0, l.indexOf("=")).trim(), l.slice(l.indexOf("=") + 1).trim()]),
-);
-const db = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
-
-// Oppositions where knowing one half determines the other. Deliberately
-// conservative: only pairs that are genuinely binary in MCAT usage.
-const PAIRS = [
-  ["increases", "decreases"], ["increase", "decrease"], ["higher", "lower"],
-  ["more", "less"], ["greater", "smaller"], ["positive", "negative"],
-  ["hydrophilic", "hydrophobic"], ["polar", "nonpolar"], ["distal", "proximal"],
-  ["afferent", "efferent"], ["agonist", "antagonist"], ["anabolic", "catabolic"],
-  ["oxidation", "reduction"], ["oxidized", "reduced"], ["endothermic", "exothermic"],
-  ["endergonic", "exergonic"], ["anterior", "posterior"], ["dorsal", "ventral"],
-  ["horizontal", "vertical"], ["sympathetic", "parasympathetic"],
-  ["telencephalon", "diencephalon"], ["visceral", "parietal"],
-  ["competitive", "noncompetitive"], ["reversible", "irreversible"],
-  ["prefix", "suffix"], ["stimulates", "inhibits"], ["activates", "inhibits"],
-  ["intracellular", "extracellular"], ["hyperpolarization", "depolarization"],
-  ["systolic", "diastolic"], ["inspiration", "expiration"],
-  ["anode", "cathode"], ["aerobic", "anaerobic"], ["donates", "accepts"],
-  ["vein", "arteries"], ["vein", "artery"], ["veins", "arteries"],
-  ["oxygenated", "deoxygenated"], ["heat", "solutes"],
-  ["absorbs", "releases"], ["influx", "efflux"], ["inhalation", "exhalation"],
-];
-
-// A better rule than the list above, because it generalises: two answers that
-// share a root and differ only by an opposing prefix are a contrast, whatever
-// the root is. preganglionic/postganglionic was missed by the explicit list and
-// caught by this. Each entry is a prefix pair that reverses meaning.
-const PREFIXES = [
-  ["pre", "post"], ["hyper", "hypo"], ["endo", "exo"], ["intra", "extra"],
-  ["intra", "inter"], ["macro", "micro"], ["anti", "pro"], ["sub", "supra"],
-  ["afferent", "efferent"], ["ana", "cata"], ["ecto", "endo"],
-];
-// One answer being the other with a NEGATING prefix is the same defect by a
-// different route: anaerobic is an + aerobic, nonpolar is non + polar,
-// irreversible is ir + reversible. Like the opposing-prefix rule this needs no
-// vocabulary listed in advance, which is the point.
-const NEGATORS = ["an", "a", "non", "un", "in", "im", "ir", "il", "anti", "de", "dis"];
-function negatedPair(a, b) {
-  for (const [x, y] of [[a, b], [b, a]]) {
-    for (const n of NEGATORS) {
-      if (x.startsWith(n) && x.slice(n.length) === y && y.length >= 5) return `${n}- negation of "${y}"`;
-    }
-  }
-  return null;
-}
-
-/** Do two answers share a root but carry opposing prefixes? */
-function opposingPrefix(a, b) {
-  for (const [p, q] of PREFIXES) {
-    for (const [x, y] of [[p, q], [q, p]]) {
-      if (a.startsWith(x) && b.startsWith(y)) {
-        const ra = a.slice(x.length), rb = b.slice(y.length);
-        // Require a real shared root, not two short words that happen to match.
-        if (ra.length >= 4 && ra === rb) return `${x}- / ${y}- on "${ra}"`;
-      }
-    }
-  }
-  return null;
-}
-const CLOZE = /\{\{c(\d+)::([\s\S]+?)(?:::([\s\S]+?))?\}\}/g;
-const norm = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, " ").replace(/\s+/g, " ").trim();
-
-async function page(t, cols, order) {
-  const out = [];
-  for (let f = 0; ; f += 1000) {
-    const { data, error } = await db.from(t).select(cols)
-      .order(order[0], { ascending: true }).order(order[1], { ascending: true }).range(f, f + 999);
-    if (error) throw new Error(error.message);
-    if (!data.length) break;
-    out.push(...data);
-    if (data.length < 1000) break;
-  }
-  return out;
-}
 
 const cards = await page("flashcards", "id,deck_id,cloze_text,cloze_count", ["id", "id"]);
 const state = await page("flashcard_user_state", "flashcard_id,cloze_index,stability,reps,suspended", ["flashcard_id", "cloze_index"]);
