@@ -243,9 +243,47 @@ export function timeA(q) {
   const WPM = 200;
   const stemRead = (stemWords / WPM) * 60;
   const optRead = (optWords / WPM) * 60;
+  // REASONING TIME DOES NOT SCALE WITH OPTION LENGTH. A calculation question
+  // has four numeric answers, perhaps eight words in total, and still needs ten
+  // seconds of actual arithmetic. Sizing the decision phase from how long the
+  // options take to READ would give it three, which is the Reel #1 failure in
+  // miniature: enough time to see the question, not enough to answer it.
+  //
+  // A question counts as a calculation when its options are numeric, which is
+  // what "short answers, long thinking" looks like from the outside.
+  const numericOptions = q.options.filter((o) =>
+    /^[A-D][.)]\s*[-+]?[\d.,]+/.test(String(o).trim())
+  ).length;
+  const isCalculation = numericOptions >= 3;
+  const reasoningBuffer = isCalculation ? 8 : 3;
+
   const read = Math.min(8, Math.max(4, Math.round(stemRead * 0.6)));
-  const decide = Math.min(10, Math.max(6, Math.round(optRead + 3)));
-  return { read, decide, total: read + decide, stemWords, optWords, stemRead, optRead };
+  let decide = Math.min(10, Math.max(6, Math.round(optRead + reasoningBuffer)));
+
+  // THE LOOP IS THE EXTRA THINKING TIME, so the clip does not have to be.
+  //
+  // Reel #2 measured a 7.0s average watch on a 12s clip, with the options
+  // appearing at 6s. Viewers were leaving about one second after the answers
+  // arrived, which means the countdown beyond that was barely watched and was
+  // costing completion percentage for nothing. Completion is one of the
+  // strongest ranking signals Instagram has.
+  //
+  // The same reel logged 1.61 plays per viewer, 20 replays across 33 people.
+  // So a 10s clip watched 1.6 times gives a student 16 seconds with the
+  // question AND a strong completion signal, where a 15s clip abandoned at 7s
+  // gives the same thinking and a weak one. Ending nearer where viewers
+  // actually leave restarts the loop instead of trailing off.
+  //
+  // The DECISION phase absorbs the squeeze, never the reading phase: reading
+  // too little is what sank Reel #1, and it is the fix that is working.
+  const MAX_TOTAL = 11;
+  const DECIDE_FLOOR = 5;
+  if (read + decide > MAX_TOTAL) {
+    decide = Math.max(DECIDE_FLOOR, MAX_TOTAL - read);
+  }
+  const total = read + decide;
+  return { read, decide, total, stemWords, optWords, stemRead, optRead, isCalculation,
+           overLength: total > MAX_TOTAL };
 }
 
 function planA(q) {
@@ -352,7 +390,9 @@ for (const q of questions) {
     if (timing) {
       console.log(`  timing derived: stem ${timing.stemWords}w needs ${timing.stemRead.toFixed(1)}s to read, `
         + `options ${timing.optWords}w needs ${timing.optRead.toFixed(1)}s`);
-      console.log(`  -> ${timing.read}s reading (no timer) + ${timing.decide}s deciding = ${timing.total}s`);
+      console.log(`  -> ${timing.read}s reading (no timer) + ${timing.decide}s deciding = ${timing.total}s`
+        + (timing.isCalculation ? "   [calculation]" : "")
+        + (timing.overLength ? "   [OVER LENGTH: the stem is too long to trim further]" : ""));
     }
     const work = path.join(outDir, `.${q.slug}_${t}_frames`);
     fs.mkdirSync(work, { recursive: true });

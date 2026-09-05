@@ -78,5 +78,25 @@
       "D. Sympatric speciation means diverging without geographic separation. These populations were separated first, so the divergence began allopatrically."
     ],
     "teaching_point": "When a reproductive barrier gets STRONGER over time, ask who pays the cost of ignoring it. Reinforcement happens because hybridising is expensive, so choosiness is rewarded. Drift explains divergence, but never divergence running the same direction in two separate populations."
+  },
+  {
+    "slug": "lens-inside-focal-length",
+    "eyebrow": "Physics: Light and Optics",
+    "stem": "A 5 cm tall object sits 20 cm from a converging lens with a focal length of 30 cm. How tall is the image?",
+    "options": [
+      "A. 1.7 cm",
+      "B. 3 cm",
+      "C. 7.5 cm",
+      "D. 15 cm"
+    ],
+    "answer": "D",
+    "answer_text": "15 cm",
+    "explanation": "1/f = 1/do + 1/di gives 1/di = 1/30 - 1/20 = -1/60, so di = -60 cm. The negative sign means the image is virtual and on the same side as the object. Magnification is -di/do = +3, so a 5 cm object gives a 15 cm upright image. This is the magnifying glass case: the object sits inside the focal length.",
+    "distractors": [
+      "A. 1.7 cm inverts the magnification, using 1/3 instead of 3. Worth checking the direction: an object inside the focal length is always magnified, never shrunk.",
+      "B. 3 cm comes from adding instead of subtracting in the lens equation, 1/30 + 1/20, which puts di at +12 cm and makes the image real and smaller. A converging lens cannot do that with the object inside f.",
+      "C. 7.5 cm uses f/do as the magnification. That shortcut is not the magnification, and it happens to give 1.5 here."
+    ],
+    "teaching_point": "Object inside the focal length is the one case every MCAT student should recognise on sight: the image is virtual, upright and magnified. If your arithmetic returns a shrunken or inverted image there, the sign went wrong, not the physics."
   }
 ]
