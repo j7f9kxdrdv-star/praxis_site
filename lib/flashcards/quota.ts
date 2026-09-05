@@ -54,7 +54,8 @@ export async function countTodaysReviews(
   // re-queue logs another row). Without paging, the count truncates at 1000
   // and UNDERcounts today's unique cards — which showed up as a phantom
   // "cards still left today" after the user had already finished their limit.
-  // We order by the row's unique `id` so pages don't skip or overlap.
+  // Ordered by time with `id` as a unique tiebreaker, so pages neither skip
+  // nor overlap AND the rows arrive in the order the reviews happened.
   const newCards = new Set<string>();
   const reviewedCards = new Set<string>();
   const seenCards = new Set<string>();
@@ -67,6 +68,15 @@ export async function countTodaysReviews(
       .select("flashcard_id, cloze_index, prev_interval_days, is_first_exposure, source")
       .eq("user_id", userId)
       .gte("reviewed_at", dayStart.toISOString())
+      // CHRONOLOGICAL, then id purely as a tiebreaker.
+      //
+      // `id` is a UUID, so ordering by it alone is arbitrary: the first three
+      // rows come back as August 10, July 13, August 28. It is unique, which
+      // makes paging stable, but it says nothing about when a review happened.
+      // The rule below assigns a card's bucket from the FIRST time it is seen
+      // that day, and that only works if the rows actually arrive in time
+      // order.
+      .order("reviewed_at", { ascending: true })
       .order("id", { ascending: true })
       .range(from, from + PAGE - 1);
     if (error || !data) break;
@@ -90,8 +100,8 @@ export async function countTodaysReviews(
       const isFirst =
         r.is_first_exposure ?? (r.prev_interval_days ?? 0) === 0;
       // A card's bucket is decided by the FIRST time it is seen today and
-      // never revisited. Rows arrive ordered by id, so the first row for a key
-      // is the earliest event of the day.
+      // never revisited. Rows arrive in chronological order (see the ordering
+      // above), so the first row for a key is the earliest event of the day.
       //
       // The previous rule put a card in "new" if ANY of today's rows was a
       // first exposure, which let the classification move BACKWARDS. Deleting
