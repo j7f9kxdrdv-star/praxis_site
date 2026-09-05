@@ -5,6 +5,16 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 
+interface OfficialScore {
+  id: string;
+  exam_date: string;
+  total_score: number;
+  score_cp: number | null;
+  score_cars: number | null;
+  score_bb: number | null;
+  score_ps: number | null;
+}
+
 const SUBSCRIPTION_LABELS: Record<string, string> = {
   free: "Early access, free until billing opens",
   practice: "Practice ($79/mo)",
@@ -37,7 +47,122 @@ export default function SettingsPage() {
   const [passwordSaved, setPasswordSaved] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
+  // Official MCAT results the student chooses to report. This is the only data
+  // that can ever calibrate the score estimate against reality, and it cannot
+  // be collected retroactively, so the form exists before the predictor that
+  // will eventually use it.
+  const [officialScores, setOfficialScores] = useState<OfficialScore[]>([]);
+  const [examDate, setExamDate] = useState("");
+  const [totalScore, setTotalScore] = useState("");
+  const [scoreCp, setScoreCp] = useState("");
+  const [scoreCars, setScoreCars] = useState("");
+  const [scoreBb, setScoreBb] = useState("");
+  const [scorePs, setScorePs] = useState("");
+  const [savingScore, setSavingScore] = useState(false);
+  const [scoreSaved, setScoreSaved] = useState(false);
+  const [scoreError, setScoreError] = useState<string | null>(null);
+
   const [signingOut, setSigningOut] = useState(false);
+
+  useEffect(() => {
+    async function loadScores() {
+      const { data } = await supabase
+        .from("official_mcat_scores")
+        .select("id, exam_date, total_score, score_cp, score_cars, score_bb, score_ps")
+        .eq("user_id", user.id)
+        .order("exam_date", { ascending: false });
+      setOfficialScores((data as OfficialScore[]) || []);
+    }
+    loadScores();
+  }, [user.id]);
+
+  async function saveOfficialScore(e: React.FormEvent) {
+    e.preventDefault();
+    setSavingScore(true);
+    setScoreError(null);
+
+    const total = Number(totalScore);
+    if (!examDate) {
+      setScoreError("Which date did you sit the exam?");
+      setSavingScore(false);
+      return;
+    }
+    if (!Number.isInteger(total) || total < 472 || total > 528) {
+      setScoreError("Total score must be a whole number between 472 and 528.");
+      setSavingScore(false);
+      return;
+    }
+
+    const sections = [
+      ["C/P", scoreCp],
+      ["CARS", scoreCars],
+      ["B/B", scoreBb],
+      ["P/S", scorePs],
+    ] as const;
+    const parsed: Record<string, number | null> = {};
+    for (const [label, raw] of sections) {
+      if (!raw.trim()) {
+        parsed[label] = null;
+        continue;
+      }
+      const v = Number(raw);
+      if (!Number.isInteger(v) || v < 118 || v > 132) {
+        setScoreError(`${label} must be a whole number between 118 and 132.`);
+        setSavingScore(false);
+        return;
+      }
+      parsed[label] = v;
+    }
+
+    // If all four sections are given they must add up. Catching a typo here is
+    // worth it, because a wrong outcome is worse than a missing one: it would
+    // quietly bias every future calibration.
+    const given = Object.values(parsed).filter((v) => v !== null) as number[];
+    if (given.length === 4) {
+      const sum = given.reduce((a, b) => a + b, 0);
+      if (sum !== total) {
+        setScoreError(
+          `Your section scores add up to ${sum}, but you entered ${total} as the total.`
+        );
+        setSavingScore(false);
+        return;
+      }
+    }
+
+    const { error } = await supabase.from("official_mcat_scores").upsert(
+      {
+        user_id: user.id,
+        exam_date: examDate,
+        total_score: total,
+        score_cp: parsed["C/P"],
+        score_cars: parsed["CARS"],
+        score_bb: parsed["B/B"],
+        score_ps: parsed["P/S"],
+      },
+      { onConflict: "user_id,exam_date" }
+    );
+
+    setSavingScore(false);
+    if (error) {
+      setScoreError(error.message || "Save failed");
+      return;
+    }
+
+    const { data } = await supabase
+      .from("official_mcat_scores")
+      .select("id, exam_date, total_score, score_cp, score_cars, score_bb, score_ps")
+      .eq("user_id", user.id)
+      .order("exam_date", { ascending: false });
+    setOfficialScores((data as OfficialScore[]) || []);
+    setExamDate("");
+    setTotalScore("");
+    setScoreCp("");
+    setScoreCars("");
+    setScoreBb("");
+    setScorePs("");
+    setScoreSaved(true);
+    setTimeout(() => setScoreSaved(false), 2500);
+  }
 
   // Hydrate form from profile when it loads
   useEffect(() => {
@@ -351,6 +476,112 @@ export default function SettingsPage() {
       </Section>
 
       {/* ─────────── Sign out ─────────── */}
+      {/* ─────────── Official MCAT score ─────────── */}
+      <Section title="Your official MCAT score">
+        <p
+          className="text-[13px] mb-4"
+          style={{ color: "var(--color-prax-ink-soft)", lineHeight: 1.55 }}
+        >
+          If you have taken the real MCAT, adding your score here is the single
+          most useful thing you can do for the accuracy of our estimates. We
+          compare what Praxist predicted against what actually happened. Your
+          score is private, is never shown to other students, and adding it is
+          entirely optional.
+        </p>
+
+        {officialScores.length > 0 && (
+          <div className="mb-5">
+            {officialScores.map((sc) => (
+              <div
+                key={sc.id}
+                className="flex items-baseline gap-3 py-2.5"
+                style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
+              >
+                <span
+                  className="font-serif"
+                  style={{ fontSize: 20, color: "var(--color-prax-green)" }}
+                >
+                  {sc.total_score}
+                </span>
+                <span
+                  className="text-[11px] font-semibold uppercase"
+                  style={{ letterSpacing: "0.14em", color: "var(--color-prax-ink-mute)" }}
+                >
+                  {new Date(sc.exam_date + "T00:00:00").toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </span>
+                {sc.score_cp !== null && (
+                  <span
+                    className="text-[11px] ml-auto"
+                    style={{ color: "var(--color-prax-ink-mute)" }}
+                  >
+                    {sc.score_cp} / {sc.score_cars} / {sc.score_bb} / {sc.score_ps}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <form onSubmit={saveOfficialScore} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <TextField
+              label="Exam date"
+              type="date"
+              value={examDate}
+              onChange={setExamDate}
+            />
+            <TextField
+              label="Total score (472 to 528)"
+              type="number"
+              value={totalScore}
+              onChange={setTotalScore}
+              placeholder="e.g. 512"
+            />
+          </div>
+
+          <div>
+            <div
+              className="text-[11px] font-semibold uppercase mb-2"
+              style={{ letterSpacing: "0.14em", color: "var(--color-prax-ink-mute)" }}
+            >
+              Section scores, optional
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <TextField label="C/P" type="number" value={scoreCp} onChange={setScoreCp} placeholder="118-132" />
+              <TextField label="CARS" type="number" value={scoreCars} onChange={setScoreCars} placeholder="118-132" />
+              <TextField label="B/B" type="number" value={scoreBb} onChange={setScoreBb} placeholder="118-132" />
+              <TextField label="P/S" type="number" value={scorePs} onChange={setScorePs} placeholder="118-132" />
+            </div>
+          </div>
+
+          {scoreError && (
+            <div className="text-[12px]" style={{ color: "var(--color-prax-red, #b94a4a)" }}>
+              {scoreError}
+            </div>
+          )}
+
+          <div className="flex items-center gap-3 pt-1">
+            <button
+              type="submit"
+              disabled={savingScore}
+              className="px-5 py-2 rounded-lg font-semibold text-[13px] disabled:opacity-50"
+              style={{ background: "var(--color-prax-green)", color: "#fff" }}
+            >
+              {savingScore ? "Saving…" : "Add score"}
+            </button>
+            {scoreSaved && (
+              <span className="text-[12px]" style={{ color: "var(--color-prax-green)" }}>
+                ✓ Thank you
+              </span>
+            )}
+          </div>
+        </form>
+      </Section>
+
       <Section title="Sign out">
         <p
           className="text-[13px] mb-3"
