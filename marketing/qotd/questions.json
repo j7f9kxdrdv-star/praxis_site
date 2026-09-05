@@ -58,5 +58,25 @@
       "D. Parallel guarantees equal voltage, not equal power. Equal power would require equal resistance."
     ],
     "teaching_point": "Pick the power formula that uses the quantity the circuit holds constant. Parallel holds voltage constant, so P = V²/R. Series holds current constant, so P = I²R. Choosing the wrong one is the fastest way to invert your answer."
+  },
+  {
+    "slug": "reinforcement-contact-zone",
+    "eyebrow": "Biology: Evolution and Speciation",
+    "stem": "Two long-separated salamander populations meet again. Hybrids form but rarely survive to breed. Over forty generations, females of each population become less willing to court males from the other. This change is best described as:",
+    "options": [
+      "A. Founder effect",
+      "B. Genetic drift",
+      "C. Reinforcement",
+      "D. Sympatric speciation"
+    ],
+    "answer": "C",
+    "answer_text": "Reinforcement",
+    "explanation": "Hybrids rarely breed, so a female that courts across the zone wastes her reproductive effort. Alleles for choosier courtship spread in both populations, strengthening a barrier that acts before mating. That is reinforcement.",
+    "distractors": [
+      "A. A founder effect needs a few individuals starting a new population. These are two established populations meeting again, not founding anything.",
+      "B. Drift is random and would not push BOTH populations toward the same outcome. A shared direction is the signature of selection.",
+      "D. Sympatric speciation means diverging without geographic separation. These populations were separated first, so the divergence began allopatrically."
+    ],
+    "teaching_point": "When a reproductive barrier gets STRONGER over time, ask who pays the cost of ignoring it. Reinforcement happens because hybridising is expensive, so choosiness is rewarded. Drift explains divergence, but never divergence running the same direction in two separate populations."
   }
 ]
