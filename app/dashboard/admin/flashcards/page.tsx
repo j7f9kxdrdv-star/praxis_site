@@ -37,7 +37,6 @@ const SECTION_ORDER = [
   "biochemistry",
   "chemistry",
   "organic_chemistry",
-  "amino_acids",
   "physics",
   "scientific_reasoning",
   "psych_soc",

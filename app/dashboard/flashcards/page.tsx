@@ -39,7 +39,6 @@ const SECTIONS: { id: string; label: string }[] = [
   { id: "biochemistry", label: "Biochemistry" },
   { id: "chemistry", label: "Chemistry" },
   { id: "organic_chemistry", label: "Organic Chemistry" },
-  { id: "amino_acids", label: "Amino Acids" },
   { id: "physics", label: "Physics" },
   { id: "scientific_reasoning", label: "Scientific Reasoning" },
   { id: "psych_soc", label: "Psych / Soc" },

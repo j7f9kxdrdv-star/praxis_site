@@ -90,6 +90,40 @@ function wilsonLowerBound(passed: number, total: number, z = 1.96): number {
  * answers is "where should I spend my time", which is a question about your own
  * distribution rather than about a fixed pass mark.
  */
+/**
+ * Display names for FLASHCARD deck sections.
+ *
+ * Separate from SECTION_LABELS, which covers the question bank and uses an
+ * entirely different taxonomy: "bio_biochem" and "chem_phys" there against
+ * "biology", "biochemistry", "chemistry" and "organic_chemistry" here. Reusing
+ * that map left seven of the eight flashcard sections falling through to their
+ * raw slug, so the panel read "organic chemistry" and "biochemistry" in
+ * lowercase.
+ *
+ * The deck `topic` column cannot stand in for this: biology spans two topics
+ * ("Molecular and Cellular Biology" and "Body Systems"), and psych_soc is
+ * recorded inconsistently as both "Psych / Soc" and "Psych/Soc".
+ */
+const FLASH_SECTION_LABELS: Record<string, string> = {
+  biology: "Biology",
+  biochemistry: "Biochemistry",
+  chemistry: "General Chemistry",
+  organic_chemistry: "Organic Chemistry",
+  physics: "Physics",
+  psych_soc: "Behavioral Sciences",
+  scientific_reasoning: "Scientific Reasoning",
+};
+
+/** Last resort for a section slug nobody has named yet. */
+function flashSectionLabel(section: string): string {
+  return (
+    FLASH_SECTION_LABELS[section] ||
+    section
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+  );
+}
+
 const FLASH_BANDS = [
   { key: "focus", label: "Focus here", below: -8 },
   { key: "shaky", label: "Shaky", below: -3 },
@@ -584,6 +618,7 @@ export default function AnalyticsPage() {
         deckId: string;
         section: string;
         subtopic: string;
+        label: string;
         attempts: number;
         passed: number;
       }
@@ -605,17 +640,22 @@ export default function AnalyticsPage() {
       if (seen.has(once)) continue;
       seen.add(once);
 
-      // Every one of these is nullable in the schema. Without the final
-      // fallback a deck with no label anywhere would crash the panel on
-      // `.replace()` at render time, and analytics would go blank rather than
-      // degrade.
+      // Group on the SLUG, display the TITLE. The title column is already
+      // curated ("Carbohydrate Metabolism II", "DNA and Biotechnology"), while
+      // the slug needs a formatter that would have to know about roman numerals
+      // and acronyms to produce the same thing, and would still get
+      // "Aldehydes And Ketones Ii" wrong. The slugs are also inconsistent, some
+      // separated by underscores and some by spaces, so they are unfit to show.
+      // Every column here is nullable, hence the chain.
       const subtopic = deck.subtopic || deck.topic || deck.title || "Untitled deck";
+      const label = deck.title || deck.subtopic || deck.topic || "Untitled deck";
       const key = `${deck.section ?? "other"}::${subtopic}`;
       const row =
         map.get(key) || {
           deckId,
           section: deck.section ?? "other",
           subtopic,
+          label,
           attempts: 0,
           passed: 0,
         };
@@ -1935,8 +1975,7 @@ export default function AnalyticsPage() {
                         color: "var(--color-prax-green)",
                       }}
                     >
-                      {SECTION_LABELS[sec.section] ||
-                        sec.section.replace(/_/g, " ")}
+                      {flashSectionLabel(sec.section)}
                     </span>
                     <span
                       className="flex-1 min-w-0 truncate font-semibold uppercase"
@@ -2020,7 +2059,7 @@ export default function AnalyticsPage() {
                                   color: "var(--color-prax-ink)",
                                 }}
                               >
-                                {sub.subtopic.replace(/_/g, " ")}
+                                {sub.label}
                               </div>
                               <SmallCaps style={{ marginTop: 1 }}>
                                 {sub.attempts} cards
