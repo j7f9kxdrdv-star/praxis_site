@@ -16,7 +16,7 @@
  * Reads only. Prints a list.
  */
 import {
-  db, PAIRS, negatedPair, opposingPrefix, CLOZE, norm, page,
+  db, PAIRS, SERIES, negatedPair, opposingPrefix, relatedAnswers, CLOZE, norm, page,
 } from "./lib/contrast-vocab.mjs";
 import fs from "fs";
 
@@ -51,25 +51,49 @@ function detect(c) {
     groups.get(+m[1]).push(norm(m[2]));
   }
   if (groups.size < 2) return null;
+  const entries = [...groups.entries()];
+
+  // A SERIES is checked first, and it collects EVERY group holding a member,
+  // not just the first two. Merging one pair out of "single / double / triple"
+  // leaves the third alone and the card still gives itself away from both
+  // sides: asking for the merged pair shows "triple", and asking for "triple"
+  // shows the other two. Mikko caught exactly that. A partial merge on a series
+  // is not a smaller fix, it is no fix.
+  const has = (ans, term) => ans === term || ans.split(" ").includes(term);
+  for (const list of SERIES) {
+    const involved = entries.filter(([, v]) => v.some((x) => list.some((t) => has(x, t))));
+    const members = new Set();
+    for (const [, v] of involved) {
+      for (const x of v) for (const t of list) if (has(x, t)) members.add(t);
+    }
+    if (involved.length >= 2 && members.size >= 2) {
+      return {
+        reason: `${[...members].join(" / ")} are members of one series`,
+        pair: involved.map(([g]) => g).sort((a, b) => a - b),
+      };
+    }
+  }
+
   for (const [a, b] of PAIRS) {
-    const ga = [...groups.entries()].find(([, v]) => v.some((x) => x === a || x.split(" ").includes(a)));
-    const gb = [...groups.entries()].find(([, v]) => v.some((x) => x === b || x.split(" ").includes(b)));
+    const ga = entries.find(([, v]) => v.some((x) => x === a || x.split(" ").includes(a)));
+    const gb = entries.find(([, v]) => v.some((x) => x === b || x.split(" ").includes(b)));
     if (ga && gb && ga[0] !== gb[0]) return { reason: `${a} / ${b}`, pair: [ga[0], gb[0]] };
   }
-  const entries = [...groups.entries()];
+
   for (let i = 0; i < entries.length; i++)
     for (let j = i + 1; j < entries.length; j++)
       for (const wa of entries[i][1]) for (const wb of entries[j][1]) {
-        const hit = opposingPrefix(wa, wb) || negatedPair(wa, wb);
+        const hit = relatedAnswers(wa, wb);
         if (hit) return { reason: hit, pair: [entries[i][0], entries[j][0]] };
       }
   return null;
 }
 
-/** Fold `from` into `keep`, then renumber every group to a contiguous 1..N. */
+/** Fold every group in `from` into `keep`, then renumber to a contiguous 1..N. */
 function merge(text, keep, from) {
+  const fold = new Set(Array.isArray(from) ? from : [from]);
   const folded = text.replace(CLOZE, (full, g, ans, hint) => {
-    const n = +g === from ? keep : +g;
+    const n = fold.has(+g) ? keep : +g;
     return hint === undefined ? `{{c${n}::${ans}}}` : `{{c${n}::${ans}::${hint}}}`;
   });
   CLOZE.lastIndex = 0;
@@ -93,8 +117,8 @@ const tooMany = [];
 for (const c of cards) {
   const d = detect(c);
   if (!d) continue;
-  const [a, b] = d.pair;
-  const keep = Math.min(a, b), from = Math.max(a, b);
+  const involved = [...d.pair].sort((x, y) => x - y);
+  const keep = involved[0], from = involved.slice(1);
   const { text, count } = merge(c.cloze_text, keep, from);
 
   // Verification, per card, before anything is written.
@@ -122,7 +146,7 @@ for (const c of cards) {
 
   const contiguous = [...groups].sort((x, y) => x - y).every((g, i) => g === i + 1);
   const sameWords = wordbag(text) === wordbag(c.cloze_text);
-  const shrank = count === (c.cloze_count ?? 0) - 1;
+  const shrank = count === (c.cloze_count ?? 0) - from.length;
   if (!contiguous || !sameWords || !shrank || groups.size !== count) {
     console.error(`REFUSED ${c.id}: contiguous=${contiguous} words=${sameWords} shrank=${shrank}`);
     continue;
@@ -161,7 +185,11 @@ let sql = `-- ============================================================
 -- exactly one group fewer than before, and the card's words unchanged (only
 -- the blanking moved).
 --
--- PROGRESS ON THESE CARDS IS DELETED: ${rows.length} rows across ${users.size} account(s).
+-- PROGRESS ON THESE CARDS IS RESET, NOT DELETED: ${rows.length} rows across ${users.size} account(s).
+-- The schedule is discarded because the merged blank asks a harder question
+-- than the one that was graded, but the card stays SEEN. Deleting the row
+-- instead would make a card studied for weeks reappear as brand new and spend
+-- the daily new-card budget.
 -- ${pastExam} of those blanks were scheduled past the 2026-09-12 exam and would never
 -- have come back in time. A leaking card could be answered without knowing it,
 -- so its review history is not evidence of knowledge. These re-enter as new
@@ -176,7 +204,16 @@ for (const f of fixes) {
   sql += `--   was: ${f.before.replace(/\s+/g, " ").slice(0, 160)}\n`;
   sql += `--   now: ${f.after.replace(/\s+/g, " ").slice(0, 160)}\n`;
   sql += `UPDATE public.flashcards SET cloze_text = ${q(f.after)}, cloze_count = ${f.count} WHERE id = '${f.id}';\n`;
-  sql += `DELETE FROM public.flashcard_user_state WHERE flashcard_id = '${f.id}';\n\n`;
+  // RESET, DO NOT DELETE. Deleting a card's state makes it "unseen" again, so
+  // a card the student has studied for weeks reappears as brand new and is
+  // charged against the daily NEW-card budget instead of the review budget.
+  // Mikko hit exactly that: "I have reviewed all the cards, so I don't get how
+  // there are 12 unseen." Only the schedule should be discarded, because the
+  // merged blank asks a harder question than the one that was graded; the fact
+  // that he has seen the card is still true and must survive.
+  sql += `DELETE FROM public.flashcard_user_state WHERE flashcard_id = '${f.id}' AND cloze_index > ${f.count};\n`;
+  sql += `UPDATE public.flashcard_user_state SET stability = 2.0, interval_days = 0, scheduled_days = 0,\n`;
+  sql += `    next_review_at = now(), fsrs_state = 2, learning_steps = 0 WHERE flashcard_id = '${f.id}';\n\n`;
 }
 sql += `COMMIT;
 
@@ -193,7 +230,7 @@ SELECT COUNT(*) AS orphaned_progress FROM public.flashcard_user_state s
 JOIN public.flashcards f ON f.id = s.flashcard_id
 WHERE s.cloze_index > f.cloze_count;
 `;
-fs.writeFileSync("supabase/fixes/20260903_merge_split_contrasts_round3.sql", sql);
+fs.writeFileSync("supabase/fixes/20260904_merge_ordered_series.sql", sql);
 if (tooMany.length) {
   console.log(`\nREFUSED as over-merges, these need hand design: ${tooMany.length}`);
   for (const t of tooMany) {
@@ -203,6 +240,6 @@ if (tooMany.length) {
   console.log("");
 }
 console.log(`repaired          : ${fixes.length} cards`);
-console.log(`progress deleted  : ${rows.length} rows across ${users.size} account(s)`);
+console.log(`schedules reset   : ${rows.length} rows across ${users.size} account(s)`);
 console.log(`of those, past exam: ${pastExam} blanks that would never have returned in time`);
-console.log(`\nwrote supabase/fixes/20260903_merge_split_contrasts_round3.sql`);
+console.log(`\nwrote supabase/fixes/20260904_merge_ordered_series.sql`);

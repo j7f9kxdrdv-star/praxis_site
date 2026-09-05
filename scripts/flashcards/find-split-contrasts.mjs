@@ -16,7 +16,7 @@
  * Reads only. Prints a list.
  */
 import {
-  db, PAIRS, PREFIXES, NEGATORS, negatedPair, opposingPrefix,
+  db, PAIRS, PREFIXES, NEGATORS, negatedPair, opposingPrefix, sameSeries, relatedAnswers,
   CLOZE, norm, page, visibleText, groupsOf,
 } from "./lib/contrast-vocab.mjs";
 import fs from "fs";
@@ -59,7 +59,7 @@ for (const c of cards) {
     outer: for (let i = 0; i < entries.length; i++) {
       for (let j = i + 1; j < entries.length; j++) {
         for (const wa of entries[i][1]) for (const wb of entries[j][1]) {
-          const hit = opposingPrefix(wa, wb) || negatedPair(wa, wb);
+          const hit = relatedAnswers(wa, wb);
           if (hit) { reason = `${hit}, split across c${entries[i][0]} and c${entries[j][0]}`;
             involved = [entries[i][0], entries[j][0]]; break outer; }
         }

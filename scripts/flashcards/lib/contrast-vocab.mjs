@@ -77,12 +77,52 @@ export const PAIRS = [
   ["calcitonin", "parathyroid"],
 ];
 
+// ORDERED SERIES, not pairs. Mikko found the bond-composition card:
+//
+//   "a {c1 single} bond is 1 sigma; a {c2 double} bond is 1 sigma + 1 pi;
+//    a {c3 triple} bond is 1 sigma + 2 pi"
+//
+// Nothing here is an opposite, so every pair-based rule was blind to it. But
+// seeing two members of a counted sequence hands you the third just as surely
+// as seeing one half of a contrast hands you the other. A series member in one
+// group and another member in a DIFFERENT group is the same defect.
+export const SERIES = [
+  ["single", "double", "triple", "quadruple"],
+  ["primary", "secondary", "tertiary", "quaternary"],
+  ["mono", "di", "tri", "tetra"],
+  ["first", "second", "third", "fourth"],
+  ["alpha", "beta", "gamma", "delta"],
+  ["one", "two", "three", "four"],
+  ["initiation", "elongation", "termination"],
+  ["prophase", "metaphase", "anaphase", "telophase"],
+  ["sensory", "integration", "motor"],
+  ["absorption", "distribution", "metabolism", "excretion"],
+];
+
+/** Are two answers different members of the same ordered series? */
+export function sameSeries(a, b) {
+  const has = (ans, term) => ans === term || ans.split(" ").includes(term);
+  for (const list of SERIES) {
+    const ia = list.findIndex((t) => has(a, t));
+    const ib = list.findIndex((t) => has(b, t));
+    if (ia >= 0 && ib >= 0 && ia !== ib) {
+      return `"${list[ia]}" and "${list[ib]}" are members of the same series`;
+    }
+  }
+  return null;
+}
+
 // A better rule than the list above, because it generalises: two answers that
 // share a root and differ only by an opposing prefix are a contrast, whatever
 // the root is. preganglionic/postganglionic was missed by the explicit list and
 // caught by this. Each entry is a prefix pair that reverses meaning.
 export const PREFIXES = [
   ["pre", "post"], ["hyper", "hypo"], ["endo", "exo"], ["intra", "extra"],
+  // Counting prefixes. Mikko found the twin card, where "Monozygotic" sat in
+  // plain stem text beside a blanked "dizygotic". These also appear in SERIES,
+  // but that rule only compares one BLANK against another; a giveaway sitting
+  // in unblanked prose needs the prefix rule to catch it.
+  ["mono", "di"], ["mono", "poly"], ["homo", "hetero"], ["uni", "bi"],
   ["intra", "inter"], ["macro", "micro"], ["anti", "pro"], ["sub", "supra"],
   ["afferent", "efferent"], ["ana", "cata"], ["ecto", "endo"],
 ];
@@ -111,6 +151,32 @@ export function opposingPrefix(a, b) {
         // Require a real shared root, not two short words that happen to match.
         if (ra.length >= 4 && ra === rb) return `${x}- / ${y}- on "${ra}"`;
       }
+    }
+  }
+  return null;
+}
+
+/**
+ * Are two ANSWERS related, comparing word by word?
+ *
+ * opposingPrefix and negatedPair both require the root to match exactly, so
+ * they only ever worked on single-word answers. Fed a whole phrase they fail
+ * silently:
+ *
+ *   "monozygotic identical" vs "dizygotic fraternal"   -> no match
+ *   "monozygotic"           vs "dizygotic"             -> mono- / di- on "zygotic"
+ *
+ * Mikko found the twin card that this had been letting through. Every
+ * multi-word answer in the bank was invisible to those two rules until now.
+ */
+export function relatedAnswers(a, b) {
+  const wa = String(a).split(" ").filter(Boolean);
+  const wb = String(b).split(" ").filter(Boolean);
+  for (const x of wa) {
+    for (const y of wb) {
+      if (x === y) continue;
+      const hit = opposingPrefix(x, y) || negatedPair(x, y) || sameSeries(x, y);
+      if (hit) return hit;
     }
   }
   return null;
