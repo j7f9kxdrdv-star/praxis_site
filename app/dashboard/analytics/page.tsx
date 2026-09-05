@@ -1243,49 +1243,59 @@ export default function AnalyticsPage() {
               </svg>
             </div>
             {scoreEstimate.low !== null ? (
-              <div className="flex items-baseline gap-2">
-                <div
-                  className="leading-none font-medium"
-                  style={{
-                    fontFamily: "var(--font-prax-serif)",
-                    fontSize: 44,
-                    color: "var(--color-prax-cream)",
-                    fontVariantNumeric: "tabular-nums lining-nums",
-                  }}
-                >
-                  {scoreEstimate.low}
+              <div>
+                {/* No confidence label on purpose. "Low confidence" reads as a
+                    judgement of the student when it is a statement about how
+                    little we have measured, and the opposite phrasing, "we are
+                    confident you will score in here", is a promise nothing
+                    validates: no Praxist prediction has ever been compared to a
+                    real MCAT result. The line under the bar already says what
+                    the estimate rests on and why it is wide, which is the
+                    honest version of the same caveat.
+
+                    scoreEstimate.confidence is still computed, for the admin
+                    diagnostics the V2 spec calls for. It is simply not shown to
+                    students.
+
+                    The LIKELY score leads, with the range beneath it.
+                    Two 44px numbers sixteen points apart read as "we have no
+                    idea", when in fact the centre is a real estimate and the
+                    width is mostly the cost of two MCAT sections we have never
+                    tested. Leading with the centre says what we think; the line
+                    under it says how sure we are. */}
+                <div className="flex items-baseline gap-2.5">
+                  <div
+                    className="leading-none font-medium"
+                    style={{
+                      fontFamily: "var(--font-prax-serif)",
+                      fontSize: 46,
+                      color: "var(--color-prax-cream)",
+                      fontVariantNumeric: "tabular-nums lining-nums",
+                    }}
+                  >
+                    {scoreEstimate.centre}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      letterSpacing: "0.16em",
+                      textTransform: "uppercase",
+                      fontWeight: 600,
+                      color: "rgba(246,244,227,0.55)",
+                    }}
+                  >
+                    likely
+                  </div>
                 </div>
                 <div
+                  className="mt-1.5"
                   style={{
-                    fontFamily: "var(--font-prax-serif)",
-                    fontSize: 22,
-                    color: "rgba(246,244,227,0.5)",
+                    fontSize: 12,
+                    color: "rgba(246,244,227,0.72)",
+                    fontVariantNumeric: "tabular-nums",
                   }}
                 >
-                  to
-                </div>
-                <div
-                  className="leading-none font-medium"
-                  style={{
-                    fontFamily: "var(--font-prax-serif)",
-                    fontSize: 44,
-                    color: "var(--color-prax-cream)",
-                    fontVariantNumeric: "tabular-nums lining-nums",
-                  }}
-                >
-                  {scoreEstimate.high}
-                </div>
-                <div
-                  className="ml-1"
-                  style={{
-                    fontSize: 10,
-                    letterSpacing: "0.16em",
-                    textTransform: "uppercase",
-                    fontWeight: 600,
-                    color: "rgba(246,244,227,0.55)",
-                  }}
-                >
-                  {scoreEstimate.confidence} confidence
+                  {scoreEstimate.low} to {scoreEstimate.high}
                 </div>
               </div>
             ) : (
