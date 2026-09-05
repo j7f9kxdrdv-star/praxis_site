@@ -85,6 +85,12 @@ function wilsonLowerBound(passed: number, total: number, z = 1.96): number {
 /**
  * How far below your own recall a subtopic has to sit before it is called out.
  *
+ * The delta itself is never SHOWN. It was displayed as "-57 pts" and on an MCAT
+ * product "points" means scaled score points, 472 to 528, so a student could
+ * read a topic delta as a score. It also said the same thing three times on one
+ * row, next to the percentage, the raw tally and a pill that exists because of
+ * it. The bands below still carry the comparison; the subtitle names it.
+ *
  * Bands are RELATIVE, not absolute. A 61% subtopic is strong for a student
  * averaging 57% and mediocre for one averaging 80%, and the question this panel
  * answers is "where should I spend my time", which is a question about your own
@@ -400,6 +406,9 @@ export default function AnalyticsPage() {
   // Flashcard taxonomy. Fetched as two small lookups rather than joined onto
   // every review row: the card list is ~4k rows and the deck list ~70, against
   // tens of thousands of reviews that would each drag a copy of the taxonomy.
+  const [openQuestionSections, setOpenQuestionSections] = useState<Set<string>>(
+    new Set()
+  );
   const [openFlashSections, setOpenFlashSections] = useState<Set<string>>(
     new Set()
   );
@@ -589,6 +598,61 @@ export default function AnalyticsPage() {
   }, [filtered]);
 
   const weakestTopic = subtopicStats[0];
+
+  /**
+   * The same grouping the flashcard panel uses, applied to practice questions.
+   *
+   * Sections come from the QUESTION taxonomy (bio_biochem, chem_phys), which is
+   * why this reads SECTION_LABELS rather than FLASH_SECTION_LABELS.
+   *
+   * NOTE ON THE THRESHOLD. Subtopics still enter at 3 attempts, inherited from
+   * the card this replaces. That is too few to call anything mastery: going
+   * 0 for 3 happens about one time in eight even when you know the material at
+   * 50%, and 4 for 4 happens one time in sixteen. On the current data every
+   * single subtopic sits at 1 to 5 attempts, so the labels below are describing
+   * coin flips. The layout is being fixed first and the threshold deliberately
+   * left for later; when it is raised, only MIN_ATTEMPTS needs to change.
+   */
+  const questionTopicStats = useMemo(() => {
+    const baseline = overallAccuracy / 100;
+
+    const scored = subtopicStats.map((r) => ({
+      ...r,
+      delta: Math.round(r.accuracy - overallAccuracy),
+      floor: wilsonLowerBound(r.correct, r.total),
+    }));
+
+    const groups = new Map<
+      string,
+      { section: string; total: number; correct: number; subs: typeof scored }
+    >();
+    for (const r of scored) {
+      const g =
+        groups.get(r.section) || {
+          section: r.section,
+          total: 0,
+          correct: 0,
+          subs: [] as typeof scored,
+        };
+      g.total += r.total;
+      g.correct += r.correct;
+      g.subs.push(r);
+      groups.set(r.section, g);
+    }
+
+    const sections = Array.from(groups.values())
+      .map((g) => ({
+        section: g.section,
+        accuracy: Math.round((g.correct / g.total) * 100),
+        delta: Math.round((g.correct / g.total) * 100 - overallAccuracy),
+        subs: [...g.subs].sort((a, b) => a.floor - b.floor),
+        focusCount: g.subs.filter((x) => flashBandOf(x.delta).key === "focus")
+          .length,
+      }))
+      .sort((a, b) => a.accuracy - b.accuracy);
+
+    return { sections, subtopicCount: scored.length, baseline };
+  }, [subtopicStats, overallAccuracy]);
 
   /**
    * Which flashcard subtopics is this student actually weak on?
@@ -1999,23 +2063,6 @@ export default function AnalyticsPage() {
                     >
                       {sec.accuracy}%
                     </span>
-                    <span
-                      className="shrink-0 text-right font-semibold uppercase"
-                      style={{
-                        fontSize: 10,
-                        letterSpacing: "0.22em",
-                        minWidth: 62,
-                        color:
-                          sec.delta < -3
-                            ? "var(--color-prax-gold)"
-                            : sec.delta > 3
-                            ? "var(--color-prax-green-soft)"
-                            : "var(--color-prax-ink-mute)",
-                      }}
-                    >
-                      {sec.delta > 0 ? "+" : ""}
-                      {sec.delta} pts
-                    </span>
                   </button>
 
                   {isOpen && (
@@ -2080,10 +2127,6 @@ export default function AnalyticsPage() {
                               >
                                 {sub.accuracy}%
                               </div>
-                              <SmallCaps style={{ marginTop: 1 }}>
-                                {sub.delta > 0 ? "+" : ""}
-                                {sub.delta} pts
-                              </SmallCaps>
                             </div>
 
                             <div
@@ -2141,9 +2184,9 @@ export default function AnalyticsPage() {
         )}
       </PraxCard>
 
-      {/* ── Topic Mastery list ── */}
+      {/* ── Topic mastery, grouped by section ── */}
       <PraxCard variant="secondary" className="mb-6">
-        <div className="flex items-end justify-between mb-5 gap-3">
+        <div className="flex items-end justify-between mb-2 gap-3">
           <div>
             <div
               className="font-medium"
@@ -2156,15 +2199,17 @@ export default function AnalyticsPage() {
               Topic mastery
             </div>
             <SmallCaps style={{ marginTop: 4 }}>
-              Weakest first. These move your score the most
+              {questionTopicStats.sections.length > 0
+                ? "Weakest sections first · graded against your own accuracy"
+                : "Answer practice questions to see which topics need work"}
             </SmallCaps>
           </div>
-          {subtopicStats.length > 0 && (
-            <SmallCaps>{subtopicStats.length} topics</SmallCaps>
+          {questionTopicStats.subtopicCount > 0 && (
+            <SmallCaps>{questionTopicStats.subtopicCount} topics</SmallCaps>
           )}
         </div>
 
-        {subtopicStats.length === 0 ? (
+        {questionTopicStats.sections.length === 0 ? (
           <div
             className="italic text-center py-8"
             style={{
@@ -2173,110 +2218,188 @@ export default function AnalyticsPage() {
               color: "var(--color-prax-ink-mute)",
             }}
           >
-            Answer at least 3 questions per topic to see mastery data.
+            Answer at least 3 questions in a topic to see mastery data.
           </div>
         ) : (
           <div>
-            {subtopicStats.map((s) => {
-              const accuracy = s.accuracy;
-              const isStrong = accuracy >= 80;
-              const isDeveloping = accuracy >= 60 && accuracy < 80;
-
-              const badgeBg = isStrong
-                ? "var(--color-prax-green-tint)"
-                : isDeveloping
-                ? "var(--color-prax-cream-card)"
-                : "var(--color-prax-gold)";
-              const badgeColor = isStrong
-                ? "var(--color-prax-green)"
-                : isDeveloping
-                ? "var(--color-prax-ink-soft)"
-                : "var(--color-prax-cream)";
-              const badgeLabel = isStrong
-                ? "Strong"
-                : isDeveloping
-                ? "Developing"
-                : "Focus Here";
+            {questionTopicStats.sections.map((sec) => {
+              const isOpen = openQuestionSections.has(sec.section);
+              const summary =
+                sec.focusCount > 0
+                  ? `${sec.focusCount} need${sec.focusCount === 1 ? "s" : ""} focus`
+                  : "nothing urgent";
 
               return (
                 <div
-                  key={`${s.section}::${s.subtopic}`}
-                  className="flex items-center gap-4 py-3"
-                  style={{
-                    borderBottom: "1px solid var(--color-prax-cream-border)",
-                  }}
+                  key={sec.section}
+                  style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
                 >
-                  <div
-                    className="w-1 rounded-full overflow-hidden shrink-0"
-                    style={{
-                      height: 32,
-                      background: "var(--color-prax-cream-card)",
-                    }}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOpenQuestionSections((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(sec.section)) next.delete(sec.section);
+                        else next.add(sec.section);
+                        return next;
+                      })
+                    }
+                    aria-expanded={isOpen}
+                    className="w-full flex items-center gap-3 py-4 text-left"
+                    style={{ background: "none", border: 0, cursor: "pointer" }}
                   >
-                    <div
-                      className="w-full rounded-full transition-all duration-700"
+                    <svg
+                      width="9"
+                      height="9"
+                      viewBox="0 0 10 10"
+                      aria-hidden="true"
+                      className="shrink-0"
                       style={{
-                        height: `${accuracy}%`,
-                        marginTop: `${100 - accuracy}%`,
-                        background: isStrong
-                          ? "var(--color-prax-green)"
-                          : isDeveloping
-                          ? "var(--color-prax-green-soft)"
-                          : "var(--color-prax-gold)",
-                      }}
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div
-                      className="font-medium truncate"
-                      style={{
-                        fontFamily: "var(--font-prax-serif)",
-                        fontSize: 14.5,
-                        color: "var(--color-prax-green)",
+                        transform: isOpen ? "rotate(90deg)" : "none",
+                        transition: "transform 160ms",
                       }}
                     >
-                      {s.subtopic.replace(/_/g, " ")}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 10.5,
-                        color: "var(--color-prax-ink-mute)",
-                        fontVariantNumeric: "tabular-nums",
-                      }}
-                    >
-                      {SECTION_LABELS[s.section] || s.section} · {s.correct}/
-                      {s.total} correct
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2.5 shrink-0">
-                    <div
-                      style={{
-                        fontFamily: "var(--font-prax-serif)",
-                        fontSize: 17,
-                        fontStyle: "italic",
-                        color: "var(--color-prax-green)",
-                        fontVariantNumeric: "tabular-nums lining-nums",
-                      }}
-                    >
-                      {accuracy}%
-                    </div>
+                      <path
+                        d="M3 1l4 4-4 4"
+                        fill="none"
+                        stroke="var(--color-prax-ink-mute)"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                     <span
-                      className="px-2.5 py-1 rounded-full whitespace-nowrap"
+                      className="font-medium shrink-0"
                       style={{
-                        background: badgeBg,
-                        color: badgeColor,
-                        fontSize: 9.5,
-                        fontWeight: 700,
-                        letterSpacing: "0.14em",
-                        textTransform: "uppercase",
+                        fontFamily: "var(--font-prax-serif)",
+                        fontSize: 18,
+                        color: "var(--color-prax-green)",
                       }}
                     >
-                      {badgeLabel}
+                      {SECTION_LABELS[sec.section] ||
+                        sec.section.replace(/_/g, " ")}
                     </span>
-                  </div>
+                    <span
+                      className="flex-1 min-w-0 truncate font-semibold uppercase"
+                      style={{
+                        fontSize: 10,
+                        letterSpacing: "0.22em",
+                        color: "var(--color-prax-ink-mute)",
+                      }}
+                    >
+                      {sec.subs.length} topic{sec.subs.length === 1 ? "" : "s"} ·{" "}
+                      {summary}
+                    </span>
+                    <span
+                      className="tabular-nums shrink-0 text-right"
+                      style={{
+                        fontFamily: "var(--font-prax-serif)",
+                        fontSize: 18,
+                        color: "var(--color-prax-green)",
+                        minWidth: 46,
+                      }}
+                    >
+                      {sec.accuracy}%
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div style={{ padding: "0 0 12px 20px" }}>
+                      {sec.subs.map((sub) => {
+                        const band = flashBandOf(sub.delta);
+                        const tone = FLASH_BAND_STYLE[band.key];
+                        return (
+                          <div
+                            key={`${sub.section}::${sub.subtopic}`}
+                            className="flex items-center gap-3.5 py-2.5"
+                            style={{
+                              borderTop:
+                                "1px solid var(--color-prax-cream-border)",
+                            }}
+                          >
+                            <div
+                              className="rounded-full overflow-hidden shrink-0"
+                              style={{
+                                width: 3,
+                                height: 26,
+                                background: "var(--color-prax-cream-deep)",
+                              }}
+                            >
+                              <div
+                                className="w-full rounded-full transition-all duration-700"
+                                style={{
+                                  height: `${sub.accuracy}%`,
+                                  marginTop: `${100 - sub.accuracy}%`,
+                                  background: tone.bar,
+                                }}
+                              />
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div
+                                className="truncate"
+                                style={{
+                                  fontFamily: "var(--font-prax-serif)",
+                                  fontSize: 14.5,
+                                  color: "var(--color-prax-ink)",
+                                }}
+                              >
+                                {sub.subtopic}
+                              </div>
+                              <SmallCaps style={{ marginTop: 1 }}>
+                                {sub.correct}/{sub.total} correct
+                              </SmallCaps>
+                            </div>
+
+                            <div
+                              className="text-right shrink-0"
+                              style={{ minWidth: 44 }}
+                            >
+                              <div
+                                className="tabular-nums"
+                                style={{
+                                  fontFamily: "var(--font-prax-serif)",
+                                  fontSize: 15,
+                                  color: "var(--color-prax-green)",
+                                }}
+                              >
+                                {sub.accuracy}%
+                              </div>
+                            </div>
+
+                            {/* No per-row action here, unlike the flashcard
+                                panel. A deck is a route, so "Study" can open
+                                exactly that deck. Practice sessions are built
+                                through a builder that takes no subtopic, so a
+                                "Practice" button next to Lineweaver-Burk would
+                                not actually serve Lineweaver-Burk questions. */}
+                            <div
+                              className="shrink-0 rounded-full px-2.5 py-1"
+                              style={{
+                                background: tone.pillBg,
+                                color: tone.pillFg,
+                                fontSize: 9,
+                                letterSpacing: "0.13em",
+                                textTransform: "uppercase",
+                                fontWeight: 600,
+                                minWidth: 80,
+                                textAlign: "center",
+                              }}
+                            >
+                              {band.label}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
+
+            <div
+              style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
+            />
           </div>
         )}
       </PraxCard>
