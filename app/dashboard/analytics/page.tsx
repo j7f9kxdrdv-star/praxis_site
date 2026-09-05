@@ -20,6 +20,15 @@ interface Attempt {
   questions: { section: string; subtopic: string; difficulty: string } | null;
 }
 
+/** A deck IS a subtopic in the flashcard library: one deck per subtopic. */
+interface DeckMeta {
+  id: string;
+  section: string | null;
+  topic: string | null;
+  subtopic: string | null;
+  title: string;
+}
+
 interface DailyActivity {
   activity_date: string;
   questions_completed: number;
@@ -53,6 +62,72 @@ function estimateScoreRange(accuracy: number): [number, number] {
   if (accuracy > 0) return [498, 503];
   return [0, 0];
 }
+
+/**
+ * Lower bound of the Wilson score interval for a proportion.
+ *
+ * Ranking subtopics by raw accuracy is wrong when the counts differ. A student
+ * who got 1 of 3 wrong in a topic they barely touched would outrank a topic
+ * they have failed 200 times, and the advice would send them at the noise. The
+ * Wilson lower bound asks "how bad could this plausibly be, given how little we
+ * have seen", so a small sample cannot jump the queue on the strength of a
+ * couple of unlucky cards.
+ */
+function wilsonLowerBound(passed: number, total: number, z = 1.96): number {
+  if (total <= 0) return 0;
+  const p = passed / total;
+  const denom = 1 + (z * z) / total;
+  const centre = p + (z * z) / (2 * total);
+  const margin = z * Math.sqrt((p * (1 - p) + (z * z) / (4 * total)) / total);
+  return (centre - margin) / denom;
+}
+
+/**
+ * How far below your own recall a subtopic has to sit before it is called out.
+ *
+ * Bands are RELATIVE, not absolute. A 61% subtopic is strong for a student
+ * averaging 57% and mediocre for one averaging 80%, and the question this panel
+ * answers is "where should I spend my time", which is a question about your own
+ * distribution rather than about a fixed pass mark.
+ */
+const FLASH_BANDS = [
+  { key: "focus", label: "Focus here", below: -8 },
+  { key: "shaky", label: "Shaky", below: -3 },
+  { key: "onpace", label: "On pace", below: 3 },
+  { key: "strong", label: "Strong", below: Infinity },
+] as const;
+
+type FlashBand = (typeof FLASH_BANDS)[number];
+
+function flashBandOf(delta: number): FlashBand {
+  return FLASH_BANDS.find((b) => delta < b.below) ?? FLASH_BANDS[FLASH_BANDS.length - 1];
+}
+
+const FLASH_BAND_STYLE: Record<
+  FlashBand["key"],
+  { bar: string; pillBg: string; pillFg: string }
+> = {
+  focus: {
+    bar: "var(--color-prax-gold)",
+    pillBg: "var(--color-prax-gold)",
+    pillFg: "var(--color-prax-cream)",
+  },
+  shaky: {
+    bar: "var(--color-prax-gold-soft)",
+    pillBg: "var(--color-prax-cream-deep)",
+    pillFg: "var(--color-prax-ink-soft)",
+  },
+  onpace: {
+    bar: "var(--color-prax-green-soft)",
+    pillBg: "var(--color-prax-green-tint)",
+    pillFg: "var(--color-prax-green)",
+  },
+  strong: {
+    bar: "var(--color-prax-green)",
+    pillBg: "var(--color-prax-green)",
+    pillFg: "var(--color-prax-cream)",
+  },
+};
 
 function buildSvgPath(points: [number, number][]): string {
   if (points.length === 0) return "";
@@ -288,6 +363,14 @@ export default function AnalyticsPage() {
   const [period, setPeriod] = useState<Period>("30d");
   const [chartSection, setChartSection] = useState<string>("all");
   const [sectionDropdownOpen, setSectionDropdownOpen] = useState(false);
+  // Flashcard taxonomy. Fetched as two small lookups rather than joined onto
+  // every review row: the card list is ~4k rows and the deck list ~70, against
+  // tens of thousands of reviews that would each drag a copy of the taxonomy.
+  const [openFlashSections, setOpenFlashSections] = useState<Set<string>>(
+    new Set()
+  );
+  const [cardToDeck, setCardToDeck] = useState<Map<string, string>>(new Map());
+  const [deckMeta, setDeckMeta] = useState<Map<string, DeckMeta>>(new Map());
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
 
@@ -341,6 +424,29 @@ export default function AnalyticsPage() {
           return { data: all };
         })(),
       ]);
+
+      // Card -> deck, and deck -> subtopic. Paged, because the card table is
+      // larger than a single Supabase response.
+      const cards: { id: string; deck_id: string }[] = [];
+      for (let from = 0; ; from += 1000) {
+        const { data, error } = await supabase
+          .from("flashcards")
+          .select("id, deck_id")
+          .order("id", { ascending: true })
+          .range(from, from + 999);
+        if (error || !data) break;
+        cards.push(...(data as { id: string; deck_id: string }[]));
+        if (data.length < 1000) break;
+      }
+      const { data: deckRows } = await supabase
+        .from("flashcard_decks")
+        .select("id, section, topic, subtopic, title");
+      setCardToDeck(new Map(cards.map((c) => [c.id, c.deck_id])));
+      setDeckMeta(
+        new Map(
+          ((deckRows as DeckMeta[]) || []).map((d) => [d.id, d])
+        )
+      );
 
       setAllAttempts((attempts as unknown as Attempt[]) || []);
       setActivity(act || []);
@@ -449,6 +555,137 @@ export default function AnalyticsPage() {
   }, [filtered]);
 
   const weakestTopic = subtopicStats[0];
+
+  /**
+   * Which flashcard subtopics is this student actually weak on?
+   *
+   * Two decisions worth stating, because both change the answer:
+   *
+   * 1. ONE ATTEMPT PER BLANK PER DAY. Rating a card "Again" re-queues it inside
+   *    the same session, so a card that was struggled with logs several rows.
+   *    Counting all of them would score a topic by how stubbornly it was
+   *    revisited rather than by how well it is known. Only the first rating of
+   *    each blank on each day counts.
+   *
+   * 2. RANKED BY WILSON LOWER BOUND, not by raw accuracy, so a topic with a
+   *    handful of attempts cannot lead the list on a couple of unlucky cards.
+   *
+   * The figure shown is the student's own accuracy against their own average,
+   * because "eleven points below your baseline" is actionable in a way that a
+   * bare percentage is not: it separates a topic that is genuinely lagging from
+   * one that merely looks low because everything is hard this week.
+   */
+  const flashTopicStats = useMemo(() => {
+    const MIN_ATTEMPTS = 10;
+    const seen = new Set<string>();
+    const map = new Map<
+      string,
+      {
+        deckId: string;
+        section: string;
+        subtopic: string;
+        attempts: number;
+        passed: number;
+      }
+    >();
+
+    // Oldest first, so "first attempt of the day" really is the first one.
+    const ordered = [...allReviews].sort((a, b) =>
+      a.reviewed_at < b.reviewed_at ? -1 : a.reviewed_at > b.reviewed_at ? 1 : 0
+    );
+
+    for (const r of ordered) {
+      const deckId = cardToDeck.get(r.flashcard_id);
+      if (!deckId) continue;
+      const deck = deckMeta.get(deckId);
+      if (!deck) continue;
+
+      const day = (r.reviewed_at || "").slice(0, 10);
+      const once = `${r.flashcard_id}::${r.cloze_index}::${day}`;
+      if (seen.has(once)) continue;
+      seen.add(once);
+
+      // Every one of these is nullable in the schema. Without the final
+      // fallback a deck with no label anywhere would crash the panel on
+      // `.replace()` at render time, and analytics would go blank rather than
+      // degrade.
+      const subtopic = deck.subtopic || deck.topic || deck.title || "Untitled deck";
+      const key = `${deck.section ?? "other"}::${subtopic}`;
+      const row =
+        map.get(key) || {
+          deckId,
+          section: deck.section ?? "other",
+          subtopic,
+          attempts: 0,
+          passed: 0,
+        };
+      row.attempts++;
+      if (r.rating !== "again") row.passed++;
+      map.set(key, row);
+    }
+
+    const rows = Array.from(map.values());
+    const totalAttempts = rows.reduce((a, r) => a + r.attempts, 0);
+    const totalPassed = rows.reduce((a, r) => a + r.passed, 0);
+    const baseline = totalAttempts > 0 ? totalPassed / totalAttempts : 0;
+
+    const scored = rows
+      .filter((r) => r.attempts >= MIN_ATTEMPTS)
+      .map((r) => ({
+        ...r,
+        accuracy: Math.round((r.passed / r.attempts) * 100),
+        floor: wilsonLowerBound(r.passed, r.attempts),
+        delta: Math.round((r.passed / r.attempts - baseline) * 100),
+      }));
+
+    // Grouped by section, because a flat weakest-first list cannot tell two
+    // very different situations apart. Organic Chemistry sits exactly at this
+    // student's average while holding both their worst subtopic and five of
+    // their best: the fix is two decks. Behavioral Sciences is six points down
+    // with nothing strong anywhere in it: the fix is the whole subject. Flat,
+    // both look identical, because only the failing subtopics are visible.
+    const groups = new Map<
+      string,
+      { section: string; attempts: number; passed: number; subs: typeof scored }
+    >();
+    for (const r of scored) {
+      const g =
+        groups.get(r.section) || {
+          section: r.section,
+          attempts: 0,
+          passed: 0,
+          subs: [] as typeof scored,
+        };
+      g.attempts += r.attempts;
+      g.passed += r.passed;
+      g.subs.push(r);
+      groups.set(r.section, g);
+    }
+
+    const sections = Array.from(groups.values())
+      .map((g) => ({
+        section: g.section,
+        attempts: g.attempts,
+        accuracy: Math.round((g.passed / g.attempts) * 100),
+        delta: Math.round((g.passed / g.attempts - baseline) * 100),
+        // Weakest first inside a section too, on the Wilson floor rather than
+        // raw accuracy.
+        subs: [...g.subs].sort((a, b) => a.floor - b.floor),
+        focusCount: g.subs.filter((s) => flashBandOf(s.delta).key === "focus")
+          .length,
+      }))
+      .sort((a, b) => a.accuracy - b.accuracy);
+
+    return {
+      sections,
+      subtopicCount: scored.length,
+      baseline: Math.round(baseline * 100),
+      // Subtopics that exist but have not been studied enough to judge.
+      // Reported rather than hidden, so the list is not silently incomplete.
+      tooFewCount: rows.filter((r) => r.attempts < MIN_ATTEMPTS).length,
+      minAttempts: MIN_ATTEMPTS,
+    };
+  }, [allReviews, cardToDeck, deckMeta]);
 
   // ── Flashcard recall stats (from review history) ──
   const flashStats = useMemo(() => {
@@ -1604,6 +1841,266 @@ export default function AnalyticsPage() {
           )}
         </PraxCard>
       </div>
+
+      {/* ── Flashcard focus areas ── */}
+      <PraxCard variant="secondary" className="mb-6">
+        <div className="flex items-end justify-between mb-2 gap-3">
+          <div>
+            <div
+              className="font-medium"
+              style={{
+                fontFamily: "var(--font-prax-serif)",
+                fontSize: 22,
+                color: "var(--color-prax-green)",
+              }}
+            >
+              Flashcard focus areas
+            </div>
+            <SmallCaps style={{ marginTop: 4 }}>
+              {flashTopicStats.sections.length > 0
+                ? "Weakest sections first · graded against your own recall"
+                : "Study flashcards to see which subtopics need work"}
+            </SmallCaps>
+          </div>
+          {flashTopicStats.subtopicCount > 0 && (
+            <SmallCaps>{flashTopicStats.subtopicCount} subtopics</SmallCaps>
+          )}
+        </div>
+
+        {flashTopicStats.sections.length === 0 ? (
+          <div
+            className="italic text-center py-8"
+            style={{
+              fontFamily: "var(--font-prax-serif)",
+              fontSize: 13,
+              color: "var(--color-prax-ink-mute)",
+            }}
+          >
+            Review at least {flashTopicStats.minAttempts} cards in a subtopic to
+            see where you stand.
+          </div>
+        ) : (
+          <div>
+            {flashTopicStats.sections.map((sec) => {
+              const isOpen = openFlashSections.has(sec.section);
+              const summary =
+                sec.focusCount > 0
+                  ? `${sec.focusCount} need${sec.focusCount === 1 ? "s" : ""} focus`
+                  : "nothing urgent";
+
+              return (
+                <div
+                  key={sec.section}
+                  style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
+                >
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOpenFlashSections((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(sec.section)) next.delete(sec.section);
+                        else next.add(sec.section);
+                        return next;
+                      })
+                    }
+                    aria-expanded={isOpen}
+                    className="w-full flex items-center gap-3 py-4 text-left"
+                    style={{ background: "none", border: 0, cursor: "pointer" }}
+                  >
+                    <svg
+                      width="9"
+                      height="9"
+                      viewBox="0 0 10 10"
+                      aria-hidden="true"
+                      className="shrink-0"
+                      style={{
+                        transform: isOpen ? "rotate(90deg)" : "none",
+                        transition: "transform 160ms",
+                      }}
+                    >
+                      <path
+                        d="M3 1l4 4-4 4"
+                        fill="none"
+                        stroke="var(--color-prax-ink-mute)"
+                        strokeWidth="1.6"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <span
+                      className="font-medium shrink-0"
+                      style={{
+                        fontFamily: "var(--font-prax-serif)",
+                        fontSize: 18,
+                        color: "var(--color-prax-green)",
+                      }}
+                    >
+                      {SECTION_LABELS[sec.section] ||
+                        sec.section.replace(/_/g, " ")}
+                    </span>
+                    <span
+                      className="flex-1 min-w-0 truncate font-semibold uppercase"
+                      style={{
+                        fontSize: 10,
+                        letterSpacing: "0.22em",
+                        color: "var(--color-prax-ink-mute)",
+                      }}
+                    >
+                      {sec.subs.length} subtopic{sec.subs.length === 1 ? "" : "s"} ·{" "}
+                      {summary}
+                    </span>
+                    <span
+                      className="tabular-nums shrink-0 text-right"
+                      style={{
+                        fontFamily: "var(--font-prax-serif)",
+                        fontSize: 18,
+                        color: "var(--color-prax-green)",
+                        minWidth: 46,
+                      }}
+                    >
+                      {sec.accuracy}%
+                    </span>
+                    <span
+                      className="shrink-0 text-right font-semibold uppercase"
+                      style={{
+                        fontSize: 10,
+                        letterSpacing: "0.22em",
+                        minWidth: 62,
+                        color:
+                          sec.delta < -3
+                            ? "var(--color-prax-gold)"
+                            : sec.delta > 3
+                            ? "var(--color-prax-green-soft)"
+                            : "var(--color-prax-ink-mute)",
+                      }}
+                    >
+                      {sec.delta > 0 ? "+" : ""}
+                      {sec.delta} pts
+                    </span>
+                  </button>
+
+                  {isOpen && (
+                    <div style={{ padding: "0 0 12px 20px" }}>
+                      {sec.subs.map((sub) => {
+                        const band = flashBandOf(sub.delta);
+                        const tone = FLASH_BAND_STYLE[band.key];
+                        return (
+                          <div
+                            key={sub.deckId}
+                            className="flex items-center gap-3.5 py-2.5"
+                            style={{
+                              borderTop:
+                                "1px solid var(--color-prax-cream-border)",
+                            }}
+                          >
+                            <div
+                              className="rounded-full overflow-hidden shrink-0"
+                              style={{
+                                width: 3,
+                                height: 26,
+                                background: "var(--color-prax-cream-deep)",
+                              }}
+                            >
+                              <div
+                                className="w-full rounded-full transition-all duration-700"
+                                style={{
+                                  height: `${sub.accuracy}%`,
+                                  marginTop: `${100 - sub.accuracy}%`,
+                                  background: tone.bar,
+                                }}
+                              />
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div
+                                className="truncate"
+                                style={{
+                                  fontFamily: "var(--font-prax-serif)",
+                                  fontSize: 14.5,
+                                  color: "var(--color-prax-ink)",
+                                }}
+                              >
+                                {sub.subtopic.replace(/_/g, " ")}
+                              </div>
+                              <SmallCaps style={{ marginTop: 1 }}>
+                                {sub.attempts} cards
+                              </SmallCaps>
+                            </div>
+
+                            <div
+                              className="text-right shrink-0"
+                              style={{ minWidth: 44 }}
+                            >
+                              <div
+                                className="tabular-nums"
+                                style={{
+                                  fontFamily: "var(--font-prax-serif)",
+                                  fontSize: 15,
+                                  color: "var(--color-prax-green)",
+                                }}
+                              >
+                                {sub.accuracy}%
+                              </div>
+                              <SmallCaps style={{ marginTop: 1 }}>
+                                {sub.delta > 0 ? "+" : ""}
+                                {sub.delta} pts
+                              </SmallCaps>
+                            </div>
+
+                            <div
+                              className="shrink-0 rounded-full px-2.5 py-1"
+                              style={{
+                                background: tone.pillBg,
+                                color: tone.pillFg,
+                                fontSize: 9,
+                                letterSpacing: "0.13em",
+                                textTransform: "uppercase",
+                                fontWeight: 600,
+                                minWidth: 80,
+                                textAlign: "center",
+                              }}
+                            >
+                              {band.label}
+                            </div>
+
+                            <Link
+                              href={`/dashboard/flashcards/${sub.deckId}`}
+                              className="shrink-0 rounded-full px-3 py-1.5 transition-colors"
+                              style={{
+                                border:
+                                  "1px solid var(--color-prax-cream-border)",
+                                color: "var(--color-prax-green)",
+                                fontSize: 9,
+                                letterSpacing: "0.13em",
+                                textTransform: "uppercase",
+                                fontWeight: 600,
+                              }}
+                            >
+                              Study
+                            </Link>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            <div
+              style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
+            />
+
+            {flashTopicStats.tooFewCount > 0 && (
+              <SmallCaps style={{ marginTop: 12, display: "block" }}>
+                {flashTopicStats.tooFewCount} more subtopic
+                {flashTopicStats.tooFewCount === 1 ? "" : "s"} studied fewer than{" "}
+                {flashTopicStats.minAttempts} times, too little to judge yet
+              </SmallCaps>
+            )}
+          </div>
+        )}
+      </PraxCard>
 
       {/* ── Topic Mastery list ── */}
       <PraxCard variant="secondary" className="mb-6">
