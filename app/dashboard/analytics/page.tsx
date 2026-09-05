@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import { estimateScore, estimateBasis } from "@/lib/scoring/scoreEstimate";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
 import {
@@ -18,6 +19,8 @@ interface Attempt {
   created_at: string;
   question_id: string;
   questions: { section: string; subtopic: string; difficulty: string } | null;
+  /** Null on rows written before the column existed; see scoreEstimate. */
+  is_first_attempt?: boolean | null;
 }
 
 /** A deck IS a subtopic in the flashcard library: one deck per subtopic. */
@@ -52,16 +55,6 @@ const SECTION_LABELS: Record<string, string> = {
 
 /* ─────────── Helpers ─────────── */
 
-function estimateScoreRange(accuracy: number): [number, number] {
-  if (accuracy >= 90) return [519, 520];
-  if (accuracy >= 85) return [516, 519];
-  if (accuracy >= 80) return [513, 516];
-  if (accuracy >= 75) return [510, 513];
-  if (accuracy >= 70) return [507, 510];
-  if (accuracy >= 60) return [503, 507];
-  if (accuracy > 0) return [498, 503];
-  return [0, 0];
-}
 
 /**
  * Lower bound of the Wilson score interval for a proportion.
@@ -431,7 +424,7 @@ export default function AnalyticsPage() {
         supabase
           .from("question_attempts")
           .select(
-            "is_correct, created_at, question_id, questions(section, subtopic, difficulty)"
+            "is_correct, created_at, question_id, is_first_attempt, questions(section, subtopic, difficulty)"
           )
           .eq("user_id", user.id),
         supabase
@@ -527,7 +520,30 @@ export default function AnalyticsPage() {
   const totalCorrect = filtered.filter((a) => a.is_correct).length;
   const overallAccuracy =
     totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
-  const [scoreLow, scoreHigh] = estimateScoreRange(overallAccuracy);
+
+  /**
+   * The score estimate runs on FIRST ATTEMPTS ONLY, which is a different number
+   * from the accuracy shown elsewhere on this page.
+   *
+   * About a quarter of all attempts in the bank are repeats of a question the
+   * student had already answered. Those are useful as learning data and useless
+   * as evidence of ability, because the answer has already been seen. Counting
+   * them inflated the old estimate.
+   *
+   * Rows written before the is_first_attempt column existed are backfilled, so
+   * the fallback here only matters if that migration has not been run yet: in
+   * that case every attempt counts, which is the old behaviour.
+   */
+  const scoreEstimate = useMemo(() => {
+    const eligible = allAttempts.filter((a) => a.is_first_attempt !== false);
+    const correct = eligible.filter((a) => a.is_correct).length;
+    const accuracy =
+      eligible.length > 0 ? Math.round((correct / eligible.length) * 100) : 0;
+    const sections = new Set(
+      eligible.map((a) => a.questions?.section).filter(Boolean) as string[]
+    );
+    return estimateScore(accuracy, eligible.length, sections);
+  }, [allAttempts]);
 
   // Section stats
   const sectionStats = useMemo(() => {
@@ -1215,7 +1231,7 @@ export default function AnalyticsPage() {
           <div className="relative">
             <div className="flex justify-between items-start mb-3">
               <SmallCaps style={{ color: "var(--color-prax-gold-soft)" }}>
-                Est. Score Range
+                Estimated MCAT range
               </SmallCaps>
               <svg
                 width="18"
@@ -1226,7 +1242,7 @@ export default function AnalyticsPage() {
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
               </svg>
             </div>
-            {totalQuestions > 0 ? (
+            {scoreEstimate.low !== null ? (
               <div className="flex items-baseline gap-2">
                 <div
                   className="leading-none font-medium"
@@ -1237,7 +1253,7 @@ export default function AnalyticsPage() {
                     fontVariantNumeric: "tabular-nums lining-nums",
                   }}
                 >
-                  {scoreLow}
+                  {scoreEstimate.low}
                 </div>
                 <div
                   style={{
@@ -1257,7 +1273,19 @@ export default function AnalyticsPage() {
                     fontVariantNumeric: "tabular-nums lining-nums",
                   }}
                 >
-                  {scoreHigh}
+                  {scoreEstimate.high}
+                </div>
+                <div
+                  className="ml-1"
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: "0.16em",
+                    textTransform: "uppercase",
+                    fontWeight: 600,
+                    color: "rgba(246,244,227,0.55)",
+                  }}
+                >
+                  {scoreEstimate.confidence} confidence
                 </div>
               </div>
             ) : (
@@ -1269,7 +1297,7 @@ export default function AnalyticsPage() {
                   color: "rgba(246,244,227,0.5)",
                 }}
               >
-                No data yet
+                Not enough data yet
               </div>
             )}
             <div className="mt-4">
@@ -1295,8 +1323,7 @@ export default function AnalyticsPage() {
                   fontWeight: 600,
                 }}
               >
-                <span>Based on accuracy</span>
-                <span>Target 520</span>
+                <span>{estimateBasis(scoreEstimate)}</span>
               </div>
             </div>
           </div>

@@ -255,6 +255,19 @@ export default function PracticeSession() {
     const timeSpent = Math.max(0, elapsedRef.current - questionStartElapsedRef.current);
     setLastQuestionSeconds(timeSpent);
 
+    // Is this the first time this student has ever answered this question?
+    //
+    // Recorded at write time rather than derived later, because "eligible
+    // evidence" is the predictor's hottest read and deriving it means a window
+    // function over the student's entire attempt history on every call. A
+    // repeat is still stored in full; it is simply not an independent
+    // measurement of ability, since the answer has already been seen.
+    const { count: priorAttempts } = await supabase
+      .from("question_attempts")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("question_id", currentQuestion.id);
+
     await supabase.from("question_attempts").insert({
       user_id: user.id,
       question_id: currentQuestion.id,
@@ -262,6 +275,11 @@ export default function PracticeSession() {
       selected_answer: selectedAnswer,
       is_correct: isCorrect,
       time_spent_seconds: timeSpent,
+      is_first_attempt: (priorAttempts ?? 0) === 0,
+      // Left NULL deliberately. Praxist has no timed mode yet, so "was this
+      // timed" is unknown rather than false, and writing false would tell a
+      // future calibration that these were confirmed untimed.
+      is_timed: null,
     });
 
     // Credit today's activity as soon as a question is answered. The streak is

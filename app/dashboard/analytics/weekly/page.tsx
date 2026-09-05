@@ -39,16 +39,6 @@ interface SavedReport {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function estimateScoreRange(accuracy: number): [number, number] {
-  if (accuracy >= 90) return [519, 520];
-  if (accuracy >= 85) return [516, 519];
-  if (accuracy >= 80) return [513, 516];
-  if (accuracy >= 75) return [510, 513];
-  if (accuracy >= 70) return [507, 510];
-  if (accuracy >= 60) return [503, 507];
-  if (accuracy > 0) return [498, 503];
-  return [0, 0];
-}
 
 function parseReportSections(text: string): { title: string; body: string }[] {
   const sections: { title: string; lines: string[] }[] = [];
@@ -310,7 +300,6 @@ export default function WeeklyReportPage() {
     ? Object.entries(metrics.section_breakdown).filter(([, v]) => v.attempts > 0)
     : [];
 
-  const [scoreLow, scoreHigh] = estimateScoreRange(metrics?.overall_accuracy ?? 0);
 
   const reportDateRange = metrics
     ? `${new Date(metrics.start_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" })} to ${new Date(metrics.end_date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`
@@ -434,12 +423,10 @@ export default function WeeklyReportPage() {
             </div>
             <div className="bg-as-primary rounded-[1.5rem] p-5 flex flex-col gap-1 relative overflow-hidden">
               <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/5 rounded-full blur-xl" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-white/60 relative">Est. Score</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-white/60 relative">Accuracy</span>
               {metrics && metrics.overall_accuracy > 0 ? (
                 <div className="flex items-baseline gap-1 relative">
-                  <span className="text-2xl font-bold text-white">{scoreLow}</span>
-                  <span className="text-sm text-white/50 font-serif">to</span>
-                  <span className="text-2xl font-bold text-white">{scoreHigh}</span>
+                  <span className="text-2xl font-bold text-white">{Math.round(metrics.overall_accuracy)}%</span>
                 </div>
               ) : (
                 <span className="text-2xl font-bold text-white/40 relative">—</span>
