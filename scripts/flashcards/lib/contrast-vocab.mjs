@@ -73,6 +73,11 @@ export const PAIRS = [
 
   // Hormone antagonists. Added after the endometrium card, where "Estrogen"
   // was blanked and "progesterone" sat in the parallel clause.
+  // Carbonyl pair. Found on the alpha-hydrogen acidity card, where "ketones"
+  // and "aldehydes" sat in different groups, so asking for one printed the
+  // other. Nearly every comparative carbonyl card is built on this contrast.
+  ["ketone", "aldehyde"], ["ketones", "aldehydes"],
+
   ["estrogen", "progesterone"], ["insulin", "glucagon"],
   ["calcitonin", "parathyroid"],
 ];

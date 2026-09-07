@@ -98,5 +98,25 @@
       "C. 7.5 cm uses f/do as the magnification. That shortcut is not the magnification, and it happens to give 1.5 here."
     ],
     "teaching_point": "Object inside the focal length is the one case every MCAT student should recognise on sight: the image is virtual, upright and magnified. If your arithmetic returns a shrunken or inverted image there, the sign went wrong, not the physics."
+  },
+  {
+    "slug": "calorimetry-final-temp",
+    "eyebrow": "General Chemistry: Thermochemistry",
+    "stem": "A 250 g water sample at 18 °C absorbs 5225 J of heat. The specific heat of water is 4.18 J/g°C. What is the final temperature?",
+    "options": [
+      "A. 5 °C",
+      "B. 13 °C",
+      "C. 23 °C",
+      "D. 28 °C"
+    ],
+    "answer": "C",
+    "answer_text": "23 °C",
+    "explanation": "q = mcΔT, so ΔT = 5225 / (250 × 4.18) = 5225 / 1045 = 5 °C. That is the CHANGE, not the answer. The sample absorbs heat, so it warms: 18 + 5 = 23 °C.",
+    "distractors": [
+      "A. 5 °C is ΔT itself. The question asks for the final temperature, and stopping one step early is the most common way this is lost under time pressure.",
+      "B. 13 °C subtracts the change instead of adding it. The sample ABSORBS heat, so it can only get warmer.",
+      "D. 28 °C doubles the change, which happens if you halve the mass or drop a factor in 250 × 4.18."
+    ],
+    "teaching_point": "q = mcΔT returns a CHANGE in temperature, never a temperature. Whenever a calorimetry question asks for a final value, the last step is adding to or subtracting from the starting point, and the direction is set by whether heat went in or out."
   }
 ]

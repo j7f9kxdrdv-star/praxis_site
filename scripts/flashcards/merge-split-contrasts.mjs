@@ -230,7 +230,7 @@ SELECT COUNT(*) AS orphaned_progress FROM public.flashcard_user_state s
 JOIN public.flashcards f ON f.id = s.flashcard_id
 WHERE s.cloze_index > f.cloze_count;
 `;
-fs.writeFileSync("supabase/fixes/20260904_merge_ordered_series.sql", sql);
+fs.writeFileSync("supabase/fixes/20260906_merge_carbonyl_contrasts.sql", sql);
 if (tooMany.length) {
   console.log(`\nREFUSED as over-merges, these need hand design: ${tooMany.length}`);
   for (const t of tooMany) {
@@ -242,4 +242,4 @@ if (tooMany.length) {
 console.log(`repaired          : ${fixes.length} cards`);
 console.log(`schedules reset   : ${rows.length} rows across ${users.size} account(s)`);
 console.log(`of those, past exam: ${pastExam} blanks that would never have returned in time`);
-console.log(`\nwrote supabase/fixes/20260904_merge_ordered_series.sql`);
+console.log(`\nwrote supabase/fixes/20260906_merge_carbonyl_contrasts.sql`);
