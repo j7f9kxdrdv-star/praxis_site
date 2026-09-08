@@ -134,13 +134,22 @@ for (const q of questions) {
   const fails = [];
   if (worst.v >= T.vocab) fails.push(`vocabulary overlap ${(100 * worst.v).toFixed(0)}% (limit ${100 * T.vocab}%)`);
   if (worst.n >= T.numeric) fails.push(`numeric fingerprint ${(100 * worst.n).toFixed(0)}% (limit ${100 * T.numeric}%)`);
-  if (worst.d >= T.distractor) fails.push(`distractor overlap ${(100 * worst.d).toFixed(0)}% (limit ${100 * T.distractor}%)`);
+  // The distractor check only means something for TEXT options. Numeric answers
+  // strip to their unit alone: "30 mL/min" and "4,200 mL/min" both reduce to
+  // {"min"}, so two calculation questions sharing nothing but a unit score a
+  // perfect 100%. Below a handful of content words the signal is noise, so it
+  // is reported and not enforced.
+  const distractorSignalUsable = mine.opts.size >= 4;
+  if (distractorSignalUsable && worst.d >= T.distractor) {
+    fails.push(`distractor overlap ${(100 * worst.d).toFixed(0)}% (limit ${100 * T.distractor}%)`);
+  }
   if (worst.shared.length >= T.rare) fails.push(`${worst.shared.length} rare terms in common: ${worst.shared.join(", ")}`);
 
   console.log(`${"=".repeat(70)}\n${q.slug}  (${q.eyebrow})`);
   console.log(`${q.stem.replace(/[_^]\{([^}]+)\}/g, "$1").slice(0, 150)}\n`);
   console.log(`  nearest in bank: vocab ${(100 * worst.v).toFixed(0)}%, numeric ${(100 * worst.n).toFixed(0)}%, `
-    + `distractors ${(100 * worst.d).toFixed(0)}%, rare terms ${worst.shared.length}`);
+    + `distractors ${(100 * worst.d).toFixed(0)}%${distractorSignalUsable ? "" : " (not enforced: numeric answers)"}`
+    + `, rare terms ${worst.shared.length}`);
 
   if (fails.length) {
     blocked++;

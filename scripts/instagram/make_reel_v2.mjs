@@ -257,7 +257,18 @@ export function timeA(q) {
   const isCalculation = numericOptions >= 3;
   const reasoningBuffer = isCalculation ? 8 : 3;
 
-  const read = Math.min(8, Math.max(4, Math.round(stemRead * 0.6)));
+  // THE ANSWERS ARRIVE AT 2 TO 3 SECONDS, not at six.
+  //
+  // Holding them back is worth doing: the reveal is the only motion in the clip
+  // and it gives someone mid-scroll a reason to look again. But six seconds was
+  // far too late. Average watch was 7.0s on reel #2 and 2.0s on reel #3, so
+  // almost nobody reached the moment the answers appeared, and on reel #3
+  // nobody did at all.
+  //
+  // What sank Reel #1 was never the timing of the options. It was running a
+  // COUNTDOWN over text nobody could finish reading. Those are separable, and
+  // only the clock has to wait for comprehension.
+  const read = Math.min(3, Math.max(2, Math.round(stemRead * 0.3)));
   let decide = Math.min(10, Math.max(6, Math.round(optRead + reasoningBuffer)));
 
   // THE LOOP IS THE EXTRA THINKING TIME, so the clip does not have to be.

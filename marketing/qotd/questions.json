@@ -118,5 +118,25 @@
       "D. 28 °C doubles the change, which happens if you halve the mass or drop a factor in 250 × 4.18."
     ],
     "teaching_point": "q = mcΔT returns a CHANGE in temperature, never a temperature. Whenever a calorimetry question asks for a final value, the last step is adding to or subtracting from the starting point, and the direction is set by whether heat went in or out."
+  },
+  {
+    "slug": "molecular-mimicry",
+    "eyebrow": "Biology: The Immune System",
+    "stem": "Weeks after a streptococcal throat infection clears, a patient's own antibodies begin attacking heart valve tissue. The bacterium carries a surface protein resembling a cardiac protein. This is best described as:",
+    "options": [
+      "A. Clonal deletion",
+      "B. Molecular mimicry",
+      "C. Central tolerance",
+      "D. Clonal anergy"
+    ],
+    "answer": "B",
+    "answer_text": "Molecular mimicry",
+    "explanation": "Antibodies raised against the bacterial protein cross-react with the structurally similar host protein, so an appropriate response to a pathogen becomes an attack on self. This is the mechanism behind rheumatic heart disease.",
+    "distractors": [
+      "A. Clonal deletion removes self-reactive lymphocytes during development. Here the damage happens because a foreign target resembles self, not because deletion failed.",
+      "C. Central tolerance is the training that prevents self-attack in the first place. It describes what normally stops this, not what caused it.",
+      "D. Clonal anergy silences a lymphocyte that binds antigen without costimulation. These cells are fully active, which is the whole problem."
+    ],
+    "teaching_point": "When self-damage follows an infection, ask whether the immune system made a mistake or was fooled. Mimicry is being fooled: the response was correct for the pathogen and the host protein simply looked too much like it."
   }
 ]
