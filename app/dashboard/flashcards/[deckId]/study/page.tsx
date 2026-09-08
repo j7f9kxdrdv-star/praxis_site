@@ -4,6 +4,12 @@ import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
+import {
+  nextOwed,
+  requeueGap,
+  isFinished,
+  MAX_SHOWS_PER_SESSION,
+} from "@/lib/flashcards/relearn";
 import { supabase } from "@/lib/supabase";
 import { renderClozeSegments } from "@/lib/flashcards/cloze";
 import { nextSchedule, previewLabel, EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
@@ -51,7 +57,6 @@ const RATING_DOT: Record<Rating, string> = {
 
 // When a card is rated "Again", re-insert it this many cards ahead so it
 // comes back later in the SAME session (or at the end if fewer remain).
-const REQUEUE_GAP = 3;
 
 interface UserState {
   flashcard_id: string;
@@ -72,6 +77,10 @@ interface ReviewItem {
   card: Card;
   clozeIndex: number; // 0 for basic, 1..N for cloze
   state: UserState | null;
+  /** Successful recalls still owed before this card leaves the session. */
+  owed?: number;
+  /** How many times it has appeared today, so a card cannot cycle forever. */
+  shows?: number;
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -297,6 +306,14 @@ export default function StudyPage() {
     seenRef.current.add(cardKey);
     if (passed) doneRef.current.add(cardKey);
     if (firstAttempt && passed) firstTryOkRef.current.add(cardKey);
+    const shows = (current.shows ?? 0) + 1;
+    const owed = nextOwed(current.owed ?? 0, rating);
+    const finished = isFinished(owed, shows);
+    // "Done" means the card cleared its debt, not merely that one grade passed.
+    // A card owing further recalls is still in play, and counting it as done
+    // would tell the student they had finished work still queued.
+    if (finished) doneRef.current.add(`${current.card.id}:${current.clozeIndex}`);
+    else doneRef.current.delete(`${current.card.id}:${current.clozeIndex}`);
     setStats({
       done: doneRef.current.size,
       attempted: seenRef.current.size,
@@ -305,11 +322,9 @@ export default function StudyPage() {
     setHistory((h) => [...h, rating]);
     setSubmitting(false);
 
-    if (rating === "again") {
-      // Bring a wrong card back later this session so you keep seeing it until
-      // you get it right, instead of waiting for a future session. Carry the
-      // just-saved schedule onto the re-queued copy so a later pass builds on
-      // the lapsed state rather than the original.
+    if (!finished) {
+      // Carry the just-saved schedule onto the re-queued copy so a later pass
+      // builds on the lapsed state rather than the original.
       const requeuedState: UserState = {
         flashcard_id: current.card.id,
         cloze_index: current.clozeIndex,
@@ -323,11 +338,11 @@ export default function StudyPage() {
         last_rating: rating,
         last_reviewed_at: new Date().toISOString(),
       };
-      const requeued: ReviewItem = { ...current, state: requeuedState };
+      const requeued: ReviewItem = { ...current, state: requeuedState, owed, shows };
       setRevealed(false);
       setQueue((q) => {
         const next = [...q];
-        const insertAt = Math.min(index + 1 + REQUEUE_GAP, next.length);
+        const insertAt = Math.min(index + 1 + requeueGap(owed), next.length);
         next.splice(insertAt, 0, requeued);
         return next;
       });
