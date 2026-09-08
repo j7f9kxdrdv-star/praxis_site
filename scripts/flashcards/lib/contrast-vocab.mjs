@@ -28,7 +28,7 @@ export const db = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVIC
 // showing one of three does not give away another.
 export const PAIRS = [
   ["increases", "decreases"], ["increase", "decrease"], ["higher", "lower"],
-  ["more", "less"], ["greater", "smaller"], ["positive", "negative"],
+  ["more", "less"], ["more", "fewer"], ["greater", "smaller"], ["positive", "negative"],
   ["hydrophilic", "hydrophobic"], ["polar", "nonpolar"], ["distal", "proximal"],
   ["afferent", "efferent"], ["agonist", "antagonist"], ["anabolic", "catabolic"],
   ["oxidation", "reduction"], ["oxidized", "reduced"], ["endothermic", "exothermic"],
