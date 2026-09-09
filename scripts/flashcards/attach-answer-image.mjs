@@ -23,7 +23,7 @@
  * REFUSES rather than guesses. An ambiguous search prints the matches and
  * stops, and a card that already has an image has to be passed --replace.
  */
-import { db, page } from "./lib/contrast-vocab.mjs";
+import { db, page, ROOT } from "./lib/contrast-vocab.mjs";
 import fs from "fs";
 import path from "path";
 import { execFileSync } from "child_process";
@@ -101,7 +101,8 @@ const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g
 const deckDir = slug(deckTitle.get(card.deck_id) ?? "misc");
 const base = `${slug(path.basename(src, ext)) || card.id.slice(0, 8)}${ext}`;
 const rel = `/flashcards/${deckDir}/answers/${base}`;
-const dest = path.join(process.cwd(), "public", rel);
+// Under the repo, wherever the command was typed from.
+const dest = path.join(ROOT, "public", rel);
 
 // The column's CHECK constraint enforces this too; failing here gives a better
 // message than a Postgres violation would.

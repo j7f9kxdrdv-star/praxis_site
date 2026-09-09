@@ -14,9 +14,19 @@
  */
 import { createClient } from "@supabase/supabase-js";
 import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+// THE REPO, NOT THE SHELL'S CURRENT FOLDER. This file lives at
+// <repo>/scripts/flashcards/lib/, so the root is three levels up, and every
+// script that imports it works from anywhere. Read from the working directory,
+// ".env.local" resolved against wherever the terminal happened to be: running
+// an attach command from the home folder failed with MODULE_NOT_FOUND, and had
+// the path resolved it would then have failed again looking for the keys.
+export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 
 export const env = Object.fromEntries(
-  fs.readFileSync(".env.local", "utf8").split("\n")
+  fs.readFileSync(path.join(ROOT, ".env.local"), "utf8").split("\n")
     .filter((l) => l.includes("=") && !l.trim().startsWith("#"))
     .map((l) => [l.slice(0, l.indexOf("=")).trim(), l.slice(l.indexOf("=") + 1).trim()]),
 );
