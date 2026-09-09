@@ -432,8 +432,9 @@ export default function StudyPage() {
       } else if (revealed) {
         // Only two keys are live on a repeat view, matching the two buttons.
         if ((current?.owed ?? 0) > 0) {
-          if (e.key === "1") submitRecall("correct");
-          else if (e.key === "2") submitRecall("missed");
+          // Key 1 is the wrong answer on both bars. See RECALL in StudySurface.
+          if (e.key === "1") submitRecall("missed");
+          else if (e.key === "2") submitRecall("correct");
         } else if (e.key === "1") submitRating("again");
         else if (e.key === "2") submitRating("hard");
         else if (e.key === "3") submitRating("medium");
@@ -577,9 +578,6 @@ export default function StudyPage() {
             hint={segments.filter((s) => s.kind === "blank" && s.hint).map((s) => (s.kind === "blank" ? s.hint : "")).join(" · ") || undefined}
             revealed={revealed}
             onFlip={flip}
-            intervalDays={intervalDays}
-            easeFactor={easeFactor}
-            lastRating={lastRating}
             submitting={submitting}
             onRate={submitRating}
             owed={current?.owed ?? 0}
@@ -689,8 +687,8 @@ export default function StudyPage() {
                 {(owedNow > 0
                   ? [
                       { keys: ["Space"], label: "Reveal / Flip" },
-                      { keys: ["1"], label: "Correct" },
-                      { keys: ["2"], label: "Missed" },
+                      { keys: ["1"], label: "Missed" },
+                      { keys: ["2"], label: "Correct" },
                     ]
                   : [
                       { keys: ["Space"], label: "Reveal / Flip" },

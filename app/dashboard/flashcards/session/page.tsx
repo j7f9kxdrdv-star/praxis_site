@@ -511,8 +511,9 @@ function SessionInner() {
         // bound, 3 and 4 would submit an Easy the student could not see and did
         // not choose.
         if ((current?.owed ?? 0) > 0) {
-          if (e.key === "1") submitRecall("correct");
-          else if (e.key === "2") submitRecall("missed");
+          // Key 1 is the wrong answer on both bars. See RECALL in StudySurface.
+          if (e.key === "1") submitRecall("missed");
+          else if (e.key === "2") submitRecall("correct");
         } else if (e.key === "1") submitRating("again");
         else if (e.key === "2") submitRating("hard");
         else if (e.key === "3") submitRating("medium");
@@ -686,9 +687,6 @@ function SessionInner() {
             hint={segments.filter((s) => s.kind === "blank" && s.hint).map((s) => (s.kind === "blank" ? s.hint : "")).join(" · ") || undefined}
             revealed={revealed}
             onFlip={flip}
-            intervalDays={intervalDays}
-            easeFactor={easeFactor}
-            lastRating={lastRating}
             submitting={submitting}
             onRate={submitRating}
             owed={current?.owed ?? 0}
@@ -796,8 +794,8 @@ function SessionInner() {
                 {(owedNow > 0
                   ? [
                       { keys: ["Space"], label: "Reveal / Flip" },
-                      { keys: ["1"], label: "Correct" },
-                      { keys: ["2"], label: "Missed" },
+                      { keys: ["1"], label: "Missed" },
+                      { keys: ["2"], label: "Correct" },
                     ]
                   : [
                       { keys: ["Space"], label: "Reveal / Flip" },

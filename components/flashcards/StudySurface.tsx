@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import type { ClozeSegment } from "@/lib/flashcards/cloze";
-import { previewLabel, type Rating } from "@/lib/flashcards/scheduler";
+import type { Rating } from "@/lib/flashcards/scheduler";
 import type { RelearnAnswer } from "@/lib/flashcards/relearn";
 import RichText from "@/components/flashcards/RichText";
 
@@ -46,11 +46,6 @@ export interface StudySurfaceProps {
   revealed: boolean;
   onFlip: () => void;
 
-  intervalDays: number;
-  /** Per-card ease factor, for accurate interval previews on the grade buttons. */
-  easeFactor: number;
-  /** The card's stored last rating — "again" means this is a post-lapse recheck. */
-  lastRating: Rating | null;
   submitting: boolean;
   onRate: (rating: Rating) => void;
   /**
@@ -66,12 +61,19 @@ export interface StudySurfaceProps {
   onSuspend: () => void;
 }
 
-// The repeat view borrows the palette of the grade it stands in for: a miss is
-// the Again red, a recall the Medium green, so the colour still means the same
-// thing across both bars.
+// WORST ON THE LEFT, BEST ON THE RIGHT, exactly like the grade bar above it.
+//
+// Shipped the other way round and it cost Mikko a whole session. The grade bar
+// runs Again, Hard, Medium, Easy, so the hand learns "reach right to say I knew
+// it". Putting Correct on the left inverted that, every repeat he answered
+// landed on Missed, and Missed resets the debt: two cards cycled seven times
+// each before the appearance cap let them go. Every repeat in the review log
+// that evening was written as "again", which is what told us.
+//
+// Key 1 is the wrong answer on both bars, for the same reason.
 const RECALL: { answer: RelearnAnswer; label: string; key: string; className: string }[] = [
-  { answer: "correct", label: "Correct", key: "1", className: "bg-as-primary hover:bg-as-primary-container" },
-  { answer: "missed", label: "Missed", key: "2", className: "bg-[#a8432c] hover:bg-[#96371f]" },
+  { answer: "missed", label: "Missed", key: "1", className: "bg-[#a8432c] hover:bg-[#96371f]" },
+  { answer: "correct", label: "Correct", key: "2", className: "bg-as-primary hover:bg-as-primary-container" },
 ];
 
 const GRADES: { rating: Rating; label: string; key: string; className: string }[] = [
@@ -96,9 +98,6 @@ export default function StudySurface({
   backImageAlt,
   revealed,
   onFlip,
-  intervalDays,
-  easeFactor,
-  lastRating,
   submitting,
   onRate,
   owed = 0,
@@ -276,7 +275,7 @@ export default function StudySurface({
                 >
                   <span>{label}</span>
                   <span className="text-[9px] font-medium opacity-80 normal-case tracking-normal">
-                    {previewLabel(intervalDays, easeFactor, lastRating, rating)} · {key}
+                    {key}
                   </span>
                 </button>
               ))}
