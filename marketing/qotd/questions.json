@@ -24,17 +24,17 @@
     "eyebrow": "General Chemistry: Acids and Bases",
     "stem": "A 0.10 M solution of a weak monoprotic acid has a pH of 3.0. What is the approximate K_{a} of the acid?",
     "options": [
-      "A. 1 × 10^{-3}",
-      "B. 1 × 10^{-5}",
-      "C. 1 × 10^{-7}",
-      "D. 1 × 10^{-9}"
+      "A. 1 \u00d7 10^{-3}",
+      "B. 1 \u00d7 10^{-5}",
+      "C. 1 \u00d7 10^{-7}",
+      "D. 1 \u00d7 10^{-9}"
     ],
     "answer": "B",
-    "answer_text": "1 × 10^{-5}",
-    "explanation": "pH 3.0 gives [H^{+}] = 10^{-3} M. For HA ⇌ H^{+} + A^{-}, both products sit at 10^{-3}, and [HA] stays near 0.10 M. So K_{a} ≈ (10^{-3})² / 0.10 = 10^{-5}.",
+    "answer_text": "1 \u00d7 10^{-5}",
+    "explanation": "pH 3.0 gives [H^{+}] = 10^{-3} M. For HA \u21cc H^{+} + A^{-}, both products sit at 10^{-3}, and [HA] stays near 0.10 M. So K_{a} \u2248 (10^{-3})\u00b2 / 0.10 = 10^{-5}.",
     "distractors": [
       "A. This is [H^{+}] itself, not K_{a}. The concentration of protons is what you measured, not the equilibrium constant that produced it.",
-      "C. This is (10^{-3})² with the 0.10 M forgotten. Dividing by 0.10 moves the exponent by one, not none.",
+      "C. This is (10^{-3})\u00b2 with the 0.10 M forgotten. Dividing by 0.10 moves the exponent by one, not none.",
       "D. Off by four orders of magnitude, which would make the acid far weaker than a pH of 3.0 could produce at this concentration."
     ],
     "teaching_point": "Check the approximation before you trust it. Here 10^{-3} is 1% of 0.10 M, comfortably inside the 5% rule, so treating [HA] as unchanged is safe. Above 5% you would need the quadratic."
@@ -42,22 +42,22 @@
   {
     "slug": "parallel-power",
     "eyebrow": "Physics: Circuits",
-    "stem": "A 4 Ω resistor and a 12 Ω resistor are connected in parallel across a battery. Which resistor dissipates more power, and by what factor?",
+    "stem": "A 4 \u03a9 resistor and a 12 \u03a9 resistor are connected in parallel across a battery. Which resistor dissipates more power, and by what factor?",
     "options": [
-      "A. The 4 Ω, by a factor of 3",
-      "B. The 12 Ω, by a factor of 3",
-      "C. The 4 Ω, by a factor of 9",
+      "A. The 4 \u03a9, by a factor of 3",
+      "B. The 12 \u03a9, by a factor of 3",
+      "C. The 4 \u03a9, by a factor of 9",
       "D. They dissipate equal power"
     ],
     "answer": "A",
-    "answer_text": "The 4 Ω, by a factor of 3",
-    "explanation": "Parallel means both resistors see the same voltage, so use P = V²/R. Power is then inversely proportional to resistance: 12/4 = 3. The smaller resistor dissipates three times more.",
+    "answer_text": "The 4 \u03a9, by a factor of 3",
+    "explanation": "Parallel means both resistors see the same voltage, so use P = V\u00b2/R. Power is then inversely proportional to resistance: 12/4 = 3. The smaller resistor dissipates three times more.",
     "distractors": [
       "B. This inverts the relationship. More resistance in parallel means less current through that branch, and therefore less power, not more.",
-      "C. A factor of 9 comes from squaring the ratio, which happens with P = I²R in SERIES, where current is shared and resistance is not.",
+      "C. A factor of 9 comes from squaring the ratio, which happens with P = I\u00b2R in SERIES, where current is shared and resistance is not.",
       "D. Parallel guarantees equal voltage, not equal power. Equal power would require equal resistance."
     ],
-    "teaching_point": "Pick the power formula that uses the quantity the circuit holds constant. Parallel holds voltage constant, so P = V²/R. Series holds current constant, so P = I²R. Choosing the wrong one is the fastest way to invert your answer."
+    "teaching_point": "Pick the power formula that uses the quantity the circuit holds constant. Parallel holds voltage constant, so P = V\u00b2/R. Series holds current constant, so P = I\u00b2R. Choosing the wrong one is the fastest way to invert your answer."
   },
   {
     "slug": "reinforcement-contact-zone",
@@ -102,22 +102,22 @@
   {
     "slug": "calorimetry-final-temp",
     "eyebrow": "General Chemistry: Thermochemistry",
-    "stem": "A 250 g water sample at 18 °C absorbs 5225 J of heat. The specific heat of water is 4.18 J/g°C. What is the final temperature?",
+    "stem": "A 250 g water sample at 18 \u00b0C absorbs 5225 J of heat. The specific heat of water is 4.18 J/g\u00b0C. What is the final temperature?",
     "options": [
-      "A. 5 °C",
-      "B. 13 °C",
-      "C. 23 °C",
-      "D. 28 °C"
+      "A. 5 \u00b0C",
+      "B. 13 \u00b0C",
+      "C. 23 \u00b0C",
+      "D. 28 \u00b0C"
     ],
     "answer": "C",
-    "answer_text": "23 °C",
-    "explanation": "q = mcΔT, so ΔT = 5225 / (250 × 4.18) = 5225 / 1045 = 5 °C. That is the CHANGE, not the answer. The sample absorbs heat, so it warms: 18 + 5 = 23 °C.",
+    "answer_text": "23 \u00b0C",
+    "explanation": "q = mc\u0394T, so \u0394T = 5225 / (250 \u00d7 4.18) = 5225 / 1045 = 5 \u00b0C. That is the CHANGE, not the answer. The sample absorbs heat, so it warms: 18 + 5 = 23 \u00b0C.",
     "distractors": [
-      "A. 5 °C is ΔT itself. The question asks for the final temperature, and stopping one step early is the most common way this is lost under time pressure.",
-      "B. 13 °C subtracts the change instead of adding it. The sample ABSORBS heat, so it can only get warmer.",
-      "D. 28 °C doubles the change, which happens if you halve the mass or drop a factor in 250 × 4.18."
+      "A. 5 \u00b0C is \u0394T itself. The question asks for the final temperature, and stopping one step early is the most common way this is lost under time pressure.",
+      "B. 13 \u00b0C subtracts the change instead of adding it. The sample ABSORBS heat, so it can only get warmer.",
+      "D. 28 \u00b0C doubles the change, which happens if you halve the mass or drop a factor in 250 \u00d7 4.18."
     ],
-    "teaching_point": "q = mcΔT returns a CHANGE in temperature, never a temperature. Whenever a calorimetry question asks for a final value, the last step is adding to or subtracting from the starting point, and the direction is set by whether heat went in or out."
+    "teaching_point": "q = mc\u0394T returns a CHANGE in temperature, never a temperature. Whenever a calorimetry question asks for a final value, the last step is adding to or subtracting from the starting point, and the direction is set by whether heat went in or out."
   },
   {
     "slug": "molecular-mimicry",
@@ -158,5 +158,25 @@
       "D. Oxidation breaks glucose down for energy inside cells. It removes sugar rather than releasing it, and it does not happen in the mouth."
     ],
     "teaching_point": "Sweetness reports molecular size, not carbohydrate content. Starch is already made of glucose; you simply cannot taste it until amylase cuts the chain into pieces small enough for the receptor."
+  },
+  {
+    "slug": "warm-soda-goes-flat",
+    "eyebrow": "General Chemistry: Solutions",
+    "stem": "An open soda goes flat faster on a warm counter than in the fridge. What explains the difference?",
+    "options": [
+      "A. Reaction of carbon dioxide with water",
+      "B. Evaporation of water carrying gas away",
+      "C. Slower diffusion of gas in warm liquid",
+      "D. Lower solubility of gas at higher temperature"
+    ],
+    "answer": "D",
+    "answer_text": "Lower solubility of gas at higher temperature",
+    "explanation": "Dissolving a gas releases heat, so warming the liquid pushes that equilibrium back toward the gas phase. Carbon dioxide that stayed dissolved in the cold can now comes out of solution and escapes, which is what going flat is.",
+    "distractors": [
+      "A. Carbon dioxide does form a little carbonic acid in water, but that equilibrium lies far to the left and the gas is not consumed. It leaves as gas.",
+      "B. Evaporation removes water, not the gas dissolved in it, and a soda goes flat long before it dries out.",
+      "C. Diffusion gets faster when warm, not slower. And slower diffusion would keep the gas in, not let it out."
+    ],
+    "teaching_point": "Solids and gases move in opposite directions with heat. Warming usually dissolves more of a solid and less of a gas, so \"warm dissolves more\" is a rule that only half works."
   }
 ]
