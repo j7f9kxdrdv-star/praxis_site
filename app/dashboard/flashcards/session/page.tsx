@@ -36,6 +36,9 @@ interface Card {
   cloze_text: string | null;
   cloze_count: number;
   explanation: string | null;
+  /** Answer-side image, shown under the card on reveal. Null on most cards. */
+  back_image_url: string | null;
+  back_image_alt: string | null;
   deck_id: string;
 }
 
@@ -166,7 +169,7 @@ function SessionInner() {
       for (let from = 0; ; from += CARD_PAGE) {
         const { data, error } = await supabase
           .from("flashcards")
-          .select("id, card_type, front_text, back_text, cloze_text, cloze_count, explanation, deck_id")
+          .select("id, card_type, front_text, back_text, cloze_text, cloze_count, explanation, back_image_url, back_image_alt, deck_id")
           .order("id", { ascending: true })
           .range(from, from + CARD_PAGE - 1);
         if (error || !data || data.length === 0) break;
@@ -678,6 +681,8 @@ function SessionInner() {
             frontText={current?.card.front_text ?? null}
             backText={backText}
             explanation={current?.card.explanation ?? null}
+            backImageUrl={current?.card.back_image_url ?? null}
+            backImageAlt={current?.card.back_image_alt ?? null}
             hint={segments.filter((s) => s.kind === "blank" && s.hint).map((s) => (s.kind === "blank" ? s.hint : "")).join(" · ") || undefined}
             revealed={revealed}
             onFlip={flip}

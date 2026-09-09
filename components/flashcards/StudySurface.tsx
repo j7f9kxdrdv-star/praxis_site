@@ -34,6 +34,14 @@ export interface StudySurfaceProps {
   backText?: string | null;
   explanation?: string | null;
   hint?: string;
+  /**
+   * An image belonging to the ANSWER, shown under the card once revealed and
+   * absent otherwise. Distinct from an image inside the card text, which is
+   * part of the prompt and stays on the front: on the amino acid cards the
+   * structure IS the question.
+   */
+  backImageUrl?: string | null;
+  backImageAlt?: string | null;
 
   revealed: boolean;
   onFlip: () => void;
@@ -84,6 +92,8 @@ export default function StudySurface({
   backText,
   explanation,
   hint,
+  backImageUrl,
+  backImageAlt,
   revealed,
   onFlip,
   intervalDays,
@@ -98,6 +108,10 @@ export default function StudySurface({
   // A repeat view needs somewhere to send the answer. Without a handler the
   // buttons would render and do nothing, so fall back to the grade bar.
   const isRepeatView = owed > 0 && !!onRecallAnswer;
+  // The answer image, when the card has one and the answer is showing. Win or
+  // lose: it appears on reveal, not on a passing grade.
+  const showAnswerImage = revealed && !!backImageUrl;
+
   const pct =
     progress && progress.total > 0
       ? Math.round((progress.done / progress.total) * 100)
@@ -139,8 +153,21 @@ export default function StudySurface({
       </div>
 
       {/* ── Card — fills the landscape screen; a wide horizontal card ─── */}
-      <div className="flex-1 flex items-center justify-center lg:items-start lg:flex-none min-h-0 my-2 lg:mt-3 lg:mb-0">
-        <div className="relative w-full h-full lg:h-auto max-w-[760px] mx-auto rounded-[1.75rem] p-[1.5px] bg-gradient-to-br from-as-outline-variant/40 via-as-primary/10 to-as-outline-variant/40 shadow-[0_30px_60px_-20px_rgba(0,54,48,0.18),0_8px_24px_-12px_rgba(0,54,48,0.12)]">
+      {/*
+        A column, so an answer image can sit under the card. With no image the
+        geometry is unchanged: a column's justify-center is a row's items-center,
+        and the card keeps h-full so it still fills the landscape screen. With
+        one, the card shrinks to its content and the pair scrolls together,
+        because on a phone a card plus a diagram will not always fit.
+      */}
+      <div
+        className={`flex-1 flex flex-col min-h-0 my-2 lg:mt-3 lg:mb-0 ${
+          showAnswerImage
+            ? "justify-start gap-3 overflow-y-auto"
+            : "justify-center lg:justify-start lg:flex-none"
+        }`}
+      >
+        <div className={`relative w-full ${showAnswerImage ? "shrink-0" : "h-full"} lg:h-auto max-w-[760px] mx-auto rounded-[1.75rem] p-[1.5px] bg-gradient-to-br from-as-outline-variant/40 via-as-primary/10 to-as-outline-variant/40 shadow-[0_30px_60px_-20px_rgba(0,54,48,0.18),0_8px_24px_-12px_rgba(0,54,48,0.12)]`}>
           <button
             onClick={onFlip}
             className="relative w-full h-full flex items-center justify-center bg-as-surface-container-lowest rounded-[calc(1.75rem-1.5px)] px-6 py-5 sm:px-10 lg:p-14 text-center lg:min-h-[420px] lg:max-h-[480px] hover:bg-white transition-colors overflow-y-auto"
@@ -188,6 +215,22 @@ export default function StudySurface({
             </div>
           </button>
         </div>
+
+        {/*
+          A card with no answer image renders NOTHING here: no frame, no
+          reserved space, no gap. That was the whole requirement, so it is a
+          plain conditional rather than an empty container that collapses.
+        */}
+        {showAnswerImage && (
+          <figure className="w-full max-w-[760px] mx-auto shrink-0 rounded-[1.5rem] border border-as-outline-variant/25 bg-as-surface-container-lowest p-3 sm:p-4 shadow-[0_12px_32px_-20px_rgba(0,54,48,0.18)]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={backImageUrl!}
+              alt={backImageAlt ?? ""}
+              className="w-full max-h-[38dvh] lg:max-h-[300px] object-contain rounded-xl"
+            />
+          </figure>
+        )}
       </div>
 
       {/* ── Action bar — pinned to the bottom on mobile ─────────── */}

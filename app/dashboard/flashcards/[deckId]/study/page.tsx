@@ -34,6 +34,9 @@ interface Card {
   cloze_text: string | null;
   cloze_count: number;
   explanation: string | null;
+  /** Answer-side image, shown under the card on reveal. Null on most cards. */
+  back_image_url: string | null;
+  back_image_alt: string | null;
 }
 
 interface Deck {
@@ -139,7 +142,7 @@ export default function StudyPage() {
           .maybeSingle(),
         supabase
           .from("flashcards")
-          .select("id, card_type, front_text, back_text, cloze_text, cloze_count, explanation, position")
+          .select("id, card_type, front_text, back_text, cloze_text, cloze_count, explanation, back_image_url, back_image_alt, position")
           .eq("deck_id", params.deckId)
           .order("position"),
       ]);
@@ -569,6 +572,8 @@ export default function StudyPage() {
             frontText={current?.card.front_text ?? null}
             backText={backText}
             explanation={current?.card.explanation ?? null}
+            backImageUrl={current?.card.back_image_url ?? null}
+            backImageAlt={current?.card.back_image_alt ?? null}
             hint={segments.filter((s) => s.kind === "blank" && s.hint).map((s) => (s.kind === "blank" ? s.hint : "")).join(" · ") || undefined}
             revealed={revealed}
             onFlip={flip}
