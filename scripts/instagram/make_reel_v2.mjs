@@ -50,6 +50,9 @@ const only = arg("--slug");
 const allTemplates = args.includes("--all-templates");
 const wanted = allTemplates ? ["a", "b", "c"] : [(arg("--template") || "a").toLowerCase()];
 const outDir = arg("--out") || path.join(ROOT, "marketing", "qotd");
+// Ask for a length directly: --seconds 9. Without it the clip is sized from
+// how much there is to read, which is the default and usually the right one.
+const secondsArg = arg("--seconds") ? Number(arg("--seconds")) : null;
 
 const questions = JSON.parse(fs.readFileSync(path.join(ROOT, "marketing/qotd/questions.json"), "utf8"))
   .filter((q) => !only || q.slug === only);
@@ -287,14 +290,23 @@ export function timeA(q) {
   //
   // The DECISION phase absorbs the squeeze, never the reading phase: reading
   // too little is what sank Reel #1, and it is the fix that is working.
-  const MAX_TOTAL = 11;
+  const MAX_TOTAL = secondsArg ?? 11;
   const DECIDE_FLOOR = 5;
   if (read + decide > MAX_TOTAL) {
     decide = Math.max(DECIDE_FLOOR, MAX_TOTAL - read);
   }
   const total = read + decide;
+
+  // WHAT A SHORTER CLIP ACTUALLY COSTS, stated rather than buried. Every word
+  // on screen stays on screen, so the reading load is the whole question, and
+  // at 200wpm 48 words want 14.4 seconds. Reel #1 put 59 words in 10 seconds
+  // with a countdown running and was skipped by 68.6% of viewers; that was
+  // arithmetic, not taste. Shortening the clip without shortening the copy
+  // walks back toward it, so the numbers are printed every run.
+  const readingLoad = stemRead + optRead;
+
   return { read, decide, total, stemWords, optWords, stemRead, optRead, isCalculation,
-           overLength: total > MAX_TOTAL };
+           readingLoad, overLength: total > MAX_TOTAL };
 }
 
 function planA(q) {
@@ -401,6 +413,11 @@ for (const q of questions) {
     if (timing) {
       console.log(`  timing derived: stem ${timing.stemWords}w needs ${timing.stemRead.toFixed(1)}s to read, `
         + `options ${timing.optWords}w needs ${timing.optRead.toFixed(1)}s`);
+      console.log(`  reading load: ${timing.stemWords + timing.optWords} words on screen = `
+        + `${timing.readingLoad.toFixed(1)}s at 200wpm, in a ${timing.total}s clip`
+        + (timing.readingLoad > timing.total
+            ? `  <- SHORT BY ${(timing.readingLoad - timing.total).toFixed(1)}s, the loop has to carry it`
+            : "  <- fits"));
       console.log(`  -> ${timing.read}s reading (no timer) + ${timing.decide}s deciding = ${timing.total}s`
         + (timing.isCalculation ? "   [calculation]" : "")
         + (timing.overLength ? "   [OVER LENGTH: the stem is too long to trim further]" : ""));

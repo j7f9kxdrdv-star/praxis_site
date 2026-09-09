@@ -162,15 +162,15 @@
   {
     "slug": "warm-soda-goes-flat",
     "eyebrow": "General Chemistry: Solutions",
-    "stem": "An open soda goes flat faster on a warm counter than in the fridge. What explains the difference?",
+    "stem": "Soda goes flat faster on the counter than in the fridge. Why?",
     "options": [
-      "A. Reaction of carbon dioxide with water",
-      "B. Evaporation of water carrying gas away",
-      "C. Slower diffusion of gas in warm liquid",
-      "D. Lower solubility of gas at higher temperature"
+      "A. Reaction with the water",
+      "B. Evaporation of the water",
+      "C. Slower diffusion of the gas",
+      "D. Lower solubility of the gas"
     ],
     "answer": "D",
-    "answer_text": "Lower solubility of gas at higher temperature",
+    "answer_text": "Lower solubility of the gas",
     "explanation": "Dissolving a gas releases heat, so warming the liquid pushes that equilibrium back toward the gas phase. Carbon dioxide that stayed dissolved in the cold can now comes out of solution and escapes, which is what going flat is.",
     "distractors": [
       "A. Carbon dioxide does form a little carbonic acid in water, but that equilibrium lies far to the left and the gas is not consumed. It leaves as gas.",
