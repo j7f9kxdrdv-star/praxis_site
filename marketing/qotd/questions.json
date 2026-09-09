@@ -138,5 +138,25 @@
       "D. Clonal anergy silences a lymphocyte that binds antigen without costimulation. These cells are fully active, which is the whole problem."
     ],
     "teaching_point": "When self-damage follows an infection, ask whether the immune system made a mistake or was fooled. Mimicry is being fooled: the response was correct for the pathogen and the host protein simply looked too much like it."
+  },
+  {
+    "slug": "chewing-bread-amylase",
+    "eyebrow": "Biochemistry: Carbohydrate Metabolism",
+    "stem": "Bread tastes sweeter the longer you chew it, even though nothing sweet has been added. Which process explains the change?",
+    "options": [
+      "A. Denaturation of salivary proteins",
+      "B. Enzymatic hydrolysis of starch",
+      "C. Fermentation by oral bacteria",
+      "D. Oxidation of glucose"
+    ],
+    "answer": "B",
+    "answer_text": "Enzymatic hydrolysis of starch",
+    "explanation": "Salivary amylase cleaves the glycosidic bonds in starch, releasing maltose and shorter sugars. Starch itself does not taste sweet because the receptors respond to small sugars, so the sweetness appears only once the chain has been broken up.",
+    "distractors": [
+      "A. Denaturation unfolds proteins. It would disable amylase rather than produce sugar, and starch is not a protein.",
+      "C. Bacteria in the mouth do ferment sugars, but over hours, and fermentation consumes sugar rather than creating it.",
+      "D. Oxidation breaks glucose down for energy inside cells. It removes sugar rather than releasing it, and it does not happen in the mouth."
+    ],
+    "teaching_point": "Sweetness reports molecular size, not carbohydrate content. Starch is already made of glucose; you simply cannot taste it until amylase cuts the chain into pieces small enough for the receptor."
   }
 ]
