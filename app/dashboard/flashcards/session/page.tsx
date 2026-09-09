@@ -6,9 +6,13 @@ import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import {
   nextOwed,
+  nextOwedOnRepeat,
+  ratingForRepeat,
+  repeatMovesSchedule,
   requeueGap,
   isFinished,
   MAX_SHOWS_PER_SESSION,
+  type RelearnAnswer,
 } from "@/lib/flashcards/relearn";
 
 import { supabase } from "@/lib/supabase";
@@ -57,6 +61,8 @@ interface ReviewItem {
   owed?: number;
   /** How many times it has appeared today, so a card cannot cycle forever. */
   shows?: number;
+  /** Has this card already lapsed in this session? One lapse per card is enough. */
+  lapsed?: boolean;
 }
 
 // "cram" is kept only as a legacy URL alias. The concept is Extra Study: the
@@ -342,7 +348,29 @@ function SessionInner() {
     }
   }, [index, queue.length]);
 
+  /** The four-button bar: a card being graded for the first time this session. */
   async function submitRating(rating: Rating) {
+    if (!current || submitting) return;
+    await record(rating, nextOwed(current.owed ?? 0, rating), false);
+  }
+
+  /**
+   * The two-button bar: a card that came back owing recalls. It asks whether
+   * the answer came back, not how hard it was, because the four-point scale on
+   * a card read thirty seconds ago was grading working memory.
+   */
+  async function submitRecall(answer: RelearnAnswer) {
+    if (!current || submitting) return;
+    const owedAfter = nextOwedOnRepeat(current.owed ?? 0, answer);
+    await record(
+      ratingForRepeat(answer),
+      owedAfter,
+      // Held unless this answer released the card or was a genuine miss.
+      !repeatMovesSchedule(answer, owedAfter, current.lapsed ?? false),
+    );
+  }
+
+  async function record(rating: Rating, owed: number, isRelearnStep: boolean) {
     if (!current || submitting) return;
     setSubmitting(true);
 
@@ -370,6 +398,7 @@ function SessionInner() {
         rating,
         source,
         clientRequestId: attemptId,
+        isRelearnStep,
       });
     } catch (e) {
       // Surfaced rather than swallowed. The old path ignored write failures
@@ -387,7 +416,6 @@ function SessionInner() {
     const firstAttempt = !seenRef.current.has(cardKey);
     const passed = rating !== "again";
     const shows = (current.shows ?? 0) + 1;
-    const owed = nextOwed(current.owed ?? 0, rating);
     // Released early only because it has been seen too many times today.
     const finished = isFinished(owed, shows);
 
@@ -422,7 +450,15 @@ function SessionInner() {
         last_rating: rating,
         last_reviewed_at: new Date().toISOString(),
       };
-      const requeued: ReviewItem = { ...current, state: requeuedState, owed, shows };
+      const requeued: ReviewItem = {
+        ...current,
+        state: requeuedState,
+        owed,
+        shows,
+        // Sticky: once a card has lapsed this session, further misses re-queue
+        // it without lapsing it again.
+        lapsed: (current.lapsed ?? false) || rating === "again",
+      };
       setRevealed(false);
       setQueue((q) => {
         const next = [...q];
@@ -468,7 +504,13 @@ function SessionInner() {
         e.preventDefault();
         flip();
       } else if (revealed) {
-        if (e.key === "1") submitRating("again");
+        // The repeat view offers two answers, so only two keys are live. Left
+        // bound, 3 and 4 would submit an Easy the student could not see and did
+        // not choose.
+        if ((current?.owed ?? 0) > 0) {
+          if (e.key === "1") submitRecall("correct");
+          else if (e.key === "2") submitRecall("missed");
+        } else if (e.key === "1") submitRating("again");
         else if (e.key === "2") submitRating("hard");
         else if (e.key === "3") submitRating("medium");
         else if (e.key === "4") submitRating("easy");
@@ -602,6 +644,10 @@ function SessionInner() {
   const lastRating = (current?.state?.last_rating as Rating | null | undefined) ?? null;
   const elapsedSec = Math.floor((now - sessionStart) / 1000);
   const elapsedLabel = `${Math.floor(elapsedSec / 60)}:${String(elapsedSec % 60).padStart(2, "0")}`;
+  // Above zero this card came back owing recalls, so the bar shows the two
+  // repeat buttons and the rail has to agree with them.
+  const owedNow = current?.owed ?? 0;
+
   const accuracyPct = stats.attempted > 0
     ? Math.round((stats.firstTryCorrect / stats.attempted) * 100)
     : null;
@@ -640,6 +686,8 @@ function SessionInner() {
             lastRating={lastRating}
             submitting={submitting}
             onRate={submitRating}
+            owed={current?.owed ?? 0}
+            onRecallAnswer={submitRecall}
             onSuspend={suspendCard}
           />
 
@@ -695,8 +743,25 @@ function SessionInner() {
               )}
             </div>
 
+            {/* Relearning: no interval to preview, because this answer is held */}
+            {revealed && owedNow > 0 && (
+              <div className="bg-as-surface-container-lowest border border-as-outline-variant/20 rounded-3xl p-5">
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-as-outline mb-3">
+                  Relearning
+                </p>
+                <p className="text-xs text-as-on-surface-variant leading-relaxed">
+                  {owedNow === 1
+                    ? "Recall it once more and it is done for today."
+                    : `Recall it ${owedNow} more times and it is done for today.`}
+                </p>
+                <p className="text-xs text-as-outline leading-relaxed mt-2">
+                  Its next date is set when it leaves, not on these repeats.
+                </p>
+              </div>
+            )}
+
             {/* Next interval preview */}
-            {revealed && (
+            {revealed && owedNow === 0 && (
               <div className="bg-as-surface-container-lowest border border-as-outline-variant/20 rounded-3xl p-5">
                 <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-as-outline mb-3">
                   Next Review In
@@ -723,13 +788,20 @@ function SessionInner() {
                 Keyboard
               </p>
               <div className="space-y-1.5 text-xs">
-                {[
-                  { keys: ["Space"], label: "Reveal / Flip" },
-                  { keys: ["1"], label: "Again" },
-                  { keys: ["2"], label: "Hard" },
-                  { keys: ["3"], label: "Medium" },
-                  { keys: ["4"], label: "Easy" },
-                ].map(({ keys, label }) => (
+                {(owedNow > 0
+                  ? [
+                      { keys: ["Space"], label: "Reveal / Flip" },
+                      { keys: ["1"], label: "Correct" },
+                      { keys: ["2"], label: "Missed" },
+                    ]
+                  : [
+                      { keys: ["Space"], label: "Reveal / Flip" },
+                      { keys: ["1"], label: "Again" },
+                      { keys: ["2"], label: "Hard" },
+                      { keys: ["3"], label: "Medium" },
+                      { keys: ["4"], label: "Easy" },
+                    ]
+                ).map(({ keys, label }) => (
                   <div key={label} className="flex items-center justify-between">
                     <span className="text-as-on-surface-variant">{label}</span>
                     <span className="flex gap-1">

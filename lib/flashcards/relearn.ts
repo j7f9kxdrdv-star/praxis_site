@@ -59,3 +59,72 @@ export const MAX_SHOWS_PER_SESSION = 8;
 export function isFinished(owed: number, shows: number): boolean {
   return owed === 0 || shows >= MAX_SHOWS_PER_SESSION;
 }
+
+// ─── The repeat view ───────────────────────────────────────────────────────
+//
+// A card in debt comes back inside the same session. Until now it came back
+// with the same four buttons, so a card failed thirty seconds ago could be
+// graded Easy, and that Easy overwrote the Again: the schedule ended up set by
+// the answer still sitting in working memory rather than by the memory that has
+// to survive until tomorrow.
+//
+// A repeat view asks ONE question, so it gets one pair of buttons. There are
+// two answers and not one, because a single button cannot say "I still don't
+// know it": the debt would pay itself down whatever happened, a card the
+// student never recalled would graduate looking learned, and the appearance cap
+// below could never be reached.
+
+export type RelearnAnswer = "correct" | "missed";
+
+/** A card that still owes recalls is being re-shown, not graded afresh. */
+export function isRepeat(owed: number): boolean {
+  return owed > 0;
+}
+
+/** Debt after answering a repeat view. A miss puts the card back to the start. */
+export function nextOwedOnRepeat(owed: number, answer: RelearnAnswer): number {
+  return answer === "missed" ? 3 : Math.max(owed - 1, 0);
+}
+
+/**
+ * The grade a repeat view records.
+ *
+ * The four-point scale still exists in the database, because FSRS speaks it and
+ * the review log has to stay one shape. The student is simply no longer asked
+ * to choose a point on it for an answer they read moments ago.
+ */
+export function ratingForRepeat(answer: RelearnAnswer): Rating {
+  return answer === "missed" ? "again" : "medium";
+}
+
+/**
+ * Whether this submission is allowed to move the card's schedule.
+ *
+ * ONE LAPSE AND ONE GRADUATION PER CARD PER SESSION. Exactly two submissions in
+ * a relearning run are allowed through:
+ *
+ *   the FIRST miss          the card lapses, which is the honest record
+ *   the RELEASING recall    FSRS's own relearning graduation
+ *
+ * Everything between them is recorded and held, so three recalls thirty seconds
+ * apart cannot buy three intervals.
+ *
+ * `alreadyLapsed` is what stops the second half of that. Letting every miss
+ * through looked right until the run was simulated: a card the student cannot
+ * get today is missed up to eight times before the appearance cap releases it,
+ * and each one was a separate FSRS lapse. Eight lapses is not eight times more
+ * evidence than one, it is the same fact counted eight times, and lapse count
+ * feeds difficulty and stability directly.
+ *
+ * The card still comes back and still owes its recalls. Only the accounting is
+ * capped, and a card that was never lapsed (a first grade of Hard, then a miss)
+ * still lapses properly the first time it is missed.
+ */
+export function repeatMovesSchedule(
+  answer: RelearnAnswer,
+  owedAfter: number,
+  alreadyLapsed: boolean,
+): boolean {
+  if (answer === "missed") return !alreadyLapsed;
+  return owedAfter === 0;
+}

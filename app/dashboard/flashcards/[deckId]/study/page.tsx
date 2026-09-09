@@ -6,8 +6,12 @@ import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import {
   nextOwed,
+  nextOwedOnRepeat,
+  ratingForRepeat,
+  repeatMovesSchedule,
   requeueGap,
   isFinished,
+  type RelearnAnswer,
   MAX_SHOWS_PER_SESSION,
 } from "@/lib/flashcards/relearn";
 import { supabase } from "@/lib/supabase";
@@ -81,6 +85,8 @@ interface ReviewItem {
   owed?: number;
   /** How many times it has appeared today, so a card cannot cycle forever. */
   shows?: number;
+  /** Has this card already lapsed in this session? One lapse per card is enough. */
+  lapsed?: boolean;
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -268,7 +274,28 @@ export default function StudyPage() {
     }
   }, [index, queue.length]);
 
+  /** The four-button bar: a card being graded for the first time this session. */
   async function submitRating(rating: Rating) {
+    if (!current || submitting) return;
+    await record(rating, nextOwed(current.owed ?? 0, rating), false);
+  }
+
+  /**
+   * The two-button bar. Same rule as the cross-deck session, from the same
+   * module: a card that came back owing recalls is asked whether the answer
+   * came back, not how hard it was.
+   */
+  async function submitRecall(answer: RelearnAnswer) {
+    if (!current || submitting) return;
+    const owedAfter = nextOwedOnRepeat(current.owed ?? 0, answer);
+    await record(
+      ratingForRepeat(answer),
+      owedAfter,
+      !repeatMovesSchedule(answer, owedAfter, current.lapsed ?? false),
+    );
+  }
+
+  async function record(rating: Rating, owed: number, isRelearnStep: boolean) {
     if (!current || submitting) return;
     setSubmitting(true);
 
@@ -289,6 +316,7 @@ export default function StudyPage() {
         rating,
         source,
         clientRequestId: attemptId,
+        isRelearnStep,
       });
     } catch (e) {
       setSaveError(e instanceof Error ? e.message : "Could not save that review.");
@@ -307,7 +335,6 @@ export default function StudyPage() {
     if (passed) doneRef.current.add(cardKey);
     if (firstAttempt && passed) firstTryOkRef.current.add(cardKey);
     const shows = (current.shows ?? 0) + 1;
-    const owed = nextOwed(current.owed ?? 0, rating);
     const finished = isFinished(owed, shows);
     // "Done" means the card cleared its debt, not merely that one grade passed.
     // A card owing further recalls is still in play, and counting it as done
@@ -338,7 +365,15 @@ export default function StudyPage() {
         last_rating: rating,
         last_reviewed_at: new Date().toISOString(),
       };
-      const requeued: ReviewItem = { ...current, state: requeuedState, owed, shows };
+      const requeued: ReviewItem = {
+        ...current,
+        state: requeuedState,
+        owed,
+        shows,
+        // Sticky: once a card has lapsed this session, further misses re-queue
+        // it without lapsing it again.
+        lapsed: (current.lapsed ?? false) || rating === "again",
+      };
       setRevealed(false);
       setQueue((q) => {
         const next = [...q];
@@ -379,6 +414,10 @@ export default function StudyPage() {
     advance();
   }
 
+  // Above zero this card came back owing recalls: two buttons, two keys, and a
+  // rail that says so. Same rule as the cross-deck session.
+  const owedNow = current?.owed ?? 0;
+
   // ─── Keyboard shortcuts ────────────────────────────────────────────────────
 
   useEffect(() => {
@@ -388,7 +427,11 @@ export default function StudyPage() {
         e.preventDefault();
         flip();
       } else if (revealed) {
-        if (e.key === "1") submitRating("again");
+        // Only two keys are live on a repeat view, matching the two buttons.
+        if ((current?.owed ?? 0) > 0) {
+          if (e.key === "1") submitRecall("correct");
+          else if (e.key === "2") submitRecall("missed");
+        } else if (e.key === "1") submitRating("again");
         else if (e.key === "2") submitRating("hard");
         else if (e.key === "3") submitRating("medium");
         else if (e.key === "4") submitRating("easy");
@@ -534,6 +577,8 @@ export default function StudyPage() {
             lastRating={lastRating}
             submitting={submitting}
             onRate={submitRating}
+            owed={current?.owed ?? 0}
+            onRecallAnswer={submitRecall}
             onSuspend={suspendCard}
           />
 
@@ -591,8 +636,25 @@ export default function StudyPage() {
               )}
             </div>
 
+            {/* Relearning: no interval to preview, because this answer is held */}
+            {revealed && owedNow > 0 && (
+              <div className="bg-as-surface-container-lowest border border-as-outline-variant/20 rounded-3xl p-5">
+                <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-as-outline mb-3">
+                  Relearning
+                </p>
+                <p className="text-xs text-as-on-surface-variant leading-relaxed">
+                  {owedNow === 1
+                    ? "Recall it once more and it is done for today."
+                    : `Recall it ${owedNow} more times and it is done for today.`}
+                </p>
+                <p className="text-xs text-as-outline leading-relaxed mt-2">
+                  Its next date is set when it leaves, not on these repeats.
+                </p>
+              </div>
+            )}
+
             {/* Next interval preview (only after reveal) */}
-            {revealed && (
+            {revealed && owedNow === 0 && (
               <div className="bg-as-surface-container-lowest border border-as-outline-variant/20 rounded-3xl p-5">
                 <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-as-outline mb-3">
                   Next Review In
@@ -619,13 +681,20 @@ export default function StudyPage() {
                 Keyboard
               </p>
               <div className="space-y-1.5 text-xs">
-                {[
-                  { keys: ["Space"], label: "Reveal / Flip" },
-                  { keys: ["1"], label: "Again" },
-                  { keys: ["2"], label: "Hard" },
-                  { keys: ["3"], label: "Medium" },
-                  { keys: ["4"], label: "Easy" },
-                ].map(({ keys, label }) => (
+                {(owedNow > 0
+                  ? [
+                      { keys: ["Space"], label: "Reveal / Flip" },
+                      { keys: ["1"], label: "Correct" },
+                      { keys: ["2"], label: "Missed" },
+                    ]
+                  : [
+                      { keys: ["Space"], label: "Reveal / Flip" },
+                      { keys: ["1"], label: "Again" },
+                      { keys: ["2"], label: "Hard" },
+                      { keys: ["3"], label: "Medium" },
+                      { keys: ["4"], label: "Easy" },
+                    ]
+                ).map(({ keys, label }) => (
                   <div key={label} className="flex items-center justify-between">
                     <span className="text-as-on-surface-variant">{label}</span>
                     <span className="flex gap-1">

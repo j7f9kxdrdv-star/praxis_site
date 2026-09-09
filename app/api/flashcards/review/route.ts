@@ -34,6 +34,7 @@ interface ReviewBody {
   rating?: string;
   source?: string;
   clientRequestId?: string;
+  isRelearnStep?: boolean;
 }
 
 const RATINGS = ["again", "hard", "medium", "easy"] as const;
@@ -80,6 +81,8 @@ export async function POST(req: NextRequest) {
   const rating = String(body.rating ?? "") as Rating;
   const source = String(body.source ?? "daily_review");
   const clientRequestId = String(body.clientRequestId ?? "");
+  // A relearning repetition that is not releasing the card. See below.
+  const isRelearnStep = body.isRelearnStep === true;
 
   if (!UUID_RE.test(flashcardId)) {
     return NextResponse.json({ error: "Invalid flashcardId." }, { status: 400 });
@@ -168,7 +171,23 @@ export async function POST(req: NextRequest) {
     lastReviewedAt !== null && lastReviewedAt >= startOfStudyDay(now, dayStartHour);
   const isMature = prevInterval >= 1;
   const isPostLapseRecheck = state?.last_rating === "again";
-  const advance = !(sameStudyDay && isMature && !isPostLapseRecheck);
+
+  // ── The relearning repetition ─────────────────────────────────────────
+  //
+  // A card that owes further recalls comes back inside the same session and is
+  // answered CORRECT or MISSED. Those in-between recalls are evidence that the
+  // student can produce the answer today; they are not spaced retrievals, and
+  // three of them thirty seconds apart must not buy three intervals.
+  //
+  // So the client marks them, and a marked attempt is recorded but held. Only
+  // two submissions in a relearning run move the schedule: a MISSED, which is a
+  // real lapse, and the recall that finally releases the card, which is FSRS's
+  // own relearning graduation.
+  //
+  // ACCEPTING THIS FROM THE CLIENT IS SAFE, and it is the only scheduling input
+  // this route takes from one. It can only hold a card back, never push it
+  // further out, so it cannot be used to award longer intervals than earned.
+  const advance = !isRelearnStep && !(sameStudyDay && isMature && !isPostLapseRecheck);
 
   // When the schedule is held, write back exactly what the card already had,
   // so the row is unchanged while the attempt is still logged.
@@ -217,7 +236,8 @@ export async function POST(req: NextRequest) {
   const row = Array.isArray(data) ? data[0] : data;
   return NextResponse.json({
     // True when this retrieval was recorded but deliberately did not move the
-    // schedule, because the card was already answered earlier the same day.
+    // schedule: either the card was already answered earlier the same day, or
+    // this was a relearning repetition that did not release it.
     scheduleHeld: !advance,
     intervalDays: row?.interval_days ?? sched.intervalDays,
     // Vestigial: FSRS does not use it, but it is still returned so any

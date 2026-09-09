@@ -30,6 +30,16 @@ export interface SubmitReviewArgs {
   source: ReviewSource;
   /** Stable per grading action. Reusing it on a retry makes the write idempotent. */
   clientRequestId: string;
+  /**
+   * A relearning repetition inside the same session that is NOT releasing the
+   * card. Recorded like any other attempt, but it must not move the schedule:
+   * see repeatMovesSchedule in lib/flashcards/relearn.ts.
+   *
+   * The server never trusts the client for scheduling, and this is the one safe
+   * exception: the flag can only ever HOLD a card back, never push it further
+   * out, so a caller cannot use it to award itself longer intervals.
+   */
+  isRelearnStep?: boolean;
 }
 
 /**
@@ -54,6 +64,7 @@ export async function submitReview(args: SubmitReviewArgs): Promise<SubmittedRev
       rating: args.rating,
       source: args.source,
       clientRequestId: args.clientRequestId,
+      isRelearnStep: args.isRelearnStep ?? false,
     }),
   });
 

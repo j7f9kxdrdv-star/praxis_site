@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { ClozeSegment } from "@/lib/flashcards/cloze";
 import { previewLabel, type Rating } from "@/lib/flashcards/scheduler";
+import type { RelearnAnswer } from "@/lib/flashcards/relearn";
 import RichText from "@/components/flashcards/RichText";
 
 /**
@@ -12,8 +13,10 @@ import RichText from "@/components/flashcards/RichText";
  * Mobile-first: fills the viewport, the card is the centered focus, and the
  * action bar is pinned to the bottom (thumb zone) with safe-area padding.
  * Before reveal it shows a single "Show answer" button; after reveal, the four
- * grade buttons. On desktop (lg) it relaxes to the classic card-with-buttons
- * layout so the page's context rail sits beside it.
+ * grade buttons — or, on a card that came back owing recalls, the two
+ * repeat-view buttons instead. See `owed` below. On desktop (lg) it relaxes to
+ * the classic card-with-buttons layout so the page's context rail sits beside
+ * it.
  *
  * Purely presentational: all state + handlers come from the parent page.
  */
@@ -42,8 +45,26 @@ export interface StudySurfaceProps {
   lastRating: Rating | null;
   submitting: boolean;
   onRate: (rating: Rating) => void;
+  /**
+   * Successful recalls this card still owes before it may leave the session.
+   * Above zero the card is a REPEAT: it was already graded minutes ago and has
+   * come back to be retrieved, so the four-point scale is replaced by the one
+   * question a repeat actually asks. Grading a card Easy thirty seconds after
+   * failing it measured working memory and overwrote the Again that mattered.
+   */
+  owed?: number;
+  /** Answer to a repeat view. Required whenever `owed` can be above zero. */
+  onRecallAnswer?: (answer: RelearnAnswer) => void;
   onSuspend: () => void;
 }
+
+// The repeat view borrows the palette of the grade it stands in for: a miss is
+// the Again red, a recall the Medium green, so the colour still means the same
+// thing across both bars.
+const RECALL: { answer: RelearnAnswer; label: string; key: string; className: string }[] = [
+  { answer: "correct", label: "Correct", key: "1", className: "bg-as-primary hover:bg-as-primary-container" },
+  { answer: "missed", label: "Missed", key: "2", className: "bg-[#a8432c] hover:bg-[#96371f]" },
+];
 
 const GRADES: { rating: Rating; label: string; key: string; className: string }[] = [
   { rating: "again", label: "Again", key: "1", className: "bg-[#a8432c] hover:bg-[#96371f]" },
@@ -70,8 +91,13 @@ export default function StudySurface({
   lastRating,
   submitting,
   onRate,
+  owed = 0,
+  onRecallAnswer,
   onSuspend,
 }: StudySurfaceProps) {
+  // A repeat view needs somewhere to send the answer. Without a handler the
+  // buttons would render and do nothing, so fall back to the grade bar.
+  const isRepeatView = owed > 0 && !!onRecallAnswer;
   const pct =
     progress && progress.total > 0
       ? Math.round((progress.done / progress.total) * 100)
@@ -175,6 +201,28 @@ export default function StudySurface({
           </button>
         ) : (
           <div className="space-y-2.5">
+            {isRepeatView ? (
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
+                {RECALL.map(({ answer, label, key, className }) => (
+                  <button
+                    key={answer}
+                    onClick={() => onRecallAnswer!(answer)}
+                    disabled={submitting}
+                    className={`flex flex-col items-center gap-0.5 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-wide text-white transition-colors disabled:opacity-50 shadow-[0_8px_24px_-14px_rgba(0,54,48,0.45)] ${className}`}
+                  >
+                    <span>{label}</span>
+                    <span className="text-[9px] font-medium opacity-80 normal-case tracking-normal">
+                      {answer === "missed"
+                        ? "back to 3"
+                        : owed === 1
+                          ? "clears it"
+                          : `${owed - 1} more`}{" "}
+                      · {key}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            ) : (
             <div className="grid grid-cols-4 gap-2 sm:gap-3">
               {GRADES.map(({ rating, label, key, className }) => (
                 <button
@@ -190,6 +238,7 @@ export default function StudySurface({
                 </button>
               ))}
             </div>
+            )}
             <button
               onClick={onSuspend}
               className="w-full text-[10px] font-bold uppercase tracking-widest text-as-outline hover:text-as-primary py-1.5"
