@@ -178,5 +178,44 @@
       "C. Diffusion gets faster when warm, not slower. And slower diffusion would keep the gas in, not let it out."
     ],
     "teaching_point": "Solids and gases move in opposite directions with heat. Warming usually dissolves more of a solid and less of a gas, so \"warm dissolves more\" is a rule that only half works."
+  },
+  {
+    "slug": "helium-balloon-sags",
+    "eyebrow": "General Chemistry: The Gas Phase",
+    "stem": "A helium balloon sags overnight, but the same balloon filled with air stays up for days. Why?",
+    "options": [
+      "A. Helium cools and contracts",
+      "B. Helium dissolves into the latex",
+      "C. Helium escapes through the latex faster",
+      "D. Helium is lighter so it floats out"
+    ],
+    "answer": "C",
+    "answer_text": "Helium escapes through the latex faster",
+    "explanation": "Helium atoms are small and, being light, move faster at the same temperature. They slip through the gaps in the latex far more readily than the larger nitrogen and oxygen molecules in air, so the balloon empties itself.",
+    "distractors": [
+      "A. Cooling would shrink the balloon overnight and it would come back in the morning. A helium balloon does not recover, because the gas is gone.",
+      "B. The gas leaves as gas. Dissolving into the rubber is not what empties the balloon.",
+      "D. Lower density is why it rises, not why it deflates. Buoyancy lifts the balloon; it does not push gas through the wall."
+    ],
+    "teaching_point": "Lighter gases move faster at a given temperature, so they leak, effuse and diffuse faster. The same fact explains why the balloon floats and why it does not stay floating, which are two different questions people tend to merge."
+  },
+  {
+    "slug": "parachute-acceleration",
+    "eyebrow": "Physics: Force and Motion",
+    "stem": "A skydiver falling at terminal velocity opens their parachute. Immediately after, their acceleration is:",
+    "options": [
+      "A. Upward, opposite their motion",
+      "B. Downward, at g",
+      "C. Downward, but less than g",
+      "D. Zero, because they are at terminal velocity"
+    ],
+    "answer": "A",
+    "answer_text": "Upward, opposite their motion",
+    "explanation": "Opening the parachute multiplies the drag force at once, while weight is unchanged. Drag now exceeds weight, so the net force points up and so does the acceleration. They are still moving downward the whole time, just slowing.",
+    "distractors": [
+      "D. Terminal velocity meant zero net force with the old drag. Changing the area changes the drag instantly, so the balance is broken the moment the canopy opens.",
+      "B and C. Both keep the acceleration pointing down, which would mean speeding up. A parachute that made you fall faster would not be a parachute."
+    ],
+    "teaching_point": "Acceleration follows net force, never velocity. Moving down and accelerating up happen together every time something slows on its way down, and that split is what most of these questions are really testing."
   }
 ]
