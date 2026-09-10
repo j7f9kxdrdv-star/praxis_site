@@ -22,6 +22,8 @@ interface Profile {
   daily_new_card_limit: number;
   daily_review_limit: number;
   weekly_question_goal: number | null;
+  /** Score the student is aiming for, 472-528. Null when unset. */
+  target_mcat_score: number | null;
   /** IANA name. Null until the browser has reported one. */
   timezone: string | null;
   /** Local hour the study day rolls over. 4 by default, so a session running

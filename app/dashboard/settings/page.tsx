@@ -31,6 +31,9 @@ export default function SettingsPage() {
   const [mcatDate, setMcatDate] = useState("");
   const [studyHours, setStudyHours] = useState<string>("");
   const [weeklyGoal, setWeeklyGoal] = useState<string>("");
+  // The score they are aiming for. Optional: Study Status only reports "On
+  // track" when it is set, because on track toward nothing is not a claim.
+  const [targetScore, setTargetScore] = useState<string>("");
   // Their actual recent pace, shown as a hint so the goal they pick is grounded.
   const [recentPace, setRecentPace] = useState<number | null>(null);
 
@@ -170,6 +173,11 @@ export default function SettingsPage() {
     setFirstName(profile.first_name || "");
     setLastName(profile.last_name || "");
     setMcatDate(profile.mcat_test_date || "");
+    setTargetScore(
+      profile.target_mcat_score !== null && profile.target_mcat_score !== undefined
+        ? String(profile.target_mcat_score)
+        : "",
+    );
     setStudyHours(
       profile.study_hours_per_week !== null &&
         profile.study_hours_per_week !== undefined
@@ -225,6 +233,18 @@ export default function SettingsPage() {
       return;
     }
 
+    const targetNum = targetScore.trim() === "" ? null : Number(targetScore);
+    // The real MCAT scale. Matches the CHECK on the column and the bounds on
+    // official_mcat_scores, so the three cannot disagree.
+    if (
+      targetNum !== null &&
+      (!Number.isInteger(targetNum) || targetNum < 472 || targetNum > 528)
+    ) {
+      setProfileError("Target MCAT score must be a whole number between 472 and 528.");
+      setSavingProfile(false);
+      return;
+    }
+
     const { error } = await supabase
       .from("profiles")
       .update({
@@ -233,6 +253,7 @@ export default function SettingsPage() {
         mcat_test_date: mcatDate.trim() || null,
         study_hours_per_week: studyHoursNum,
         weekly_question_goal: weeklyGoalNum,
+        target_mcat_score: targetNum,
       })
       .eq("id", user.id);
 
@@ -356,6 +377,22 @@ export default function SettingsPage() {
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <TextField
+                label="Target MCAT score"
+                type="number"
+                value={targetScore}
+                onChange={setTargetScore}
+                placeholder="e.g. 512"
+              />
+              <div
+                className="mt-1.5 text-[12px]"
+                style={{ color: "var(--color-prax-ink-mute)" }}
+              >
+                Optional. Without one your dashboard will not say whether you are on track,
+                because there would be nothing to be on track toward.
+              </div>
+            </div>
             <div>
               <TextField
                 label="Weekly question goal"
