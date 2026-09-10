@@ -1,9 +1,17 @@
 "use client";
 
-// The panel that replaced "Today's Focus". The rule for what appears and what
-// each number means lives in lib/dashboard/checklist.ts; this file only draws
-// it, so the two cannot drift the way three copies of the flashcard contrast
-// vocabulary once did.
+// TODAY'S PLAN. The panel that replaced "Today's Focus", and the dominant thing
+// on the dashboard. The rule for what appears and what each number means lives
+// in lib/dashboard/checklist.ts; this file only draws it, so the two cannot
+// drift the way three copies of the flashcard contrast vocabulary once did.
+//
+// ORDERED, AND NUMBERED SO THE ORDER READS AS DELIBERATE. The sequence comes
+// from the student's measured phase, and a numbered list says "we worked this
+// out for you" where an unnumbered one says "here are four things, pick".
+//
+// ONE DOMINANT ACTION. Four equally weighted buttons hand the decision back to
+// the student, which is the decision the plan exists to make. Rows stay
+// clickable for anyone who wants to jump, but the eye is given one place to go.
 
 import Link from "next/link";
 import {
@@ -65,13 +73,27 @@ function Tick({ state }: { state: ChecklistLine["state"] }) {
   return <span style={base} aria-hidden />;
 }
 
-function Row({ line }: { line: ChecklistLine }) {
+function Row({ line, index }: { line: ChecklistLine; index: number | null }) {
   const soon = line.state === "soon";
   const done = line.state === "done";
   const pct = line.target > 0 ? Math.min(1, line.done / line.target) : 0;
 
   const body = (
     <>
+      {/* The step number. Absent on a row that is not part of the sequence. */}
+      <span
+        className="shrink-0 tabular-nums text-right"
+        style={{
+          width: 22,
+          fontFamily: "var(--font-prax-serif)",
+          fontSize: 13,
+          color: done ? "rgba(246,244,227,0.35)" : "var(--color-prax-gold-soft)",
+          opacity: index === null ? 0 : 1,
+        }}
+        aria-hidden={index === null}
+      >
+        {index === null ? "" : String(index).padStart(2, "0")}
+      </span>
       <Tick state={line.state} />
       <span className="flex-1 min-w-0">
         <span
@@ -180,6 +202,12 @@ export default function TodayChecklist({
   const live = countable(lines);
   const progress = overallProgress(lines);
   const nextUp = live.find((l) => l.state !== "done");
+  // "Continue" once any work has been logged today, so the button reflects the
+  // session rather than the clock.
+  const started = live.some((l) => l.done > 0);
+  // Nothing to do is not zero percent done. A ring reading 0% beside "Nothing
+  // due today" reads as a failure the student had no way to avoid.
+  const hasWork = live.length > 0;
 
   return (
     <div
@@ -225,7 +253,7 @@ export default function TodayChecklist({
                   color: "var(--color-prax-gold-soft)",
                 }}
               >
-                Today&apos;s Checklist
+                Today&apos;s Plan
               </span>
             </div>
             <h2
@@ -244,12 +272,15 @@ export default function TodayChecklist({
               className="m-0 mt-2"
               style={{ fontSize: 13.5, color: "rgba(246,244,227,0.72)", maxWidth: "46ch" }}
             >
-              {phase
-                ? phase.reason
-                : "Each line fills as you work and ticks itself when it is done."}
+              {!hasWork && !loading
+                ? "Your plan will fill in as cards come due and you work through questions."
+                : phase
+                  ? phase.reason
+                  : "Each line fills as you work and ticks itself when it is done."}
             </p>
           </div>
 
+          {hasWork && (
           <div className="relative shrink-0" style={{ width: 104, height: 104 }}>
             <svg width="104" height="104" viewBox="0 0 104 104" style={{ transform: "rotate(-90deg)" }}>
               <circle cx="52" cy="52" r={RING_R} fill="none" stroke="rgba(216,229,223,0.18)" strokeWidth="7" />
@@ -285,6 +316,7 @@ export default function TodayChecklist({
               </span>
             </div>
           </div>
+          )}
         </div>
 
         {loading ? (
@@ -292,7 +324,13 @@ export default function TodayChecklist({
         ) : (
           <ul className="list-none m-0 p-0 flex flex-col gap-0.5">
             {lines.map((l) => (
-              <Row key={l.key} line={l} />
+              <Row
+                key={l.key}
+                line={l}
+                // Numbered only if it is real work. The greyed row waiting on
+                // the study modules is not step four of anything yet.
+                index={l.state === "soon" ? null : live.findIndex((x) => x.key === l.key) + 1}
+              />
             ))}
           </ul>
         )}
@@ -306,14 +344,18 @@ export default function TodayChecklist({
                 background: "var(--color-prax-cream-card)",
                 color: "var(--color-prax-green-deep)",
                 borderRadius: 999,
-                padding: "12px 26px",
-                fontSize: 14,
+                padding: "14px 30px",
+                fontSize: 15,
                 fontWeight: 600,
                 textDecoration: "none",
+                boxShadow: "0 10px 28px -16px rgba(3,56,48,0.6)",
               }}
             >
-              Start with {nextUp.title.toLowerCase()} <span aria-hidden>→</span>
+              {started ? "Continue" : "Start"} today&apos;s plan <span aria-hidden>→</span>
             </Link>
+            <span style={{ fontSize: 12, color: "rgba(246,244,227,0.6)" }}>
+              Next: {nextUp.title.toLowerCase()}
+            </span>
             {input && input.unseenBlanks === 0 && (
               <span style={{ fontSize: 12, color: "rgba(246,244,227,0.6)" }}>
                 You have seen every card at least once, so there are no new ones today.

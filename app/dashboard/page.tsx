@@ -22,12 +22,6 @@ interface Stats {
   precisionDelta: number; // percentage points vs last week
 }
 
-interface SubjectProgress {
-  section: string;
-  label: string;
-  percent: number;
-  attention: boolean;
-}
 
 interface FlashcardSummary {
   totalDue: number;
@@ -38,17 +32,41 @@ interface FlashcardSummary {
 }
 
 import TodayChecklist from "@/components/dashboard/TodayChecklist";
-import type { ChecklistInput, FocusDeck } from "@/lib/dashboard/checklist";
+import SummaryRow from "@/components/dashboard/SummaryRow";
+import {
+  PriorityTopics,
+  StudyStatusCard,
+  MemoryReview,
+  RecentProgress,
+  ActivityStrip,
+  type ProgressSignal,
+} from "@/components/dashboard/DashboardCards";
+import {
+  scoreRange,
+  recentAccuracy,
+  weeklyProgress,
+  coverage,
+  priorityTopics,
+  accuracyTrend,
+  coverageBand,
+  type Attempt,
+  type QuestionMeta,
+  type PriorityTopic,
+  type Coverage as CoverageShape,
+  type RecentAccuracy as RecentAccuracyShape,
+  type WeeklyProgress as WeeklyProgressShape,
+} from "@/lib/dashboard/summary";
+import {
+  studyStatus as computeStudyStatus,
+  STATUS_LABEL,
+  statusNote,
+} from "@/lib/learner/studyStatus";
+import type { ScoreEstimate } from "@/lib/scoring/scoreEstimate";
+import { buildChecklist, type ChecklistInput, type FocusDeck } from "@/lib/dashboard/checklist";
 import { detectPhase, summariseCards, type PhaseResult } from "@/lib/dashboard/phase";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
 import { startOfStudyDay } from "@/lib/flashcards/studyDay";
 
-const SECTION_LABELS: Record<string, string> = {
-  bio_biochem: "Biological Systems",
-  chem_phys: "Physical Sciences",
-  psych_soc: "Psychological Behavior",
-  cars: "Critical Reasoning",
-};
 
 /* ---------------------------------------------------------------------- */
 /* Helpers                                                                */
@@ -79,226 +97,7 @@ function startOfDayMs(d: Date): number {
 /* Sparkline (inline SVG)                                                 */
 /* ---------------------------------------------------------------------- */
 
-function Spark({
-  points,
-  color,
-  width = 72,
-  height = 22,
-}: {
-  points: number[];
-  color: string;
-  width?: number;
-  height?: number;
-}) {
-  if (points.length === 0) {
-    return <div style={{ width, height }} />;
-  }
-  const max = Math.max(...points, 1);
-  const min = Math.min(...points, 0);
-  const range = max - min || 1;
-  const step = points.length > 1 ? width / (points.length - 1) : 0;
-  const coords = points.map(
-    (p, i) => [i * step, height - ((p - min) / range) * height] as [number, number]
-  );
-  const d = coords
-    .map((c, i) => (i === 0 ? "M" : "L") + c[0].toFixed(1) + " " + c[1].toFixed(1))
-    .join(" ");
-  const area = d + ` L ${width} ${height} L 0 ${height} Z`;
-  const last = coords[coords.length - 1];
-  return (
-    <svg width={width} height={height} style={{ display: "block" }}>
-      <path d={area} fill={color} opacity="0.12" />
-      <path
-        d={d}
-        fill="none"
-        stroke={color}
-        strokeWidth="1.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <circle cx={last[0]} cy={last[1]} r="2.2" fill={color} />
-    </svg>
-  );
-}
 
-/* ---------------------------------------------------------------------- */
-/* Stat card                                                              */
-/* ---------------------------------------------------------------------- */
-
-function StatCard({
-  label,
-  value,
-  unit,
-  delta,
-  deltaIsGood = true,
-  spark,
-  hint,
-  empty,
-  emptyCta,
-  emptyHref,
-}: {
-  label: string;
-  value: string;
-  unit?: string;
-  delta?: string;
-  deltaIsGood?: boolean;
-  spark?: number[];
-  hint?: string;
-  empty?: boolean;
-  emptyCta?: string;
-  emptyHref?: string;
-}) {
-  const card = (
-    <div
-      className="relative flex flex-1 min-w-0 flex-col rounded-xl px-[18px] pt-4 pb-3.5"
-      style={{
-        background: "var(--color-prax-cream-card)",
-        border: "1px solid var(--color-prax-cream-border)",
-      }}
-    >
-      <div className="flex items-baseline justify-between mb-2.5">
-        <div
-          className="font-semibold uppercase"
-          style={{
-            fontFamily: "var(--font-prax-sans)",
-            fontSize: 10,
-            letterSpacing: "0.2em",
-            color: "var(--color-prax-ink-mute)",
-          }}
-        >
-          {label}
-        </div>
-        {delta && (
-          <div
-            className="font-semibold"
-            style={{
-              fontFamily: "var(--font-prax-sans)",
-              fontSize: 10.5,
-              color: deltaIsGood
-                ? "var(--color-prax-green-soft)"
-                : "var(--color-prax-ink-mute)",
-            }}
-          >
-            {delta}
-          </div>
-        )}
-      </div>
-      <div className="flex items-end justify-between gap-2.5">
-        <div className="flex items-baseline gap-1">
-          <div
-            className="leading-none font-medium"
-            style={{
-              fontFamily: "var(--font-prax-serif)",
-              fontSize: 30,
-              color: empty
-                ? "var(--color-prax-ink-mute)"
-                : "var(--color-prax-green)",
-              fontVariantNumeric: "tabular-nums lining-nums",
-            }}
-          >
-            {value}
-          </div>
-          {unit && (
-            <div
-              style={{
-                fontFamily: "var(--font-prax-serif)",
-                fontSize: 15,
-                color: "var(--color-prax-ink-soft)",
-              }}
-            >
-              {unit}
-            </div>
-          )}
-        </div>
-        {spark && <Spark points={spark} color="var(--color-prax-green-soft)" />}
-      </div>
-      <div
-        className="mt-2"
-        style={{
-          fontFamily: "var(--font-prax-sans)",
-          fontSize: 11,
-          color: empty ? "var(--color-prax-gold)" : "var(--color-prax-ink-mute)",
-          fontWeight: empty ? 600 : 400,
-        }}
-      >
-        {empty ? emptyCta : hint}
-      </div>
-    </div>
-  );
-  return empty && emptyHref ? (
-    <Link href={emptyHref} className="flex flex-1 min-w-0">
-      {card}
-    </Link>
-  ) : (
-    card
-  );
-}
-
-/* ---------------------------------------------------------------------- */
-/* Subject row                                                            */
-/* ---------------------------------------------------------------------- */
-
-function SubjectRow({
-  name,
-  value,
-  attention,
-}: {
-  name: string;
-  value: number;
-  attention: boolean;
-}) {
-  return (
-    <div className="mb-3.5">
-      <div className="flex items-baseline justify-between mb-1.5">
-        <div className="flex items-center gap-2">
-          {attention && (
-            <div
-              className="rounded-full"
-              style={{ width: 5, height: 5, background: "var(--color-prax-gold)" }}
-            />
-          )}
-          <div
-            style={{
-              fontFamily: "var(--font-prax-sans)",
-              fontSize: 12.5,
-              color: "var(--color-prax-ink)",
-              fontWeight: attention ? 600 : 500,
-            }}
-          >
-            {name}
-          </div>
-        </div>
-        <div
-          style={{
-            fontFamily: "var(--font-prax-serif)",
-            fontSize: 14,
-            color: attention
-              ? "var(--color-prax-gold)"
-              : "var(--color-prax-green)",
-            fontVariantNumeric: "tabular-nums lining-nums",
-          }}
-        >
-          {value}
-          <span style={{ fontSize: 11, color: "var(--color-prax-ink-mute)" }}>%</span>
-        </div>
-      </div>
-      <div
-        className="rounded-full overflow-hidden"
-        style={{ height: 4, background: "var(--color-prax-cream-deep)" }}
-      >
-        <div
-          className="h-full rounded-full"
-          style={{
-            width: `${value}%`,
-            background: attention
-              ? "var(--color-prax-gold)"
-              : "var(--color-prax-green)",
-          }}
-        />
-      </div>
-    </div>
-  );
-}
 
 /* ---------------------------------------------------------------------- */
 /* Main page                                                              */
@@ -317,7 +116,6 @@ export default function DashboardHome() {
     weekDelta: 0,
     precisionDelta: 0,
   });
-  const [subjects, setSubjects] = useState<SubjectProgress[]>([]);
   const [flashcards, setFlashcards] = useState<FlashcardSummary>({
     totalDue: 0,
     urgent: 0,
@@ -327,6 +125,16 @@ export default function DashboardHome() {
   });
   const [checklist, setChecklist] = useState<ChecklistInput | null>(null);
   const [phase, setPhase] = useState<PhaseResult | null>(null);
+
+  // ── The redesigned dashboard's own state ──────────────────────────────
+  // Derived in lib/dashboard/summary.ts from rows this page already loads.
+  const [score, setScore] = useState<ScoreEstimate | null>(null);
+  const [weekly, setWeekly] = useState<WeeklyProgressShape | null>(null);
+  const [recent, setRecent] = useState<RecentAccuracyShape | null>(null);
+  const [cover, setCover] = useState<CoverageShape | null>(null);
+  const [priorities, setPriorities] = useState<PriorityTopic[]>([]);
+  const [progressSignals, setProgressSignals] = useState<ProgressSignal[]>([]);
+  const [cardsThisWeek, setCardsThisWeek] = useState(0);
   /** Decks reviewed since the study day began, so a focus deck can tick off. */
   const decksStudiedToday = useRef<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -336,6 +144,49 @@ export default function DashboardHome() {
     user.user_metadata?.first_name ||
     user.email?.split("@")[0] ||
     "Student";
+
+  // ── Derived for the cards below ───────────────────────────────────────
+  //
+  // At render rather than in the loader, so a late-arriving brief or profile
+  // flows through without a second pass over thousands of rows.
+  const trend = accuracyTrend(stats.precisionDelta, recent?.sampleSize ?? 0);
+  // The versioned rule-based model in lib/learner/studyStatus.ts. Every rule is
+  // a stated condition and the result carries the one that fired, so a status
+  // can be explained rather than re-derived.
+  //
+  // memoryHealth is passed to be DISPLAYED beside the status. It never reaches
+  // the score predictor, which takes only first-attempt question evidence.
+  const statusResult = computeStudyStatus({
+    eligibleAttempts: recent?.sampleSize ?? 0,
+    accuracyDeltaPoints: recent?.deltaPoints ?? null,
+    coveragePercent: cover?.percent ?? 0,
+    priorityCount: priorities.length,
+    memoryHealth: phase
+      ? phase.phase === "applying"
+        ? "STRONG"
+        : phase.phase === "consolidating"
+          ? "STABLE"
+          : "BUILDING"
+      : null,
+    predictedHigh: score?.high ?? null,
+    predictionConfidence: score?.confidence ?? null,
+    targetScore: profile?.target_mcat_score ?? null,
+  });
+  const status = {
+    status: STATUS_LABEL[statusResult.status],
+    note: statusNote(statusResult, profile?.target_mcat_score ?? null),
+  };
+  /** The one genuinely modelled signal on the status card. */
+  const MEMORY_PHASE_LABEL: Record<string, string> = {
+    building: "Building",
+    consolidating: "Consolidating",
+    applying: "Holding",
+  };
+  const memoryPhaseLabel = phase ? (MEMORY_PHASE_LABEL[phase.phase] ?? null) : null;
+  /** Today's review target, taken from the plan so the two cannot disagree. */
+  const reviewLine = checklist
+    ? buildChecklist(checklist).find((l) => l.key === "cards_review") ?? null
+    : null;
 
   /* -------------------------------------------------------- *
    * Load all dashboard data.                                  *
@@ -348,7 +199,7 @@ export default function DashboardHome() {
       // -- Question attempts (basis for stats, accuracy, week, sparks) --
       const { data: attempts } = await supabase
         .from("question_attempts")
-        .select("is_correct, created_at, question_id")
+        .select("is_correct, created_at, question_id, is_first_attempt")
         .eq("user_id", user.id)
         .order("created_at", { ascending: true });
 
@@ -507,32 +358,6 @@ export default function DashboardHome() {
         precisionDelta,
       });
 
-      // ── Subject mastery ──────────────────────────────────
-      if (allQuestions && allAttempts) {
-        const answered = new Set(allAttempts.map((a) => a.question_id));
-        const sectionMap: Record<string, { total: number; done: number }> = {};
-        allQuestions.forEach((q) => {
-          if (!sectionMap[q.section]) sectionMap[q.section] = { total: 0, done: 0 };
-          sectionMap[q.section].total++;
-          if (answered.has(q.id)) sectionMap[q.section].done++;
-        });
-
-        const subjectList = Object.entries(sectionMap).map(([key, val]) => ({
-          section: key,
-          label: SECTION_LABELS[key] || key,
-          percent: val.total > 0 ? Math.round((val.done / val.total) * 100) : 0,
-          attention: false,
-        }));
-        subjectList.sort((a, b) => b.percent - a.percent);
-        // Flag the least-covered subject. NOTE this is coverage, not accuracy:
-        // percent is answered/total, so a low number means untouched material,
-        // not material the student is bad at. The copy must not say otherwise.
-        if (subjectList.length > 0) {
-          const min = subjectList.reduce((a, b) => (b.percent < a.percent ? b : a));
-          min.attention = true;
-        }
-        setSubjects(subjectList);
-      }
 
       // ── Flashcards ───────────────────────────────────────
       let totalItems = 0;
@@ -658,6 +483,82 @@ export default function DashboardHome() {
         phase: detected.phase,
       });
 
+      // ── The redesigned dashboard's figures ───────────────
+      //
+      // All of it from rows already loaded above. Nothing new is fetched and
+      // nothing is invented: a metric without evidence returns null and the
+      // card says so rather than showing a zero.
+      const attemptRows = (allAttempts ?? []) as Attempt[];
+      const questionList = (allQuestions ?? []) as QuestionMeta[];
+      const questionById = new Map(questionList.map((q) => [q.id, q]));
+
+      // The EXISTING predictor, not a second one. Flashcards are not an input,
+      // because the approved model does not use them.
+      setScore(scoreRange(attemptRows, questionById));
+      setWeekly(weeklyProgress(attemptRows, profile?.weekly_question_goal ?? null));
+      const recentAcc = recentAccuracy(attemptRows);
+      setRecent(recentAcc);
+      const cov = coverage(attemptRows, questionList);
+      setCover(cov);
+      const topics = priorityTopics(attemptRows, questionById);
+      setPriorities(topics);
+
+      // Cards studied this week, for the activity strip and recent progress.
+      const weekAgoIso = new Date(Date.now() - 7 * 86_400_000).toISOString();
+      const cardsWeek = new Set(
+        (await (async () => {
+          const rows: { flashcard_id: string; cloze_index: number }[] = [];
+          for (let from = 0; ; from += PAGE) {
+            const { data } = await supabase
+              .from("flashcard_reviews")
+              .select("flashcard_id, cloze_index")
+              .eq("user_id", user.id)
+              .gte("reviewed_at", weekAgoIso)
+              .order("reviewed_at", { ascending: true })
+              .order("id", { ascending: true })
+              .range(from, from + PAGE - 1);
+            if (!data || data.length === 0) break;
+            rows.push(...data);
+            if (data.length < PAGE) break;
+          }
+          return rows;
+        })()).map((r) => `${r.flashcard_id}:${r.cloze_index}`),
+      ).size;
+      setCardsThisWeek(cardsWeek);
+
+      // ── Recent progress ──────────────────────────────────
+      // Movement, not totals. Only signals with something to say appear.
+      const signals: ProgressSignal[] = [];
+      if (recentAcc.percent !== null && precisionDelta !== 0) {
+        signals.push({
+          label: "Practice accuracy",
+          value: `${precisionDelta > 0 ? "+" : ""}${precisionDelta} pts`,
+          detail: "against the week before",
+        });
+      }
+      if (weekDelta !== 0) {
+        signals.push({
+          label: "Questions completed",
+          value: `${weekDelta > 0 ? "+" : ""}${weekDelta}`,
+          detail: "against the week before",
+        });
+      }
+      if (cardsWeek > 0) {
+        signals.push({
+          label: "Cards reviewed",
+          value: cardsWeek.toLocaleString("en-US"),
+          detail: "distinct cards this week",
+        });
+      }
+      if (cov.attempted > 0) {
+        signals.push({
+          label: "Coverage",
+          value: `${cov.percent}%`,
+          detail: `${cov.attempted.toLocaleString("en-US")} questions seen`,
+        });
+      }
+      setProgressSignals(signals);
+
       setLoading(false);
     }
 
@@ -699,7 +600,8 @@ export default function DashboardHome() {
         });
         if (!res.ok) return;
         const brief = await res.json();
-        if (cancelled || !Array.isArray(brief?.focusDecks)) return;
+        if (cancelled) return;
+        if (!Array.isArray(brief?.focusDecks)) return;
         setChecklist((prev) =>
           prev
             ? {
@@ -723,7 +625,6 @@ export default function DashboardHome() {
     };
   }, [user.id]);
 
-  const practiceHref = "/dashboard/practice";
 
 
   /* -------------------------------------------------------- *
@@ -794,97 +695,30 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        {/* ── TERTIARY: Insight Pulse ────────────────────────────── */}
-        <div className="mb-8">
-          <div
-            className="flex justify-between items-baseline pb-3.5 mb-4"
-            style={{ borderBottom: "1px solid var(--color-prax-cream-border)" }}
-          >
-            <div className="flex items-baseline gap-2.5">
-              <div
-                className="font-semibold uppercase"
-                style={{
-                  fontSize: 10,
-                  letterSpacing: "0.22em",
-                  color: "var(--color-prax-ink-mute)",
-                }}
-              >
-                Insight Pulse
-              </div>
-              <div
-                className="italic"
-                style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 13,
-                  color: "var(--color-prax-ink-mute)",
-                }}
-              >
-                last 7 days
-              </div>
-            </div>
-            <Link
-              href="/dashboard/analytics"
-              className="font-semibold cursor-pointer"
-              style={{
-                fontSize: 11.5,
-                color: "var(--color-prax-green)",
-              }}
-            >
-              Detailed Analytics →
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <StatCard
-              label="Streak"
-              value={String(stats.streak)}
-              empty={stats.streak === 0}
-              emptyCta="Start a streak today →"
-              emptyHref={practiceHref}
-              hint={stats.streak === 1 ? "day" : "days"}
-            />
-            <StatCard
-              label="Activity"
-              value={String(stats.questionsThisWeek)}
-              unit="q"
-              delta={
-                stats.weekDelta > 0
-                  ? `+${stats.weekDelta} vs last`
-                  : stats.weekDelta < 0
-                  ? `${stats.weekDelta} vs last`
-                  : "—"
-              }
-              deltaIsGood={stats.weekDelta >= 0}
-              spark={stats.weeklySpark.some((v) => v > 0) ? stats.weeklySpark : undefined}
-              hint="Questions this week"
-            />
-            <StatCard
-              label="Precision"
-              value={stats.accuracy !== null ? String(stats.accuracy) : "—"}
-              unit={stats.accuracy !== null ? "%" : undefined}
-              delta={
-                stats.precisionDelta > 0
-                  ? `+${stats.precisionDelta} pts`
-                  : stats.precisionDelta < 0
-                  ? `${stats.precisionDelta} pts`
-                  : undefined
-              }
-              deltaIsGood={stats.precisionDelta >= 0}
-              spark={
-                stats.precisionSpark.some((v) => v > 0) ? stats.precisionSpark : undefined
-              }
-              hint={stats.accuracy !== null ? "Overall accuracy" : "Answer 20+ to see"}
-            />
-            <StatCard
-              label="Solved"
-              value={String(stats.totalQuestions)}
-              hint="All questions answered"
-              delta="lifetime"
-              deltaIsGood={false}
-            />
-          </div>
-        </div>
+        {/* ── ROW 1: where am I ─────────────────────────────────── */}
+        {/*
+          Replaced Streak, Activity, Precision and Solved. Those measure
+          effort spent rather than ground gained, and they held the four
+          highest-value positions on the page. They survive, quieter, in the
+          activity strip at the foot.
+        */}
+        {/*
+          SUMMARY FIRST, THEN THE PLAN, at every width. An earlier version put
+          the plan above the summary on phones so it cleared the fold; the
+          ordering here reads "where am I" before "what do I do" everywhere
+          rather than inverting on small screens. The summary is two compact
+          rows of two on mobile, never four cramped columns, so the plan is
+          still reached quickly.
+        */}
+        <SummaryRow
+          score={score}
+          weekly={weekly}
+          recent={recent}
+          cover={cover}
+          loading={loading}
+        />
 
-        {/* ── PRIMARY: Today's checklist ─────────────────────────── */}
+        {/* ── PRIMARY: Today's Plan ──────────────────────────────── */}
         {/*
           Replaced a panel that announced the backlog: "5,028 of your 7,143
           cards are waiting." True, and useless. It told a student the size of
@@ -894,366 +728,43 @@ export default function DashboardHome() {
         */}
         <TodayChecklist input={checklist} phase={phase} loading={loading} />
 
-        {/* ── SECONDARY row: Spaced Repetition + Subject Mastery ── */}
-        <div className="grid grid-cols-1 lg:[grid-template-columns:1.25fr_1fr] gap-5 mb-8">
-          {/* Spaced Repetition */}
-          <div
-            className="relative overflow-hidden flex flex-col"
-            style={{
-              background: "var(--color-prax-cream-deep)",
-              border: "1px solid var(--color-prax-cream-border)",
-              borderRadius: 16,
-              padding: "24px 26px",
-            }}
-          >
-            <div className="flex justify-between items-baseline mb-[18px]">
-              <div
-                className="font-semibold uppercase"
-                style={{
-                  fontSize: 10,
-                  letterSpacing: "0.22em",
-                  color: "var(--color-prax-ink-mute)",
-                }}
-              >
-                Spaced Repetition
-              </div>
-              <Link
-                href="/dashboard/flashcards"
-                className="font-semibold cursor-pointer"
-                style={{ fontSize: 11.5, color: "var(--color-prax-green)" }}
-              >
-                All Decks →
-              </Link>
-            </div>
-            <div className="flex items-baseline gap-2.5">
-              <div
-                className="leading-none font-medium"
-                style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 52,
-                  color: "var(--color-prax-green)",
-                  fontVariantNumeric: "tabular-nums lining-nums",
-                }}
-              >
-                {flashcards.totalDue}
-              </div>
-              <div
-                className="italic"
-                style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 18,
-                  color: "var(--color-prax-ink-soft)",
-                }}
-              >
-                cards due
-              </div>
-            </div>
-            <div
-              className="mt-2 max-w-[340px]"
-              style={{ fontSize: 13, color: "var(--color-prax-ink-soft)" }}
-            >
-              {flashcards.deckCount === 0
-                ? "Create or import a deck to begin spaced repetition."
-                : flashcards.totalDue === 0
-                ? "All caught up. New cards will surface as you progress."
-                : "Review now to keep retention strong."}
-            </div>
-
-            {/* Segmented urgency bar */}
-            {flashcards.totalDue > 0 && (
-              <div className="mt-5">
-                <div
-                  className="flex rounded-full overflow-hidden"
-                  style={{ height: 8, gap: 2 }}
-                >
-                  {flashcards.urgent > 0 && (
-                    <div
-                      style={{ flex: flashcards.urgent, background: "var(--color-prax-gold)" }}
-                    />
-                  )}
-                  {flashcards.soon > 0 && (
-                    <div
-                      style={{
-                        flex: flashcards.soon,
-                        background: "var(--color-prax-green-soft)",
-                      }}
-                    />
-                  )}
-                  {flashcards.later > 0 && (
-                    <div
-                      style={{
-                        flex: flashcards.later,
-                        background: "var(--color-prax-green-tint)",
-                      }}
-                    />
-                  )}
-                </div>
-                <div
-                  className="flex justify-between mt-2.5"
-                  style={{ fontSize: 11 }}
-                >
-                  <div className="flex items-center gap-1.5">
-                    <div
-                      className="rounded-full"
-                      style={{ width: 6, height: 6, background: "var(--color-prax-gold)" }}
-                    />
-                    <span style={{ color: "var(--color-prax-ink-soft)" }}>
-                      <strong
-                        style={{
-                          color: "var(--color-prax-gold)",
-                          fontWeight: 700,
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {flashcards.urgent}
-                      </strong>{" "}
-                      urgent
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div
-                      className="rounded-full"
-                      style={{
-                        width: 6,
-                        height: 6,
-                        background: "var(--color-prax-green-soft)",
-                      }}
-                    />
-                    <span style={{ color: "var(--color-prax-ink-soft)" }}>
-                      <strong
-                        style={{
-                          color: "var(--color-prax-green)",
-                          fontWeight: 700,
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {flashcards.soon}
-                      </strong>{" "}
-                      soon
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div
-                      className="rounded-full"
-                      style={{
-                        width: 6,
-                        height: 6,
-                        background: "var(--color-prax-green-tint)",
-                      }}
-                    />
-                    <span style={{ color: "var(--color-prax-ink-soft)" }}>
-                      <strong
-                        style={{
-                          color: "var(--color-prax-ink-soft)",
-                          fontWeight: 700,
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {flashcards.later}
-                      </strong>{" "}
-                      later
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="flex-1" />
-            {flashcards.totalDue > 0 && (
-              <Link
-                href="/dashboard/flashcards"
-                className="self-start font-semibold uppercase cursor-pointer mt-6"
-                style={{
-                  background: "var(--color-prax-green)",
-                  color: "var(--color-prax-cream)",
-                  border: "none",
-                  borderRadius: 999,
-                  padding: "11px 22px",
-                  fontSize: 11.5,
-                  letterSpacing: "0.14em",
-                }}
-              >
-                Review Now
-              </Link>
-            )}
-          </div>
-
-          {/* Subject Mastery */}
-          <div
-            style={{
-              background: "var(--color-prax-cream-deep)",
-              border: "1px solid var(--color-prax-cream-border)",
-              borderRadius: 16,
-              padding: "24px 26px",
-            }}
-          >
-            <div className="flex justify-between items-baseline mb-5">
-              <div
-                className="font-semibold uppercase"
-                style={{
-                  fontSize: 10,
-                  letterSpacing: "0.22em",
-                  color: "var(--color-prax-ink-mute)",
-                }}
-              >
-                Subject Mastery
-              </div>
-              <div
-                className="italic"
-                style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 12,
-                  color: "var(--color-prax-ink-mute)",
-                }}
-              >
-                {subjects.length} subjects tracked
-              </div>
-            </div>
-            {subjects.length > 0 ? (
-              subjects.map((s) => (
-                <SubjectRow
-                  key={s.section}
-                  name={s.label}
-                  value={s.percent}
-                  attention={s.attention}
-                />
-              ))
-            ) : (
-              <div
-                className="italic"
-                style={{
-                  fontSize: 12,
-                  color: "var(--color-prax-ink-mute)",
-                }}
-              >
-                Complete practice questions to start tracking mastery.
-              </div>
-            )}
-            {subjects.find((s) => s.attention) && (
-              <div
-                className="flex items-center gap-2 mt-[18px] pt-3.5"
-                style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
-              >
-                <div
-                  className="rounded-full"
-                  style={{ width: 5, height: 5, background: "var(--color-prax-gold)" }}
-                />
-                <div
-                  className="italic"
-                  style={{
-                    fontFamily: "var(--font-prax-serif)",
-                    fontSize: 11.5,
-                    color: "var(--color-prax-ink-soft)",
-                  }}
-                >
-                  Least covered so far. This tracks how much you have
-                  attempted, not how well you did.
-                </div>
-              </div>
-            )}
-          </div>
+        {/* ── ROW 2: what needs attention ───────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+          <PriorityTopics topics={priorities} loading={loading} />
+          <StudyStatusCard
+            status={status.status}
+            note={status.note}
+            trend={trend}
+            coverageBand={cover ? coverageBand(cover.percent) : null}
+            priorityCount={priorities.length}
+            memoryPhase={memoryPhaseLabel}
+            loading={loading}
+          />
         </div>
 
-        {/* ── SECONDARY: Question Bank + Modules ─────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-8">
-          {[
-            {
-              title: "The Question Bank",
-              desc: "High-yield questions designed for conceptual mastery.",
-              cta: "Access Bank",
-              meta: "Filter by section, topic, difficulty",
-              href: "/dashboard/practice",
-              icon: (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                  <path d="M8 9h8M8 13h5" />
-                  <path d="M4 5h16v12l-4 4H4z" />
-                </svg>
-              ),
-            },
-            {
-              title: "Curated Modules",
-              desc: "Structured video lectures and clinical breakdowns of complex topics.",
-              cta: "Explore Modules",
-              meta: "Lessons across all MCAT sections",
-              href: "/dashboard/lessons",
-              icon: (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-                  <rect x="3" y="5" width="18" height="14" rx="2" />
-                  <path d="M10 9l5 3-5 3z" fill="currentColor" />
-                </svg>
-              ),
-            },
-          ].map((c) => (
-            <Link
-              key={c.title}
-              href={c.href}
-              className="flex items-center gap-5"
-              style={{
-                background: "var(--color-prax-cream-deep)",
-                border: "1px solid var(--color-prax-cream-border)",
-                borderRadius: 16,
-                padding: "22px 26px",
-              }}
-            >
-              <div
-                className="grid place-items-center shrink-0"
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 10,
-                  background: "var(--color-prax-green-tint)",
-                  color: "var(--color-prax-green)",
-                }}
-              >
-                {c.icon}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div
-                  className="font-medium mb-1"
-                  style={{
-                    fontFamily: "var(--font-prax-serif)",
-                    fontSize: 20,
-                    color: "var(--color-prax-green)",
-                  }}
-                >
-                  {c.title}
-                </div>
-                <div
-                  className="leading-snug mb-1.5"
-                  style={{
-                    fontSize: 12.5,
-                    color: "var(--color-prax-ink-soft)",
-                  }}
-                >
-                  {c.desc}
-                </div>
-                <div
-                  className="font-semibold uppercase"
-                  style={{
-                    fontSize: 10,
-                    letterSpacing: "0.18em",
-                    color: "var(--color-prax-ink-mute)",
-                  }}
-                >
-                  {c.meta}
-                </div>
-              </div>
-              <div
-                className="font-bold uppercase flex items-center gap-2 cursor-pointer hidden lg:flex"
-                style={{
-                  fontSize: 10,
-                  letterSpacing: "0.18em",
-                  color: "var(--color-prax-green)",
-                }}
-              >
-                {c.cta}
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M5 12h14M13 6l6 6-6 6" />
-                </svg>
-              </div>
-            </Link>
-          ))}
+        {/* ── ROW 3: am I moving ────────────────────────────────── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-5">
+          <MemoryReview
+            recommendedToday={reviewLine?.target ?? 0}
+            doneToday={reviewLine?.done ?? 0}
+            comingSoon={flashcards.soon}
+            backlog={Math.max(0, flashcards.urgent - (reviewLine?.target ?? 0))}
+            loading={loading}
+          />
+          {/* Recent Progress sits here, not a second coverage card: the top
+              row already carries Content Coverage, and repeating it lower down
+              spends a prime slot on a number the student has just read. */}
+          <RecentProgress signals={progressSignals} loading={loading} />
         </div>
+
+        {/* ── Activity, kept and demoted ────────────────────────── */}
+        <ActivityStrip
+          streak={stats.streak}
+          totalQuestions={stats.totalQuestions}
+          questionsThisWeek={stats.questionsThisWeek}
+          cardsThisWeek={cardsThisWeek}
+        />
+
 
         {/* ── FOOTER banner: Elite ──────────────────────────────── */}
         {profile?.subscription_tier === "free" && (
