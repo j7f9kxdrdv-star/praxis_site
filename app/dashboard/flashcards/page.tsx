@@ -6,6 +6,12 @@ import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
+import {
+  measurePace,
+  recommendLimits,
+  type LimitRecommendation,
+} from "@/lib/dashboard/recommendedLimits";
+import { summariseCards } from "@/lib/dashboard/phase";
 import { DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
 import {
   PageHeader,
@@ -68,6 +74,10 @@ export default function FlashcardsHub() {
   const [extraStudyAttemptsToday, setExtraStudyAttemptsToday] = useState(0);
   const [reviewsToday, setReviewsToday] = useState(0);
 
+  // What the app would suggest, if the student wants it. Never written for
+  // them: see lib/dashboard/recommendedLimits.ts.
+  const [recommendation, setRecommendation] = useState<LimitRecommendation | null>(null);
+
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   // Daily limits settings modal
@@ -129,12 +139,14 @@ export default function FlashcardsHub() {
         next_review_at: string;
         suspended: boolean;
         starred: boolean;
+        fsrs_state?: number | null;
+        stability?: number | null;
       }[] = [];
       for (let from = 0; ; from += PAGE) {
         const { data, error } = await supabase
           .from("flashcard_user_state")
           .select(
-            "flashcard_id, cloze_index, next_review_at, suspended, starred"
+            "flashcard_id, cloze_index, next_review_at, suspended, starred, fsrs_state, stability"
           )
           .eq("user_id", user.id)
           .order("flashcard_id", { ascending: true })
@@ -248,10 +260,46 @@ export default function FlashcardsHub() {
       setNewToday(newDoneToday);
       setExtraStudyAttemptsToday(extraToday);
       setReviewsToday(reviewsDoneToday);
+
+      // ── What we would suggest, if they want it ─────────────
+      //
+      // Computed here and shown in the settings modal. Nothing is written: the
+      // student's own numbers stand until they press Save themselves.
+      const summary = summariseCards(stateRows);
+      // A recent sample, not the whole log. 500 rows put the median within a
+      // second of the figure from 40,000, and it reflects how fast they are NOW.
+      const { data: paceRows } = await supabase
+        .from("flashcard_reviews")
+        .select("reviewed_at, is_first_exposure")
+        .eq("user_id", user.id)
+        .order("reviewed_at", { ascending: false })
+        .limit(500);
+      setRecommendation(
+        recommendLimits({
+          meanStability: summary.meanStability,
+          relearningShare: summary.relearningShare,
+          dailyDemand: summary.dailyDemand,
+          studyHoursPerWeek: profile?.study_hours_per_week ?? null,
+          pace: measurePace([...(paceRows ?? [])].reverse()),
+          cardsDue: urgentAll - unseenTotal,
+          unseenBlanks: unseenTotal,
+          currentReviewLimit: profile?.daily_review_limit ?? 150,
+          currentNewLimit: profile?.daily_new_card_limit ?? 25,
+        }),
+      );
       setDataLoaded(true);
     }
     load();
-  }, [user.id, profile?.daily_new_card_limit, profile?.daily_review_limit]);
+    // Weekly hours and the day boundary are in here because the recommendation
+    // is computed from them: change your hours in Settings and the suggestion
+    // should follow, not wait for a reload.
+  }, [
+    user.id,
+    profile?.daily_new_card_limit,
+    profile?.daily_review_limit,
+    profile?.study_hours_per_week,
+    profile?.day_start_hour,
+  ]);
 
   function decksInSection(section: string) {
     return decks.filter((d) => d.section === section);
@@ -984,6 +1032,7 @@ export default function FlashcardsHub() {
           userId={user.id}
           initialNewLimit={profile?.daily_new_card_limit ?? 25}
           initialReviewLimit={profile?.daily_review_limit ?? 150}
+          recommendation={recommendation}
           onClose={() => setShowSettings(false)}
           onSaved={async () => {
             await refreshProfile();
@@ -1000,12 +1049,15 @@ function FlashcardSettingsModal({
   userId,
   initialNewLimit,
   initialReviewLimit,
+  recommendation,
   onClose,
   onSaved,
 }: {
   userId: string;
   initialNewLimit: number;
   initialReviewLimit: number;
+  /** Shown, never applied on the student's behalf. Null when it cannot be made. */
+  recommendation: LimitRecommendation | null;
   onClose: () => void;
   onSaved: () => Promise<void>;
 }) {
@@ -1131,6 +1183,92 @@ function FlashcardSettingsModal({
             onChange={setReviewLimit}
             placeholder="e.g. 150"
           />
+
+          {/* ── What we would suggest ──────────────────────────────
+              Filled into the fields, never saved. The student still presses
+              Save, so "we never change a number a student chose" stays
+              literally true rather than nearly true. */}
+          {recommendation && (recommendation.blocked || recommendation.differsFromCurrent) && (
+            <div
+              className="rounded-xl p-4"
+              style={{
+                background: "var(--color-prax-cream-card)",
+                border: "1px solid var(--color-prax-cream-border)",
+              }}
+            >
+              <div
+                className="font-semibold uppercase mb-2"
+                style={{
+                  fontSize: 9.5,
+                  letterSpacing: "0.16em",
+                  color: "var(--color-prax-ink-mute)",
+                }}
+              >
+                What we would suggest
+              </div>
+
+              {recommendation.blocked ? (
+                <p className="text-[12.5px]" style={{ color: "var(--color-prax-ink-soft)" }}>
+                  {recommendation.blocked}
+                </p>
+              ) : (
+                <>
+                  <div className="flex items-baseline gap-5 mb-2">
+                    <div>
+                      <div
+                        className="tabular-nums"
+                        style={{ fontFamily: "var(--font-prax-serif)", fontSize: 21, color: "var(--color-prax-green)" }}
+                      >
+                        {recommendation.newLimit}
+                      </div>
+                      <div className="text-[10.5px]" style={{ color: "var(--color-prax-ink-mute)" }}>
+                        new a day
+                      </div>
+                    </div>
+                    <div>
+                      <div
+                        className="tabular-nums"
+                        style={{ fontFamily: "var(--font-prax-serif)", fontSize: 21, color: "var(--color-prax-green)" }}
+                      >
+                        {recommendation.reviewLimit}
+                      </div>
+                      <div className="text-[10.5px]" style={{ color: "var(--color-prax-ink-mute)" }}>
+                        reviews a day
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-[12px] leading-relaxed" style={{ color: "var(--color-prax-ink-soft)" }}>
+                    {recommendation.newReason}
+                  </p>
+                  <p className="text-[11.5px] leading-relaxed mt-1.5" style={{ color: "var(--color-prax-ink-mute)" }}>
+                    Based on about {recommendation.basis.cardMinutesPerDay} minutes of cards a day
+                    {recommendation.basis.measured
+                      ? `, at the ${recommendation.basis.secondsPerReview.toFixed(1)}s a card you actually average.`
+                      : ". We will sharpen this once you have more reviews to measure."}
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewLimit(String(recommendation.newLimit ?? 0));
+                      setReviewLimit(String(recommendation.reviewLimit ?? 0));
+                    }}
+                    className="mt-3 rounded-full px-4 py-2"
+                    style={{
+                      background: "var(--color-prax-green)",
+                      color: "var(--color-prax-cream)",
+                      fontSize: 12.5,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Use these numbers
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
           <p
             className="text-[12px]"
             style={{ color: "var(--color-prax-ink-mute)" }}
