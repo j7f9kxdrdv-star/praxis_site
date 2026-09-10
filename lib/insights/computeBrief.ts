@@ -49,7 +49,57 @@ async function loadState(db: SupabaseClient, userId: string): Promise<StateRow[]
   return out;
 }
 
-async function loadDeckTitles(db: SupabaseClient): Promise<Map<string, string>> {
+/**
+ * Every review the student has ever logged. This is the expensive part and the
+ * reason focus decks are computed here, inside something cached per study day,
+ * rather than on the dashboard on every load.
+ */
+async function loadReviews(
+  db: SupabaseClient,
+  userId: string,
+): Promise<{ flashcard_id: string; cloze_index: number; rating: string; reviewed_at: string }[]> {
+  const out: { flashcard_id: string; cloze_index: number; rating: string; reviewed_at: string }[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await db
+      .from("flashcard_reviews")
+      .select("flashcard_id, cloze_index, rating, reviewed_at")
+      .eq("user_id", userId)
+      // CHRONOLOGICAL, with id only as a tiebreaker. Ordering by id alone is
+      // arbitrary here: it is a UUID, and doing that once produced a 73.7%
+      // accuracy figure whose real value was 57%.
+      .order("reviewed_at", { ascending: true })
+      .order("id", { ascending: true })
+      .range(from, from + 999);
+    if (error) throw new Error(error.message);
+    if (!data.length) break;
+    out.push(...(data as typeof out));
+    if (data.length < 1000) break;
+  }
+  return out;
+}
+
+/**
+ * Ranking a proportion when the counts differ.
+ *
+ * A deck missed 3 times out of 4 is not more reliably weak than one missed 90
+ * times out of 200, and a raw percentage would say it was. The Wilson lower
+ * bound asks how bad the deck could plausibly be given how much was seen, so a
+ * small sample cannot jump the queue on one unlucky morning. The Analytics page
+ * ranks the same way.
+ */
+function wilsonLowerBound(ok: number, n: number): number {
+  if (n === 0) return 0;
+  const z = 1.96;
+  const p = ok / n;
+  return (
+    (p + (z * z) / (2 * n) - z * Math.sqrt((p * (1 - p) + (z * z) / (4 * n)) / n)) /
+    (1 + (z * z) / n)
+  );
+}
+
+async function loadDeckTitles(
+  db: SupabaseClient,
+): Promise<Map<string, { deckId: string; title: string }>> {
   const cards: { id: string; deck_id: string }[] = [];
   for (let from = 0; ; from += 1000) {
     const { data, error } = await db
@@ -64,8 +114,26 @@ async function loadDeckTitles(db: SupabaseClient): Promise<Map<string, string>> 
   }
   const { data: decks } = await db.from("flashcard_decks").select("id, title");
   const deckTitle = new Map((decks ?? []).map((d) => [d.id, d.title as string]));
-  return new Map(cards.map((c) => [c.id, deckTitle.get(c.deck_id) ?? "Unknown deck"]));
+  return new Map(
+    cards.map((c) => [
+      c.id,
+      { deckId: c.deck_id, title: deckTitle.get(c.deck_id) ?? "Unknown deck" },
+    ]),
+  );
 }
+
+/**
+ * First looks a deck needs before its recall figure means anything.
+ *
+ * Set at 100 rather than the 20 the Analytics page uses, because this list is
+ * three names long and acted on. Analytics can afford to show a thin deck with
+ * a wide error bar beside forty others; a checklist that sends you to the wrong
+ * deck all morning cannot.
+ */
+const MIN_FIRST_LOOKS_FOR_FOCUS = 100;
+
+/** Three is enough to steer a session without becoming a second report. */
+const FOCUS_DECKS_RETURNED = 3;
 
 const median = (xs: number[]): number => {
   if (!xs.length) return 0;
@@ -90,6 +158,7 @@ export async function computeBrief(
       generatedAt: now.toISOString(),
       studyDay: studyDayKey(now, dayStartHour),
       insufficientEvidence: true,
+      focusDecks: [],
       claims: [
         {
           kind: "no_evidence",
@@ -188,7 +257,7 @@ export async function computeBrief(
   if (leeches.length > 0) {
     const byDeck = new Map<string, number>();
     for (const l of leeches) {
-      const t = cardDeck.get(l.flashcard_id) ?? "Unknown deck";
+      const t = cardDeck.get(l.flashcard_id)?.title ?? "Unknown deck";
       byDeck.set(t, (byDeck.get(t) ?? 0) + 1);
     }
     const worst = [...byDeck.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3);
@@ -210,7 +279,7 @@ export async function computeBrief(
   // ── Decks going cold ────────────────────────────────────────────────────
   const deckStats = new Map<string, { blanks: number; due: number; lastSeen: string | null }>();
   for (const r of live) {
-    const t = cardDeck.get(r.flashcard_id);
+    const t = cardDeck.get(r.flashcard_id)?.title;
     if (!t) continue;
     const s = deckStats.get(t) ?? { blanks: 0, due: 0, lastSeen: null };
     s.blanks++;
@@ -263,10 +332,75 @@ export async function computeBrief(
     evidence: { dueNow: due.length, neverStudied, cardsInCirculation: live.length },
   });
 
+  // ── Focus decks ─────────────────────────────────────────────────────────
+  //
+  // The decks the student is genuinely weakest on, for the dashboard checklist.
+  //
+  // WHY THIS IS A DIFFERENT LIST FROM THE ANALYTICS PAGE, and why that is
+  // correct rather than a bug. Mikko: "the analytics page should show your
+  // performance overall; the dashboard should say what you really need to focus
+  // on." Analytics is a report card and ranks purely by how you are doing. This
+  // ranks what is worth opening today, so a deck with cards waiting is placed
+  // above an equally weak deck with nothing due.
+  //
+  // Weakness itself is the same measurement in both places, because there is
+  // only one truth about it. What differs is the ordering on top.
+  //
+  // A DECK WITH NOTHING DUE STILL APPEARS. Mikko's call: "yes, because it's a
+  // weak spot." Waiting a week to mention a deck the student keeps failing
+  // would be the dashboard withholding the one thing it exists to say.
+  const reviews = await loadReviews(db, userId);
+  const firstLookSeen = new Set<string>();
+  const perDeck = new Map<string, { attempts: number; ok: number; title: string }>();
+  for (const r of reviews) {
+    // The FIRST look at a card on a given day. A re-queue after "Again" logs
+    // another row within minutes, and counting those measures how stubborn a
+    // card was rather than whether it was known.
+    const key = `${r.flashcard_id}:${r.cloze_index}:${(r.reviewed_at || "").slice(0, 10)}`;
+    if (firstLookSeen.has(key)) continue;
+    firstLookSeen.add(key);
+    const entry = cardDeck.get(r.flashcard_id);
+    if (!entry) continue;
+    const deckId = entry.deckId;
+    const e = perDeck.get(deckId) ?? { attempts: 0, ok: 0, title: entry.title };
+    e.attempts++;
+    if (r.rating !== "again") e.ok++;
+    perDeck.set(deckId, e);
+  }
+
+  const dueByDeck = new Map<string, number>();
+  for (const r of live) {
+    if (!isDue(r)) continue;
+    const deckId = cardDeck.get(r.flashcard_id)?.deckId;
+    if (!deckId) continue;
+    dueByDeck.set(deckId, (dueByDeck.get(deckId) ?? 0) + 1);
+  }
+
+  const focusDecks = [...perDeck.entries()]
+    // Below this many first looks the figure is noise, not a weak spot.
+    .filter(([, e]) => e.attempts >= MIN_FIRST_LOOKS_FOR_FOCUS)
+    .map(([deckId, e]) => ({
+      deckId,
+      title: e.title,
+      accuracy: e.ok / e.attempts,
+      lowerBound: wilsonLowerBound(e.ok, e.attempts),
+      attempts: e.attempts,
+      due: dueByDeck.get(deckId) ?? 0,
+    }))
+    .sort((a, b) => {
+      // Weakest first. Decks within a hair of each other are separated by which
+      // one the student can actually act on this morning.
+      const gap = a.lowerBound - b.lowerBound;
+      if (Math.abs(gap) > 0.03) return gap;
+      return b.due - a.due;
+    })
+    .slice(0, FOCUS_DECKS_RETURNED);
+
   return {
     generatedAt: now.toISOString(),
     studyDay: studyDayKey(now, dayStartHour),
     insufficientEvidence: false,
     claims: claims.sort((a, b) => a.priority - b.priority),
+    focusDecks,
   };
 }

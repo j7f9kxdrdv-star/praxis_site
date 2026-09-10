@@ -43,10 +43,36 @@ export interface Claim {
   evidence: Record<string, string | number>;
 }
 
+/**
+ * A deck the student is genuinely weak on, for the dashboard checklist.
+ *
+ * Computed here rather than on the dashboard because getting it right means
+ * reading the whole review log: 41,787 rows for one real account. Two cheap
+ * proxies were tried on the dashboard first and both failed on the only part
+ * that is displayed, the top three. Lapse rate put every deck between 1.16 and
+ * 1.28 lapses a card, and FSRS difficulty saturated at 9.0 across the worst
+ * six. Correlation with the truth was 0.83 across 73 decks and 2 of 5 on the
+ * top five, which is a coin toss dressed as a recommendation.
+ */
+export interface FocusDeck {
+  deckId: string;
+  title: string;
+  /** First-look recall, 0 to 1. */
+  accuracy: number;
+  /** Wilson lower bound, which is what the ranking uses. */
+  lowerBound: number;
+  /** First looks the figure is based on. */
+  attempts: number;
+  /** Cards waiting in this deck right now. A tiebreak, never a filter. */
+  due: number;
+}
+
 export interface Brief {
   generatedAt: string;
   studyDay: string;
   claims: Claim[];
   /** True when there is too little history for any confident claim at all. */
   insufficientEvidence: boolean;
+  /** Weakest decks, worst first. Empty when there is not enough history. */
+  focusDecks: FocusDeck[];
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
@@ -37,27 +37,11 @@ interface FlashcardSummary {
   deckCount: number;
 }
 
-/**
- * One claim from the Tier 1 insight brief.
- *
- * This replaced a "Today's Focus" that ranked the student's weakest topic from
- * as few as THREE question attempts — where the only possible accuracies are
- * 0%, 33%, 67% and 100% — and then displayed an "expected precision gain" of
- * +N%, computed as (85 - accuracy) x 0.15. That number was invented. It was
- * derived from no outcome data, because none exists, and it promised a score
- * improvement the product explicitly does not promise.
- *
- * Everything shown here is now computed in lib/insights and arrives with the
- * evidence that justifies it.
- */
-interface BriefClaim {
-  kind: string;
-  priority: number;
-  confidence: string;
-  headline: string;
-  detail: string;
-  evidence: Record<string, string | number>;
-}
+import TodayChecklist from "@/components/dashboard/TodayChecklist";
+import type { ChecklistInput, FocusDeck } from "@/lib/dashboard/checklist";
+import { detectPhase, summariseCards, type PhaseResult } from "@/lib/dashboard/phase";
+import { countTodaysReviews } from "@/lib/flashcards/quota";
+import { startOfStudyDay } from "@/lib/flashcards/studyDay";
 
 const SECTION_LABELS: Record<string, string> = {
   bio_biochem: "Biological Systems",
@@ -341,8 +325,10 @@ export default function DashboardHome() {
     later: 0,
     deckCount: 0,
   });
-  const [claims, setClaims] = useState<BriefClaim[] | null>(null);
-  const [briefLoading, setBriefLoading] = useState(true);
+  const [checklist, setChecklist] = useState<ChecklistInput | null>(null);
+  const [phase, setPhase] = useState<PhaseResult | null>(null);
+  /** Decks reviewed since the study day began, so a focus deck can tick off. */
+  const decksStudiedToday = useRef<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
   const firstName =
@@ -383,7 +369,7 @@ export default function DashboardHome() {
       // -- Flashcards: decks, cards, user state --
       const { data: deckRows } = await supabase
         .from("flashcard_decks")
-        .select("id");
+        .select("id, title");
       const deckIds = (deckRows || []).map((d) => d.id);
 
       // Page through rows to bypass Supabase's default 1000-row cap on .select()
@@ -422,7 +408,7 @@ export default function DashboardHome() {
         for (let from = 0; ; from += PAGE) {
           const { data, error } = await supabase
             .from("flashcard_user_state")
-            .select("flashcard_id, cloze_index, next_review_at, suspended")
+            .select("flashcard_id, cloze_index, next_review_at, suspended, lapses, last_reviewed_at, fsrs_state, stability")
             .eq("user_id", user.id)
             // Stable sort is REQUIRED here too. This table has no `id` column,
             // so the primary key pair is the sort key. Unordered pages let the
@@ -583,6 +569,95 @@ export default function DashboardHome() {
         deckCount: deckIds.length,
       });
 
+      // ── Today's checklist ────────────────────────────────
+      //
+      // Everything here is either something the student set or work they
+      // actually did. Nothing is estimated, and nothing is invented: that was
+      // the failure of the panel this replaced, which showed an "expected
+      // precision gain" derived from no outcome data at all.
+      const dayStartHour = profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR;
+      const dayStart = startOfStudyDay(new Date(), dayStartHour);
+      const dayStartIso = dayStart.toISOString();
+      const todayKey = new Date().toISOString().slice(0, 10);
+
+      // Cards done today, counted the same way the study pages count them, so
+      // the checklist and the session agree about what a card is.
+      const todays = await countTodaysReviews(user.id, dayStartHour);
+
+      // Missed questions waiting in Smart Review, which already exists.
+      const { count: missedDue } = await supabase
+        .from("review_schedule")
+        .select("question_id", { count: "exact", head: true })
+        .eq("user_id", user.id)
+        .lte("next_review_date", todayKey);
+
+      // Questions answered this study day, split the way the checklist asks
+      // for them: a first attempt is new work, a repeat is Smart Review.
+      const todaysAttempts = (allAttempts || []).filter(
+        (a) => a.created_at >= dayStartIso
+      );
+      const newQuestionsToday = todaysAttempts.filter(
+        (a) => (a as { is_first_attempt?: boolean }).is_first_attempt !== false
+      ).length;
+      const missedQuestionsToday = todaysAttempts.length - newQuestionsToday;
+
+      // ── Where the student is ─────────────────────────────
+      // Measured, not asserted. See lib/dashboard/phase.ts for what the
+      // numbers are and what they deliberately do not include.
+      const examDate = profile?.mcat_test_date ? new Date(profile.mcat_test_date) : null;
+      const daysToExam = examDate
+        ? Math.ceil((examDate.getTime() - Date.now()) / 86_400_000)
+        : null;
+      const detected = detectPhase({
+        ...summariseCards(
+          stateRows as {
+            fsrs_state?: number | null;
+            stability?: number | null;
+            suspended?: boolean | null;
+          }[],
+        ),
+        daysToExam,
+      });
+      setPhase(detected);
+
+      // Which decks were touched today, so a focus deck can tick itself off
+      // once the brief names them.
+      // A Map, not a .find() per row: the first version of this scanned 4,116
+      // cards for each of 7,146 state rows, which is 29 million comparisons on
+      // every dashboard load.
+      const cardToDeck = new Map(cardRows.map((c) => [c.id, c.deck_id]));
+      const touched = new Set<string>();
+      stateRows.forEach((r) => {
+        const seenAt = (r as { last_reviewed_at?: string | null }).last_reviewed_at;
+        if (!seenAt || seenAt < dayStartIso) return;
+        const deckId = cardToDeck.get(r.flashcard_id);
+        if (deckId) touched.add(deckId);
+      });
+      decksStudiedToday.current = touched;
+
+      // Focus decks are NOT computed here. Getting them right means reading the
+      // whole review log, which takes eighteen seconds on a 41,787-row account,
+      // so they arrive from the cached brief in the effect below and the line
+      // fills in when they land. Two shortcuts were tried here first and both
+      // named the wrong decks.
+
+      setChecklist({
+        reviewLimit: profile?.daily_review_limit ?? 0,
+        newLimit: profile?.daily_new_card_limit ?? 0,
+        weeklyQuestionGoal: profile?.weekly_question_goal ?? 0,
+        cardsDue: Math.max(0, urgent - unseen),
+        unseenBlanks: unseen,
+        missedQuestionsDue: missedDue ?? 0,
+        focusDecks: [],
+        reviewsToday: todays.reviewsToday,
+        newToday: todays.newToday,
+        newQuestionsToday,
+        missedQuestionsToday,
+        // The study modules are not built yet.
+        topicsReady: false,
+        phase: detected.phase,
+      });
+
       setLoading(false);
     }
 
@@ -590,26 +665,31 @@ export default function DashboardHome() {
     return () => {
       cancelled = true;
     };
+    // Deliberately keyed on the user alone, though the body reads four profile
+    // fields. DashboardShell awaits the profile before it renders children, so
+    // it is already present on the first run; adding the fields would key this
+    // on values that change from undefined to their real value and run the
+    // whole paged load a second time for nothing.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user.id]);
 
   /* -------------------------------------------------------- */
 
-  // Weekly goal: the user's own target, set in Settings. This used to be hardcoded at 50,
-  // which meant anyone studying regularly sat pinned at 100% forever and the ring stopped
-  // telling them anything.
-  const weeklyGoal = profile?.weekly_question_goal ?? 100;
-  const weeklyGoalPct = Math.min(
-    100,
-    Math.round((stats.questionsThisWeek / weeklyGoal) * 100)
-  );
-  const weeklyGoalRemaining = Math.max(0, weeklyGoal - stats.questionsThisWeek);
+  // NOTE: the insight brief used to be fetched here. It existed only to fill
+  // Today's Focus, so replacing that panel left it with no consumer and the
+  // fetch ran on every load for nothing. lib/insights and /api/insights/brief
+  // are untouched and still work; nothing renders them today.
 
-  // The insight brief. Fetched separately from the dashboard's own queries
-  // because it is served by an API route with its own cache, and a slow first
-  // build of it must not delay everything else on the page.
+  // ── Focus decks, from the cached brief ────────────────────────────────
+  //
+  // Fetched separately and never awaited by the main load. The computation
+  // behind it reads every review the student has ever logged and takes about
+  // eighteen seconds on the largest real account; it is cached per study day,
+  // so that cost lands once a morning. Blocking the dashboard on it would trade
+  // a correct line for an unusable page.
   useEffect(() => {
     let cancelled = false;
-    async function loadBrief() {
+    (async () => {
       try {
         const { data: sessionData } = await supabase.auth.getSession();
         const token = sessionData.session?.access_token;
@@ -619,41 +699,32 @@ export default function DashboardHome() {
         });
         if (!res.ok) return;
         const brief = await res.json();
-        if (!cancelled) setClaims(Array.isArray(brief?.claims) ? brief.claims : []);
+        if (cancelled || !Array.isArray(brief?.focusDecks)) return;
+        setChecklist((prev) =>
+          prev
+            ? {
+                ...prev,
+                focusDecks: (brief.focusDecks as FocusDeck[]).map((d) => ({
+                  ...d,
+                  // Touched today is local knowledge; the brief is a day-level
+                  // snapshot and does not know what happened since it was cached.
+                  studiedToday: decksStudiedToday.current.has(d.deckId),
+                })),
+              }
+            : prev,
+        );
       } catch {
-        // The brief is additive. If it cannot be built the dashboard still works.
-      } finally {
-        if (!cancelled) setBriefLoading(false);
+        // The line simply does not appear. A checklist missing one row beats a
+        // dashboard that fails because an optional extra could not be built.
       }
-    }
-    loadBrief();
+    })();
     return () => {
       cancelled = true;
     };
-  }, []);
-
-  // The claim that leads, and where its button should send you.
-  const lead = claims?.[0] ?? null;
-  // "pace" carries its value in its detail, not its headline ("What each daily
-  // amount actually buys you"), so it reads as a stray section title in a
-  // one-line strip. It belongs on a fuller insights surface, not here.
-  const supporting = (claims ?? []).filter((c) => c.kind !== "pace").slice(1, 3);
-  const ACTION: Record<string, { href: string; label: string }> = {
-    backlog: { href: "/dashboard/flashcards/session?mode=due", label: "Start reviewing" },
-    pace: { href: "/dashboard/flashcards/session?mode=due", label: "Start reviewing" },
-    today: { href: "/dashboard/flashcards/session?mode=due", label: "Start reviewing" },
-    leech: { href: "/dashboard/flashcards", label: "See those decks" },
-    stale_deck: { href: "/dashboard/flashcards", label: "Open your decks" },
-    no_evidence: { href: "/dashboard/practice", label: "Start a practice set" },
-  };
-  const action = ACTION[lead?.kind ?? ""] ?? {
-    href: "/dashboard/practice",
-    label: "Start a practice set",
-  };
+  }, [user.id]);
 
   const practiceHref = "/dashboard/practice";
 
-  const isNewUser = stats.totalQuestions === 0;
 
   /* -------------------------------------------------------- *
    * Render                                                    *
@@ -813,200 +884,15 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        {/* ── PRIMARY: Today's Focus ────────────────────────────── */}
-        <div
-          className="relative overflow-hidden mb-8"
-          style={{
-            background: "var(--color-prax-green)",
-            borderRadius: 20,
-            padding: "32px 36px",
-            boxShadow:
-              "0 1px 2px rgba(3,56,48,0.05), 0 12px 40px -20px rgba(3,56,48,0.35)",
-          }}
-        >
-          {/* Decorative orbital motif */}
-          <svg
-            className="absolute opacity-20"
-            style={{ right: -80, top: -100 }}
-            width="440"
-            height="440"
-            viewBox="0 0 440 440"
-            aria-hidden
-          >
-            <g fill="none" stroke="var(--color-prax-cream)" strokeWidth="1">
-              <circle cx="220" cy="220" r="200" />
-              <circle cx="220" cy="220" r="150" />
-              <circle cx="220" cy="220" r="100" />
-              <circle cx="220" cy="220" r="50" />
-              <ellipse cx="220" cy="220" rx="200" ry="70" transform="rotate(30 220 220)" />
-              <ellipse cx="220" cy="220" rx="200" ry="70" transform="rotate(-30 220 220)" />
-              <ellipse cx="220" cy="220" rx="200" ry="70" transform="rotate(90 220 220)" />
-            </g>
-            <circle cx="220" cy="220" r="5" fill="var(--color-prax-gold-soft)" />
-          </svg>
-
-          <div className="relative grid grid-cols-1 lg:[grid-template-columns:1.55fr_auto] gap-12 items-center">
-            <div>
-              <div className="flex items-center gap-2.5 mb-4">
-                <div
-                  className="rounded-full"
-                  style={{ width: 6, height: 6, background: "var(--color-prax-gold-soft)" }}
-                />
-                <div
-                  className="font-semibold uppercase"
-                  style={{
-                    fontSize: 10,
-                    letterSpacing: "0.22em",
-                    color: "var(--color-prax-gold-soft)",
-                  }}
-                >
-                  Today&apos;s Focus
-                </div>
-              </div>
-              <h2
-                className="font-normal italic m-0 max-w-[520px]"
-                style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 38,
-                  lineHeight: 1.08,
-                  color: "var(--color-prax-cream)",
-                  letterSpacing: "-0.005em",
-                }}
-              >
-                {lead
-                  ? lead.headline
-                  : briefLoading
-                  ? "Working out where you stand."
-                  : isNewUser
-                  ? "Begin with your first practice session."
-                  : "Keep building your practice rhythm."}
-              </h2>
-              <div
-                className="mt-3.5 max-w-[500px]"
-                style={{
-                  color: "rgba(246,244,227,0.72)",
-                  fontSize: 13.5,
-                  lineHeight: 1.6,
-                }}
-              >
-                {lead ? (
-                  lead.detail
-                ) : briefLoading ? (
-                  "One moment."
-                ) : isNewUser ? (
-                  "Once you have studied a little, this will tell you where you actually stand."
-                ) : (
-                  "Study a few more cards and this will tell you where you actually stand."
-                )}
-              </div>
-              <div className="flex items-center gap-4 mt-7 flex-wrap">
-                <Link
-                  href={action.href}
-                  className="inline-flex items-center gap-2.5 cursor-pointer"
-                  style={{
-                    background: "var(--color-prax-cream)",
-                    color: "var(--color-prax-green)",
-                    border: "none",
-                    borderRadius: 999,
-                    padding: "14px 26px",
-                    fontSize: 13.5,
-                    fontWeight: 600,
-                    letterSpacing: "0.02em",
-                  }}
-                >
-                  {action.label}
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  >
-                    <path d="M5 12h14M13 6l6 6-6 6" />
-                  </svg>
-                </Link>
-                {supporting.length > 0 && (
-                  <div
-                    style={{
-                      fontSize: 11.5,
-                      color: "rgba(246,244,227,0.6)",
-                      lineHeight: 1.7,
-                    }}
-                  >
-                    {supporting.map((c) => c.headline).join("  ·  ")}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Weekly goal ring */}
-            <div className="text-center pr-3 hidden lg:block">
-              <svg width="140" height="140" viewBox="0 0 140 140">
-                <circle
-                  cx="70"
-                  cy="70"
-                  r="60"
-                  fill="none"
-                  stroke="rgba(246,244,227,0.18)"
-                  strokeWidth="9"
-                />
-                <circle
-                  cx="70"
-                  cy="70"
-                  r="60"
-                  fill="none"
-                  stroke="var(--color-prax-gold-soft)"
-                  strokeWidth="9"
-                  strokeDasharray={`${(2 * Math.PI * 60 * weeklyGoalPct) / 100} ${
-                    2 * Math.PI * 60
-                  }`}
-                  strokeLinecap="round"
-                  transform="rotate(-90 70 70)"
-                />
-                <text
-                  x="70"
-                  y="70"
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  style={{
-                    fontFamily: "var(--font-prax-serif)",
-                    fontSize: 32,
-                    fill: "var(--color-prax-cream)",
-                    fontWeight: 500,
-                  }}
-                >
-                  {weeklyGoalPct}
-                  <tspan fontSize="16">%</tspan>
-                </text>
-                <text
-                  x="70"
-                  y="96"
-                  textAnchor="middle"
-                  style={{
-                    fontFamily: "var(--font-prax-sans)",
-                    fontSize: 8,
-                    fill: "var(--color-prax-gold-soft)",
-                    letterSpacing: "0.2em",
-                    fontWeight: 600,
-                  }}
-                >
-                  WEEKLY GOAL
-                </text>
-              </svg>
-              <div
-                className="italic mt-1"
-                style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 11,
-                  color: "rgba(246,244,227,0.65)",
-                }}
-              >
-                {stats.questionsThisWeek} of {weeklyGoal} · {weeklyGoalRemaining} to go
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* ── PRIMARY: Today's checklist ─────────────────────────── */}
+        {/*
+          Replaced a panel that announced the backlog: "5,028 of your 7,143
+          cards are waiting." True, and useless. It told a student the size of
+          their problem and nothing about what to do this morning, and the
+          number only grew. The rule for what appears here lives in
+          lib/dashboard/checklist.ts.
+        */}
+        <TodayChecklist input={checklist} phase={phase} loading={loading} />
 
         {/* ── SECONDARY row: Spaced Repetition + Subject Mastery ── */}
         <div className="grid grid-cols-1 lg:[grid-template-columns:1.25fr_1fr] gap-5 mb-8">
