@@ -581,6 +581,45 @@ export default function DashboardHome() {
   // fetch ran on every load for nothing. lib/insights and /api/insights/brief
   // are untouched and still work; nothing renders them today.
 
+  // ── Recent Progress, from the snapshot system ─────────────────────────
+  //
+  // Fetched separately and never awaited, the same shape as the brief above.
+  // ROLLOUT IS THE FAILURE MODE: there is no per-feature flag system in this
+  // codebase (launch-mode.ts gates the marketing site, which is a different
+  // question), so this leans on the safest pattern already here. If the call
+  // fails for any reason, including the learner tables not existing yet, the
+  // catch swallows it and the card keeps the inline signals it has today.
+  //
+  // Topics improved and priority areas resolved can ONLY come from here. They
+  // are counted from deduped learner_events, so a transition is counted once
+  // however many times this runs, and there is no way to approximate them on
+  // the client without double-counting.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (!token) return;
+        const res = await fetch("/api/learner/snapshot", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const body = await res.json();
+        if (cancelled || !Array.isArray(body?.progress?.signals)) return;
+        // Only replace the inline signals when the snapshot system actually has
+        // something to say. An empty period keeps the existing card rather than
+        // blanking it.
+        if (body.progress.signals.length > 0) setProgressSignals(body.progress.signals);
+      } catch {
+        // Snapshot-backed progress is additive. Its absence is not an error.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user.id]);
+
   // ── Focus decks, from the cached brief ────────────────────────────────
   //
   // Fetched separately and never awaited by the main load. The computation
