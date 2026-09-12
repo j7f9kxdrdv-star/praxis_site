@@ -23,7 +23,7 @@
 // so CARS and Psych/Soc are always unmeasured and the range is always wide.
 // That is correct, and it narrows on its own the day that content ships.
 
-export const PREDICTOR_VERSION = "1.2.0-provisional";
+export const PREDICTOR_VERSION = "1.3.0-provisional";
 
 // ─── 1.2.0: the ceiling became evidence-aware ──────────────────────────────
 //
@@ -58,15 +58,54 @@ export const PREDICTOR_VERSION = "1.2.0-provisional";
  *
  * These boundaries are expert judgement, not fitted values. They are the single
  * most important thing to replace once real outcomes exist.
+ *
+ * ─── 1.3.0: THE TABLE MUST SPAN THE WHOLE SCALE ─────────────────────────
+ *
+ * It previously saturated at both ends. Everything at or below 55% mapped to
+ * 500 and everything at or above 90% mapped to 519, so the model could only
+ * ever express 497 to 522: twenty-five points of a fifty-six point scale. A
+ * student answering nothing correctly was told they looked average, and no
+ * amount of evidence could ever produce a 525.
+ *
+ * That saturation was doing a job it should not have had. Before 1.2.0 the
+ * table was the ONLY thing holding back an over-confident high-end claim, so
+ * refusing to go above 519 was a crude but real protection. The evidence
+ * ceiling does that job now, and does it properly: it asks what the evidence
+ * base can support rather than capping everyone forever.
+ *
+ * So the table is free to span the real scale, and the ceiling decides HOW
+ * QUICKLY a student can reach the top of it. 472 and 528 are both reachable
+ * again, and a 528 requires a deep, broad, full-length-backed evidence base
+ * rather than being impossible by construction.
+ *
+ * THE APPROVED MIDDLE IS UNTOUCHED. Every boundary from 60% to 90% is exactly
+ * as it was, so no existing student's estimate moves except Mikko's, by one
+ * point, from the new 52% band.
  */
 const ACCURACY_TO_CENTRE: { minAccuracy: number; centre: number }[] = [
+  // Extended upward in 1.3.0. Gated by the evidence ceiling, not by refusal.
+  { minAccuracy: 98, centre: 527 },
+  { minAccuracy: 95, centre: 524 },
+  { minAccuracy: 92, centre: 521 },
+  // ── unchanged since 1.0.0 ──
   { minAccuracy: 90, centre: 519 },
   { minAccuracy: 85, centre: 516 },
   { minAccuracy: 80, centre: 513 },
   { minAccuracy: 75, centre: 510 },
   { minAccuracy: 70, centre: 507 },
   { minAccuracy: 60, centre: 503 },
-  { minAccuracy: 0, centre: 500 },
+  // ── extended downward in 1.3.0 ──
+  //
+  // 25% is chance on four options, so an accuracy near it carries no evidence
+  // of knowledge and belongs near the floor rather than at the median. The
+  // steps widen below 60% because the scale itself compresses down there: the
+  // distance from chance to competent is many more scaled points than the
+  // distance between two strong students.
+  { minAccuracy: 52, centre: 499 },
+  { minAccuracy: 44, centre: 494 },
+  { minAccuracy: 36, centre: 488 },
+  { minAccuracy: 28, centre: 481 },
+  { minAccuracy: 0, centre: 474 },
 ];
 
 /** The four MCAT sections, and which question-bank sections feed each. */

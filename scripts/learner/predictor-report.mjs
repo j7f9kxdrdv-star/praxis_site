@@ -106,8 +106,12 @@ report("a full length raises the evidence ceiling",
 report("an elite evidence ceiling is reachable on a full evidence base",
   evCeilingAt(800, ALL_FOUR, 30, 3) >= 525, `best case = ${evCeilingAt(800, ALL_FOUR, 30, 3)}`);
 
-report("the DISPLAYED top is capped by the centre table, never reaching 528",
-  ceilingAt(800, ALL_FOUR, 30, 3) < 528, `best displayed high = ${ceilingAt(800, ALL_FOUR, 30, 3)}`);
+report("the DISPLAYED top reaches 528 on a complete evidence base",
+  ceilingAt(800, ALL_FOUR, 30, 3) === 528, `best displayed high = ${ceilingAt(800, ALL_FOUR, 30, 3)}`);
+
+report("and 472 is reachable at the bottom of the scale",
+  estimateScore(25, 5000, ALL_FOUR, topics(60), 10).low === 472,
+  `worst displayed low = ${estimateScore(25, 5000, ALL_FOUR, topics(60), 10).low}`);
 
 let widthMono = true, pw = Infinity;
 for (const n of [20, 50, 100, 250, 500]) {

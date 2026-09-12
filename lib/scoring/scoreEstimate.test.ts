@@ -266,3 +266,66 @@ describe("confidence follows evidence, not range width", () => {
     expect(estimateScore(95, 5000, new Set(BANK_TODAY), BROAD, 5).confidence).toBe("Low");
   });
 });
+
+describe("THE FULL 472 TO 528 SCALE STAYS REACHABLE", () => {
+  // 1.2.0 moderated the ceiling and, as a side effect, made anything above 522
+  // impossible forever: the centre table saturated at 519 and half-width could
+  // only add three at deep evidence. Evidence must control HOW QUICKLY the top
+  // of the scale becomes available, never whether it exists at all.
+
+  const DEEP_AND_BROAD = () =>
+    estimateScore(100, 5000, new Set(ALL_SECTIONS), topics(60), 10);
+
+  it("reaches the top of the scale on a complete evidence base", () => {
+    expect(DEEP_AND_BROAD().high).toBe(SCORE_CEILING);
+  });
+
+  it("reaches the bottom of the scale when performance is at chance", () => {
+    // 25% on four options is chance, which is no evidence of knowledge at all.
+    const e = estimateScore(25, 5000, new Set(ALL_SECTIONS), topics(60), 10);
+    expect(e.low).toBe(SCORE_FLOOR);
+  });
+
+  it("spans substantially more of the scale than the centre table used to", () => {
+    const top = DEEP_AND_BROAD().high!;
+    const bottom = estimateScore(0, 5000, new Set(ALL_SECTIONS), topics(60), 10).low!;
+    // 1.2.0 could express 497 to 522. The real scale is 56 points wide.
+    expect(top - bottom).toBeGreaterThanOrEqual(50);
+  });
+
+  it("EVIDENCE GATES THE TOP RATHER THAN THE TABLE REFUSING IT", () => {
+    // The same perfect accuracy, at four evidence depths. The ceiling should
+    // release the high end progressively, and only a complete base reaches 528.
+    const thin = estimateScore(100, 20, new Set(BANK_TODAY), topics(12), 0).high!;
+    const mid = estimateScore(100, 250, new Set(ALL_SECTIONS), topics(30), 0).high!;
+    const deep = estimateScore(100, 800, new Set(ALL_SECTIONS), topics(30), 3).high!;
+
+    expect(thin).toBeLessThan(mid);
+    expect(mid).toBeLessThan(deep);
+    expect(deep).toBe(SCORE_CEILING);
+    // And the thin case is still protected, which was the point of 1.2.0.
+    expect(thin).toBeLessThanOrEqual(520);
+  });
+
+  it("the centre mapping is monotonic across the whole accuracy range", () => {
+    let previous = -Infinity;
+    for (let acc = 0; acc <= 100; acc++) {
+      const c = estimateScore(acc, 5000, new Set(ALL_SECTIONS), topics(60), 10).centre!;
+      expect(c).toBeGreaterThanOrEqual(previous);
+      previous = c;
+    }
+  });
+
+  it("leaves the approved 60 to 90 percent band exactly where it was", () => {
+    // Those boundaries were calibrated before 1.3.0 and must not drift. Deep
+    // evidence, so the ceiling is not binding and the centre shows through.
+    const centreAt = (acc: number) =>
+      estimateScore(acc, 800, new Set(ALL_SECTIONS), topics(30), 3).centre!;
+    expect(centreAt(60)).toBe(503);
+    expect(centreAt(70)).toBe(507);
+    expect(centreAt(75)).toBe(510);
+    expect(centreAt(80)).toBe(513);
+    expect(centreAt(85)).toBe(516);
+    expect(centreAt(90)).toBe(519);
+  });
+});
