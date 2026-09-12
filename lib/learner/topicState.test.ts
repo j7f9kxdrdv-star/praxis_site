@@ -112,21 +112,21 @@ describe("topic state", () => {
 
 describe("priority", () => {
   it("does not call a barely-seen topic weak", () => {
-    const p = topicPriority(1, 4, "INSUFFICIENT_EVIDENCE", false);
+    const p = topicPriority(1, 4, "INSUFFICIENT_EVIDENCE", false, null);
     expect(p.isPriority).toBe(false);
     expect(p.reasons[0].code).toBe("NEEDS_MORE_EVIDENCE");
   });
 
   it("flags a genuinely weak topic, with a reason code", () => {
     const state = topicState(6, 30, null);
-    const p = topicPriority(6, 30, state, false);
+    const p = topicPriority(6, 30, state, false, null);
     expect(p.isPriority).toBe(true);
     expect(p.reasons.map((r) => r.code)).toContain("WEAK_APPLICATION");
     expect(p.severity).toBeGreaterThan(0);
   });
 
   it("adds a declining-trend reason on top", () => {
-    const p = topicPriority(10, 30, "NEEDS_ATTENTION", true);
+    const p = topicPriority(10, 30, "NEEDS_ATTENTION", true, null);
     expect(p.reasons.map((r) => r.code)).toContain("DECLINING_TREND");
   });
 
@@ -180,5 +180,87 @@ describe("priority resolution", () => {
 
   it("cannot resolve something that was never a priority", () => {
     expect(isPriorityResolved(false, 100, 100)).toBe(false);
+  });
+});
+
+describe("PRIORITY MEMBERSHIP IS STICKY", () => {
+  // The defect: entry and exit both used PRIORITY_ENTER, so a topic improving
+  // from below 0.40 to just above it left the priority list while still failing
+  // the 0.50 resolution bar. It vanished in silence. Eleven real topics were
+  // sitting in that gap and no PRIORITY_TOPIC_RESOLVED had ever been emitted.
+
+  /** Correct answers out of n that land the Wilson lower bound in a range. */
+  const findScore = (n: number, lo: number, hi: number) => {
+    for (let c = 0; c <= n; c++) {
+      const lb = wilsonLowerBound(c, n);
+      if (lb >= lo && lb < hi) return c;
+    }
+    throw new Error(`no score out of ${n} lands in [${lo}, ${hi})`);
+  };
+
+  it("enters priority below the entry threshold", () => {
+    const n = 30;
+    const c = findScore(n, 0, PRIORITY_ENTER);
+    const p = topicPriority(c, n, topicState(c, n, null), false, false);
+    expect(p.isPriority).toBe(true);
+  });
+
+  it("STAYS a priority in the gap between entry and exit", () => {
+    // The exact case that was failing. Above entry, below exit.
+    const n = 30;
+    const c = findScore(n, PRIORITY_ENTER, PRIORITY_EXIT);
+    const lb = wilsonLowerBound(c, n);
+    expect(lb).toBeGreaterThanOrEqual(PRIORITY_ENTER);
+    expect(lb).toBeLessThan(PRIORITY_EXIT);
+
+    // A topic arriving here fresh is NOT a priority.
+    expect(topicPriority(c, n, topicState(c, n, null), false, false).isPriority).toBe(false);
+    // But one that was already a priority stays one.
+    expect(topicPriority(c, n, topicState(c, n, null), false, true).isPriority).toBe(true);
+  });
+
+  it("resolves only after clearing the exit threshold on enough evidence", () => {
+    const n = 30;
+    const clears = findScore(n, PRIORITY_EXIT, 1.01);
+    expect(topicPriority(clears, n, topicState(clears, n, null), false, true).isPriority).toBe(false);
+    expect(isPriorityResolved(true, clears, n)).toBe(true);
+  });
+
+  it("cannot resolve on thin evidence however good it looks", () => {
+    // Perfect, but below the attempts bar. Reviewing a topic and answering a
+    // handful correctly must not clear a priority.
+    const thin = MIN_ATTEMPTS_TO_RESOLVE - 1;
+    expect(topicPriority(thin, thin, "INSUFFICIENT_EVIDENCE", false, true).isPriority).toBe(true);
+    expect(isPriorityResolved(true, thin, thin)).toBe(false);
+  });
+
+  it("membership and the resolution event can never disagree", () => {
+    // Both must be driven by the same predicate, or a topic leaves the list
+    // without an event again. Swept across the whole space.
+    for (let n = MIN_ATTEMPTS_FOR_STATE; n <= 60; n += 3) {
+      for (let c = 0; c <= n; c++) {
+        const stillPriority = topicPriority(c, n, topicState(c, n, null), false, true).isPriority;
+        const resolved = isPriorityResolved(true, c, n);
+        expect(stillPriority).toBe(!resolved);
+      }
+    }
+  });
+
+  it("one good answer does not resolve a priority", () => {
+    // A topic deep in priority territory answers one more correctly.
+    const before = topicPriority(6, 20, topicState(6, 20, null), false, true);
+    const after = topicPriority(7, 21, topicState(7, 21, null), false, true);
+    expect(before.isPriority).toBe(true);
+    expect(after.isPriority).toBe(true);
+  });
+
+  it("one bad answer does not re-flag a resolved topic on the same evidence", () => {
+    // Resolved at 25/30, then one miss. It should not snap straight back.
+    const n = 30;
+    const clears = findScore(n, PRIORITY_EXIT, 1.01);
+    expect(topicPriority(clears, n, topicState(clears, n, null), false, true).isPriority).toBe(false);
+    // Now not a priority, and one miss must not clear the ENTRY bar either.
+    const next = topicPriority(clears, n + 1, topicState(clears, n + 1, null), false, false);
+    expect(next.isPriority).toBe(false);
   });
 });

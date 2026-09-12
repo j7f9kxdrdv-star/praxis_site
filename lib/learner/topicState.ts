@@ -22,8 +22,18 @@
 
 // 1.1.0 recalibrated two thresholds against real student data. See the notes
 // on MIN_ATTEMPTS_FOR_STATE and PRIORITY_ENTER below for what changed and why.
-// Snapshots written by 1.0.0 remain interpretable: they carry their own version.
-export const TOPIC_MODEL_VERSION = "1.1.0";
+//
+// 1.2.0 made priority membership STICKY. Until then PRIORITY_ENTER decided both
+// whether a topic became a priority and whether it stayed one, while
+// PRIORITY_EXIT was consulted only by the resolution event. A topic that
+// climbed into the gap between the two thresholds therefore vanished from the
+// priority list without ever resolving, and no event was emitted. Eleven real
+// topics sat in that gap and not one PRIORITY_TOPIC_RESOLVED had ever been
+// generated. See topicPriority.
+//
+// Snapshots written by older versions remain interpretable: they carry their
+// own version, and the band thresholds did not move in 1.2.0.
+export const TOPIC_MODEL_VERSION = "1.2.0";
 
 export type TopicState =
   | "INSUFFICIENT_EVIDENCE"
@@ -229,9 +239,41 @@ export function topicPriority(
   attempts: number,
   state: TopicState,
   declined: boolean,
+  wasPriority: boolean | null,
 ): TopicPriority {
   const reasons: { code: PriorityReasonCode; severity: number }[] = [];
+  const lb = wilsonLowerBound(correct, attempts);
+  const severity = Math.max(0, Math.min(1, (PRIORITY_ENTER - lb) / PRIORITY_ENTER));
 
+  // ── STICKY MEMBERSHIP ──────────────────────────────────────────────────
+  //
+  // A topic that is already a priority leaves the list by RESOLVING and by no
+  // other route. The predicate below is the identical one the
+  // PRIORITY_TOPIC_RESOLVED event uses, which is the whole point: membership
+  // and the event cannot disagree, so a priority can never disappear without
+  // the student being told it did.
+  //
+  // The bug this replaces: entry and exit were both PRIORITY_ENTER, so a topic
+  // climbing from 0.38 to 0.42 stopped being a priority while still failing the
+  // 0.50 resolution bar. It left the list in silence. A student was told to
+  // work on something, did the work, and got nothing back.
+  if (wasPriority) {
+    const resolved = isPriorityResolved(true, correct, attempts);
+    if (!resolved) {
+      // Still a priority. The reason is still worth recomputing, because a
+      // topic can be sitting in the gap (improving, not yet resolved) and the
+      // copy should reflect where it is rather than where it entered.
+      if (state === "NEEDS_ATTENTION") reasons.push({ code: "WEAK_APPLICATION", severity });
+      else reasons.push({ code: "RECENT_MISSES", severity });
+      if (declined) reasons.push({ code: "DECLINING_TREND", severity: Math.max(severity, 0.5) });
+      return { isPriority: true, severity, reasons };
+    }
+    // Resolved. Falls through to not-a-priority, and snapshot.ts emits the
+    // event off the same condition.
+    return { isPriority: false, severity, reasons: [] };
+  }
+
+  // ── ENTRY ──────────────────────────────────────────────────────────────
   if (attempts === 0) {
     return { isPriority: false, severity: 0, reasons: [] };
   }
@@ -245,9 +287,7 @@ export function topicPriority(
     };
   }
 
-  const lb = wilsonLowerBound(correct, attempts);
   const isPriority = lb < PRIORITY_ENTER;
-  const severity = Math.max(0, Math.min(1, (PRIORITY_ENTER - lb) / PRIORITY_ENTER));
 
   if (isPriority) {
     if (state === "NEEDS_ATTENTION") reasons.push({ code: "WEAK_APPLICATION", severity });

@@ -16,6 +16,9 @@ import {
   isImprovement,
   isDecline,
   isPriorityResolved,
+  wilsonLowerBound,
+  PRIORITY_EXIT,
+  MIN_ATTEMPTS_TO_RESOLVE,
   TOPIC_MODEL_VERSION,
   type TopicState,
   type PriorityReasonCode,
@@ -90,7 +93,9 @@ export function buildSnapshot(input: SnapshotInput): LearnerSnapshot {
     const prev = prevByTopic.get(topic) ?? null;
     const state = topicState(e.correct, e.attempts, prev?.state ?? null);
     const declined = isDecline(prev?.state ?? null, state);
-    const p = topicPriority(e.correct, e.attempts, state, declined);
+    // The PREVIOUS priority flag is what makes membership sticky: a topic
+    // already on the list stays on it until it resolves. See topicPriority.
+    const p = topicPriority(e.correct, e.attempts, state, declined, prev?.isPriority ?? null);
     return {
       topic,
       section: e.section,
@@ -208,7 +213,19 @@ export function deriveEvents(
         // The band is carried in metadata instead.
         previousValue: "PRIORITY",
         newValue: "NOT_PRIORITY",
-        metadata: { attempts: t.attempts, correct: t.correct, state: t.state },
+        // Enough to re-derive the decision months later without the code that
+        // made it: the evidence, the score, the bar it had to clear, and which
+        // band the topic sat in on either side.
+        metadata: {
+          attempts: t.attempts,
+          correct: t.correct,
+          state: t.state,
+          previousState: prev.state,
+          wilsonLowerBound: Number(wilsonLowerBound(t.correct, t.attempts).toFixed(4)),
+          exitThreshold: PRIORITY_EXIT,
+          minAttemptsToResolve: MIN_ATTEMPTS_TO_RESOLVE,
+          topicModelVersion: TOPIC_MODEL_VERSION,
+        },
         dedupeKey: `PRIORITY_TOPIC_RESOLVED:${t.topic}:${day}`,
         calculationVersion: version,
       });
