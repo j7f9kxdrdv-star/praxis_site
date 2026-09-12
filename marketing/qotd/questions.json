@@ -217,5 +217,25 @@
       "B and C. Both keep the acceleration pointing down, which would mean speeding up. A parachute that made you fall faster would not be a parachute."
     ],
     "teaching_point": "Acceleration follows net force, never velocity. Moving down and accelerating up happen together every time something slows on its way down, and that split is what most of these questions are really testing."
+  },
+  {
+    "slug": "sodium-pump-cardiac-force",
+    "eyebrow": "Biology: The Cardiovascular System",
+    "stem": "A drug blocks the sodium potassium pump in cardiac muscle. Each contraction becomes stronger. What best explains this?",
+    "options": [
+      "A. Spared ATP powers more cross bridges",
+      "B. Potassium builds up inside the cell",
+      "C. The sodium gradient exporting calcium weakens",
+      "D. The pacemaker fires more often"
+    ],
+    "answer": "C",
+    "answer_text": "The sodium gradient exporting calcium weakens",
+    "explanation": "The pump is what maintains the sodium gradient. Calcium leaves the cell on an exchanger that runs on that gradient, so weakening it strands calcium in the cytosol. More calcium per beat is a stronger beat. This is how digoxin works.",
+    "distractors": [
+      "A. Blocking an ATPase does spare ATP, but ATP is not what limits contractile force in a beating heart. Calcium availability is.",
+      "B. The pump moves potassium IN. Blocking it leaves potassium outside the cell, not stacked up inside.",
+      "D. Rate and force are different things. The pacemaker sets how often the heart beats, and the question describes how hard each beat is."
+    ],
+    "teaching_point": "When a pump is blocked, follow the gradient it maintained rather than the ATP it consumed. Secondary transporters run on that gradient, so the real effect usually lands one step downstream, on whatever the gradient was quietly powering."
   }
 ]
