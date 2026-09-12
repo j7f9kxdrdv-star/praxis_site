@@ -35,6 +35,34 @@ import { cardTimeShare } from "@/lib/dashboard/phase";
  */
 const REVIEWS_PER_NEW_CARD = 5;
 
+/**
+ * New cards a day while the collection is still small, and the size below
+ * which that cap applies.
+ *
+ * WHY A CAP AT ALL, when the headroom maths says otherwise. A student with no
+ * cards has no review demand, so the engine sees the entire day as free and
+ * recommends filling it: 95 new cards a day at fifteen hours, 190 at thirty.
+ * The arithmetic is right and the advice is wrong, because the demand those
+ * cards create has not arrived yet, not because it will not.
+ *
+ * Mikko's own history is the proof. He introduced 7,333 new cards in 58 days, a
+ * median of 113 a day, and ended with 5,033 due and a mean stability of 9.6
+ * days against another student's 20.6. The backlog and the weak recall were the
+ * same bill. Recommending that rate to a new student would reproduce it
+ * deliberately.
+ *
+ * There is also a limit to how much genuinely new material a person encodes in
+ * a sitting, which no amount of available time changes. Standard spaced
+ * repetition practice is twenty to thirty a day for a new learner; forty is the
+ * generous end of that, and the cap lifts once the collection is large enough
+ * for real demand to constrain intake on its own.
+ *
+ * JUDGEMENT, NOT MEASUREMENT. There is no outcome data to fit this to, and it
+ * is the first thing to revisit when there is.
+ */
+export const NEW_LEARNER_CARD_CAP = 40;
+export const NEW_LEARNER_COLLECTION_SIZE = 500;
+
 /** Fallbacks for a student with no history to measure. */
 const DEFAULT_SECONDS_PER_CARD = 9;
 const DEFAULT_NEW_MULTIPLIER = 1.2;
@@ -126,6 +154,8 @@ export interface LimitInput {
   cardsDue: number;
   /** Card-blanks never seen. */
   unseenBlanks: number;
+  /** Card-blanks the student HAS seen. Below a few hundred, intake is capped. */
+  seenBlanks?: number;
   /** What the student currently has set, so the caller can show the gap. */
   currentReviewLimit: number;
   currentNewLimit: number;
@@ -209,9 +239,17 @@ export function recommendLimits(input: LimitInput): LimitRecommendation {
     const byTime = Math.floor((leftoverMinutes * 60) / Math.max(1, pace.secondsPerNewCard));
     const bySustainability = Math.floor(capacity / REVIEWS_PER_NEW_CARD);
     const byHeadroom = Math.floor(headroom / (REVIEWS_PER_NEW_CARD / 14));
-    newLimit = roundTo(Math.min(byTime, bySustainability, byHeadroom, unseenBlanks), 5);
-    newReason =
-      byTime < bySustainability
+    // The cap only binds while the collection is too small to constrain intake
+    // on its own. See NEW_LEARNER_CARD_CAP.
+    const isNewCollection = (input.seenBlanks ?? Infinity) < NEW_LEARNER_COLLECTION_SIZE;
+    const beginnerCap = isNewCollection ? NEW_LEARNER_CARD_CAP : Infinity;
+    newLimit = roundTo(
+      Math.min(byTime, bySustainability, byHeadroom, beginnerCap, unseenBlanks),
+      5,
+    );
+    newReason = isNewCollection
+      ? "A steady start. Every new card comes back several times over the next fortnight, so this rises once your reviews settle."
+      : byTime < bySustainability
         ? "What is left of your card time once the reviews waiting are done."
         : `Each new card costs about ${REVIEWS_PER_NEW_CARD} reviews before it settles, so this keeps the queue level.`;
   }
@@ -238,4 +276,33 @@ export function recommendLimits(input: LimitInput): LimitRecommendation {
       Math.abs(reviewLimit - input.currentReviewLimit) > Math.max(20, input.currentReviewLimit * 0.15) ||
       Math.abs(newLimit - input.currentNewLimit) > Math.max(5, input.currentNewLimit * 0.15),
   };
+}
+
+/**
+ * Seconds a practice question actually costs, passage reading included.
+ *
+ * From the exam's own timing rather than a guess: the AAMC gives 95 minutes for
+ * the 59 questions of Chem/Phys and the same for Bio/Biochem, which is 97
+ * seconds a question. Untimed practice runs slower still, so this is the
+ * generous-to-the-student end.
+ */
+const SECONDS_PER_QUESTION = 97;
+
+/**
+ * Questions a week, from the time cards did not take.
+ *
+ * HALF of what is left, not all of it. The card share already claims 55% of a
+ * new student's day; handing questions the whole remainder would leave nothing
+ * for reading content, which is the thing a beginner needs most. Splitting the
+ * rest evenly between questions and content is a judgement, and a visible one:
+ * the screen shows the daily figure this produces before it is saved.
+ *
+ * Rounded to tens, because this is a goal a person reads rather than a computed
+ * quantity, and editable on the screen it appears on.
+ */
+export function suggestedWeeklyQuestions(minutesPerDay: number, cardMinutesPerDay: number): number {
+  const leftoverPerDay = Math.max(0, minutesPerDay - cardMinutesPerDay);
+  const questionMinutesPerWeek = (leftoverPerDay / 2) * 7;
+  const questions = (questionMinutesPerWeek * 60) / SECONDS_PER_QUESTION;
+  return Math.max(20, Math.round(questions / 10) * 10);
 }

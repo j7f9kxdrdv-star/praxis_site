@@ -75,6 +75,8 @@ export default function DashboardShell({
         await supabase.from("profiles").update({ timezone: tz }).eq("id", userId);
       }
     }
+
+    return data as Profile | null;
   }
 
   useEffect(() => {
@@ -89,7 +91,25 @@ export default function DashboardShell({
       }
 
       setUser(user);
-      await fetchProfile(user.id);
+      const loaded = await fetchProfile(user.id);
+
+      // ── The onboarding gate ──────────────────────────────────────────
+      //
+      // onboarding_completed is written at the end of /onboarding, including
+      // when the student skips it: being asked once is the point, and asking
+      // twice is nagging. Until this landed the column had never been read or
+      // written by anything, so its values were arbitrary; the migration in
+      // supabase/migrations/20260911_onboarding_gate.sql resets it for anyone
+      // who has not actually answered.
+      //
+      // replace(), not push(), so Back from the flow does not land on a
+      // dashboard that will only bounce them here again. /onboarding sits
+      // outside this shell, so there is no loop to fall into.
+      if (loaded && !loaded.onboarding_completed) {
+        router.replace("/onboarding");
+        return;
+      }
+
       setLoading(false);
     }
 
@@ -114,7 +134,9 @@ export default function DashboardShell({
       value={{
         user,
         profile,
-        refreshProfile: () => fetchProfile(user.id),
+        refreshProfile: async () => {
+          await fetchProfile(user.id);
+        },
       }}
     >
       <div className="min-h-screen bg-as-surface-container-low font-body text-as-on-surface flex">
