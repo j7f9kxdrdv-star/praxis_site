@@ -113,9 +113,13 @@ describe("study status", () => {
 
 describe("product rule: flashcards never move the predicted score", () => {
   it("the predictor's signature cannot accept flashcard data", () => {
-    // estimateScore takes first-attempt accuracy, the attempt count and the
-    // bank sections with data. There is no parameter a card could enter by.
-    expect(estimateScore.length).toBe(3);
+    // Every parameter is question evidence: accuracy, attempt count, sections,
+    // subtopics, full lengths. There is no parameter a card could enter by.
+    // The exhaustive guard lives in lib/scoring/scoreEstimate.test.ts, which
+    // scans the module for memory imports and identifiers; this is the
+    // signature-level check that a reader of studyStatus would look for.
+    const params = estimateScore.toString().slice(0, 400);
+    expect(/flashcard|card|review|memory|stability|retention/i.test(params)).toBe(false);
   });
 
   it("identical question evidence gives an identical range whatever memory says", () => {

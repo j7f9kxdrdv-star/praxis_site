@@ -542,7 +542,15 @@ export default function AnalyticsPage() {
     const sections = new Set(
       eligible.map((a) => a.questions?.section).filter(Boolean) as string[]
     );
-    return estimateScore(accuracy, eligible.length, sections);
+    // Breadth, not just volume. 300 questions inside three subtopics is not
+    // 300 questions' worth of evidence about a section, and the predictor now
+    // moderates its ceiling accordingly. See evidenceStrength.
+    const subtopics = new Set(
+      eligible.map((a) => a.questions?.subtopic).filter(Boolean) as string[]
+    );
+    // Full lengths: none exist in the product yet, so this is honestly zero
+    // rather than omitted. It starts paying out the day the type ships.
+    return estimateScore(accuracy, eligible.length, sections, subtopics, 0);
   }, [allAttempts]);
 
   // Section stats

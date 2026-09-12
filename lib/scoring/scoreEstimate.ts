@@ -23,7 +23,31 @@
 // so CARS and Psych/Soc are always unmeasured and the range is always wide.
 // That is correct, and it narrows on its own the day that content ships.
 
-export const PREDICTOR_VERSION = "1.1.0-provisional";
+export const PREDICTOR_VERSION = "1.2.0-provisional";
+
+// ─── 1.2.0: the ceiling became evidence-aware ──────────────────────────────
+//
+// THE DEFECT. Uncertainty widened the interval in both directions, so thin
+// evidence pushed the TOP of the range up. Twenty first attempts at 100% showed
+// 510 to 528: the top of the band a student was shown was a perfect MCAT score,
+// earned on twenty questions, across half an exam, at Low confidence. Five
+// hundred perfect attempts showed 512 to 526, a LOWER ceiling than twenty. That
+// inversion is the tell that width was doing a job it should not have had.
+//
+// THE SEPARATION. Range width and range ceiling answer different questions.
+// Width asks how precisely we can place this student. The ceiling asks what
+// claim the evidence can support at all. Thin evidence should widen the first
+// and hold down the second, and previously it did both by widening.
+//
+// WHAT MODERATES THE CEILING. An evidence strength in [0,1], built from depth
+// and breadth MULTIPLICATIVELY, so a zero in one cannot be bought with the
+// other. A student cannot reach an elite ceiling on volume alone while half the
+// exam has never been measured, which is the situation every Praxist student is
+// in today and will be until CARS and Psych/Soc content ships.
+//
+// WHAT THIS IS NOT. It is not a fixed cap keyed off a question count. Every
+// input moves continuously, and the ceiling rises on its own as the evidence
+// base deepens and broadens. Nothing needs to be edited when CARS ships.
 
 /**
  * Centre of the estimate, from FIRST-ATTEMPT accuracy.
@@ -73,7 +97,111 @@ export interface ScoreEstimate {
   /** MCAT sections with no first-attempt evidence behind them. */
   blindSections: string[];
   firstAttempts: number;
+  /** How the ceiling was moderated. Internal diagnostics, not student copy. */
+  evidence: EvidenceStrength | null;
   version: string;
+}
+
+/**
+ * How much the question count alone can buy, saturating.
+ *
+ * Logarithmic, because the first hundred questions tell us far more than the
+ * nine hundredth does. 800 is where depth is treated as effectively complete:
+ * it is roughly two full MCAT question banks' worth of first attempts, and no
+ * student in the system is close to it yet.
+ *
+ * JUDGEMENT, NOT MEASUREMENT. There are no MCAT outcomes to fit this against.
+ */
+const DEPTH_SATURATION = 800;
+
+/**
+ * Distinct subtopics that count as broad coverage WITHIN the sections a student
+ * has touched.
+ *
+ * Breadth matters separately from depth because 300 questions inside three
+ * subtopics is not 300 questions' worth of evidence about a section. Thirty is
+ * an order-of-magnitude judgement about how many subtopics a section spans.
+ */
+const TOPIC_TARGET = 30;
+
+/**
+ * How much of the breadth term survives when topic coverage is at zero.
+ *
+ * Topic breadth modulates the estimate; it does not dominate it. A student with
+ * deep evidence in few subtopics still has real evidence.
+ */
+const TOPIC_FLOOR = 0.7;
+
+/**
+ * The penalty for having no full-length exam evidence.
+ *
+ * A full length is the only thing that measures stamina, timing and section
+ * ordering together, so its absence should cost something. It costs a little
+ * rather than a lot because TODAY NO STUDENT CAN HAVE ONE: no full-length type
+ * exists in the product, official_mcat_scores is empty, and penalising every
+ * student hard for a thing none of them can do would make every estimate
+ * uniformly worse while distinguishing nobody.
+ *
+ * The term is live so that the model does not need rewriting when full lengths
+ * ship. It simply starts paying out.
+ */
+const NO_FULL_LENGTH_FACTOR = 0.85;
+
+/**
+ * The highest score claimable when the evidence is effectively nothing.
+ *
+ * THIS IS THE ONE GENUINELY NEW PRODUCT ASSUMPTION IN 1.2.0 and it deserves to
+ * be argued with. 512 sits comfortably above the 500 median and below anything
+ * that reads as elite. The claim it encodes is: "on almost no evidence, the
+ * most we will say is that this student looks like a solid scorer."
+ *
+ * It is a floor on the CEILING, not a cap on the student. It rises immediately
+ * as evidence arrives, and it never touches the centre of the estimate except
+ * when the centre would otherwise sit above its own ceiling.
+ */
+const CEILING_FLOOR = 512;
+
+export interface EvidenceStrength {
+  /** 0 to 1. The moderating term applied to the ceiling. */
+  overall: number;
+  depth: number;
+  sectionBreadth: number;
+  topicBreadth: number;
+  hasFullLength: boolean;
+  /** The highest score this evidence base can support. */
+  ceiling: number;
+}
+
+/**
+ * How much this evidence base can be asked to support.
+ *
+ * MULTIPLICATIVE ON PURPOSE. Adding the terms would let a huge question count
+ * compensate for never having answered a CARS question, and it cannot: the
+ * total score is the sum of four sections, and two of them are unmeasured.
+ */
+export function evidenceStrength(
+  firstAttempts: number,
+  sectionsWithData: Set<string>,
+  topicsWithData: Set<string>,
+  fullLengths: number,
+): EvidenceStrength {
+  const depth = Math.min(1, Math.log1p(firstAttempts) / Math.log1p(DEPTH_SATURATION));
+
+  const measuredSections = MCAT_SECTIONS.filter((s) =>
+    s.bankSections.some((b) => sectionsWithData.has(b)),
+  ).length;
+  const sectionBreadth = measuredSections / MCAT_SECTIONS.length;
+
+  const topicBreadth = Math.min(1, topicsWithData.size / TOPIC_TARGET);
+  const topicTerm = TOPIC_FLOOR + (1 - TOPIC_FLOOR) * topicBreadth;
+
+  const hasFullLength = fullLengths > 0;
+  const examTerm = hasFullLength ? 1 : NO_FULL_LENGTH_FACTOR;
+
+  const overall = depth * sectionBreadth * topicTerm * examTerm;
+  const ceiling = CEILING_FLOOR + (SCORE_CEILING - CEILING_FLOOR) * overall;
+
+  return { overall, depth, sectionBreadth, topicBreadth, hasFullLength, ceiling };
 }
 
 /**
@@ -82,11 +210,16 @@ export interface ScoreEstimate {
  * @param firstAttemptAccuracy 0-100, computed over FIRST attempts only
  * @param firstAttempts        how many first attempts that figure rests on
  * @param sectionsWithData     bank section slugs the student has answered in
+ * @param topicsWithData       distinct subtopics answered in, for breadth
+ * @param fullLengths          full-length exams sat. Always 0 today; the
+ *                             product has no full-length type yet.
  */
 export function estimateScore(
   firstAttemptAccuracy: number,
   firstAttempts: number,
-  sectionsWithData: Set<string>
+  sectionsWithData: Set<string>,
+  topicsWithData: Set<string> = new Set(),
+  fullLengths = 0,
 ): ScoreEstimate {
   const blindSections = MCAT_SECTIONS.filter(
     (s) => !s.bankSections.some((b) => sectionsWithData.has(b))
@@ -100,11 +233,12 @@ export function estimateScore(
       confidence: "Low",
       blindSections,
       firstAttempts,
+      evidence: null,
       version: PREDICTOR_VERSION,
     };
   }
 
-  const centre =
+  const rawCentre =
     ACCURACY_TO_CENTRE.find((b) => firstAttemptAccuracy >= b.minAccuracy)?.centre ?? 500;
 
   // Thin evidence widens the range. Falls off with the square root of the
@@ -120,23 +254,59 @@ export function estimateScore(
     BASE_HALF_WIDTH + sampleWidening + blindSections.length * WIDENING_PER_BLIND_SECTION
   );
 
+  const evidence = evidenceStrength(
+    firstAttempts,
+    sectionsWithData,
+    topicsWithData,
+    fullLengths,
+  );
+
+  // ── The ceiling, applied ───────────────────────────────────────────────
+  //
+  // The top of the range is the LOWER of what uncertainty allows and what the
+  // evidence can support. Width is still free to be wide; it is simply no
+  // longer free to be wide UPWARD into a claim nobody has earned.
+  const high = Math.min(
+    SCORE_CEILING,
+    rawCentre + halfWidth,
+    Math.round(evidence.ceiling),
+  );
+
+  // THE CEILING SLIDES THE WINDOW DOWN, IT DOES NOT SQUEEZE IT.
+  //
+  // The first version of this clamped the centre instead, and the calibration
+  // run caught what that did: 100 questions across four sections came out as
+  // 515 to 519, a four-point range at Low confidence. A narrow range reads as
+  // certainty, so moderating the ceiling had accidentally made thin evidence
+  // look MORE authoritative, which is the opposite of the point.
+  //
+  // Width belongs to uncertainty and nothing else. The window keeps the full
+  // width halfWidth earned and hangs from the ceiling, so capping the top
+  // lowers the bottom by exactly as much.
+  const centre = high - halfWidth;
+  const low = Math.max(SCORE_FLOOR, high - 2 * halfWidth);
+
   // A range is only as trustworthy as its blindest section. Two unmeasured
   // sections is half the exam, and no amount of practice in the other two can
-  // make the TOTAL confident.
+  // make the TOTAL confident. That rule is kept exactly as it was, and evidence
+  // strength now decides the rest rather than the raw question count.
   const confidence: Confidence =
     blindSections.length >= 2
       ? "Low"
-      : blindSections.length === 1 || firstAttempts < 150
+      : evidence.overall < 0.45
+      ? "Low"
+      : evidence.overall < 0.7
       ? "Moderate"
       : "High";
 
   return {
-    low: Math.max(SCORE_FLOOR, centre - halfWidth),
-    high: Math.min(SCORE_CEILING, centre + halfWidth),
+    low,
+    high,
     centre,
     confidence,
     blindSections,
     firstAttempts,
+    evidence,
     version: PREDICTOR_VERSION,
   };
 }
