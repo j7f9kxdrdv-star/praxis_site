@@ -146,11 +146,66 @@ describe("derived events", () => {
     }
   });
 
-  it("records coverage growing", () => {
+  it("A SESSION IS NOT A COVERAGE EVENT", () => {
+    // The defect this replaced: any increase at all fired an event, so one
+    // arrived per active study day and 49 of 70 events in the whole derived
+    // history were this. Ordinary progress inside a milestone gap is silent.
     const day1 = snap({ coverageAttempted: 100 });
     const day2 = snap({ studyDay: "2026-09-12", coverageAttempted: 140, previous: day1 });
-    const e = deriveEvents(day1, day2).find((x) => x.type === "CONTENT_COVERAGE_INCREASED");
-    expect(e!.metadata.questionsAdded).toBe(40);
+    expect(deriveEvents(day1, day2)).toHaveLength(0);
+  });
+
+  it("fires when a milestone is crossed", () => {
+    const total = 1000;
+    const below = snap({ coverageAttempted: 90, coverageTotal: total });
+    const above = snap({
+      studyDay: "2026-09-12", coverageAttempted: 110, coverageTotal: total, previous: below,
+    });
+    const e = deriveEvents(below, above).find((x) => x.type === "CONTENT_COVERAGE_MILESTONE");
+    expect(e).toBeDefined();
+    expect(e!.metadata.milestone).toBe(10);
+    expect(e!.metadata.questionsAttempted).toBe(110);
+  });
+
+  it("fires once per milestone, never again on a rebuild", () => {
+    const total = 1000;
+    const below = snap({ coverageAttempted: 90, coverageTotal: total });
+    const above = snap({
+      studyDay: "2026-09-12", coverageAttempted: 110, coverageTotal: total, previous: below,
+    });
+    // Same milestone, so the same dedupe key: the upsert collides rather than
+    // inserting a second row, even though the day is different.
+    const first = deriveEvents(below, above).find((x) => x.type === "CONTENT_COVERAGE_MILESTONE");
+    const later = snap({
+      studyDay: "2026-09-20", coverageAttempted: 130, coverageTotal: total, previous: above,
+    });
+    expect(deriveEvents(above, later)).toHaveLength(0);
+    expect(first!.dedupeKey).toBe("CONTENT_COVERAGE_MILESTONE:10");
+  });
+
+  it("emits one event per milestone when a big jump crosses several", () => {
+    const total = 1000;
+    const below = snap({ coverageAttempted: 50, coverageTotal: total });
+    const leap = snap({
+      studyDay: "2026-09-12", coverageAttempted: 600, coverageTotal: total, previous: below,
+    });
+    const ms = deriveEvents(below, leap)
+      .filter((x) => x.type === "CONTENT_COVERAGE_MILESTONE")
+      .map((x) => x.metadata.milestone);
+    expect(ms).toEqual([10, 25, 50]);
+  });
+
+  it("SAYS NOTHING ABOUT MASTERY", () => {
+    // Coverage is what has been encountered. A milestone must carry no claim
+    // about ability, so its metadata holds counts and nothing else.
+    const total = 1000;
+    const below = snap({ coverageAttempted: 90, coverageTotal: total });
+    const above = snap({
+      studyDay: "2026-09-12", coverageAttempted: 110, coverageTotal: total, previous: below,
+    });
+    const e = deriveEvents(below, above).find((x) => x.type === "CONTENT_COVERAGE_MILESTONE")!;
+    const keys = Object.keys(e.metadata).join(" ");
+    expect(/accuracy|correct|state|band|mastery|score/i.test(keys)).toBe(false);
   });
 });
 

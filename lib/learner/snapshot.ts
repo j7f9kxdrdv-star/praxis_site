@@ -24,7 +24,37 @@ import {
   type PriorityReasonCode,
 } from "@/lib/learner/topicState";
 
-export const SNAPSHOT_VERSION = "1.0.0";
+// 1.1.0 replaced the per-day coverage event with milestones. See
+// COVERAGE_MILESTONES below for what was wrong with the old one.
+export const SNAPSHOT_VERSION = "1.1.0";
+
+/**
+ * Coverage points worth telling a student about.
+ *
+ * WHAT THIS REPLACES. CONTENT_COVERAGE_INCREASED fired on any increase at all,
+ * which meant once per active study day, which meant 49 of 70 events in the
+ * entire derived history. It failed the test this file opens with: an event is
+ * a MEANINGFUL DIFFERENCE between two snapshots, and "the student did a session
+ * yesterday" is not one. It is the mechanical consequence of studying, already
+ * recorded in question_attempts and already carried on the snapshot itself as
+ * coverageAttempted.
+ *
+ * Three things were wrong with it beyond the volume. Nothing consumed it:
+ * Recent Progress computes its coverage delta straight from the snapshots and
+ * the API only ever queries the two ability events. Sixteen of the forty-nine
+ * did not move the displayed percent at all, so the event said 4% to 4%. And
+ * every single one recorded between twelve and fifty questions, so there was no
+ * signal in the distribution to threshold on: they were all just sessions.
+ *
+ * A milestone is a real transition. Crossing a quarter of the bank is true,
+ * checkable, and worth a line in a feed. It is also SAFE against the rule that
+ * coverage is not mastery, because it says only how much has been seen and
+ * makes no claim at all about how well.
+ *
+ * Dedupe is on the milestone rather than the day, so each one can fire exactly
+ * once in a student's life however many times a day is recomputed.
+ */
+export const COVERAGE_MILESTONES = [10, 25, 50, 75, 90] as const;
 
 export interface TopicSnapshot {
   topic: string;
@@ -132,7 +162,7 @@ export type LearnerEventType =
   | "TOPIC_PERFORMANCE_DECLINED"
   | "PRIORITY_TOPIC_ADDED"
   | "PRIORITY_TOPIC_RESOLVED"
-  | "CONTENT_COVERAGE_INCREASED";
+  | "CONTENT_COVERAGE_MILESTONE";
 
 export interface DerivedEvent {
   type: LearnerEventType;
@@ -251,20 +281,29 @@ export function deriveEvents(
     }
   }
 
-  if (current.coverageAttempted > previous.coverageAttempted) {
-    events.push({
-      type: "CONTENT_COVERAGE_INCREASED",
-      occurredOn: day,
-      subjectKind: "OVERALL",
-      subjectId: "coverage",
-      previousValue: String(previous.coveragePercent),
-      newValue: String(current.coveragePercent),
-      metadata: {
-        questionsAdded: current.coverageAttempted - previous.coverageAttempted,
-      },
-      dedupeKey: `CONTENT_COVERAGE_INCREASED:${day}`,
-      calculationVersion: version,
-    });
+  // Each milestone the day crossed. A single big session can cross more than
+  // one, and each is its own event; a quiet day crosses none and produces
+  // nothing, which is the point.
+  for (const milestone of COVERAGE_MILESTONES) {
+    if (previous.coveragePercent < milestone && current.coveragePercent >= milestone) {
+      events.push({
+        type: "CONTENT_COVERAGE_MILESTONE",
+        occurredOn: day,
+        subjectKind: "OVERALL",
+        subjectId: "coverage",
+        previousValue: String(previous.coveragePercent),
+        newValue: String(current.coveragePercent),
+        metadata: {
+          milestone,
+          questionsAttempted: current.coverageAttempted,
+          questionsTotal: current.coverageTotal,
+          questionsAddedToday: current.coverageAttempted - previous.coverageAttempted,
+        },
+        // No day in the key: a milestone is crossed once, not once per rebuild.
+        dedupeKey: `CONTENT_COVERAGE_MILESTONE:${milestone}`,
+        calculationVersion: version,
+      });
+    }
   }
 
   return events;
