@@ -334,32 +334,62 @@ export default function Onboarding() {
             </p>
           )}
 
-          <div className="flex items-center gap-4 mt-8 flex-wrap">
+          {/*
+            THE PRIMARY OWNS ITS OWN ROW.
+
+            All three actions used to share one row, which fitted at 390px and
+            only just. Lengthening the secondary label to say what it actually
+            does pushed it over: at 390 it wrapped and orphaned itself under
+            Back, right-aligned and looking like a mistake.
+
+            Stacking fixes it at every width rather than at one, and it also
+            stops the wrap that put the leave-the-flow action directly beneath
+            the primary button, which is the one place it should never land.
+          */}
+          <div className="mt-8">
             {step !== "plan" ? (
-              <button onClick={goNext} style={praxBtnGreenOnCream}>
+              <button onClick={goNext} style={{ ...praxBtnGreenOnCream, ...blockBtn }}>
                 Continue
               </button>
             ) : (
               <button
                 onClick={() => finish(true)}
                 disabled={saving}
-                style={{ ...praxBtnGreenOnCream, opacity: saving ? 0.6 : 1 }}
+                style={{ ...praxBtnGreenOnCream, ...blockBtn, opacity: saving ? 0.6 : 1 }}
               >
                 {saving ? "Saving" : planReady ? "Start studying" : "Finish"}
               </button>
             )}
-            {index > 0 && (
-              <button onClick={goBack} style={textBtn}>
-                Back
-              </button>
-            )}
-            <button
-              onClick={() => finish(false)}
-              disabled={saving}
-              style={{ ...textBtn, marginLeft: "auto" }}
+
+            <div
+              className="flex items-center mt-4"
+              style={{ justifyContent: index > 0 ? "space-between" : "flex-end" }}
             >
-              Skip for now
-            </button>
+              {index > 0 && (
+                <button onClick={goBack} style={textBtn}>
+                  Back
+                </button>
+              )}
+              {/*
+                THE SAME LABEL ON EVERY SCREEN, because it is the same action on
+                every screen: finish(false) leaves onboarding, keeps whatever has
+                been answered, applies no derived plan, and marks the flow done so
+                the student is not asked again.
+
+                It was "Skip for now", which was wrong twice over. On the plan
+                screen it read as "set nothing" while actually keeping the old
+                defaults, 25 new cards and 150 reviews and 100 questions a week,
+                which are the numbers nobody chose and this flow exists to
+                replace. On the earlier screens it read as "skip this question"
+                when it in fact exits the whole flow permanently.
+
+                "Set these up later" is true on all four: the settings are not
+                being set now, and Settings is where they live.
+              */}
+              <button onClick={() => finish(false)} disabled={saving} style={textBtn}>
+                Set these up later
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -465,6 +495,14 @@ function Field({
     </label>
   );
 }
+
+/** praxBtnGreenOnCream is inline-flex; this makes it own the row. */
+const blockBtn: React.CSSProperties = {
+  display: "flex",
+  width: "100%",
+  justifyContent: "center",
+  padding: "14px 22px",
+};
 
 const textBtn: React.CSSProperties = {
   background: "transparent",
