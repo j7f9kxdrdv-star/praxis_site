@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { estimateScore, estimateBasis } from "@/lib/scoring/scoreEstimate";
 import { canonicalTopicKey, titleFromKey } from "@/lib/analytics/topicKey";
+import type { FlashcardAggregate } from "@/lib/analytics/flashcardAggregate";
 import {
   buildSeries,
   evidenceFor,
@@ -59,13 +60,6 @@ interface DeckMeta {
 interface DailyActivity {
   activity_date: string;
   questions_completed: number;
-}
-
-interface FlashReview {
-  flashcard_id: string;
-  cloze_index: number;
-  rating: "again" | "hard" | "medium" | "easy";
-  reviewed_at: string;
 }
 
 type Period = "7d" | "30d" | "all" | "custom";
@@ -927,10 +921,10 @@ function PerfPanel({
 export default function AnalyticsPage() {
   const { user } = useDashboard();
   const [allAttempts, setAllAttempts] = useState<Attempt[]>([]);
-  const [allReviews, setAllReviews] = useState<FlashReview[]>([]);
   const [, setActivity] = useState<DailyActivity[]>([]);
   const [, setLessonsCompleted] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [flashAgg, setFlashAgg] = useState<FlashcardAggregate | null>(null);
   const [progressSignals, setProgressSignals] = useState<ProgressSignal[]>([]);
   const [progressLoading, setProgressLoading] = useState(true);
   const [period, setPeriod] = useState<Period>("30d");
@@ -947,7 +941,6 @@ export default function AnalyticsPage() {
   const [openFlashSections, setOpenFlashSections] = useState<Set<string>>(
     new Set()
   );
-  const [cardToDeck, setCardToDeck] = useState<Map<string, string>>(new Map());
   const [deckMeta, setDeckMeta] = useState<Map<string, DeckMeta>>(new Map());
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
@@ -957,12 +950,8 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     async function load() {
-      const [
-        { data: attempts },
-        { data: act },
-        { data: progress },
-        { data: reviews },
-      ] = await Promise.all([
+      const [{ data: attempts }, { data: act }, { data: progress }] =
+        await Promise.all([
         supabase
           .from("question_attempts")
           .select(
@@ -979,47 +968,18 @@ export default function AnalyticsPage() {
           .select("id")
           .eq("user_id", user.id)
           .eq("completed", true),
-        // Page through the FULL review history. A single query caps at 1000
-        // rows and the old `.limit(5000)` dropped everything older than the
-        // most recent 5000 — which broke the "full chronological history"
-        // first-look math and undercounted all-time totals for heavy users.
-        // Order by time then unique `id` so pages are stable.
-        (async () => {
-          const all: FlashReview[] = [];
-          const PAGE = 1000;
-          for (let from = 0; ; from += PAGE) {
-            const { data, error } = await supabase
-              .from("flashcard_reviews")
-              .select("flashcard_id, cloze_index, rating, reviewed_at")
-              .eq("user_id", user.id)
-              .order("reviewed_at", { ascending: false })
-              .order("id", { ascending: false })
-              .range(from, from + PAGE - 1);
-            if (error || !data) break;
-            all.push(...(data as unknown as FlashReview[]));
-            if (data.length < PAGE) break;
-          }
-          return { data: all };
-        })(),
       ]);
 
-      // Card -> deck, and deck -> subtopic. Paged, because the card table is
-      // larger than a single Supabase response.
-      const cards: { id: string; deck_id: string }[] = [];
-      for (let from = 0; ; from += 1000) {
-        const { data, error } = await supabase
-          .from("flashcards")
-          .select("id, deck_id")
-          .order("id", { ascending: true })
-          .range(from, from + 999);
-        if (error || !data) break;
-        cards.push(...(data as { id: string; deck_id: string }[]));
-        if (data.length < 1000) break;
-      }
+      // Deck metadata only: 73 rows, shared by every student, and enough to
+      // turn a canonical topic key back into a deck route.
+      //
+      // The whole flashcards table used to be paged in here to build a
+      // card-to-deck map, purely so the browser could attribute reviews to
+      // topics. The aggregate endpoint does that attribution server-side now,
+      // so neither the cards nor the reviews need to travel.
       const { data: deckRows } = await supabase
         .from("flashcard_decks")
         .select("id, section, topic, subtopic, title");
-      setCardToDeck(new Map(cards.map((c) => [c.id, c.deck_id])));
       setDeckMeta(
         new Map(
           ((deckRows as DeckMeta[]) || []).map((d) => [d.id, d])
@@ -1029,7 +989,6 @@ export default function AnalyticsPage() {
       setAllAttempts((attempts as unknown as Attempt[]) || []);
       setActivity(act || []);
       setLessonsCompleted(progress?.length || 0);
-      setAllReviews((reviews as unknown as FlashReview[]) || []);
 
       setLoading(false);
     }
@@ -1190,6 +1149,23 @@ export default function AnalyticsPage() {
    * one that merely looks low because everything is hard this week.
    */
   /**
+   * Canonical topic key to a deck id, so a topic row's Review action has
+   * somewhere to go.
+   *
+   * Built from the deck table, which is 73 rows and shared by every student.
+   * The alternative was carrying a deck id on every review, which is how the
+   * old code got it and part of why it needed the reviews at all.
+   */
+  const deckIdByTopic = useMemo(() => {
+    const out = new Map<string, string>();
+    deckMeta.forEach((d, id) => {
+      const key = canonicalTopicKey(d.subtopic);
+      if (key && !out.has(key)) out.set(key, id);
+    });
+    return out;
+  }, [deckMeta]);
+
+  /**
    * Recall against application, topic by topic.
    *
    * REPLACES three sections that all answered "where am I weak?" from one
@@ -1232,35 +1208,22 @@ export default function AnalyticsPage() {
       questions.set(key, e);
     });
 
-    // ── Memory: first-look recall, by the deck's canonical subtopic ───────
+    // ── Memory: first-look recall per topic, from the server ────────────
     //
-    // The session gap is walked over the FULL history, exactly as the
-    // First-Look Recall card does, so a period boundary cannot turn a
-    // same-session repeat into a false first look. Only in-range first looks
-    // are then counted.
-    const SESSION_GAP_MS = 30 * 60 * 1000;
-    const lastSeen = new Map<string, number>();
-    const cards = new Map<string, { successes: number; trials: number; deckId: string }>();
-    [...allReviews]
-      .sort((x, y) => new Date(x.reviewed_at).getTime() - new Date(y.reviewed_at).getTime())
-      .forEach((r) => {
-        const id = `${r.flashcard_id}:${r.cloze_index}`;
-        const t = new Date(r.reviewed_at).getTime();
-        const prev = lastSeen.get(id);
-        const isFirstLook = prev === undefined || t - prev > SESSION_GAP_MS;
-        lastSeen.set(id, t);
-        if (!isFirstLook || !inRange(r.reviewed_at)) return;
-
-        const deckId = cardToDeck.get(r.flashcard_id);
-        const key = canonicalTopicKey(deckMeta.get(deckId ?? "")?.subtopic);
-        if (!key || !deckId) return;
-        const e = cards.get(key) ?? { successes: 0, trials: 0, deckId };
-        e.trials++;
-        // Again is the only grade that means retrieval failed. Hard, Medium
-        // and Easy all mean it succeeded, at differing cost.
-        if (r.rating !== "again") e.successes++;
-        cards.set(key, e);
+    // This used to walk every review in the browser to rebuild what the
+    // aggregate endpoint already computes, which is the same 42,553 rows the
+    // First-Look Recall card was downloading. The session-gap rule still
+    // applies; it just applies once, on the server, where the rows are.
+    const cards = new Map<string, { successes: number; trials: number; deckId: string | null }>();
+    for (const t of flashAgg?.byTopic ?? []) {
+      cards.set(t.key, {
+        successes: t.recalled,
+        trials: t.firstLooks,
+        // The deck a topic's Review action opens. Resolved from the small deck
+        // table the page already holds, not from review rows.
+        deckId: deckIdByTopic.get(t.key) ?? null,
       });
+    }
 
     const keys = [...new Set([...questions.keys(), ...cards.keys()])];
     const rows = keys.map((key) => {
@@ -1289,70 +1252,35 @@ export default function AnalyticsPage() {
     const pending = rows.filter((r) => !MEASURED.has(r.state) && r.state !== "NO_EVIDENCE");
 
     return { measured, pending, total: rows.length };
-  }, [allAttempts, allReviews, cardToDeck, deckMeta, period, customFrom, customTo]);
+  }, [allAttempts, flashAgg, deckIdByTopic, period, customFrom, customTo]);
 
-  // ── Flashcard recall stats (from review history) ──
-  const flashStats = useMemo(() => {
-    const inPeriod = (iso: string): boolean => {
-      if (period === "all") return true;
-      const d = new Date(iso);
-      if (period === "custom") {
-        if (!customFrom || !customTo) return true;
-        return (
-          d >= new Date(customFrom + "T00:00:00") &&
-          d <= new Date(customTo + "T23:59:59")
-        );
-      }
-      const cutoff = new Date();
-      cutoff.setDate(cutoff.getDate() - (period === "7d" ? 7 : 30));
-      return d >= cutoff;
-    };
-
-    const counts = { again: 0, hard: 0, medium: 0, easy: 0 };
-    let total = 0;
-
-    // "First-try" = the first time a card is seen in a study session. A card
-    // re-queued after "Again" recurs within minutes, so a gap larger than
-    // SESSION_GAP_MS marks a genuine new look. First-look is computed over the
-    // FULL chronological history (so a period boundary can't turn a same-session
-    // repeat into a false first look); only in-period first looks are tallied.
-    const SESSION_GAP_MS = 30 * 60 * 1000;
-    const lastSeen = new Map<string, number>();
-    const chron = [...allReviews].sort(
-      (a, b) =>
-        new Date(a.reviewed_at).getTime() - new Date(b.reviewed_at).getTime()
-    );
-    let firstTryTotal = 0;
-    let firstTryCorrect = 0;
-
-    chron.forEach((r) => {
-      const key = `${r.flashcard_id}:${r.cloze_index}`;
-      const t = new Date(r.reviewed_at).getTime();
-      const prev = lastSeen.get(key);
-      const isFirstLook = prev === undefined || t - prev > SESSION_GAP_MS;
-      lastSeen.set(key, t);
-
-      if (!inPeriod(r.reviewed_at)) return;
-      total++;
-      counts[r.rating]++;
-      if (isFirstLook) {
-        firstTryTotal++;
-        if (r.rating !== "again") firstTryCorrect++;
-      }
-    });
-
-    return {
-      total,
-      counts,
-      againCount: counts.again,
-      firstTryTotal,
-      firstTryCorrect,
+  /**
+   * Flashcard figures for the selected range, from the server.
+   *
+   * THE PAGE USED TO COUNT THESE ITSELF, over every review the student had ever
+   * logged. On the largest real account that is 42,553 rows and roughly 3.7 MB
+   * of JSON, downloaded so the browser could produce a four-bar chart and two
+   * percentages. The endpoint returns about two kilobytes and stays there
+   * however long the account lives, because its size is bounded by topics
+   * touched rather than reviews logged.
+   *
+   * Shaped to the old memo's field names, so the cards below did not change.
+   * What moved is where the arithmetic happens, not what it says.
+   */
+  const flashStats = useMemo(
+    () => ({
+      total: flashAgg?.total ?? 0,
+      counts: flashAgg?.counts ?? { again: 0, hard: 0, medium: 0, easy: 0 },
+      againCount: flashAgg?.counts.again ?? 0,
+      firstTryTotal: flashAgg?.firstLookTotal ?? 0,
+      firstTryCorrect: flashAgg?.firstLookCorrect ?? 0,
       firstTryPct:
-        firstTryTotal > 0
-          ? Math.round((firstTryCorrect / firstTryTotal) * 100)
+        flashAgg && flashAgg.firstLookTotal > 0
+          ? Math.round((flashAgg.firstLookCorrect / flashAgg.firstLookTotal) * 100)
           : null,
-    };
-  }, [allReviews, period, customFrom, customTo]);
+    }),
+    [flashAgg],
+  );
 
   // ── Question first-try accuracy (first attempt per question) ──
   const qStats = useMemo(() => {
@@ -1429,6 +1357,42 @@ export default function AnalyticsPage() {
     );
     return { from: earliest ? earliest.slice(0, 10) : "", to: today };
   }, [period, customFrom, customTo, allAttempts]);
+
+  /**
+   * Flashcard aggregates for the selected range.
+   *
+   * REFETCHED WHEN THE RANGE CHANGES, which is the trade this design makes. The
+   * alternative was shipping every review once and slicing it in the browser,
+   * and that is what cost 3.7 MB. A request per range change is three clicks'
+   * worth of traffic against a download that grew with the account forever.
+   *
+   * The range is sent as instants rather than dates so the server does not have
+   * to guess the client's timezone.
+   */
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (!token) return;
+        const qs = new URLSearchParams();
+        if (activeRange.from) qs.set("from", new Date(activeRange.from + "T00:00:00").toISOString());
+        if (activeRange.to) qs.set("to", new Date(activeRange.to + "T23:59:59").toISOString());
+        const res = await fetch(`/api/analytics/flashcards?${qs}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const body = (await res.json()) as FlashcardAggregate;
+        if (!cancelled) setFlashAgg(body);
+      } catch {
+        // The cards render their empty state rather than the page breaking.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user.id, activeRange.from, activeRange.to]);
 
   /**
    * The accuracy series, one point per day.
@@ -1984,12 +1948,23 @@ export default function AnalyticsPage() {
               Accuracy over time
             </div>
             <SmallCaps style={{ marginTop: 4 }}>
-              {/* ALL TIME, said out loud. A weekly trend constrained to the
-                  seven-day filter would be a single bar, so this one
-                  deliberately ignores the range. Leaving that unsaid is what
-                  made the chart look like it was showing dates outside the
-                  filter, which it was. */}
-              All time · weekly · weeks with &lt;5 questions excluded
+              {/* THE CAPTION FOLLOWS THE CHART NOW. It used to read "all time,
+                  weekly, weeks under five questions excluded", which was true
+                  of the chart it described and is true of none of this one:
+                  the series honours the range, resolves to days, and shows
+                  thin days rather than dropping them. A caption that outlives
+                  its chart is worse than none, because it is believed. */}
+              {periodLabel} ·{" "}
+              {series.granularity === "day"
+                ? "daily"
+                : series.granularity === "week"
+                  ? "weekly, too long a range for days"
+                  : "monthly, too long a range for days"}
+              {series.points.length - series.measured > 0
+                ? ` · ${series.points.length - series.measured} ${
+                    series.points.length - series.measured === 1 ? "day" : "days"
+                  } with no questions`
+                : ""}
             </SmallCaps>
           </div>
 
