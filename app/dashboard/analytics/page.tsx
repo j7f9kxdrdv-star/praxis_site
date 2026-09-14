@@ -63,6 +63,26 @@ interface FlashReview {
 
 type Period = "7d" | "30d" | "all" | "custom";
 
+/**
+ * Questions a week needs before it appears on the trend.
+ *
+ * One constant, used by the series, the per-section split inside a tooltip and
+ * the caption that tells the student about the exclusion, so the three cannot
+ * drift into describing different charts.
+ */
+const MIN_WEEK_QUESTIONS = 5;
+
+interface ChartWeek {
+  key: string;
+  label: string;
+  total: number;
+  correct: number;
+  accuracy: number;
+  /** 0-100, left to right. */
+  xPct: number;
+  sections: { section: string; label: string; total: number; accuracy: number }[];
+}
+
 const SECTION_LABELS: Record<string, string> = {
   bio_biochem: "Biology & Biochemistry",
   chem_phys: "Physical Sciences",
@@ -536,6 +556,8 @@ export default function AnalyticsPage() {
   const [progressLoading, setProgressLoading] = useState(true);
   const [period, setPeriod] = useState<Period>("30d");
   const [chartSection, setChartSection] = useState<string>("all");
+  /** Index of the week whose detail panel is open, or null. */
+  const [activeWeek, setActiveWeek] = useState<number | null>(null);
   const [sectionDropdownOpen, setSectionDropdownOpen] = useState(false);
   // Flashcard taxonomy. Fetched as two small lookups rather than joined onto
   // every review row: the card list is ~4k rows and the deck list ~70, against
@@ -995,11 +1017,28 @@ export default function AnalyticsPage() {
     };
   }, [allAttempts, period, customFrom, customTo]);
 
-  // Weekly accuracy chart
-  const { chartPoints, chartWeekLabels } = useMemo(() => {
+  /** Attempts in the charted section, to tell "no content" from "not enough". */
+  const sectionAttemptCount = useMemo(
+    () =>
+      chartSection === "all"
+        ? allAttempts.length
+        : allAttempts.filter((a) => a.questions?.section === chartSection).length,
+    [allAttempts, chartSection],
+  );
+
+  /**
+   * The weekly accuracy series, with enough per-week detail to explain itself.
+   *
+   * A point on a trend line is uninterpretable on its own: 83% could be 5 of 6
+   * or 150 of 181, and those mean very different things. Each week now carries
+   * its counts and, when viewing all subjects, a per-section split, so hovering
+   * or tapping answers "why is this point here" rather than just restating it.
+   */
+  const { chartPoints, chartWeekLabels, chartWeeks } = useMemo(() => {
     const empty = {
       chartPoints: [] as [number, number][],
       chartWeekLabels: [] as string[],
+      chartWeeks: [] as ChartWeek[],
     };
     if (allAttempts.length === 0) return empty;
 
@@ -1010,22 +1049,32 @@ export default function AnalyticsPage() {
 
     if (src.length === 0) return empty;
 
-    const weekMap = new Map<string, { total: number; correct: number }>();
+    const weekMap = new Map<
+      string,
+      { total: number; correct: number; bySection: Map<string, { total: number; correct: number }> }
+    >();
     src.forEach((a) => {
       const d = new Date(a.created_at);
       const day = d.getDay();
       const mon = new Date(d);
       mon.setDate(d.getDate() - ((day + 6) % 7));
       const key = mon.toISOString().split("T")[0];
-      const w = weekMap.get(key) || { total: 0, correct: 0 };
+      const w = weekMap.get(key) || { total: 0, correct: 0, bySection: new Map() };
       w.total++;
       if (a.is_correct) w.correct++;
+      const sec = a.questions?.section;
+      if (sec) {
+        const s = w.bySection.get(sec) || { total: 0, correct: 0 };
+        s.total++;
+        if (a.is_correct) s.correct++;
+        w.bySection.set(sec, s);
+      }
       weekMap.set(key, w);
     });
 
     const weeks = Array.from(weekMap.entries())
       .sort(([a], [b]) => a.localeCompare(b))
-      .filter(([, w]) => w.total >= 5);
+      .filter(([, w]) => w.total >= MIN_WEEK_QUESTIONS);
 
     if (weeks.length === 0) return empty;
 
@@ -1050,7 +1099,29 @@ export default function AnalyticsPage() {
       })
     );
 
-    return { chartPoints: points, chartWeekLabels: labels };
+    const detail: ChartWeek[] = weeks.map(([key, w], i) => ({
+      key,
+      label: labels[i],
+      total: w.total,
+      correct: w.correct,
+      accuracy: Math.round((w.correct / w.total) * 100),
+      // Left-to-right position as a percentage, so an HTML overlay can sit on
+      // the same spot as the SVG point despite preserveAspectRatio="none".
+      xPct: weeks.length === 1 ? 50 : (i / (weeks.length - 1)) * 100,
+      // A section line on two questions says nothing, so the same floor the
+      // week itself has to clear applies to each split.
+      sections: Array.from(w.bySection.entries())
+        .filter(([, s]) => s.total >= MIN_WEEK_QUESTIONS)
+        .map(([section, s]) => ({
+          section,
+          label: SECTION_LABELS[section] ?? section,
+          total: s.total,
+          accuracy: Math.round((s.correct / s.total) * 100),
+        }))
+        .sort((a, b) => b.total - a.total),
+    }));
+
+    return { chartPoints: points, chartWeekLabels: labels, chartWeeks: detail };
   }, [allAttempts, chartSection]);
 
   const linePath = buildSvgPath(chartPoints);
@@ -1634,6 +1705,7 @@ export default function AnalyticsPage() {
                     key={value}
                     onClick={() => {
                       setChartSection(value);
+                      setActiveWeek(null);
                       setSectionDropdownOpen(false);
                     }}
                     className="w-full text-left px-4 py-2.5"
@@ -1670,7 +1742,16 @@ export default function AnalyticsPage() {
               color: "var(--color-prax-ink-mute)",
             }}
           >
-            Complete more sessions to see your accuracy chart.
+            {/* SAY WHICH REASON. Two of the four sections have no questions
+                in the bank at all, so selecting CARS or Behavioural Sciences
+                used to draw an empty chart that looked broken. A student
+                should not have to guess whether they have not studied enough
+                or the content does not exist yet. */}
+            {chartSection !== "all" && sectionAttemptCount === 0
+              ? `No ${SECTION_LABELS[chartSection] ?? chartSection} questions in the bank yet, so there is nothing to chart.`
+              : chartSection !== "all"
+                ? `Not enough ${SECTION_LABELS[chartSection] ?? chartSection} questions yet. A week needs ${MIN_WEEK_QUESTIONS} to appear.`
+                : `Complete more sessions to see your accuracy chart. A week needs ${MIN_WEEK_QUESTIONS} questions to appear.`}
           </div>
         ) : (
           <div className="flex gap-3">
@@ -1694,12 +1775,13 @@ export default function AnalyticsPage() {
                 </span>
               ))}
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 relative">
               <svg
                 className="w-full overflow-visible"
                 viewBox="0 0 1000 300"
                 preserveAspectRatio="none"
                 style={{ height: 220 }}
+                aria-hidden="true"
               >
                 <defs>
                   <linearGradient id="prax-area-grad" x1="0" y1="0" x2="0" y2="1">
@@ -1750,6 +1832,150 @@ export default function AnalyticsPage() {
                   />
                 ))}
               </svg>
+
+              {/* ── The interaction layer ──────────────────────────────────
+                  A point on its own is uninterpretable: 83% could be 5 of 6 or
+                  150 of 181. These sit exactly on each point and carry the
+                  counts behind it.
+
+                  Buttons, not hover handlers. Hover alone is unusable on a
+                  phone and invisible to a keyboard, and this chart is the one
+                  thing on the page a student looks at every session. Pointer,
+                  focus and tap all open the same panel, and the accessible
+                  name states the week in full for a screen reader.
+
+                  The SVG above is aria-hidden: it is the same data, drawn. */}
+              <div className="absolute inset-x-0 top-0" style={{ height: 220 }}>
+                {chartWeeks.map((w, i) => (
+                  <button
+                    key={w.key}
+                    type="button"
+                    onMouseEnter={() => setActiveWeek(i)}
+                    onMouseLeave={() => setActiveWeek(null)}
+                    onFocus={() => setActiveWeek(i)}
+                    onBlur={() => setActiveWeek(null)}
+                    onClick={() => setActiveWeek((cur) => (cur === i ? null : i))}
+                    aria-label={`Week of ${w.label}: ${w.accuracy} percent, ${w.correct} of ${w.total} correct`}
+                    className="absolute top-0 h-full"
+                    style={{
+                      left: `${w.xPct}%`,
+                      transform: "translateX(-50%)",
+                      // Wide enough to tap, capped so neighbours do not overlap
+                      // on a long series.
+                      width: `max(28px, min(56px, ${100 / Math.max(chartWeeks.length, 1)}%))`,
+                      background: "transparent",
+                      border: 0,
+                      padding: 0,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {/* The marker only appears for the active week, so the
+                        line stays clean until someone asks. */}
+                    {activeWeek === i && (
+                      <span
+                        className="absolute rounded-full"
+                        style={{
+                          left: "50%",
+                          top: `${(chartPoints[i]?.[1] ?? 0) / 300 * 100}%`,
+                          transform: "translate(-50%, -50%)",
+                          width: 9,
+                          height: 9,
+                          background: "var(--color-prax-green)",
+                          boxShadow: "0 0 0 3px var(--color-prax-cream)",
+                        }}
+                      />
+                    )}
+                  </button>
+                ))}
+
+                {activeWeek !== null && chartWeeks[activeWeek] && (
+                  <div
+                    role="status"
+                    className="absolute rounded-xl px-3.5 py-3 pointer-events-none"
+                    style={{
+                      left: `${chartWeeks[activeWeek].xPct}%`,
+                      // Flip the anchor near the edges so the panel never
+                      // hangs off the card.
+                      transform: `translateX(${
+                        chartWeeks[activeWeek].xPct > 70
+                          ? "-95%"
+                          : chartWeeks[activeWeek].xPct < 30
+                            ? "-5%"
+                            : "-50%"
+                      })`,
+                      top: 8,
+                      zIndex: 10,
+                      minWidth: 172,
+                      background: "var(--color-prax-green)",
+                      color: "var(--color-prax-cream)",
+                      boxShadow: "0 10px 30px -12px rgba(3,56,48,0.5)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 9.5,
+                        letterSpacing: "0.16em",
+                        textTransform: "uppercase",
+                        fontWeight: 600,
+                        color: "rgba(246,244,227,0.6)",
+                      }}
+                    >
+                      Week of {chartWeeks[activeWeek].label}
+                    </div>
+                    <div className="flex items-baseline gap-2 mt-1.5">
+                      <span
+                        style={{
+                          fontFamily: "var(--font-prax-serif)",
+                          fontSize: 26,
+                          lineHeight: 1,
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {chartWeeks[activeWeek].accuracy}%
+                      </span>
+                      <span
+                        style={{
+                          fontSize: 11.5,
+                          color: "rgba(246,244,227,0.72)",
+                          fontVariantNumeric: "tabular-nums",
+                        }}
+                      >
+                        {chartWeeks[activeWeek].correct} of{" "}
+                        {chartWeeks[activeWeek].total}
+                      </span>
+                    </div>
+
+                    {/* Only when looking at everything, and only for sections
+                        carrying enough questions to mean something. */}
+                    {chartSection === "all" &&
+                      chartWeeks[activeWeek].sections.length > 1 && (
+                        <div
+                          className="mt-2.5 pt-2.5"
+                          style={{ borderTop: "1px solid rgba(246,244,227,0.18)" }}
+                        >
+                          {chartWeeks[activeWeek].sections.map((sec) => (
+                            <div
+                              key={sec.section}
+                              className="flex items-baseline justify-between gap-4"
+                              style={{ fontSize: 11.5, lineHeight: 1.7 }}
+                            >
+                              <span style={{ color: "rgba(246,244,227,0.72)" }}>
+                                {sec.label}
+                              </span>
+                              <span style={{ fontVariantNumeric: "tabular-nums" }}>
+                                {sec.accuracy}%{" "}
+                                <span style={{ color: "rgba(246,244,227,0.5)" }}>
+                                  ({sec.total})
+                                </span>
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                  </div>
+                )}
+              </div>
+
               <style>{`@keyframes praxChartDash { to { stroke-dashoffset: 0; } }`}</style>
               <div
                 className="flex justify-between mt-3"
