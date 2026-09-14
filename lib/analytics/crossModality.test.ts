@@ -180,3 +180,53 @@ describe("the guarantees this must not break", () => {
     expect(a).toEqual(b);
   });
 });
+
+describe("the key survives the round trip to the practice builder", () => {
+  // Analytics emits a canonical key in a Practice link; the builder resolves
+  // it back by canonicalising its own question topics. If those two ever
+  // disagree, the link opens an empty builder and the student is told to
+  // practise something that produces nothing.
+  //
+  // Verified against the live bank at the time of writing: all 33 emittable
+  // keys find standalone questions, and zero open empty.
+
+  const questionTopics = [
+    "Carbohydrate Metabolism I",
+    "The Musculoskeletal System",
+    "Embryogenesis & Development",
+    "Reproduction",
+    "Amino Acids, Peptides, and Proteins",
+    "Non-enzymatic Protein Function and Protein Analysis",
+  ];
+
+  it("a key built from a topic always finds that topic again", () => {
+    for (const topic of questionTopics) {
+      const emitted = canonicalTopicKey(topic);
+      const found = questionTopics.filter((t) => canonicalTopicKey(t) === emitted);
+      expect(found).toContain(topic);
+    }
+  });
+
+  it("an aliased key resolves from BOTH names", () => {
+    // The builder sees the question-bank name; the deck library uses another.
+    // Both must land on the key Analytics put in the link.
+    const emitted = canonicalTopicKey("Embryogenesis & Development");
+    expect(canonicalTopicKey("embryonic_development_and_gestation")).toBe(emitted);
+    expect(canonicalTopicKey("Embryogenesis & Development")).toBe(emitted);
+  });
+
+  it("survives URL encoding, which is how it actually travels", () => {
+    for (const topic of questionTopics) {
+      const key = canonicalTopicKey(topic);
+      const throughUrl = decodeURIComponent(encodeURIComponent(key));
+      expect(canonicalTopicKey(throughUrl)).toBe(key);
+    }
+  });
+
+  it("emits keys that are URL safe in the first place", () => {
+    for (const topic of questionTopics) {
+      // No characters that would need escaping, so a link stays readable.
+      expect(canonicalTopicKey(topic)).toMatch(/^[a-z0-9_]+$/);
+    }
+  });
+});

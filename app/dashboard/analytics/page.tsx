@@ -180,6 +180,18 @@ function filterByPeriod(
 
 /* ─────────── Donut Ring ─────────── */
 
+/** The row-level action pill. One definition, so both actions match. */
+const rowCta: React.CSSProperties = {
+  borderRadius: 999,
+  padding: "6px 12px",
+  border: "1px solid var(--color-prax-cream-border)",
+  color: "var(--color-prax-green)",
+  fontSize: 9,
+  letterSpacing: "0.13em",
+  textTransform: "uppercase",
+  fontWeight: 600,
+};
+
 /** Tone for a cross-modality state, reusing the existing band palette. */
 const STATE_TONE: Record<string, { bg: string; fg: string }> = {
   BROAD_WEAKNESS: { bg: "var(--color-prax-gold)", fg: "var(--color-prax-cream)" },
@@ -303,25 +315,23 @@ function TopicRow({
           <div className="flex items-center gap-3 mt-3 flex-wrap">
             <SmallCaps>{EVIDENCE_LABELS[topic.evidence]}</SmallCaps>
 
-            {/* Only the flashcard action can be targeted. A deck IS a route, so
-                Review opens exactly this topic's cards. Practice sessions are
-                built through a builder that takes no topic, so a Practice
-                button here would not actually serve this topic's questions;
-                it is deliberately absent rather than misleading. */}
+            {/* BOTH ACTIONS NOW LAND SOMEWHERE REAL.
+                A deck is a route, so Review opens exactly this topic's cards.
+                Practice carries the canonical topic key to the session builder,
+                which has always been able to filter on topic and simply had no
+                way in; it opens pre-filled rather than launching, so the
+                student sees what was chosen before starting. */}
             {topic.action?.kind === "REVIEW" && topic.deckId && (
-              <Link
-                href={`/dashboard/flashcards/${topic.deckId}`}
-                className="rounded-full px-3 py-1.5 transition-colors"
-                style={{
-                  border: "1px solid var(--color-prax-cream-border)",
-                  color: "var(--color-prax-green)",
-                  fontSize: 9,
-                  letterSpacing: "0.13em",
-                  textTransform: "uppercase",
-                  fontWeight: 600,
-                }}
-              >
+              <Link href={`/dashboard/flashcards/${topic.deckId}`} style={rowCta}>
                 Review cards
+              </Link>
+            )}
+            {topic.action?.kind === "PRACTICE" && topic.application.trials > 0 && (
+              <Link
+                href={`/dashboard/practice?topic=${encodeURIComponent(topic.key)}`}
+                style={rowCta}
+              >
+                Practice questions
               </Link>
             )}
           </div>

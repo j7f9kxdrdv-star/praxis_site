@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
+import { canonicalTopicKey } from "@/lib/analytics/topicKey";
 import MolecularBg from "@/components/dashboard/MolecularBg";
 import {
   PageHeader,
@@ -108,6 +109,8 @@ export default function PracticeHub() {
 
   // Builder modal state
   const [showBuilder, setShowBuilder] = useState(false);
+  /** Seed from the URL once; after that the selection belongs to the student. */
+  const seededFromUrl = useRef(false);
   const [builderStep, setBuilderStep] = useState<1 | 2 | 3>(1);
   const [builderSections, setBuilderSections] = useState<Set<string>>(new Set());
   const [builderTopics, setBuilderTopics] = useState<Set<string>>(new Set());
@@ -464,6 +467,51 @@ export default function PracticeHub() {
     setBuilderCount(10);
     setShowBuilder(true);
   }
+
+  /**
+   * Open the builder pre-filled from ?topic=<canonical key>.
+   *
+   * WHY THIS EXISTS. Analytics can now tell a student that a topic is an
+   * application gap: they recall it and lose it on questions. Until this, the
+   * only honest response to that was no button at all, because nothing could
+   * hand them questions for one topic. The capability was already here, in the
+   * builder; what was missing was a way in.
+   *
+   * IT OPENS THE BUILDER RATHER THAN LAUNCHING. A link that silently starts a
+   * session hides what was chosen, and a stray click would begin practice the
+   * student did not ask for. Pre-filled and visible lets them see the topic,
+   * change the count or difficulty, and start deliberately.
+   *
+   * The key is canonicalised on both sides, so this is the same exact-match
+   * join Analytics uses. A key naming no question leaves the builder open on
+   * its normal empty selection rather than pretending to have filtered.
+   */
+  useEffect(() => {
+    if (!dataLoaded || seededFromUrl.current) return;
+    // window.location rather than useSearchParams: this route is prerendered,
+    // and the hook would drag a Suspense boundary in for one query parameter.
+    const key = new URLSearchParams(window.location.search).get("topic");
+    if (!key) return;
+    seededFromUrl.current = true;
+
+    const wanted = canonicalTopicKey(key);
+    const matching = standalone.filter((q) => canonicalTopicKey(q.topic) === wanted);
+    if (matching.length === 0) {
+      setShowBuilder(true);
+      return;
+    }
+    setBuilderSections(new Set(matching.map((q) => q.section)));
+    setBuilderTopics(new Set(matching.map((q) => q.topic!).filter(Boolean)));
+    setBuilderAllTopics(false);
+    setBuilderDifficulty("all");
+    setBuilderCount(10);
+    setShowBuilder(true);
+    // dataLoaded ONLY. `standalone` is a fresh array on every render, so
+    // listing it would re-run this effect constantly; the ref stops it
+    // re-seeding but the work would still repeat. By the time dataLoaded
+    // flips, questions are in, so standalone is already correct.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dataLoaded]);
 
   function getBuilderTopics() {
     const t = new Map<string, { section: string; count: number }>();
