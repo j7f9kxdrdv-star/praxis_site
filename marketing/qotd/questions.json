@@ -237,5 +237,25 @@
       "D. Rate and force are different things. The pacemaker sets how often the heart beats, and the question describes how hard each beat is."
     ],
     "teaching_point": "When a pump is blocked, follow the gradient it maintained rather than the ATP it consumed. Secondary transporters run on that gradient, so the real effect usually lands one step downstream, on whatever the gradient was quietly powering."
+  },
+  {
+    "slug": "anion-exchange-pi",
+    "eyebrow": "Biochemistry: Separation Techniques",
+    "stem": "A protein with a pI of 9.0 is loaded onto an anion exchange column at pH 7.4. What happens to it?",
+    "options": [
+      "A. It binds, and salt elutes it",
+      "B. It passes through unbound",
+      "C. It binds until the pH drops",
+      "D. It precipitates on the column"
+    ],
+    "answer": "B",
+    "answer_text": "It passes through unbound",
+    "explanation": "Below its pI a protein carries net positive charge, so at pH 7.4 this one is positive. An anion exchange resin is itself positively charged, because it is built to hold anions. Like charges repel, so the protein never binds and leaves in the flow-through.",
+    "distractors": [
+      "A. Binding would need the protein to be negative, which only happens ABOVE its pI. At pH 7.4 it is well below 9.0.",
+      "C. Lowering the pH makes the protein MORE positive, so it would bind even less. Raising it toward 9.0 is what would make it stick.",
+      "D. A protein precipitates near its pI, where net charge is zero. At pH 7.4 it is charged and stays soluble."
+    ],
+    "teaching_point": "Two charges decide every ion exchange question: the protein's and the resin's. Work out the protein from pH against pI, remember that an ANION exchanger is positive, and the answer follows. Getting either one backwards inverts the result."
   }
 ]
