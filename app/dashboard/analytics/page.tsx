@@ -1,9 +1,16 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { estimateScore, estimateBasis } from "@/lib/scoring/scoreEstimate";
 import { canonicalTopicKey, titleFromKey } from "@/lib/analytics/topicKey";
+import {
+  buildSeries,
+  evidenceFor,
+  localDayKey,
+  LOW_SAMPLE,
+  type SeriesPoint,
+} from "@/lib/analytics/dailySeries";
 import {
   topicIntelligence,
   STATE_LABELS,
@@ -203,6 +210,358 @@ function filterByPeriod(
 }
 
 /* ─────────── Donut Ring ─────────── */
+
+/* ─────────────────────────────────────────────────────────────────────────
+ * The accuracy explorer
+ *
+ * ONE POINTER MODEL FOR MOUSE AND TOUCH. Pointer events carry both, so a
+ * finger dragging across the chart and a cursor moving across it run the same
+ * code path; there is no separate touch branch to drift out of sync. Capture
+ * means a drag that wanders off the element keeps tracking rather than
+ * stopping dead.
+ *
+ * NOBODY HAS TO HIT A DOT. The nearest day to the cursor's x is selected, so
+ * the whole column is a target. That is the difference between reading a chart
+ * and operating one.
+ *
+ * touch-action: pan-y lets a vertical swipe still scroll the page while a
+ * horizontal drag belongs to the chart.
+ * ───────────────────────────────────────────────────────────────────────── */
+function DailyAccuracyChart({
+  series,
+  plot,
+  showSections,
+}: {
+  series: { points: SeriesPoint[]; granularity: string; measured: number };
+  plot: {
+    xs: number[];
+    ys: (number | null)[];
+    runs: [number, number][][];
+    X0: number;
+    X1: number;
+    Y0: number;
+    Y1: number;
+  };
+  showSections: boolean;
+}) {
+  const [active, setActive] = useState<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const wrapRef = useRef<HTMLDivElement | null>(null);
+
+  // Only measured buckets can be selected: snapping to an empty day would
+  // open a panel with nothing in it.
+  const selectable = useMemo(
+    () => series.points.map((p, i) => (p.accuracy !== null ? i : -1)).filter((i) => i >= 0),
+    [series.points],
+  );
+
+  const selectNearest = useCallback(
+    (clientX: number) => {
+      const el = wrapRef.current;
+      if (!el || selectable.length === 0) return;
+      const r = el.getBoundingClientRect();
+      const ratio = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
+      const targetX = plot.X0 + ratio * (plot.X1 - plot.X0);
+      let best = selectable[0];
+      let bestD = Infinity;
+      for (const i of selectable) {
+        const d = Math.abs(plot.xs[i] - targetX);
+        if (d < bestD) {
+          bestD = d;
+          best = i;
+        }
+      }
+      setActive(best);
+    },
+    [plot, selectable],
+  );
+
+  const point = active !== null ? series.points[active] : null;
+  const evidence = point ? evidenceFor(point.total) : "NONE";
+
+  // Keyboard: the chart is one control that steps through days.
+  const step = useCallback(
+    (dir: number) => {
+      if (selectable.length === 0) return;
+      const at = active === null ? -1 : selectable.indexOf(active);
+      const next = at < 0 ? (dir > 0 ? 0 : selectable.length - 1) : at + dir;
+      if (next >= 0 && next < selectable.length) setActive(selectable[next]);
+    },
+    [active, selectable],
+  );
+
+  return (
+    <div className="flex gap-3">
+      <div
+        className="flex flex-col justify-between shrink-0 w-8 text-right"
+        style={{ height: 220 }}
+      >
+        {["100%", "75%", "50%", "25%", "0%"].map((l) => (
+          <span
+            key={l}
+            style={{
+              fontSize: 9,
+              fontWeight: 600,
+              letterSpacing: "0.1em",
+              color: "var(--color-prax-ink-mute)",
+              fontVariantNumeric: "tabular-nums",
+              lineHeight: 1,
+            }}
+          >
+            {l}
+          </span>
+        ))}
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div
+          ref={wrapRef}
+          role="group"
+          aria-label={`Accuracy by ${series.granularity}. Use left and right arrows to step through.`}
+          tabIndex={0}
+          onPointerDown={(e) => {
+            // Capture keeps a drag tracking after the finger leaves the
+            // element. It throws if the pointer id is not active, and an
+            // exception here would abort the handler before anything is
+            // selected, so the press would do nothing at all. Capture is a
+            // convenience; selecting is the job.
+            try {
+              (e.target as Element).setPointerCapture?.(e.pointerId);
+            } catch {
+              // Not capturable; dragging still works within the element.
+            }
+            setDragging(true);
+            selectNearest(e.clientX);
+          }}
+          onPointerMove={(e) => {
+            if (e.pointerType === "mouse" || dragging) selectNearest(e.clientX);
+          }}
+          onPointerUp={() => setDragging(false)}
+          onPointerCancel={() => setDragging(false)}
+          onPointerLeave={() => {
+            if (!dragging) setActive(null);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight") {
+              e.preventDefault();
+              step(1);
+            } else if (e.key === "ArrowLeft") {
+              e.preventDefault();
+              step(-1);
+            } else if (e.key === "Escape") {
+              setActive(null);
+            }
+          }}
+          className="relative"
+          style={{ height: 220, touchAction: "pan-y", cursor: "crosshair" }}
+        >
+          <svg
+            className="w-full overflow-visible"
+            viewBox="0 0 1000 300"
+            preserveAspectRatio="none"
+            style={{ height: 220 }}
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient id="prax-area-grad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="var(--color-prax-green)" stopOpacity="0.22" />
+                <stop offset="100%" stopColor="var(--color-prax-green)" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+
+            {[20, 85, 150, 215, 280].map((y) => (
+              <line
+                key={y}
+                x1={0}
+                y1={y}
+                x2={1000}
+                y2={y}
+                stroke="var(--color-prax-cream-border)"
+                strokeWidth={1}
+                vectorEffect="non-scaling-stroke"
+              />
+            ))}
+
+            {/* ONE PATH PER RUN. A single path across a gap would draw a line
+                through days the student did not study. */}
+            {plot.runs.map((run, i) => (
+              <g key={i}>
+                {run.length > 1 && (
+                  <path d={buildAreaPath(run, 300)} fill="url(#prax-area-grad)" stroke="none" />
+                )}
+                <path
+                  d={buildSvgPath(run)}
+                  fill="none"
+                  stroke="var(--color-prax-green)"
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </g>
+            ))}
+
+            {/* Thin days are drawn smaller and hollow rather than dropped, so
+                a one-question day cannot pass for a forty-question one. */}
+            {series.points.map((p, i) =>
+              p.accuracy === null ? null : (
+                <circle
+                  key={p.key}
+                  cx={plot.xs[i]}
+                  cy={plot.ys[i] as number}
+                  r={p.total < LOW_SAMPLE ? 2.5 : 3.5}
+                  fill={
+                    p.total < LOW_SAMPLE
+                      ? "var(--color-prax-cream)"
+                      : "var(--color-prax-green)"
+                  }
+                  stroke="var(--color-prax-green)"
+                  strokeWidth={p.total < LOW_SAMPLE ? 1.5 : 0}
+                  vectorEffect="non-scaling-stroke"
+                  opacity={active === null || active === i ? 1 : 0.45}
+                />
+              ),
+            )}
+
+            {active !== null && plot.ys[active] !== null && (
+              <>
+                <line
+                  x1={plot.xs[active]}
+                  y1={plot.Y0 - 10}
+                  x2={plot.xs[active]}
+                  y2={300}
+                  stroke="var(--color-prax-green)"
+                  strokeWidth={1}
+                  strokeDasharray="3 3"
+                  opacity={0.45}
+                  vectorEffect="non-scaling-stroke"
+                />
+                <circle
+                  cx={plot.xs[active]}
+                  cy={plot.ys[active] as number}
+                  r={6}
+                  fill="var(--color-prax-green)"
+                  stroke="var(--color-prax-cream)"
+                  strokeWidth={3}
+                  vectorEffect="non-scaling-stroke"
+                />
+              </>
+            )}
+          </svg>
+
+          {point && (
+            <div
+              role="status"
+              className="absolute rounded-xl px-3.5 py-3 pointer-events-none"
+              style={{
+                left: `${((plot.xs[active as number] - plot.X0) / (plot.X1 - plot.X0)) * 100}%`,
+                transform: `translateX(${
+                  plot.xs[active as number] > plot.X1 * 0.7
+                    ? "-95%"
+                    : plot.xs[active as number] < plot.X1 * 0.3
+                      ? "-5%"
+                      : "-50%"
+                })`,
+                top: 6,
+                zIndex: 10,
+                minWidth: 168,
+                background: "var(--color-prax-green)",
+                color: "var(--color-prax-cream)",
+                boxShadow: "0 10px 30px -12px rgba(3,56,48,0.5)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 9.5,
+                  letterSpacing: "0.16em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                  color: "rgba(246,244,227,0.6)",
+                }}
+              >
+                {point.label}
+              </div>
+              <div className="flex items-baseline gap-2 mt-1.5">
+                <span
+                  style={{
+                    fontFamily: "var(--font-prax-serif)",
+                    fontSize: 26,
+                    lineHeight: 1,
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {point.accuracy}%
+                </span>
+                <span
+                  style={{
+                    fontSize: 11.5,
+                    color: "rgba(246,244,227,0.72)",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {point.correct} of {point.total}
+                </span>
+              </div>
+
+              {/* A percentage on one question is not a measurement, and the
+                  tooltip has to say so where the student is looking. */}
+              {evidence === "LIMITED" && (
+                <div
+                  className="mt-1.5"
+                  style={{
+                    fontSize: 10,
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    fontWeight: 600,
+                    color: "var(--color-prax-gold-soft)",
+                  }}
+                >
+                  Limited evidence
+                </div>
+              )}
+
+              {showSections && point.sections.length > 1 && (
+                <div
+                  className="mt-2.5 pt-2.5"
+                  style={{ borderTop: "1px solid rgba(246,244,227,0.18)" }}
+                >
+                  {point.sections.map((sec) => (
+                    <div
+                      key={sec.section}
+                      className="flex items-baseline justify-between gap-4"
+                      style={{ fontSize: 11.5, lineHeight: 1.7 }}
+                    >
+                      <span style={{ color: "rgba(246,244,227,0.72)" }}>
+                        {SECTION_LABELS[sec.section] ?? sec.section}
+                      </span>
+                      <span style={{ fontVariantNumeric: "tabular-nums" }}>
+                        {sec.accuracy}%{" "}
+                        <span style={{ color: "rgba(246,244,227,0.5)" }}>({sec.total})</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div
+          className="flex justify-between mt-3"
+          style={{
+            fontSize: 9.5,
+            fontWeight: 600,
+            letterSpacing: "0.16em",
+            textTransform: "uppercase",
+            color: "var(--color-prax-ink-mute)",
+          }}
+        >
+          <span>{series.points[0]?.label}</span>
+          <span>{series.points[series.points.length - 1]?.label}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /** The row-level action pill. One definition, so both actions match. */
 const rowCta: React.CSSProperties = {
@@ -1047,108 +1406,6 @@ export default function AnalyticsPage() {
   );
 
   /**
-   * The weekly accuracy series, with enough per-week detail to explain itself.
-   *
-   * A point on a trend line is uninterpretable on its own: 83% could be 5 of 6
-   * or 150 of 181, and those mean very different things. Each week now carries
-   * its counts and, when viewing all subjects, a per-section split, so hovering
-   * or tapping answers "why is this point here" rather than just restating it.
-   */
-  const { chartPoints, chartWeekLabels, chartWeeks } = useMemo(() => {
-    const empty = {
-      chartPoints: [] as [number, number][],
-      chartWeekLabels: [] as string[],
-      chartWeeks: [] as ChartWeek[],
-    };
-    if (allAttempts.length === 0) return empty;
-
-    const src =
-      chartSection === "all"
-        ? allAttempts
-        : allAttempts.filter((a) => a.questions?.section === chartSection);
-
-    if (src.length === 0) return empty;
-
-    const weekMap = new Map<
-      string,
-      { total: number; correct: number; bySection: Map<string, { total: number; correct: number }> }
-    >();
-    src.forEach((a) => {
-      const d = new Date(a.created_at);
-      const day = d.getDay();
-      const mon = new Date(d);
-      mon.setDate(d.getDate() - ((day + 6) % 7));
-      const key = mon.toISOString().split("T")[0];
-      const w = weekMap.get(key) || { total: 0, correct: 0, bySection: new Map() };
-      w.total++;
-      if (a.is_correct) w.correct++;
-      const sec = a.questions?.section;
-      if (sec) {
-        const s = w.bySection.get(sec) || { total: 0, correct: 0 };
-        s.total++;
-        if (a.is_correct) s.correct++;
-        w.bySection.set(sec, s);
-      }
-      weekMap.set(key, w);
-    });
-
-    const weeks = Array.from(weekMap.entries())
-      .sort(([a], [b]) => a.localeCompare(b))
-      .filter(([, w]) => w.total >= MIN_WEEK_QUESTIONS);
-
-    if (weeks.length === 0) return empty;
-
-    const X_START = 0,
-      X_END = 1000,
-      Y_TOP = 20,
-      Y_BOT = 280;
-    const points: [number, number][] = weeks.map(([, w], i) => {
-      const acc = (w.correct / w.total) * 100;
-      const x =
-        weeks.length === 1
-          ? (X_START + X_END) / 2
-          : X_START + (i / (weeks.length - 1)) * (X_END - X_START);
-      const y = Y_BOT - (acc / 100) * (Y_BOT - Y_TOP);
-      return [x, y];
-    });
-
-    const labels = weeks.map(([key]) =>
-      new Date(key + "T00:00:00").toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      })
-    );
-
-    const detail: ChartWeek[] = weeks.map(([key, w], i) => ({
-      key,
-      label: labels[i],
-      total: w.total,
-      correct: w.correct,
-      accuracy: Math.round((w.correct / w.total) * 100),
-      // Left-to-right position as a percentage, so an HTML overlay can sit on
-      // the same spot as the SVG point despite preserveAspectRatio="none".
-      xPct: weeks.length === 1 ? 50 : (i / (weeks.length - 1)) * 100,
-      // A section line on two questions says nothing, so the same floor the
-      // week itself has to clear applies to each split.
-      sections: Array.from(w.bySection.entries())
-        .filter(([, s]) => s.total >= MIN_WEEK_QUESTIONS)
-        .map(([section, s]) => ({
-          section,
-          label: SECTION_LABELS[section] ?? section,
-          total: s.total,
-          accuracy: Math.round((s.correct / s.total) * 100),
-        }))
-        .sort((a, b) => b.total - a.total),
-    }));
-
-    return { chartPoints: points, chartWeekLabels: labels, chartWeeks: detail };
-  }, [allAttempts, chartSection]);
-
-  const linePath = buildSvgPath(chartPoints);
-  const areaPath = buildAreaPath(chartPoints, 280);
-
-  /* ─────────── Loading ─────────── */
-  /**
    * The range actually in force, as two dates.
    *
    * THE TRUST BUG THIS FIXES. Selecting a preset cleared both date inputs, so
@@ -1173,6 +1430,69 @@ export default function AnalyticsPage() {
     return { from: earliest ? earliest.slice(0, 10) : "", to: today };
   }, [period, customFrom, customTo, allAttempts]);
 
+  /**
+   * The accuracy series, one point per day.
+   *
+   * WEEKLY BUCKETS HID TWO THINGS. A week with one forty-question day and six
+   * empty ones looked identical to a week of steady work, and any week under
+   * five questions was dropped entirely, which deleted most of a new student's
+   * history rather than showing it as thin.
+   *
+   * All of the bucketing lives in lib/analytics/dailySeries.ts, including the
+   * rule this chart turns on: a day with no questions carries a null accuracy,
+   * never a zero, so the line breaks across it instead of diving to the floor
+   * and back.
+   *
+   * Aggregated from the attempts the page has already loaded. No second
+   * request: every other card on this page reads the same array, so a server
+   * route for this one chart would mean fetching the same rows twice. The raw
+   * load is worth moving server-side, but that is the whole page's problem
+   * rather than this chart's.
+   */
+  const series = useMemo(
+    () =>
+      buildSeries({
+        attempts: allAttempts.map((a) => ({
+          createdAt: a.created_at,
+          isCorrect: a.is_correct,
+          section: a.questions?.section ?? null,
+          isFirstAttempt: a.is_first_attempt,
+        })),
+        from: activeRange.from || localDayKey(new Date(Date.now() - 30 * 86_400_000)),
+        to: activeRange.to || localDayKey(new Date()),
+        section: chartSection,
+      }),
+    [allAttempts, chartSection, activeRange.from, activeRange.to],
+  );
+
+  /** Plot geometry. x spans the full range so gaps keep their width. */
+  const plot = useMemo(() => {
+    const X0 = 0, X1 = 1000, Y0 = 20, Y1 = 280;
+    const n = series.points.length;
+    const xs = series.points.map((_, i) =>
+      n === 1 ? (X0 + X1) / 2 : X0 + (i / (n - 1)) * (X1 - X0),
+    );
+    const ys = series.points.map((p) =>
+      p.accuracy === null ? null : Y1 - (p.accuracy / 100) * (Y1 - Y0),
+    );
+    // Contiguous runs, so the stroke stops where the studying did.
+    const runs: [number, number][][] = [];
+    let run: [number, number][] = [];
+    series.points.forEach((p, i) => {
+      if (p.accuracy === null) {
+        if (run.length) runs.push(run);
+        run = [];
+      } else {
+        run.push([xs[i], ys[i] as number]);
+      }
+    });
+    if (run.length) runs.push(run);
+    return { xs, ys, runs, X0, X1, Y0, Y1 };
+  }, [series]);
+
+
+
+  /* ─────────── Loading ─────────── */
   if (loading) {
     return (
       <PraxPage bgVariant="study">
@@ -1774,270 +2094,25 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        {chartPoints.length < 2 ? (
+        {series.measured < 1 ? (
           <div
-            className="h-48 flex items-center justify-center italic"
+            className="h-48 flex items-center justify-center italic text-center px-6"
             style={{
               fontFamily: "var(--font-prax-serif)",
-              fontSize: 14,
+              fontSize: 15,
               color: "var(--color-prax-ink-mute)",
             }}
           >
-            {/* SAY WHICH REASON. Two of the four sections have no questions
-                in the bank at all, so selecting CARS or Behavioural Sciences
-                used to draw an empty chart that looked broken. A student
-                should not have to guess whether they have not studied enough
-                or the content does not exist yet. */}
             {chartSection !== "all" && sectionAttemptCount === 0
               ? `No ${SECTION_LABELS[chartSection] ?? chartSection} questions in the bank yet, so there is nothing to chart.`
-              : chartSection !== "all"
-                ? `Not enough ${SECTION_LABELS[chartSection] ?? chartSection} questions yet. A week needs ${MIN_WEEK_QUESTIONS} to appear.`
-                : `Complete more sessions to see your accuracy chart. A week needs ${MIN_WEEK_QUESTIONS} questions to appear.`}
+              : "No questions answered in this range yet."}
           </div>
         ) : (
-          <div className="flex gap-3">
-            <div
-              className="flex flex-col justify-between shrink-0 w-8 text-right"
-              style={{ height: 220 }}
-            >
-              {["100%", "75%", "50%", "25%", "0%"].map((label) => (
-                <span
-                  key={label}
-                  style={{
-                    fontSize: 9,
-                    fontWeight: 600,
-                    letterSpacing: "0.1em",
-                    color: "var(--color-prax-ink-mute)",
-                    fontVariantNumeric: "tabular-nums",
-                    lineHeight: 1,
-                  }}
-                >
-                  {label}
-                </span>
-              ))}
-            </div>
-            <div className="flex-1 min-w-0 relative">
-              <svg
-                className="w-full overflow-visible"
-                viewBox="0 0 1000 300"
-                preserveAspectRatio="none"
-                style={{ height: 220 }}
-                aria-hidden="true"
-              >
-                <defs>
-                  <linearGradient id="prax-area-grad" x1="0" y1="0" x2="0" y2="1">
-                    <stop
-                      offset="0%"
-                      stopColor="var(--color-prax-green)"
-                      stopOpacity="0.22"
-                    />
-                    <stop
-                      offset="100%"
-                      stopColor="var(--color-prax-green)"
-                      stopOpacity="0"
-                    />
-                  </linearGradient>
-                </defs>
-                {[20, 85, 150, 215, 280].map((y) => (
-                  <line
-                    key={y}
-                    x1="0"
-                    x2="1000"
-                    y1={y}
-                    y2={y}
-                    stroke="var(--color-prax-cream-border)"
-                    strokeWidth="0.8"
-                  />
-                ))}
-                <path d={areaPath} fill="url(#prax-area-grad)" />
-                <path
-                  d={linePath}
-                  fill="none"
-                  stroke="var(--color-prax-green)"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  style={{
-                    strokeDasharray: 2000,
-                    strokeDashoffset: 2000,
-                    animation: "praxChartDash 2s ease-in-out forwards",
-                  }}
-                />
-                {chartPoints.map(([x, y], i) => (
-                  <circle
-                    key={i}
-                    cx={x}
-                    cy={y}
-                    r="5"
-                    fill="var(--color-prax-green)"
-                  />
-                ))}
-              </svg>
-
-              {/* ── The interaction layer ──────────────────────────────────
-                  A point on its own is uninterpretable: 83% could be 5 of 6 or
-                  150 of 181. These sit exactly on each point and carry the
-                  counts behind it.
-
-                  Buttons, not hover handlers. Hover alone is unusable on a
-                  phone and invisible to a keyboard, and this chart is the one
-                  thing on the page a student looks at every session. Pointer,
-                  focus and tap all open the same panel, and the accessible
-                  name states the week in full for a screen reader.
-
-                  The SVG above is aria-hidden: it is the same data, drawn. */}
-              <div className="absolute inset-x-0 top-0" style={{ height: 220 }}>
-                {chartWeeks.map((w, i) => (
-                  <button
-                    key={w.key}
-                    type="button"
-                    onMouseEnter={() => setActiveWeek(i)}
-                    onMouseLeave={() => setActiveWeek(null)}
-                    onFocus={() => setActiveWeek(i)}
-                    onBlur={() => setActiveWeek(null)}
-                    onClick={() => setActiveWeek((cur) => (cur === i ? null : i))}
-                    aria-label={`Week of ${w.label}: ${w.accuracy} percent, ${w.correct} of ${w.total} correct`}
-                    className="absolute top-0 h-full"
-                    style={{
-                      left: `${w.xPct}%`,
-                      transform: "translateX(-50%)",
-                      // Wide enough to tap, capped so neighbours do not overlap
-                      // on a long series.
-                      width: `max(28px, min(56px, ${100 / Math.max(chartWeeks.length, 1)}%))`,
-                      background: "transparent",
-                      border: 0,
-                      padding: 0,
-                      cursor: "pointer",
-                    }}
-                  >
-                    {/* The marker only appears for the active week, so the
-                        line stays clean until someone asks. */}
-                    {activeWeek === i && (
-                      <span
-                        className="absolute rounded-full"
-                        style={{
-                          left: "50%",
-                          top: `${(chartPoints[i]?.[1] ?? 0) / 300 * 100}%`,
-                          transform: "translate(-50%, -50%)",
-                          width: 9,
-                          height: 9,
-                          background: "var(--color-prax-green)",
-                          boxShadow: "0 0 0 3px var(--color-prax-cream)",
-                        }}
-                      />
-                    )}
-                  </button>
-                ))}
-
-                {activeWeek !== null && chartWeeks[activeWeek] && (
-                  <div
-                    role="status"
-                    className="absolute rounded-xl px-3.5 py-3 pointer-events-none"
-                    style={{
-                      left: `${chartWeeks[activeWeek].xPct}%`,
-                      // Flip the anchor near the edges so the panel never
-                      // hangs off the card.
-                      transform: `translateX(${
-                        chartWeeks[activeWeek].xPct > 70
-                          ? "-95%"
-                          : chartWeeks[activeWeek].xPct < 30
-                            ? "-5%"
-                            : "-50%"
-                      })`,
-                      top: 8,
-                      zIndex: 10,
-                      minWidth: 172,
-                      background: "var(--color-prax-green)",
-                      color: "var(--color-prax-cream)",
-                      boxShadow: "0 10px 30px -12px rgba(3,56,48,0.5)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        fontSize: 9.5,
-                        letterSpacing: "0.16em",
-                        textTransform: "uppercase",
-                        fontWeight: 600,
-                        color: "rgba(246,244,227,0.6)",
-                      }}
-                    >
-                      Week of {chartWeeks[activeWeek].label}
-                    </div>
-                    <div className="flex items-baseline gap-2 mt-1.5">
-                      <span
-                        style={{
-                          fontFamily: "var(--font-prax-serif)",
-                          fontSize: 26,
-                          lineHeight: 1,
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {chartWeeks[activeWeek].accuracy}%
-                      </span>
-                      <span
-                        style={{
-                          fontSize: 11.5,
-                          color: "rgba(246,244,227,0.72)",
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {chartWeeks[activeWeek].correct} of{" "}
-                        {chartWeeks[activeWeek].total}
-                      </span>
-                    </div>
-
-                    {/* Only when looking at everything, and only for sections
-                        carrying enough questions to mean something. */}
-                    {chartSection === "all" &&
-                      chartWeeks[activeWeek].sections.length > 1 && (
-                        <div
-                          className="mt-2.5 pt-2.5"
-                          style={{ borderTop: "1px solid rgba(246,244,227,0.18)" }}
-                        >
-                          {chartWeeks[activeWeek].sections.map((sec) => (
-                            <div
-                              key={sec.section}
-                              className="flex items-baseline justify-between gap-4"
-                              style={{ fontSize: 11.5, lineHeight: 1.7 }}
-                            >
-                              <span style={{ color: "rgba(246,244,227,0.72)" }}>
-                                {sec.label}
-                              </span>
-                              <span style={{ fontVariantNumeric: "tabular-nums" }}>
-                                {sec.accuracy}%{" "}
-                                <span style={{ color: "rgba(246,244,227,0.5)" }}>
-                                  ({sec.total})
-                                </span>
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                  </div>
-                )}
-              </div>
-
-              <style>{`@keyframes praxChartDash { to { stroke-dashoffset: 0; } }`}</style>
-              <div
-                className="flex justify-between mt-3"
-                style={{
-                  fontSize: 9.5,
-                  fontWeight: 600,
-                  letterSpacing: "0.16em",
-                  textTransform: "uppercase",
-                  color: "var(--color-prax-ink-mute)",
-                }}
-              >
-                <span>{chartWeekLabels[0]}</span>
-                {chartWeekLabels.length > 2 && (
-                  <span>
-                    {chartWeekLabels[Math.floor(chartWeekLabels.length / 2)]}
-                  </span>
-                )}
-                <span>{chartWeekLabels[chartWeekLabels.length - 1]}</span>
-              </div>
-            </div>
-          </div>
+          <DailyAccuracyChart
+            series={series}
+            plot={plot}
+            showSections={chartSection === "all"}
+          />
         )}
       </PraxCard>
 
