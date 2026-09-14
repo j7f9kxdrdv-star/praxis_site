@@ -112,3 +112,49 @@ describe("the report shares the learner model's evidence floor", () => {
     expect(MIN_ATTEMPTS_FOR_STATE).toBeGreaterThanOrEqual(12);
   });
 });
+
+describe("zero transitions are stripped from the payload", () => {
+  // An instruction the model can decline is not a guarantee. The prompt asked
+  // for zeros to be omitted and the first real generated report still wrote
+  // "No topics improved or declined. No priorities were resolved or added."
+  // A field that is absent cannot be reported.
+
+  const quiet = {
+    ...learner,
+    topics_improved: 0,
+    topics_declined: 0,
+    priorities_resolved: 0,
+    priorities_added: 0,
+  };
+
+  // The field names appear in the instruction prose too, so assert on the
+  // QUOTED form, which only occurs as a JSON key in the serialised payload.
+  const key = (name: string) => `"${name}"`;
+
+  it("removes transition counts that are zero", () => {
+    const p = buildWeeklyPrompt(base({ learner: quiet }));
+    expect(p).not.toContain(key("topics_improved"));
+    expect(p).not.toContain(key("priorities_resolved"));
+  });
+
+  it("keeps transition counts that actually happened", () => {
+    const p = buildWeeklyPrompt(base({ learner: { ...quiet, priorities_resolved: 1 } }));
+    expect(p).toContain(key("priorities_resolved"));
+    expect(p).not.toContain(key("topics_improved"));
+  });
+
+  it("KEEPS MEASURES AT ZERO, because those are real facts", () => {
+    // "cards reviewed: 0" is a true statement about the week. "0 topics
+    // improved" is the absence of an observation. Only the second is dropped.
+    const p = buildWeeklyPrompt(base({ learner: { ...quiet, cards_reviewed: 0 } }));
+    expect(p).toContain(key("cards_reviewed"));
+  });
+
+  it("describes first-look as session-first, not first-ever", () => {
+    // The first generated report read it as "cards seen for the first time",
+    // which is wrong: most session-first views are cards reviewed many times.
+    const p = buildWeeklyPrompt(base());
+    expect(p).toMatch(/SESSION-FIRST/);
+    expect(p).toMatch(/NOT the first time it has ever been seen/i);
+  });
+});

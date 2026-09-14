@@ -167,22 +167,45 @@ async function readLearnerSignals(
       countEvents('PRIORITY_TOPIC_ADDED'),
     ]);
 
-    // First-look recall over the window. The session gap has to be walked over
-    // the FULL history or a window boundary turns a same-session repeat into a
-    // false first look, which is the same rule the analytics card follows.
-    const { data: reviews } = await client
-      .from('flashcard_reviews')
-      .select('flashcard_id, cloze_index, rating, reviewed_at')
-      .eq('user_id', userId)
-      .order('reviewed_at', { ascending: true });
-
+    // First-look recall over the window.
+    //
+    // TWO THINGS THIS GETS RIGHT, BOTH OF WHICH IT GOT WRONG FIRST.
+    //
+    // PAGINATION. The largest real account has 42,553 reviews and Supabase
+    // returns 1,000 rows unasked. Ordered oldest-first, the unpaginated version
+    // fetched the oldest thousand, saw nothing inside the window, and reported
+    // zero cards reviewed for a student who had reviewed hundreds that week.
+    //
+    // THE LOOKBACK. Classifying a review as a first look only needs to know
+    // whether the SAME card was seen in the preceding thirty minutes, so the
+    // fetch starts one session gap before the window rather than at the
+    // beginning of history. That is enough to classify every in-window review
+    // correctly, and it means a report costs a few hundred rows instead of
+    // forty thousand.
     const SESSION_GAP_MS = 30 * 60 * 1000;
+    const lookbackIso = new Date(new Date(startIso).getTime() - SESSION_GAP_MS).toISOString();
+
+    const reviews: { flashcard_id: string; cloze_index: number; rating: string; reviewed_at: string }[] = [];
+    for (let from = 0; ; from += 1000) {
+      const { data, error } = await client
+        .from('flashcard_reviews')
+        .select('flashcard_id, cloze_index, rating, reviewed_at')
+        .eq('user_id', userId)
+        .gte('reviewed_at', lookbackIso)
+        // A stable order is required or pages overlap and skip.
+        .order('reviewed_at', { ascending: true })
+        .order('flashcard_id', { ascending: true })
+        .range(from, from + 999);
+      if (error || !data || data.length === 0) break;
+      reviews.push(...(data as typeof reviews));
+      if (data.length < 1000) break;
+    }
+
     const lastSeen = new Map<string, number>();
     const distinct = new Set<string>();
     let firstLooks = 0;
     let firstLookHits = 0;
-    (reviews ?? []).forEach((r) => {
-      const row = r as { flashcard_id: string; cloze_index: number; rating: string; reviewed_at: string };
+    reviews.forEach((row) => {
       const id = `${row.flashcard_id}:${row.cloze_index}`;
       const t = new Date(row.reviewed_at).getTime();
       const prev = lastSeen.get(id);

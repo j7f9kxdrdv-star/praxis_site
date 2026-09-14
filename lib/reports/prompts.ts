@@ -1,10 +1,34 @@
-import type { ReportMetrics } from './metrics';
+import type { ReportMetrics, LearnerSignals } from './metrics';
 
 // Shared system prompt text — referenced in generate.ts but also embedded in user prompt
 // for single-call context clarity
 const SYSTEM_PROMPT_NOTE = `You are a direct, no-fluff MCAT study coach. You write concise diagnostic reports based on structured performance data. You never invent numbers. You never use motivational language. You only reference the data you are given.
 
 WRITING STYLE, NON-NEGOTIABLE: never use an em dash or an en dash. Use a period, comma, colon, or semicolon instead, or rewrite the sentence. This applies to ranges too: write "2 to 3", never "2-3" with a dash character. Dashes read as machine-written and this report goes to a student.`;
+
+/**
+ * Drop transition counts that are zero.
+ *
+ * A count of zero is the absence of an observation, not an observation. Sending
+ * it invites a sentence about nothing having happened, which is how a thin week
+ * gets padded into a full-looking report.
+ *
+ * Measures are kept even at zero: "cards reviewed: 0" is a real fact about the
+ * week. Only the four transition counts are stripped.
+ */
+function stripZeroTransitions(l: LearnerSignals): Partial<LearnerSignals> {
+  const out: Partial<LearnerSignals> = { ...l };
+  const transitions = [
+    'topics_improved',
+    'topics_declined',
+    'priorities_resolved',
+    'priorities_added',
+  ] as const;
+  for (const k of transitions) {
+    if (out[k] === 0) delete out[k];
+  }
+  return out;
+}
 
 export function buildDailyPrompt(metrics: ReportMetrics): string {
   const safeMetrics = {
@@ -17,10 +41,16 @@ export function buildDailyPrompt(metrics: ReportMetrics): string {
     days_studied: metrics.days_studied,
     exam_days_remaining: metrics.exam_days_remaining,
     section_breakdown: metrics.section_breakdown,
-    // Read from the snapshot system, never recomputed here. Null when that
-    // system has nothing for this window, which the prompt must treat as
-    // "say nothing" rather than "say zero".
-    learner: metrics.learner,
+    // Read from the snapshot system, never recomputed here.
+    //
+    // ZERO TRANSITIONS ARE STRIPPED, NOT JUST DISCOURAGED. The prompt asked
+    // the model to omit them and the first real report still wrote "No topics
+    // improved or declined. No priorities were resolved or added." An
+    // instruction the model can decline is not a guarantee; a field that is
+    // absent cannot be reported. Counts that are genuinely zero carry no
+    // information, and a report listing four kinds of nothing reads as though
+    // the week were being padded.
+    learner: metrics.learner ? stripZeroTransitions(metrics.learner) : null,
     struggling: metrics.struggling.map((s) => ({
       section: s.section,
       subtopic: s.subtopic,
@@ -81,7 +111,7 @@ One specific recommendation for the next study session. Name the exact subtopic 
 
 **Memory and change**
 Use ONLY the "learner" block, and only if it is present.
-- If cards_reviewed is above zero, state it, and state first_look_recall if it is not null. first_look_recall is the share of genuine first attempts at a card that were recalled; it is NOT a test score and must not be described as accuracy or mastery.
+- If cards_reviewed is above zero, state it, and state first_look_recall if it is not null. first_look_recall is the share of SESSION-FIRST views of a card that were recalled. A session-first view is the first time a card is seen in a sitting, NOT the first time it has ever been seen: most are cards reviewed many times before. Do not describe it as performance on new or first-time material. It is NOT a test score and must not be called accuracy or mastery.
 - If topics_improved, priorities_resolved, priorities_added or topics_declined are above zero, state them plainly. These are recorded state transitions, so they are facts, not inferences. Never report a transition that is zero as though it were an observation; simply omit it.
 - If "learner" is null or every field is zero, omit this section entirely rather than writing that nothing changed.
 Do not connect flashcard recall to a predicted MCAT score. Recall and applied performance are separate measures and this report must not merge them.
@@ -100,10 +130,16 @@ export function buildWeeklyPrompt(metrics: ReportMetrics): string {
     days_studied: metrics.days_studied,
     exam_days_remaining: metrics.exam_days_remaining,
     section_breakdown: metrics.section_breakdown,
-    // Read from the snapshot system, never recomputed here. Null when that
-    // system has nothing for this window, which the prompt must treat as
-    // "say nothing" rather than "say zero".
-    learner: metrics.learner,
+    // Read from the snapshot system, never recomputed here.
+    //
+    // ZERO TRANSITIONS ARE STRIPPED, NOT JUST DISCOURAGED. The prompt asked
+    // the model to omit them and the first real report still wrote "No topics
+    // improved or declined. No priorities were resolved or added." An
+    // instruction the model can decline is not a guarantee; a field that is
+    // absent cannot be reported. Counts that are genuinely zero carry no
+    // information, and a report listing four kinds of nothing reads as though
+    // the week were being padded.
+    learner: metrics.learner ? stripZeroTransitions(metrics.learner) : null,
     struggling: metrics.struggling.map((s) => ({
       section: s.section,
       subtopic: s.subtopic,
@@ -166,7 +202,7 @@ Comment on the average time per question. If avg_time_seconds > 110, flag it as 
 
 **5. What Changed This Week**
 Use ONLY the "learner" block, and only if it is present.
-- State cards_reviewed and, when it is not null, first_look_recall. first_look_recall is the share of genuine first attempts at a card that were recalled; it is NOT a test score and must not be called accuracy or mastery.
+- State cards_reviewed and, when it is not null, first_look_recall. first_look_recall is the share of SESSION-FIRST views of a card that were recalled. A session-first view is the first time a card is seen in a sitting, NOT the first time it has ever been seen: most are cards reviewed many times before. Do not describe it as performance on new or first-time material. It is NOT a test score and must not be called accuracy or mastery.
 - State coverage_delta as percentage points of the question bank newly encountered, if it is not null. Coverage is how much material has been SEEN. Never describe it as material learned or mastered.
 - State topics_improved, topics_declined, priorities_resolved and priorities_added where each is above zero. These are recorded state transitions, so they are facts. Omit any that are zero rather than reporting an absence.
 - Close with one or two sentences interpreting the week: what moved, what did not, and which of the two is more informative. Name specific topics. Do not praise, do not encourage, and do not predict a score.
