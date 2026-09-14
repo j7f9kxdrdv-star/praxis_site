@@ -1038,6 +1038,31 @@ export default function AnalyticsPage() {
   const areaPath = buildAreaPath(chartPoints, 280);
 
   /* ─────────── Loading ─────────── */
+  /**
+   * The range actually in force, as two dates.
+   *
+   * THE TRUST BUG THIS FIXES. Selecting a preset cleared both date inputs, so
+   * the page showed "30 DAYS" highlighted next to two empty pickers reading
+   * mm/dd/yyyy. Nothing was wrong with the filtering; the controls simply
+   * refused to say what they were doing, which is worse, because a student
+   * cannot tell a working filter from a broken one.
+   *
+   * All Time has no start until there is a first attempt, so it shows the real
+   * one rather than an invented zero.
+   */
+  const activeRange = useMemo(() => {
+    const iso = (d: Date) => d.toISOString().slice(0, 10);
+    const today = iso(new Date());
+    if (period === "custom") return { from: customFrom, to: customTo };
+    if (period === "7d") return { from: iso(new Date(Date.now() - 7 * 86_400_000)), to: today };
+    if (period === "30d") return { from: iso(new Date(Date.now() - 30 * 86_400_000)), to: today };
+    const earliest = allAttempts.reduce<string | null>(
+      (min, a) => (min === null || a.created_at < min ? a.created_at : min),
+      null,
+    );
+    return { from: earliest ? earliest.slice(0, 10) : "", to: today };
+  }, [period, customFrom, customTo, allAttempts]);
+
   if (loading) {
     return (
       <PraxPage bgVariant="study">
@@ -1103,10 +1128,16 @@ export default function AnalyticsPage() {
       >
         <input
           type="date"
-          value={customFrom}
+          aria-label="Range start"
+          value={activeRange.from}
           onChange={(e) => {
             setCustomFrom(e.target.value);
-            if (e.target.value) setPeriod("custom");
+            // Editing either end takes the page off the preset, and the other
+            // end keeps whatever the preset had rather than emptying.
+            if (e.target.value) {
+              if (!customTo) setCustomTo(activeRange.to);
+              setPeriod("custom");
+            }
           }}
           className="px-3 py-1.5 rounded-full border-0 outline-none cursor-pointer"
           style={{
@@ -1124,11 +1155,15 @@ export default function AnalyticsPage() {
         </span>
         <input
           type="date"
-          value={customTo}
-          min={customFrom || undefined}
+          aria-label="Range end"
+          value={activeRange.to}
+          min={activeRange.from || undefined}
           onChange={(e) => {
             setCustomTo(e.target.value);
-            if (e.target.value) setPeriod("custom");
+            if (e.target.value) {
+              if (!customFrom) setCustomFrom(activeRange.from);
+              setPeriod("custom");
+            }
           }}
           className="px-3 py-1.5 rounded-full border-0 outline-none cursor-pointer"
           style={{
@@ -1214,6 +1249,10 @@ export default function AnalyticsPage() {
           >
             {totalCorrect} of {totalQuestions} correct
           </div>
+          {/* The range, on the card itself. Two cards showing different
+              denominators is only confusing while one of them will not say
+              what window it is counting. */}
+          <SmallCaps style={{ marginTop: 6 }}>{periodLabel}</SmallCaps>
         </PraxCard>
 
         {/* First-Look Recall. See flashStats: session-gapped first looks, Again = failed retrieval. */}
@@ -1270,6 +1309,7 @@ export default function AnalyticsPage() {
             {flashStats.firstTryCorrect} of {flashStats.firstTryTotal} on first
             try
           </div>
+          <SmallCaps style={{ marginTop: 6 }}>{periodLabel}</SmallCaps>
         </PraxCard>
 
         {/* Score Estimate — primary green card */}
@@ -1504,7 +1544,12 @@ export default function AnalyticsPage() {
               Accuracy over time
             </div>
             <SmallCaps style={{ marginTop: 4 }}>
-              Weekly · weeks with &lt;5 questions excluded
+              {/* ALL TIME, said out loud. A weekly trend constrained to the
+                  seven-day filter would be a single bar, so this one
+                  deliberately ignores the range. Leaving that unsaid is what
+                  made the chart look like it was showing dates outside the
+                  filter, which it was. */}
+              All time · weekly · weeks with &lt;5 questions excluded
             </SmallCaps>
           </div>
 

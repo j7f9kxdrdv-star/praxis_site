@@ -350,15 +350,25 @@ export function estimateScore(
   };
 }
 
-/** One line explaining what the estimate rests on, in the student's terms. */
+/**
+ * One line explaining what the estimate rests on, in the student's terms.
+ *
+ * IT SAYS "ALL" ON PURPOSE. The predictor deliberately ignores the page's time
+ * filter and reads every eligible first attempt, because throwing away
+ * evidence to match a date range would make the estimate worse, not more
+ * current. But an unlabelled exception is a trust problem: a student seeing
+ * "62%, 37 of 60" beside a prediction built on 201 questions has no way to
+ * know the two are measuring different things, and the natural conclusion is
+ * that one of them is broken.
+ */
 export function estimateBasis(e: ScoreEstimate): string {
   if (e.low === null) {
     return `Answer at least ${MIN_ATTEMPTS_TO_ESTIMATE} practice questions to see an estimated range.`;
   }
   if (e.blindSections.length) {
-    return `Based on ${e.firstAttempts.toLocaleString()} first-attempt questions. No ${e.blindSections.join(
+    return `All ${e.firstAttempts.toLocaleString()} first-attempt questions. No ${e.blindSections.join(
       " or "
     )} questions yet, so this range is wide.`;
   }
-  return `Based on ${e.firstAttempts.toLocaleString()} first-attempt questions across all four sections.`;
+  return `All ${e.firstAttempts.toLocaleString()} first-attempt questions across all four sections.`;
 }
