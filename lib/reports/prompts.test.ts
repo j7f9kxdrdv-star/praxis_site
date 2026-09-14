@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildDailyPrompt, buildWeeklyPrompt } from "./prompts";
+import { extractText } from "./generate";
 import type { ReportMetrics, LearnerSignals } from "./metrics";
 import { MIN_ATTEMPTS_FOR_STATE } from "@/lib/learner/topicState";
 
@@ -156,5 +157,43 @@ describe("zero transitions are stripped from the payload", () => {
     const p = buildWeeklyPrompt(base());
     expect(p).toMatch(/SESSION-FIRST/);
     expect(p).toMatch(/NOT the first time it has ever been seen/i);
+  });
+});
+
+describe("pulling the prose out of a model response", () => {
+  // Opus 5 returns a thinking block before its answer. The old code read
+  // content[0], found a non-text block, and returned an empty string; the API
+  // route then saved a blank report and reported success. A real generation
+  // was the only thing that surfaced it.
+  it("FINDS TEXT THAT IS NOT THE FIRST BLOCK", () => {
+    const content = [
+      { type: "thinking", thinking: "weighing the numbers" },
+      { type: "text", text: "1. Weekly Performance Summary" },
+    ] as { type: string; text?: string }[];
+    expect(extractText(content)).toBe("1. Weekly Performance Summary");
+  });
+
+  it("joins a response split across several text blocks", () => {
+    expect(
+      extractText([
+        { type: "text", text: "one " },
+        { type: "thinking" },
+        { type: "text", text: "two" },
+      ]),
+    ).toBe("one two");
+  });
+
+  it("returns empty when there is genuinely no prose, so the caller can throw", () => {
+    expect(extractText([{ type: "thinking" }])).toBe("");
+    expect(extractText([])).toBe("");
+  });
+});
+
+describe("an absent field is not a finding", () => {
+  it("tells the model not to remark on fields that were stripped", () => {
+    for (const p of [buildDailyPrompt(base({ period: "daily" })), buildWeeklyPrompt(base())]) {
+      expect(p).toMatch(/ABSENT FIELDS ARE NOT FINDINGS/);
+      expect(p).toMatch(/do not remark on its absence/i);
+    }
   });
 });

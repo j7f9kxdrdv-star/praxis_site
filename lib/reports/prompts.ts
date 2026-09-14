@@ -114,6 +114,7 @@ Use ONLY the "learner" block, and only if it is present.
 - If cards_reviewed is above zero, state it, and state first_look_recall if it is not null. first_look_recall is the share of SESSION-FIRST views of a card that were recalled. A session-first view is the first time a card is seen in a sitting, NOT the first time it has ever been seen: most are cards reviewed many times before. Do not describe it as performance on new or first-time material. It is NOT a test score and must not be called accuracy or mastery.
 - If topics_improved, priorities_resolved, priorities_added or topics_declined are above zero, state them plainly. These are recorded state transitions, so they are facts, not inferences. Never report a transition that is zero as though it were an observation; simply omit it.
 - If "learner" is null or every field is zero, omit this section entirely rather than writing that nothing changed.
+ABSENT FIELDS ARE NOT FINDINGS. Any field named in these instructions but missing from the data has been removed deliberately because it was zero. Do not mention it, and do not remark on its absence: a sentence reporting that nothing improved and nothing resolved is padding, not analysis.
 Do not connect flashcard recall to a predicted MCAT score. Recall and applied performance are separate measures and this report must not merge them.
 
 Maximum 350 words total. Use plain text formatting (no markdown bold, no bullet symbols beyond a plain hyphen).`;
@@ -207,6 +208,7 @@ Use ONLY the "learner" block, and only if it is present.
 - State topics_improved, topics_declined, priorities_resolved and priorities_added where each is above zero. These are recorded state transitions, so they are facts. Omit any that are zero rather than reporting an absence.
 - Close with one or two sentences interpreting the week: what moved, what did not, and which of the two is more informative. Name specific topics. Do not praise, do not encourage, and do not predict a score.
 - If "learner" is null or every field is zero, omit this section entirely.
+ABSENT FIELDS ARE NOT FINDINGS. Any field named in these instructions but missing from the data has been removed deliberately because it was zero. Do not mention it, and do not remark on its absence: a sentence reporting that nothing improved and nothing resolved is padding, not analysis.
 Do not connect flashcard recall to a predicted MCAT score. Recall and applied performance are separate measures and this report must not merge them.
 
 **6. Study Plan for Next Week**
