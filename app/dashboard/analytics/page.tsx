@@ -428,7 +428,27 @@ function PerfPanel({
   pct: number;
   stats: { value: string; label: string }[];
   breakdownLabel: string;
-  bars: { label: string; count: number; pct: number; color: string }[];
+  /**
+   * THE DENOMINATOR IS NOT OPTIONAL, and this component previously had none.
+   *
+   * Two panels drew the same bar from different quantities. For difficulty,
+   * `count` was correct answers and `pct` was accuracy, so it read "5 · 42%".
+   * For card grades, `count` was reviews and `pct` was that grade's share, so
+   * it read "40 · 12%". Identical shape, opposite meanings, and in both cases
+   * the number the percentage was taken over was invisible: 5 of 12 and 5 of
+   * 500 looked the same.
+   *
+   * `unit` names what the percentage is OF, so the two panels can no longer be
+   * read as saying the same kind of thing.
+   */
+  bars: {
+    label: string;
+    count: number;
+    denominator: number;
+    pct: number;
+    unit: string;
+    color: string;
+  }[];
   empty: boolean;
   emptyText: string;
 }) {
@@ -517,7 +537,7 @@ function PerfPanel({
                         }}
                       >
                         {" "}
-                        · {b.pct}%
+                        / {b.denominator.toLocaleString()} · {b.pct}% {b.unit}
                       </span>
                     </div>
                   </div>
@@ -1551,6 +1571,8 @@ export default function AnalyticsPage() {
           bars={diffStats.map((d, i) => ({
             label: d.label,
             count: d.correct,
+            denominator: d.total,
+            unit: "correct",
             pct: d.accuracy,
             color:
               i === 0
@@ -1578,6 +1600,8 @@ export default function AnalyticsPage() {
             {
               label: "Again",
               count: flashStats.counts.again,
+              denominator: flashStats.total,
+              unit: "of reviews",
               pct:
                 flashStats.total > 0
                   ? Math.round((flashStats.counts.again / flashStats.total) * 100)
@@ -1587,6 +1611,8 @@ export default function AnalyticsPage() {
             {
               label: "Hard",
               count: flashStats.counts.hard,
+              denominator: flashStats.total,
+              unit: "of reviews",
               pct:
                 flashStats.total > 0
                   ? Math.round((flashStats.counts.hard / flashStats.total) * 100)
@@ -1596,6 +1622,8 @@ export default function AnalyticsPage() {
             {
               label: "Medium",
               count: flashStats.counts.medium,
+              denominator: flashStats.total,
+              unit: "of reviews",
               pct:
                 flashStats.total > 0
                   ? Math.round(
@@ -1607,6 +1635,8 @@ export default function AnalyticsPage() {
             {
               label: "Easy",
               count: flashStats.counts.easy,
+              denominator: flashStats.total,
+              unit: "of reviews",
               pct:
                 flashStats.total > 0
                   ? Math.round((flashStats.counts.easy / flashStats.total) * 100)
@@ -1647,6 +1677,13 @@ export default function AnalyticsPage() {
           <div className="relative shrink-0">
             <button
               onClick={() => setSectionDropdownOpen((v) => !v)}
+              aria-expanded={sectionDropdownOpen}
+              aria-haspopup="listbox"
+              aria-label={`Filter chart by subject, currently ${
+                chartSection === "all"
+                  ? "all subjects"
+                  : SECTION_LABELS[chartSection] ?? chartSection
+              }`}
               className="flex items-center gap-2 px-3.5 py-2 rounded-full"
               style={{
                 background: "var(--color-prax-cream-card)",
@@ -1685,6 +1722,8 @@ export default function AnalyticsPage() {
             </button>
             {sectionDropdownOpen && (
               <div
+                role="listbox"
+                aria-label="Chart subject"
                 className="absolute right-0 top-full mt-2 z-20 overflow-hidden"
                 style={{
                   background: "var(--color-prax-cream-card)",
@@ -1703,6 +1742,8 @@ export default function AnalyticsPage() {
                 ].map(({ value, label }) => (
                   <button
                     key={value}
+                    role="option"
+                    aria-selected={chartSection === value}
                     onClick={() => {
                       setChartSection(value);
                       setActiveWeek(null);

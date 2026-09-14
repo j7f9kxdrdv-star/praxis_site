@@ -282,3 +282,40 @@ html {
   border-color: rgba(3, 79, 70, 0.15);
   background-color: #ffffff;
 }
+
+/* ─── Keyboard focus ───────────────────────────────────────────────────────
+ *
+ * There was none. Nothing in the app drew a focus ring, so a keyboard user
+ * tabbing through the analytics filters, the topic rows or the chart had no
+ * way to know where they were. Browsers do supply a default ring, but several
+ * components set `outline: none` implicitly through resets and inline styles,
+ * and a ring that appears on some controls and not others is worse than a
+ * consistent one.
+ *
+ * :focus-visible, not :focus, so a mouse click never draws it. The ring sits
+ * OUTSIDE the element via a double box-shadow, which keeps it visible on the
+ * dark green cards as well as the cream ones without shifting any layout.
+ */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--color-prax-cream),
+    0 0 0 4px var(--color-prax-green);
+  border-radius: inherit;
+}
+
+/* The ring is cream first, then green. On the green cards the outer green half
+ * disappears into the card and the cream half carries it, which is why there is
+ * no separate rule for them: an inverted variant was written first, for a class
+ * that turned out to match nothing. */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
