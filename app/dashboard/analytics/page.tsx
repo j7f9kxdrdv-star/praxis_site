@@ -1109,7 +1109,7 @@ export default function AnalyticsPage() {
         {/* Overall Question Accuracy */}
         <PraxCard variant="secondary">
           <div className="flex justify-between items-start mb-3">
-            <SmallCaps>Overall Question Accuracy</SmallCaps>
+            <SmallCaps>Question Accuracy</SmallCaps>
             <svg
               className="opacity-60"
               width="18"
@@ -1160,10 +1160,10 @@ export default function AnalyticsPage() {
           </div>
         </PraxCard>
 
-        {/* Overall Flashcard Accuracy */}
+        {/* First-Look Recall. See flashStats: session-gapped first looks, Again = failed retrieval. */}
         <PraxCard variant="secondary">
           <div className="flex justify-between items-start mb-3">
-            <SmallCaps>Overall Flashcard Accuracy</SmallCaps>
+            <SmallCaps>First-Look Recall</SmallCaps>
             <svg
               className="opacity-60"
               width="18"
@@ -1883,7 +1883,7 @@ export default function AnalyticsPage() {
         {/* Subject Mastery */}
         <PraxCard variant="secondary">
           <div className="flex items-center justify-between mb-5">
-            <SmallCaps>Subject Mastery</SmallCaps>
+            <SmallCaps>Section Accuracy</SmallCaps>
             <SmallCaps style={{ color: "var(--color-prax-ink-soft)" }}>
               {periodLabel}
             </SmallCaps>
@@ -2003,11 +2003,11 @@ export default function AnalyticsPage() {
                 color: "var(--color-prax-green)",
               }}
             >
-              Flashcard focus areas
+              Recall by topic
             </div>
             <SmallCaps style={{ marginTop: 4 }}>
               {flashTopicStats.sections.length > 0
-                ? "Weakest sections first · graded against your own recall"
+                ? "Weakest sections first · first-look recall on your cards"
                 : "Study flashcards to see which subtopics need work"}
             </SmallCaps>
           </div>
@@ -2241,11 +2241,11 @@ export default function AnalyticsPage() {
                 color: "var(--color-prax-green)",
               }}
             >
-              Topic mastery
+              Topic performance
             </div>
             <SmallCaps style={{ marginTop: 4 }}>
               {questionTopicStats.sections.length > 0
-                ? "Weakest sections first · graded against your own accuracy"
+                ? "Weakest sections first · question accuracy, not mastery"
                 : "Answer practice questions to see which topics need work"}
             </SmallCaps>
           </div>
