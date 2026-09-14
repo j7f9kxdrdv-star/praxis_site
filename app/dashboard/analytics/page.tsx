@@ -3,6 +3,13 @@
 import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { estimateScore, estimateBasis } from "@/lib/scoring/scoreEstimate";
+import { canonicalTopicKey, titleFromKey } from "@/lib/analytics/topicKey";
+import {
+  topicIntelligence,
+  STATE_LABELS,
+  EVIDENCE_LABELS,
+  type TopicIntelligence,
+} from "@/lib/analytics/crossModality";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
 import {
@@ -18,7 +25,13 @@ interface Attempt {
   is_correct: boolean;
   created_at: string;
   question_id: string;
-  questions: { section: string; subtopic: string; difficulty: string } | null;
+  questions: {
+    section: string;
+    /** The CHAPTER. Canonical join key against a deck's subtopic. */
+    topic: string | null;
+    subtopic: string;
+    difficulty: string;
+  } | null;
   /** Null on rows written before the column existed; see scoreEstimate. */
   is_first_attempt?: boolean | null;
 }
@@ -123,45 +136,6 @@ function flashSectionLabel(section: string): string {
   );
 }
 
-const FLASH_BANDS = [
-  { key: "focus", label: "Focus here", below: -8 },
-  { key: "shaky", label: "Shaky", below: -3 },
-  { key: "onpace", label: "On pace", below: 3 },
-  { key: "strong", label: "Strong", below: Infinity },
-] as const;
-
-type FlashBand = (typeof FLASH_BANDS)[number];
-
-function flashBandOf(delta: number): FlashBand {
-  return FLASH_BANDS.find((b) => delta < b.below) ?? FLASH_BANDS[FLASH_BANDS.length - 1];
-}
-
-const FLASH_BAND_STYLE: Record<
-  FlashBand["key"],
-  { bar: string; pillBg: string; pillFg: string }
-> = {
-  focus: {
-    bar: "var(--color-prax-gold)",
-    pillBg: "var(--color-prax-gold)",
-    pillFg: "var(--color-prax-cream)",
-  },
-  shaky: {
-    bar: "var(--color-prax-gold-soft)",
-    pillBg: "var(--color-prax-cream-deep)",
-    pillFg: "var(--color-prax-ink-soft)",
-  },
-  onpace: {
-    bar: "var(--color-prax-green-soft)",
-    pillBg: "var(--color-prax-green-tint)",
-    pillFg: "var(--color-prax-green)",
-  },
-  strong: {
-    bar: "var(--color-prax-green)",
-    pillBg: "var(--color-prax-green)",
-    pillFg: "var(--color-prax-cream)",
-  },
-};
-
 function buildSvgPath(points: [number, number][]): string {
   if (points.length === 0) return "";
   if (points.length === 1) return `M${points[0][0]},${points[0][1]}`;
@@ -205,6 +179,157 @@ function filterByPeriod(
 }
 
 /* ─────────── Donut Ring ─────────── */
+
+/** Tone for a cross-modality state, reusing the existing band palette. */
+const STATE_TONE: Record<string, { bg: string; fg: string }> = {
+  BROAD_WEAKNESS: { bg: "var(--color-prax-gold)", fg: "var(--color-prax-cream)" },
+  APPLICATION_GAP: { bg: "var(--color-prax-gold-soft)", fg: "var(--color-prax-ink-soft)" },
+  MEMORY_GAP: { bg: "var(--color-prax-gold-soft)", fg: "var(--color-prax-ink-soft)" },
+  BALANCED_STRENGTH: { bg: "var(--color-prax-green-tint)", fg: "var(--color-prax-green)" },
+  LIMITED_EVIDENCE: { bg: "var(--color-prax-cream-deep)", fg: "var(--color-prax-ink-mute)" },
+  NO_EVIDENCE: { bg: "var(--color-prax-cream-deep)", fg: "var(--color-prax-ink-mute)" },
+};
+
+/**
+ * One topic, collapsed to its two numbers and expandable to the reasoning.
+ *
+ * A button rather than a div, so it is reachable by keyboard and announces its
+ * own expanded state. The chevron is decorative and hidden from screen readers;
+ * the accessible name carries the topic and both measures.
+ */
+function TopicRow({
+  topic,
+}: {
+  topic: TopicIntelligence & { deckId: string | null };
+}) {
+  const [open, setOpen] = useState(false);
+  const tone = STATE_TONE[topic.state] ?? STATE_TONE.LIMITED_EVIDENCE;
+
+  return (
+    <div style={{ borderBottom: "1px solid var(--color-prax-cream-border)" }}>
+      <button
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="w-full flex items-center gap-3 py-3.5 text-left"
+        style={{ background: "none", border: 0 }}
+      >
+        <span
+          aria-hidden="true"
+          className="shrink-0"
+          style={{
+            color: "var(--color-prax-ink-mute)",
+            fontSize: 10,
+            transform: open ? "rotate(90deg)" : "none",
+            transition: "transform 160ms ease",
+          }}
+        >
+          ▶
+        </span>
+
+        <span
+          className="flex-1 min-w-0 truncate"
+          style={{ fontSize: 14.5, color: "var(--color-prax-ink)" }}
+        >
+          {topic.label}
+        </span>
+
+        {/* Both measures, each with the evidence behind it. A percentage
+            without its denominator is how a 2-of-3 topic starts looking like a
+            strength. */}
+        <span className="shrink-0 hidden sm:flex items-baseline gap-4">
+          <span style={{ fontSize: 12.5, color: "var(--color-prax-ink-soft)" }}>
+            <span style={{ fontVariantNumeric: "tabular-nums" }}>
+              {topic.application.pct}%
+            </span>{" "}
+            <span style={{ color: "var(--color-prax-ink-mute)" }}>
+              apply ({topic.application.trials})
+            </span>
+          </span>
+          <span style={{ fontSize: 12.5, color: "var(--color-prax-ink-soft)" }}>
+            <span style={{ fontVariantNumeric: "tabular-nums" }}>
+              {topic.memory.pct}%
+            </span>{" "}
+            <span style={{ color: "var(--color-prax-ink-mute)" }}>
+              recall ({topic.memory.trials})
+            </span>
+          </span>
+        </span>
+
+        <span
+          className="shrink-0 rounded-full px-2.5 py-1"
+          style={{
+            background: tone.bg,
+            color: tone.fg,
+            fontSize: 9,
+            letterSpacing: "0.13em",
+            textTransform: "uppercase",
+            fontWeight: 600,
+            minWidth: 96,
+            textAlign: "center",
+          }}
+        >
+          {STATE_LABELS[topic.state]}
+        </span>
+      </button>
+
+      {open && (
+        <div className="pb-4 pl-6 pr-1">
+          {/* On a narrow screen the two measures do not fit in the row, so
+              they appear here instead of being dropped. */}
+          <div
+            className="flex sm:hidden gap-4 mb-2"
+            style={{ fontSize: 12.5, color: "var(--color-prax-ink-soft)" }}
+          >
+            <span>
+              {topic.application.pct}% apply ({topic.application.trials})
+            </span>
+            <span>
+              {topic.memory.pct}% recall ({topic.memory.trials})
+            </span>
+          </div>
+
+          <p
+            className="m-0"
+            style={{
+              fontSize: 13.5,
+              lineHeight: 1.6,
+              color: "var(--color-prax-ink-soft)",
+              maxWidth: "58ch",
+            }}
+          >
+            {topic.interpretation}
+          </p>
+
+          <div className="flex items-center gap-3 mt-3 flex-wrap">
+            <SmallCaps>{EVIDENCE_LABELS[topic.evidence]}</SmallCaps>
+
+            {/* Only the flashcard action can be targeted. A deck IS a route, so
+                Review opens exactly this topic's cards. Practice sessions are
+                built through a builder that takes no topic, so a Practice
+                button here would not actually serve this topic's questions;
+                it is deliberately absent rather than misleading. */}
+            {topic.action?.kind === "REVIEW" && topic.deckId && (
+              <Link
+                href={`/dashboard/flashcards/${topic.deckId}`}
+                className="rounded-full px-3 py-1.5 transition-colors"
+                style={{
+                  border: "1px solid var(--color-prax-cream-border)",
+                  color: "var(--color-prax-green)",
+                  fontSize: 9,
+                  letterSpacing: "0.13em",
+                  textTransform: "uppercase",
+                  fontWeight: 600,
+                }}
+              >
+                Review cards
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function DonutRing({ pct, label }: { pct: number; label: string }) {
   const r = 36;
@@ -424,7 +549,7 @@ export default function AnalyticsPage() {
         supabase
           .from("question_attempts")
           .select(
-            "is_correct, created_at, question_id, is_first_attempt, questions(section, subtopic, difficulty)"
+            "is_correct, created_at, question_id, is_first_attempt, questions(section, topic, subtopic, difficulty)"
           )
           .eq("user_id", user.id),
         supabase
@@ -554,28 +679,6 @@ export default function AnalyticsPage() {
   }, [allAttempts]);
 
   // Section stats
-  const sectionStats = useMemo(() => {
-    const map = new Map<string, { total: number; correct: number }>();
-    filtered.forEach((a) => {
-      if (!a.questions) return;
-      const sec = map.get(a.questions.section) || { total: 0, correct: 0 };
-      sec.total++;
-      if (a.is_correct) sec.correct++;
-      map.set(a.questions.section, sec);
-    });
-    return ["bio_biochem", "chem_phys", "psych_soc", "cars"]
-      .filter((s) => map.has(s))
-      .map((s) => {
-        const d = map.get(s)!;
-        return {
-          section: s,
-          label: SECTION_LABELS[s],
-          ...d,
-          accuracy: d.total > 0 ? Math.round((d.correct / d.total) * 100) : 0,
-        };
-      });
-  }, [filtered]);
-
   // Difficulty stats
   const diffStats = useMemo(() => {
     const map = new Map<string, { total: number; correct: number }>();
@@ -637,47 +740,6 @@ export default function AnalyticsPage() {
    * coin flips. The layout is being fixed first and the threshold deliberately
    * left for later; when it is raised, only MIN_ATTEMPTS needs to change.
    */
-  const questionTopicStats = useMemo(() => {
-    const baseline = overallAccuracy / 100;
-
-    const scored = subtopicStats.map((r) => ({
-      ...r,
-      delta: Math.round(r.accuracy - overallAccuracy),
-      floor: wilsonLowerBound(r.correct, r.total),
-    }));
-
-    const groups = new Map<
-      string,
-      { section: string; total: number; correct: number; subs: typeof scored }
-    >();
-    for (const r of scored) {
-      const g =
-        groups.get(r.section) || {
-          section: r.section,
-          total: 0,
-          correct: 0,
-          subs: [] as typeof scored,
-        };
-      g.total += r.total;
-      g.correct += r.correct;
-      g.subs.push(r);
-      groups.set(r.section, g);
-    }
-
-    const sections = Array.from(groups.values())
-      .map((g) => ({
-        section: g.section,
-        accuracy: Math.round((g.correct / g.total) * 100),
-        delta: Math.round((g.correct / g.total) * 100 - overallAccuracy),
-        subs: [...g.subs].sort((a, b) => a.floor - b.floor),
-        focusCount: g.subs.filter((x) => flashBandOf(x.delta).key === "focus")
-          .length,
-      }))
-      .sort((a, b) => a.accuracy - b.accuracy);
-
-    return { sections, subtopicCount: scored.length, baseline };
-  }, [subtopicStats, overallAccuracy]);
-
   /**
    * Which flashcard subtopics is this student actually weak on?
    *
@@ -697,123 +759,107 @@ export default function AnalyticsPage() {
    * bare percentage is not: it separates a topic that is genuinely lagging from
    * one that merely looks low because everything is hard this week.
    */
-  const flashTopicStats = useMemo(() => {
-    const MIN_ATTEMPTS = 10;
-    const seen = new Set<string>();
-    const map = new Map<
-      string,
-      {
-        deckId: string;
-        section: string;
-        subtopic: string;
-        label: string;
-        attempts: number;
-        passed: number;
+  /**
+   * Recall against application, topic by topic.
+   *
+   * REPLACES three sections that all answered "where am I weak?" from one
+   * modality each: Section Accuracy, Recall by topic, and Topic performance.
+   * Separately none of them could tell a student whether a weak topic was weak
+   * because they do not remember it or because they remember it and cannot
+   * apply it, which are opposite problems with opposite fixes.
+   *
+   * All of the interpretation lives in lib/analytics/crossModality.ts. Nothing
+   * here decides what a state means; this only assembles the two counts and
+   * hands them over. The FSRS scheduler stays the source of truth for memory
+   * and the learner model for ability.
+   */
+  const topicIntel = useMemo(() => {
+    const inRange = (iso: string): boolean => {
+      if (period === "all") return true;
+      const d = new Date(iso);
+      if (period === "custom") {
+        if (!customFrom || !customTo) return true;
+        return (
+          d >= new Date(customFrom + "T00:00:00") &&
+          d <= new Date(customTo + "T23:59:59")
+        );
       }
-    >();
-
-    // Oldest first, so "first attempt of the day" really is the first one.
-    const ordered = [...allReviews].sort((a, b) =>
-      a.reviewed_at < b.reviewed_at ? -1 : a.reviewed_at > b.reviewed_at ? 1 : 0
-    );
-
-    for (const r of ordered) {
-      const deckId = cardToDeck.get(r.flashcard_id);
-      if (!deckId) continue;
-      const deck = deckMeta.get(deckId);
-      if (!deck) continue;
-
-      const day = (r.reviewed_at || "").slice(0, 10);
-      const once = `${r.flashcard_id}::${r.cloze_index}::${day}`;
-      if (seen.has(once)) continue;
-      seen.add(once);
-
-      // Group on the SLUG, display the TITLE. The title column is already
-      // curated ("Carbohydrate Metabolism II", "DNA and Biotechnology"), while
-      // the slug needs a formatter that would have to know about roman numerals
-      // and acronyms to produce the same thing, and would still get
-      // "Aldehydes And Ketones Ii" wrong. The slugs are also inconsistent, some
-      // separated by underscores and some by spaces, so they are unfit to show.
-      // Every column here is nullable, hence the chain.
-      const subtopic = deck.subtopic || deck.topic || deck.title || "Untitled deck";
-      const label = deck.title || deck.subtopic || deck.topic || "Untitled deck";
-      const key = `${deck.section ?? "other"}::${subtopic}`;
-      const row =
-        map.get(key) || {
-          deckId,
-          section: deck.section ?? "other",
-          subtopic,
-          label,
-          attempts: 0,
-          passed: 0,
-        };
-      row.attempts++;
-      if (r.rating !== "again") row.passed++;
-      map.set(key, row);
-    }
-
-    const rows = Array.from(map.values());
-    const totalAttempts = rows.reduce((a, r) => a + r.attempts, 0);
-    const totalPassed = rows.reduce((a, r) => a + r.passed, 0);
-    const baseline = totalAttempts > 0 ? totalPassed / totalAttempts : 0;
-
-    const scored = rows
-      .filter((r) => r.attempts >= MIN_ATTEMPTS)
-      .map((r) => ({
-        ...r,
-        accuracy: Math.round((r.passed / r.attempts) * 100),
-        floor: wilsonLowerBound(r.passed, r.attempts),
-        delta: Math.round((r.passed / r.attempts - baseline) * 100),
-      }));
-
-    // Grouped by section, because a flat weakest-first list cannot tell two
-    // very different situations apart. Organic Chemistry sits exactly at this
-    // student's average while holding both their worst subtopic and five of
-    // their best: the fix is two decks. Behavioral Sciences is six points down
-    // with nothing strong anywhere in it: the fix is the whole subject. Flat,
-    // both look identical, because only the failing subtopics are visible.
-    const groups = new Map<
-      string,
-      { section: string; attempts: number; passed: number; subs: typeof scored }
-    >();
-    for (const r of scored) {
-      const g =
-        groups.get(r.section) || {
-          section: r.section,
-          attempts: 0,
-          passed: 0,
-          subs: [] as typeof scored,
-        };
-      g.attempts += r.attempts;
-      g.passed += r.passed;
-      g.subs.push(r);
-      groups.set(r.section, g);
-    }
-
-    const sections = Array.from(groups.values())
-      .map((g) => ({
-        section: g.section,
-        attempts: g.attempts,
-        accuracy: Math.round((g.passed / g.attempts) * 100),
-        delta: Math.round((g.passed / g.attempts - baseline) * 100),
-        // Weakest first inside a section too, on the Wilson floor rather than
-        // raw accuracy.
-        subs: [...g.subs].sort((a, b) => a.floor - b.floor),
-        focusCount: g.subs.filter((s) => flashBandOf(s.delta).key === "focus")
-          .length,
-      }))
-      .sort((a, b) => a.accuracy - b.accuracy);
-
-    return {
-      sections,
-      subtopicCount: scored.length,
-      baseline: Math.round(baseline * 100),
-      // Subtopics that exist but have not been studied enough to judge.
-      // Reported rather than hidden, so the list is not silently incomplete.
-      tooFewCount: rows.filter((r) => r.attempts < MIN_ATTEMPTS).length,
-      minAttempts: MIN_ATTEMPTS,
+      const days = period === "7d" ? 7 : 30;
+      return d >= new Date(Date.now() - days * 86_400_000);
     };
-  }, [allReviews, cardToDeck, deckMeta]);
+
+    // ── Application: eligible first attempts, by canonical topic ──────────
+    const questions = new Map<string, { successes: number; trials: number; label: string }>();
+    allAttempts.forEach((a) => {
+      if (a.is_first_attempt === false) return;
+      if (!inRange(a.created_at)) return;
+      const raw = a.questions?.topic;
+      const key = canonicalTopicKey(raw);
+      if (!key) return;
+      const e = questions.get(key) ?? { successes: 0, trials: 0, label: String(raw) };
+      e.trials++;
+      if (a.is_correct) e.successes++;
+      questions.set(key, e);
+    });
+
+    // ── Memory: first-look recall, by the deck's canonical subtopic ───────
+    //
+    // The session gap is walked over the FULL history, exactly as the
+    // First-Look Recall card does, so a period boundary cannot turn a
+    // same-session repeat into a false first look. Only in-range first looks
+    // are then counted.
+    const SESSION_GAP_MS = 30 * 60 * 1000;
+    const lastSeen = new Map<string, number>();
+    const cards = new Map<string, { successes: number; trials: number; deckId: string }>();
+    [...allReviews]
+      .sort((x, y) => new Date(x.reviewed_at).getTime() - new Date(y.reviewed_at).getTime())
+      .forEach((r) => {
+        const id = `${r.flashcard_id}:${r.cloze_index}`;
+        const t = new Date(r.reviewed_at).getTime();
+        const prev = lastSeen.get(id);
+        const isFirstLook = prev === undefined || t - prev > SESSION_GAP_MS;
+        lastSeen.set(id, t);
+        if (!isFirstLook || !inRange(r.reviewed_at)) return;
+
+        const deckId = cardToDeck.get(r.flashcard_id);
+        const key = canonicalTopicKey(deckMeta.get(deckId ?? "")?.subtopic);
+        if (!key || !deckId) return;
+        const e = cards.get(key) ?? { successes: 0, trials: 0, deckId };
+        e.trials++;
+        // Again is the only grade that means retrieval failed. Hard, Medium
+        // and Easy all mean it succeeded, at differing cost.
+        if (r.rating !== "again") e.successes++;
+        cards.set(key, e);
+      });
+
+    const keys = [...new Set([...questions.keys(), ...cards.keys()])];
+    const rows = keys.map((key) => {
+      const q = questions.get(key);
+      const c = cards.get(key);
+      const intel = topicIntelligence(
+        key,
+        q?.label ?? titleFromKey(key),
+        { successes: q?.successes ?? 0, trials: q?.trials ?? 0 },
+        { successes: c?.successes ?? 0, trials: c?.trials ?? 0 },
+      );
+      return { ...intel, deckId: c?.deckId ?? null };
+    });
+
+    const MEASURED = new Set([
+      "MEMORY_GAP",
+      "APPLICATION_GAP",
+      "BROAD_WEAKNESS",
+      "BALANCED_STRENGTH",
+    ]);
+    // Weakest application first among the measured, because that is the
+    // ordering a student is looking for.
+    const measured = rows
+      .filter((r) => MEASURED.has(r.state))
+      .sort((a, b) => (a.application.lowerBound ?? 1) - (b.application.lowerBound ?? 1));
+    const pending = rows.filter((r) => !MEASURED.has(r.state) && r.state !== "NO_EVIDENCE");
+
+    return { measured, pending, total: rows.length };
+  }, [allAttempts, allReviews, cardToDeck, deckMeta, period, customFrom, customTo]);
 
   // ── Flashcard recall stats (from review history) ──
   const flashStats = useMemo(() => {
@@ -1878,124 +1924,21 @@ export default function AnalyticsPage() {
         </PraxCard>
       </div>
 
-      {/* ── Subject Mastery ── */}
-      <div className="mb-6">
-        {/* Subject Mastery */}
-        <PraxCard variant="secondary">
-          <div className="flex items-center justify-between mb-5">
-            <SmallCaps>Section Accuracy</SmallCaps>
-            <SmallCaps style={{ color: "var(--color-prax-ink-soft)" }}>
-              {periodLabel}
-            </SmallCaps>
-          </div>
-          {sectionStats.length === 0 ? (
-            <div
-              className="italic text-center py-8"
-              style={{
-                fontFamily: "var(--font-prax-serif)",
-                fontSize: 13,
-                color: "var(--color-prax-ink-mute)",
-              }}
-            >
-              Answer practice questions to see your section breakdown.
-            </div>
-          ) : (
-            <div className="space-y-5">
-              {(() => {
-                // mark weakest section in gold
-                const minAcc =
-                  sectionStats.length > 0
-                    ? Math.min(...sectionStats.map((s) => s.accuracy))
-                    : 0;
-                return sectionStats.map((s) => {
-                  const attention = s.accuracy === minAcc;
-                  return (
-                    <div key={s.section}>
-                      <div className="flex justify-between items-baseline mb-1.5">
-                        <div className="flex items-center gap-2">
-                          {attention && (
-                            <div
-                              className="rounded-full"
-                              style={{
-                                width: 5,
-                                height: 5,
-                                background: "var(--color-prax-gold)",
-                              }}
-                            />
-                          )}
-                          <div
-                            style={{
-                              fontFamily: "var(--font-prax-sans)",
-                              fontSize: 12.5,
-                              fontWeight: attention ? 600 : 500,
-                              color: "var(--color-prax-ink)",
-                            }}
-                          >
-                            {s.label}
-                          </div>
-                        </div>
-                        <div
-                          style={{
-                            fontFamily: "var(--font-prax-serif)",
-                            fontSize: 16,
-                            color: attention
-                              ? "var(--color-prax-gold)"
-                              : "var(--color-prax-green)",
-                            fontVariantNumeric: "tabular-nums lining-nums",
-                          }}
-                        >
-                          {s.accuracy}
-                          <span
-                            style={{
-                              fontSize: 12,
-                              color: "var(--color-prax-ink-mute)",
-                            }}
-                          >
-                            %
-                          </span>
-                        </div>
-                      </div>
-                      <div
-                        className="rounded-full overflow-hidden"
-                        style={{
-                          height: 5,
-                          background: "var(--color-prax-cream-card)",
-                        }}
-                      >
-                        <div
-                          className="h-full rounded-full transition-all duration-1000"
-                          style={{
-                            width: `${s.accuracy}%`,
-                            background: attention
-                              ? "var(--color-prax-gold)"
-                              : "var(--color-prax-green)",
-                          }}
-                        />
-                      </div>
-                      <div
-                        className="mt-1"
-                        style={{
-                          fontSize: 10,
-                          color: "var(--color-prax-ink-mute)",
-                          fontVariantNumeric: "tabular-nums",
-                        }}
-                      >
-                        {s.correct}/{s.total} correct
-                      </div>
-                    </div>
-                  );
-                });
-              })()}
-            </div>
-          )}
-        </PraxCard>
-      </div>
+      {/* ── Performance by topic ────────────────────────────────────────
+          Replaces three sections that each answered "where am I weak?" from a
+          single modality: Section Accuracy, Recall by topic, and Topic
+          performance. None of them could say whether a weak topic was weak
+          because the student does not REMEMBER it or because they remember it
+          and cannot APPLY it, and those have opposite fixes.
 
-      {/* ── Flashcard focus areas ── */}
+          Measured topics lead. Everything still gathering evidence collapses
+          into one line rather than filling the page with rows that say
+          "Limited evidence", which is what listing every topic would do for
+          almost every student today. */}
       <PraxCard variant="secondary" className="mb-6">
         <div className="flex items-end justify-between mb-2 gap-3">
           <div>
-            <div
+            <h2
               className="font-medium"
               style={{
                 fontFamily: "var(--font-prax-serif)",
@@ -2003,448 +1946,60 @@ export default function AnalyticsPage() {
                 color: "var(--color-prax-green)",
               }}
             >
-              Recall by topic
-            </div>
+              Performance by topic
+            </h2>
             <SmallCaps style={{ marginTop: 4 }}>
-              {flashTopicStats.sections.length > 0
-                ? "Weakest sections first · first-look recall on your cards"
-                : "Study flashcards to see which subtopics need work"}
+              {topicIntel.measured.length > 0
+                ? "What you recall, against what you can apply"
+                : "Recall and application, once both are measured"}
             </SmallCaps>
           </div>
-          {flashTopicStats.subtopicCount > 0 && (
-            <SmallCaps>{flashTopicStats.subtopicCount} subtopics</SmallCaps>
+          {topicIntel.measured.length > 0 && (
+            <SmallCaps>{topicIntel.measured.length} measured</SmallCaps>
           )}
         </div>
 
-        {flashTopicStats.sections.length === 0 ? (
-          <div
-            className="italic text-center py-8"
-            style={{
-              fontFamily: "var(--font-prax-serif)",
-              fontSize: 13,
-              color: "var(--color-prax-ink-mute)",
-            }}
-          >
-            Review at least {flashTopicStats.minAttempts} cards in a subtopic to
-            see where you stand.
-          </div>
-        ) : (
-          <div>
-            {flashTopicStats.sections.map((sec) => {
-              const isOpen = openFlashSections.has(sec.section);
-              const summary =
-                sec.focusCount > 0
-                  ? `${sec.focusCount} need${sec.focusCount === 1 ? "s" : ""} focus`
-                  : "nothing urgent";
-
-              return (
-                <div
-                  key={sec.section}
-                  style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
-                >
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setOpenFlashSections((prev) => {
-                        const next = new Set(prev);
-                        if (next.has(sec.section)) next.delete(sec.section);
-                        else next.add(sec.section);
-                        return next;
-                      })
-                    }
-                    aria-expanded={isOpen}
-                    className="w-full flex items-center gap-3 py-4 text-left"
-                    style={{ background: "none", border: 0, cursor: "pointer" }}
-                  >
-                    <svg
-                      width="9"
-                      height="9"
-                      viewBox="0 0 10 10"
-                      aria-hidden="true"
-                      className="shrink-0"
-                      style={{
-                        transform: isOpen ? "rotate(90deg)" : "none",
-                        transition: "transform 160ms",
-                      }}
-                    >
-                      <path
-                        d="M3 1l4 4-4 4"
-                        fill="none"
-                        stroke="var(--color-prax-ink-mute)"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <span
-                      className="font-medium shrink-0"
-                      style={{
-                        fontFamily: "var(--font-prax-serif)",
-                        fontSize: 18,
-                        color: "var(--color-prax-green)",
-                      }}
-                    >
-                      {flashSectionLabel(sec.section)}
-                    </span>
-                    <span
-                      className="flex-1 min-w-0 truncate font-semibold uppercase"
-                      style={{
-                        fontSize: 10,
-                        letterSpacing: "0.22em",
-                        color: "var(--color-prax-ink-mute)",
-                      }}
-                    >
-                      {sec.subs.length} subtopic{sec.subs.length === 1 ? "" : "s"} ·{" "}
-                      {summary}
-                    </span>
-                    <span
-                      className="tabular-nums shrink-0 text-right"
-                      style={{
-                        fontFamily: "var(--font-prax-serif)",
-                        fontSize: 18,
-                        color: "var(--color-prax-green)",
-                        minWidth: 46,
-                      }}
-                    >
-                      {sec.accuracy}%
-                    </span>
-                  </button>
-
-                  {isOpen && (
-                    <div style={{ padding: "0 0 12px 20px" }}>
-                      {sec.subs.map((sub) => {
-                        const band = flashBandOf(sub.delta);
-                        const tone = FLASH_BAND_STYLE[band.key];
-                        return (
-                          <div
-                            key={sub.deckId}
-                            className="flex items-center gap-3.5 py-2.5"
-                            style={{
-                              borderTop:
-                                "1px solid var(--color-prax-cream-border)",
-                            }}
-                          >
-                            <div
-                              className="rounded-full overflow-hidden shrink-0"
-                              style={{
-                                width: 3,
-                                height: 26,
-                                background: "var(--color-prax-cream-deep)",
-                              }}
-                            >
-                              <div
-                                className="w-full rounded-full transition-all duration-700"
-                                style={{
-                                  height: `${sub.accuracy}%`,
-                                  marginTop: `${100 - sub.accuracy}%`,
-                                  background: tone.bar,
-                                }}
-                              />
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                              <div
-                                className="truncate"
-                                style={{
-                                  fontFamily: "var(--font-prax-serif)",
-                                  fontSize: 14.5,
-                                  color: "var(--color-prax-ink)",
-                                }}
-                              >
-                                {sub.label}
-                              </div>
-                              <SmallCaps style={{ marginTop: 1 }}>
-                                {sub.attempts} cards
-                              </SmallCaps>
-                            </div>
-
-                            <div
-                              className="text-right shrink-0"
-                              style={{ minWidth: 44 }}
-                            >
-                              <div
-                                className="tabular-nums"
-                                style={{
-                                  fontFamily: "var(--font-prax-serif)",
-                                  fontSize: 15,
-                                  color: "var(--color-prax-green)",
-                                }}
-                              >
-                                {sub.accuracy}%
-                              </div>
-                            </div>
-
-                            <div
-                              className="shrink-0 rounded-full px-2.5 py-1"
-                              style={{
-                                background: tone.pillBg,
-                                color: tone.pillFg,
-                                fontSize: 9,
-                                letterSpacing: "0.13em",
-                                textTransform: "uppercase",
-                                fontWeight: 600,
-                                minWidth: 80,
-                                textAlign: "center",
-                              }}
-                            >
-                              {band.label}
-                            </div>
-
-                            <Link
-                              href={`/dashboard/flashcards/${sub.deckId}`}
-                              className="shrink-0 rounded-full px-3 py-1.5 transition-colors"
-                              style={{
-                                border:
-                                  "1px solid var(--color-prax-cream-border)",
-                                color: "var(--color-prax-green)",
-                                fontSize: 9,
-                                letterSpacing: "0.13em",
-                                textTransform: "uppercase",
-                                fontWeight: 600,
-                              }}
-                            >
-                              Study
-                            </Link>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-
-            <div
-              style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
-            />
-
-            {flashTopicStats.tooFewCount > 0 && (
-              <SmallCaps style={{ marginTop: 12, display: "block" }}>
-                {flashTopicStats.tooFewCount} more subtopic
-                {flashTopicStats.tooFewCount === 1 ? "" : "s"} studied fewer than{" "}
-                {flashTopicStats.minAttempts} times, too little to judge yet
-              </SmallCaps>
+        {topicIntel.measured.length === 0 ? (
+          <div className="py-6">
+            <p
+              className="m-0"
+              style={{
+                fontSize: 14,
+                lineHeight: 1.65,
+                color: "var(--color-prax-ink-soft)",
+                maxWidth: "56ch",
+              }}
+            >
+              A topic is compared once it has enough of both kinds of evidence:
+              practice questions to show whether you can apply it, and card
+              reviews to show whether you recall it.
+            </p>
+            {topicIntel.pending.length > 0 && (
+              <p
+                className="m-0 mt-3"
+                style={{ fontSize: 13.5, color: "var(--color-prax-ink-mute)" }}
+              >
+                {topicIntel.pending.length}{" "}
+                {topicIntel.pending.length === 1 ? "topic is" : "topics are"} part
+                way there.
+              </p>
             )}
           </div>
-        )}
-      </PraxCard>
-
-      {/* ── Topic mastery, grouped by section ── */}
-      <PraxCard variant="secondary" className="mb-6">
-        <div className="flex items-end justify-between mb-2 gap-3">
-          <div>
-            <div
-              className="font-medium"
-              style={{
-                fontFamily: "var(--font-prax-serif)",
-                fontSize: 22,
-                color: "var(--color-prax-green)",
-              }}
-            >
-              Topic performance
-            </div>
-            <SmallCaps style={{ marginTop: 4 }}>
-              {questionTopicStats.sections.length > 0
-                ? "Weakest sections first · question accuracy, not mastery"
-                : "Answer practice questions to see which topics need work"}
-            </SmallCaps>
-          </div>
-          {questionTopicStats.subtopicCount > 0 && (
-            <SmallCaps>{questionTopicStats.subtopicCount} topics</SmallCaps>
-          )}
-        </div>
-
-        {questionTopicStats.sections.length === 0 ? (
-          <div
-            className="italic text-center py-8"
-            style={{
-              fontFamily: "var(--font-prax-serif)",
-              fontSize: 13,
-              color: "var(--color-prax-ink-mute)",
-            }}
-          >
-            Answer at least 3 questions in a topic to see mastery data.
-          </div>
         ) : (
-          <div>
-            {questionTopicStats.sections.map((sec) => {
-              const isOpen = openQuestionSections.has(sec.section);
-              const summary =
-                sec.focusCount > 0
-                  ? `${sec.focusCount} need${sec.focusCount === 1 ? "s" : ""} focus`
-                  : "nothing urgent";
-
-              return (
-                <div
-                  key={sec.section}
-                  style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
-                >
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setOpenQuestionSections((prev) => {
-                        const next = new Set(prev);
-                        if (next.has(sec.section)) next.delete(sec.section);
-                        else next.add(sec.section);
-                        return next;
-                      })
-                    }
-                    aria-expanded={isOpen}
-                    className="w-full flex items-center gap-3 py-4 text-left"
-                    style={{ background: "none", border: 0, cursor: "pointer" }}
-                  >
-                    <svg
-                      width="9"
-                      height="9"
-                      viewBox="0 0 10 10"
-                      aria-hidden="true"
-                      className="shrink-0"
-                      style={{
-                        transform: isOpen ? "rotate(90deg)" : "none",
-                        transition: "transform 160ms",
-                      }}
-                    >
-                      <path
-                        d="M3 1l4 4-4 4"
-                        fill="none"
-                        stroke="var(--color-prax-ink-mute)"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <span
-                      className="font-medium shrink-0"
-                      style={{
-                        fontFamily: "var(--font-prax-serif)",
-                        fontSize: 18,
-                        color: "var(--color-prax-green)",
-                      }}
-                    >
-                      {SECTION_LABELS[sec.section] ||
-                        sec.section.replace(/_/g, " ")}
-                    </span>
-                    <span
-                      className="flex-1 min-w-0 truncate font-semibold uppercase"
-                      style={{
-                        fontSize: 10,
-                        letterSpacing: "0.22em",
-                        color: "var(--color-prax-ink-mute)",
-                      }}
-                    >
-                      {sec.subs.length} topic{sec.subs.length === 1 ? "" : "s"} ·{" "}
-                      {summary}
-                    </span>
-                    <span
-                      className="tabular-nums shrink-0 text-right"
-                      style={{
-                        fontFamily: "var(--font-prax-serif)",
-                        fontSize: 18,
-                        color: "var(--color-prax-green)",
-                        minWidth: 46,
-                      }}
-                    >
-                      {sec.accuracy}%
-                    </span>
-                  </button>
-
-                  {isOpen && (
-                    <div style={{ padding: "0 0 12px 20px" }}>
-                      {sec.subs.map((sub) => {
-                        const band = flashBandOf(sub.delta);
-                        const tone = FLASH_BAND_STYLE[band.key];
-                        return (
-                          <div
-                            key={`${sub.section}::${sub.subtopic}`}
-                            className="flex items-center gap-3.5 py-2.5"
-                            style={{
-                              borderTop:
-                                "1px solid var(--color-prax-cream-border)",
-                            }}
-                          >
-                            <div
-                              className="rounded-full overflow-hidden shrink-0"
-                              style={{
-                                width: 3,
-                                height: 26,
-                                background: "var(--color-prax-cream-deep)",
-                              }}
-                            >
-                              <div
-                                className="w-full rounded-full transition-all duration-700"
-                                style={{
-                                  height: `${sub.accuracy}%`,
-                                  marginTop: `${100 - sub.accuracy}%`,
-                                  background: tone.bar,
-                                }}
-                              />
-                            </div>
-
-                            <div className="flex-1 min-w-0">
-                              <div
-                                className="truncate"
-                                style={{
-                                  fontFamily: "var(--font-prax-serif)",
-                                  fontSize: 14.5,
-                                  color: "var(--color-prax-ink)",
-                                }}
-                              >
-                                {sub.subtopic}
-                              </div>
-                              <SmallCaps style={{ marginTop: 1 }}>
-                                {sub.correct}/{sub.total} correct
-                              </SmallCaps>
-                            </div>
-
-                            <div
-                              className="text-right shrink-0"
-                              style={{ minWidth: 44 }}
-                            >
-                              <div
-                                className="tabular-nums"
-                                style={{
-                                  fontFamily: "var(--font-prax-serif)",
-                                  fontSize: 15,
-                                  color: "var(--color-prax-green)",
-                                }}
-                              >
-                                {sub.accuracy}%
-                              </div>
-                            </div>
-
-                            {/* No per-row action here, unlike the flashcard
-                                panel. A deck is a route, so "Study" can open
-                                exactly that deck. Practice sessions are built
-                                through a builder that takes no subtopic, so a
-                                "Practice" button next to Lineweaver-Burk would
-                                not actually serve Lineweaver-Burk questions. */}
-                            <div
-                              className="shrink-0 rounded-full px-2.5 py-1"
-                              style={{
-                                background: tone.pillBg,
-                                color: tone.pillFg,
-                                fontSize: 9,
-                                letterSpacing: "0.13em",
-                                textTransform: "uppercase",
-                                fontWeight: 600,
-                                minWidth: 80,
-                                textAlign: "center",
-                              }}
-                            >
-                              {band.label}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-
-            <div
-              style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}
-            />
+          <div style={{ borderTop: "1px solid var(--color-prax-cream-border)" }}>
+            {topicIntel.measured.map((t) => (
+              <TopicRow key={t.key} topic={t} />
+            ))}
+            {topicIntel.pending.length > 0 && (
+              <p
+                className="m-0 pt-4"
+                style={{ fontSize: 12.5, color: "var(--color-prax-ink-mute)" }}
+              >
+                {topicIntel.pending.length} more{" "}
+                {topicIntel.pending.length === 1 ? "topic is" : "topics are"} still
+                gathering evidence on one side.
+              </p>
+            )}
           </div>
         )}
       </PraxCard>
