@@ -16,7 +16,7 @@ const SECTION_LABELS: Record<string, string> = {
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  Mastered: "bg-emerald-100 text-emerald-700",
+  Strong: "bg-emerald-100 text-emerald-700",
   Stable: "bg-as-primary/10 text-as-primary",
   Developing: "bg-amber-50 text-amber-700",
   Struggling: "bg-red-50 text-red-600",

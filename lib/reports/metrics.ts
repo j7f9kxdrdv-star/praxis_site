@@ -1,4 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { MIN_ATTEMPTS_FOR_STATE } from '@/lib/learner/topicState';
+import { MIN_FIRST_LOOKS } from '@/lib/analytics/crossModality';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -18,7 +20,7 @@ export interface SubtopicMetrics {
   confidence_score: number;
   spaced_repetition_gap_score: number;
   days_since_last_practiced: number;
-  status: 'Mastered' | 'Stable' | 'Developing' | 'Struggling' | 'Critical' | 'Insufficient Data';
+  status: 'Strong' | 'Stable' | 'Developing' | 'Struggling' | 'Critical' | 'Insufficient Data';
   last_practiced: string;
   top_priority_reason?: string;
 }
@@ -32,11 +34,46 @@ export interface ReportMetrics {
   avg_time_seconds: number;
   subtopics: SubtopicMetrics[];
   struggling: SubtopicMetrics[];   // status = Struggling or Critical
-  strong: SubtopicMetrics[];       // status = Mastered or Stable
+  strong: SubtopicMetrics[];       // status = Strong or Stable
   top_priority: SubtopicMetrics | null;
   section_breakdown: Record<string, { attempts: number; accuracy: number }>;
   days_studied: number;
   exam_days_remaining: number | null;
+  /**
+   * What the learner-state system observed over the same window.
+   *
+   * THE REPORTS HAVE NEVER SEEN ANY OF THIS. They were built from question
+   * attempts alone, so a week where a student reviewed six hundred cards and
+   * resolved a priority read as a week where nothing happened outside
+   * practice. Worse, the report carried its own status taxonomy derived from
+   * accuracy, which could disagree with the dashboard about the same topic in
+   * the same week.
+   *
+   * Every field here is READ from what the snapshot system already stored.
+   * Nothing is recomputed and no second model is defined: topics_improved
+   * counts deduped TOPIC_PERFORMANCE_IMPROVED events, not a fresh comparison.
+   * That is what makes it safe for the prose to cite them.
+   *
+   * Null when the snapshot system has nothing for this window, so a prompt can
+   * say nothing rather than say zero.
+   */
+  learner: LearnerSignals | null;
+}
+
+export interface LearnerSignals {
+  /** Distinct card-blanks reviewed in the window. */
+  cards_reviewed: number;
+  /** First-look recall over the window, or null below the evidence floor. */
+  first_look_recall: number | null;
+  first_looks: number;
+  /** Deduped events inside the window. Transitions, never totals. */
+  topics_improved: number;
+  topics_declined: number;
+  priorities_resolved: number;
+  priorities_added: number;
+  /** Percentage points of the question bank newly encountered. */
+  coverage_delta: number | null;
+  coverage_percent: number | null;
 }
 
 // ─── Internal types ───────────────────────────────────────────────────────────
@@ -96,6 +133,98 @@ function toDateString(d: Date): string {
 
 // ─── Core compute ─────────────────────────────────────────────────────────────
 
+/**
+ * Read the learner-state signals for one window.
+ *
+ * READS ONLY. Snapshots and events are written by the snapshot system and the
+ * backfill; a report must never write them, and must never derive a transition
+ * of its own, or the two surfaces will eventually disagree about the same week.
+ *
+ * Failures are swallowed into null. A report that cannot reach the snapshot
+ * tables should still be a report about questions, not a 500.
+ */
+async function readLearnerSignals(
+  userId: string,
+  client: SupabaseClient,
+  startIso: string,
+  startDay: string,
+): Promise<LearnerSignals | null> {
+  try {
+    const countEvents = async (type: string) => {
+      const { count } = await client
+        .from('learner_events')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('type', type)
+        .gte('occurred_on', startDay);
+      return count ?? 0;
+    };
+
+    const [improved, declined, resolved, added] = await Promise.all([
+      countEvents('TOPIC_PERFORMANCE_IMPROVED'),
+      countEvents('TOPIC_PERFORMANCE_DECLINED'),
+      countEvents('PRIORITY_TOPIC_RESOLVED'),
+      countEvents('PRIORITY_TOPIC_ADDED'),
+    ]);
+
+    // First-look recall over the window. The session gap has to be walked over
+    // the FULL history or a window boundary turns a same-session repeat into a
+    // false first look, which is the same rule the analytics card follows.
+    const { data: reviews } = await client
+      .from('flashcard_reviews')
+      .select('flashcard_id, cloze_index, rating, reviewed_at')
+      .eq('user_id', userId)
+      .order('reviewed_at', { ascending: true });
+
+    const SESSION_GAP_MS = 30 * 60 * 1000;
+    const lastSeen = new Map<string, number>();
+    const distinct = new Set<string>();
+    let firstLooks = 0;
+    let firstLookHits = 0;
+    (reviews ?? []).forEach((r) => {
+      const row = r as { flashcard_id: string; cloze_index: number; rating: string; reviewed_at: string };
+      const id = `${row.flashcard_id}:${row.cloze_index}`;
+      const t = new Date(row.reviewed_at).getTime();
+      const prev = lastSeen.get(id);
+      const isFirstLook = prev === undefined || t - prev > SESSION_GAP_MS;
+      lastSeen.set(id, t);
+      if (row.reviewed_at < startIso) return;
+      distinct.add(id);
+      if (isFirstLook) {
+        firstLooks++;
+        // Again is the only grade that means retrieval failed.
+        if (row.rating !== 'again') firstLookHits++;
+      }
+    });
+
+    // Coverage from the snapshots at both ends of the window.
+    const { data: snaps } = await client
+      .from('learner_state_snapshots')
+      .select('study_day, state')
+      .eq('user_id', userId)
+      .order('study_day', { ascending: true });
+
+    const rows = (snaps ?? []) as { study_day: string; state: { coveragePercent?: number } }[];
+    const latest = rows[rows.length - 1]?.state?.coveragePercent ?? null;
+    const atStart = [...rows].reverse().find((r) => r.study_day <= startDay)?.state?.coveragePercent ?? null;
+
+    return {
+      cards_reviewed: distinct.size,
+      first_looks: firstLooks,
+      first_look_recall:
+        firstLooks >= MIN_FIRST_LOOKS ? Math.round((firstLookHits / firstLooks) * 100) : null,
+      topics_improved: improved,
+      topics_declined: declined,
+      priorities_resolved: resolved,
+      priorities_added: added,
+      coverage_percent: latest,
+      coverage_delta: latest !== null && atStart !== null ? latest - atStart : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
 export async function computeMetrics(
   userId: string,
   client: SupabaseClient,
@@ -108,6 +237,10 @@ export async function computeMetrics(
 
   const startDate = toDateString(cutoff);
   const endDate = toDateString(now);
+
+  // Fetched alongside the attempt work rather than after it; the report waits
+  // on the slower of the two instead of the sum.
+  const learnerPromise = readLearnerSignals(userId, client, cutoff.toISOString(), startDate);
 
   // Fetch period attempts
   const { data: periodData, error: periodError } = await client
@@ -175,7 +308,22 @@ export async function computeMetrics(
   for (const [key, group] of groupMap) {
     const { section, topic, subtopic, attempts: groupAttempts } = group;
 
-    if (groupAttempts.length < 3) {
+    // ── The evidence floor ──────────────────────────────────────────────
+    //
+    // WAS 3, AND THAT WAS INDEFENSIBLE. A subtopic could be labelled
+    // "Mastered" on three attempts and then handed to a language model that
+    // wrote confident prose about it. Going 3 for 3 happens one time in eight
+    // for a student who knows the material at 50%, so the report was
+    // describing coin flips in the voice of a coach.
+    //
+    // MIN_ATTEMPTS_FOR_STATE is the same floor the learner model uses to say
+    // anything about a topic at all. Sharing it means the report and the
+    // dashboard cannot disagree about whether a topic is measurable, which
+    // they previously could and did.
+    //
+    // "Mastered" is also gone as a label. Raw accuracy is not mastery, however
+    // much of it there is; the band is now Strong.
+    if (groupAttempts.length < MIN_ATTEMPTS_FOR_STATE) {
       const lastPracticed = lastPracticedMap.get(key);
       subtopics.push({
         section, topic, subtopic,
@@ -339,7 +487,7 @@ export async function computeMetrics(
     // Status
     let status: SubtopicMetrics['status'];
     if (mastery_score >= 85) {
-      status = 'Mastered';
+      status = 'Strong';
     } else if (mastery_score >= 70) {
       status = 'Stable';
     } else if (mastery_score >= 55) {
@@ -437,6 +585,8 @@ export async function computeMetrics(
     exam_days_remaining = diff >= 0 ? diff : null;
   }
 
+  const learner = await learnerPromise;
+
   return {
     period,
     start_date: startDate,
@@ -446,11 +596,12 @@ export async function computeMetrics(
     avg_time_seconds,
     subtopics,
     struggling: subtopics.filter((s) => s.status === 'Struggling' || s.status === 'Critical'),
-    strong: subtopics.filter((s) => s.status === 'Mastered' || s.status === 'Stable'),
+    strong: subtopics.filter((s) => s.status === 'Strong' || s.status === 'Stable'),
     top_priority,
     section_breakdown,
     days_studied,
     exam_days_remaining,
+    learner,
   };
 }
 
