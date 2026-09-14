@@ -18,6 +18,10 @@ import {
   SmallCaps,
   PraxCard,
 } from "@/components/dashboard/PraxUI";
+import {
+  RecentProgress,
+  type ProgressSignal,
+} from "@/components/dashboard/DashboardCards";
 
 /* ─────────── Types ─────────── */
 
@@ -528,6 +532,8 @@ export default function AnalyticsPage() {
   const [, setActivity] = useState<DailyActivity[]>([]);
   const [, setLessonsCompleted] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [progressSignals, setProgressSignals] = useState<ProgressSignal[]>([]);
+  const [progressLoading, setProgressLoading] = useState(true);
   const [period, setPeriod] = useState<Period>("30d");
   const [chartSection, setChartSection] = useState<string>("all");
   const [sectionDropdownOpen, setSectionDropdownOpen] = useState(false);
@@ -646,6 +652,45 @@ export default function AnalyticsPage() {
   }, [user.id]);
 
   // ── Derived stats ──
+  /**
+   * Recent progress from the snapshot system.
+   *
+   * The same endpoint the dashboard calls, on purpose. Analytics recomputing
+   * "topics improved" from raw rows would be a second learner model, and the
+   * two surfaces would eventually disagree about the same week.
+   *
+   * The server does the work: the API reads stored snapshots and deduped
+   * events rather than replaying history, so this costs one request rather
+   * than a walk over every attempt the student has ever made.
+   *
+   * Additive. A failure leaves the card in its own empty state instead of
+   * breaking the page, because progress is not what this page is for.
+   */
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData.session?.access_token;
+        if (!token) return;
+        const res = await fetch("/api/learner/snapshot", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const body = await res.json();
+        if (cancelled || !Array.isArray(body?.progress?.signals)) return;
+        setProgressSignals(body.progress.signals as ProgressSignal[]);
+      } catch {
+        // Leave the empty state in place.
+      } finally {
+        if (!cancelled) setProgressLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user.id]);
+
   const filtered = useMemo(
     () => filterByPeriod(allAttempts, period, customFrom, customTo),
     [allAttempts, period, customFrom, customTo]
@@ -710,32 +755,6 @@ export default function AnalyticsPage() {
   }, [filtered]);
 
   // Subtopic stats (weakest first)
-  const subtopicStats = useMemo(() => {
-    const map = new Map<
-      string,
-      { section: string; subtopic: string; total: number; correct: number }
-    >();
-    filtered.forEach((a) => {
-      if (!a.questions) return;
-      const key = `${a.questions.section}::${a.questions.subtopic}`;
-      const s = map.get(key) || {
-        section: a.questions.section,
-        subtopic: a.questions.subtopic,
-        total: 0,
-        correct: 0,
-      };
-      s.total++;
-      if (a.is_correct) s.correct++;
-      map.set(key, s);
-    });
-    return Array.from(map.values())
-      .filter((s) => s.total >= 3)
-      .map((s) => ({ ...s, accuracy: Math.round((s.correct / s.total) * 100) }))
-      .sort((a, b) => a.accuracy - b.accuracy);
-  }, [filtered]);
-
-  const weakestTopic = subtopicStats[0];
-
   /**
    * The same grouping the flashcard panel uses, applied to practice questions.
    *
@@ -1757,90 +1776,19 @@ export default function AnalyticsPage() {
 
       {/* ── Focus Insight (weakest area + report cards) ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-6">
-        {/* Weakest Area */}
-        <PraxCard variant="secondary">
-          <div className="flex items-center gap-2 mb-3">
-            <div
-              className="rounded-full"
-              style={{
-                width: 6,
-                height: 6,
-                background: "var(--color-prax-gold)",
-              }}
-            />
-            <SmallCaps>Weakest Area</SmallCaps>
-          </div>
-          {weakestTopic ? (
-            <>
-              <div
-                className="font-medium mb-2"
-                style={{
-                  fontFamily: "var(--font-prax-serif)",
-                  fontSize: 22,
-                  color: "var(--color-prax-green)",
-                  letterSpacing: "-0.005em",
-                }}
-              >
-                {weakestTopic.subtopic.replace(/_/g, " ")}
-              </div>
-              <div
-                style={{
-                  fontSize: 12.5,
-                  lineHeight: 1.55,
-                  color: "var(--color-prax-ink-soft)",
-                }}
-              >
-                Accuracy{" "}
-                <span
-                  style={{
-                    fontWeight: 700,
-                    color: "var(--color-prax-gold)",
-                    fontVariantNumeric: "tabular-nums",
-                  }}
-                >
-                  {weakestTopic.accuracy}%
-                </span>{" "}
-                is your weakest topic right now. Targeting it directly will do
-                the most for your overall score.
-              </div>
-              <div
-                className="mt-4 p-3.5 rounded-xl"
-                style={{
-                  background: "var(--color-prax-cream-card)",
-                  border: "1px solid var(--color-prax-cream-border)",
-                }}
-              >
-                <SmallCaps style={{ marginBottom: 6 }}>
-                  Recommended Strategy
-                </SmallCaps>
-                <p
-                  style={{
-                    fontSize: 12,
-                    lineHeight: 1.5,
-                    color: "var(--color-prax-ink-soft)",
-                  }}
-                >
-                  Filter practice to{" "}
-                  {SECTION_LABELS[weakestTopic.section] || weakestTopic.section}{" "}
-                  and start with Easy difficulty. Build the foundation before
-                  attempting hard questions on this topic.
-                </p>
-              </div>
-            </>
-          ) : (
-            <div
-              className="italic"
-              style={{
-                fontFamily: "var(--font-prax-serif)",
-                fontSize: 14,
-                color: "var(--color-prax-ink-mute)",
-              }}
-            >
-              Answer at least 3 questions per topic to unlock personalised
-              insights.
-            </div>
-          )}
-        </PraxCard>
+        {/* ── Recent progress, from the snapshot system ──────────────────
+            REPLACES Weakest Area, which ranked subtopics that entered at three
+            attempts. Its own comment called that "describing coin flips":
+            going 0 for 3 happens about one time in eight even when you know
+            the material at 50%. Performance by topic now answers "where am I
+            weak" on real evidence, and the finer subtopic grain it gave up led
+            nowhere actionable, because the practice builder filters on topic
+            rather than subtopic.
+
+            The signals are derived events, so nothing here is a total: a topic
+            improved only if a transition was actually recorded. An empty
+            period renders the card's own empty state rather than zeros. */}
+        <RecentProgress signals={progressSignals} loading={progressLoading} />
 
         {/* Daily Report Card */}
         <PraxCard variant="secondary" href="/dashboard/analytics/daily">
