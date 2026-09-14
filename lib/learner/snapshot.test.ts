@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildSnapshot, deriveEvents, type SnapshotInput, type LearnerSnapshot } from "./snapshot";
-import { recentProgress, progressSignals, MIN_PER_WINDOW } from "./recentProgress";
+import { recentProgress, progressSignals, RECENT_WINDOW_DAYS, MIN_PER_WINDOW } from "./recentProgress";
 
 /** n attempts on one topic, `correct` of them right. */
 const attempts = (topic: string, correct: number, n: number, section = "bio_biochem") =>
@@ -224,6 +224,7 @@ describe("recent progress", () => {
     coverageAtEnd: 0,
     topicsImproved: 0,
     priorityAreasResolved: 0,
+    coverageMilestone: null,
   };
 
   it("reports an empty period as empty rather than as zeros", () => {
@@ -310,5 +311,48 @@ describe("recent progress", () => {
       priorityAreasResolved: 1,
     });
     expect(progressSignals(p).length).toBeLessThanOrEqual(4);
+  });
+});
+
+describe("coverage milestones reach the card", () => {
+  const base = {
+    periodStart: "2026-09-04",
+    periodEnd: "2026-10-04",
+    currentCorrect: 0, currentN: 0, previousCorrect: 0, previousN: 0,
+    questionsCompleted: 0, cardsReviewed: 0, lessonsCompleted: 0,
+    coverageAtStart: 0, coverageAtEnd: 0,
+    topicsImproved: 0, priorityAreasResolved: 0,
+    coverageMilestone: null as number | null,
+  };
+
+  it("a milestone alone is enough to make the period non-empty", () => {
+    // Without this the milestone had no home at all: a priority ADDED shows in
+    // the Priority Topics list, but a milestone crossed left no trace anywhere.
+    const p = recentProgress({ ...base, coverageMilestone: 25 });
+    expect(p.isEmpty).toBe(false);
+    const s = progressSignals(p).find((x) => x.label === "Question bank seen");
+    expect(s!.value).toBe("25%");
+  });
+
+  it("SAYS BREADTH, NOT MASTERY", () => {
+    // The wording must not imply the student is good at what they have seen.
+    const p = recentProgress({ ...base, coverageMilestone: 50 });
+    const s = progressSignals(p).find((x) => x.label === "Question bank seen")!;
+    const text = `${s.label} ${s.value} ${s.detail ?? ""}`;
+    expect(/master|strong|improv|accur|score|know/i.test(text)).toBe(false);
+  });
+
+  it("stays silent when no milestone was crossed", () => {
+    const p = recentProgress(base);
+    expect(p.isEmpty).toBe(true);
+    expect(progressSignals(p).some((x) => x.label === "Question bank seen")).toBe(false);
+  });
+
+  it("the window is long enough for a real study cadence", () => {
+    // At seven days this card rendered nothing for six of the seven real
+    // accounts and every derived event fell outside it.
+    expect(RECENT_WINDOW_DAYS).toBeGreaterThanOrEqual(28);
+    // And short enough to still mean "recent".
+    expect(RECENT_WINDOW_DAYS).toBeLessThanOrEqual(31);
   });
 });

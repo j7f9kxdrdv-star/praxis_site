@@ -12,7 +12,29 @@
 // enough evidence before a delta is reported, and the sample sizes are returned
 // alongside so the caller can show what the number rests on.
 
-export const RECENT_PROGRESS_VERSION = "1.0.0";
+// 1.1.0 widened the window and gave coverage milestones a home. See
+// RECENT_WINDOW_DAYS.
+export const RECENT_PROGRESS_VERSION = "1.1.0";
+
+/**
+ * How far back "recent" reaches.
+ *
+ * RAISED FROM 7 TO 30. At seven days this card rendered nothing for six of the
+ * seven real accounts, and every one of the 23 derived learner-state events
+ * fell outside the window. The system was computing genuine progress signals
+ * and then showing almost none of them.
+ *
+ * Seven days is also the wrong shape for how people actually study. A student
+ * on fifteen hours a week does two or three sessions; the accuracy comparison
+ * needs MIN_PER_WINDOW eligible attempts in BOTH halves, and two sessions
+ * against two sessions is noise. At thirty days one real account moves from no
+ * comparison at all to an ADEQUATE one.
+ *
+ * Thirty is also the longest span still honestly describable as recent. Ninety
+ * surfaces more, and was rejected for that reason: an improvement from three
+ * months ago is history, not progress.
+ */
+export const RECENT_WINDOW_DAYS = 30;
 
 /** Eligible attempts each window needs before a comparison means anything. */
 export const MIN_PER_WINDOW = 15;
@@ -39,6 +61,14 @@ export interface RecentProgressInput {
   /** Counted from deduped learner_events inside the window. */
   topicsImproved: number;
   priorityAreasResolved: number;
+  /**
+   * Highest coverage milestone crossed inside the window, or null.
+   *
+   * Surfaced here because it has nowhere else to live: a priority ADDED shows
+   * up in the Priority Topics list, but a milestone crossed leaves no trace on
+   * the dashboard at all unless this card carries it.
+   */
+  coverageMilestone: number | null;
 }
 
 export interface RecentProgress {
@@ -58,6 +88,7 @@ export interface RecentProgress {
 
   topicsImproved: number;
   priorityAreasResolved: number;
+  coverageMilestone: number | null;
 
   periodStart: string;
   periodEnd: string;
@@ -88,7 +119,8 @@ export function recentProgress(input: RecentProgressInput): RecentProgress {
     input.cardsReviewed === 0 &&
     input.lessonsCompleted === 0 &&
     input.topicsImproved === 0 &&
-    input.priorityAreasResolved === 0;
+    input.priorityAreasResolved === 0 &&
+    input.coverageMilestone === null;
 
   return {
     currentAccuracy,
@@ -104,6 +136,7 @@ export function recentProgress(input: RecentProgressInput): RecentProgress {
     coverageDelta: input.coverageAtEnd - input.coverageAtStart,
     topicsImproved: input.topicsImproved,
     priorityAreasResolved: input.priorityAreasResolved,
+    coverageMilestone: input.coverageMilestone,
     periodStart: input.periodStart,
     periodEnd: input.periodEnd,
     version: RECENT_PROGRESS_VERSION,
@@ -148,6 +181,15 @@ export function progressSignals(p: RecentProgress): { label: string; value: stri
       label: "Priority areas resolved",
       value: String(p.priorityAreasResolved),
       detail: "no longer meeting the priority threshold",
+    });
+  }
+  if (p.coverageMilestone !== null) {
+    // BREADTH, NOT MASTERY. The wording says what was seen and makes no claim
+    // at all about how well it went.
+    out.push({
+      label: "Question bank seen",
+      value: `${p.coverageMilestone}%`,
+      detail: "a new milestone this period",
     });
   }
   if (p.lessonsCompleted > 0) {

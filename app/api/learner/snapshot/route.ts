@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { buildSnapshot, deriveEvents, type LearnerSnapshot } from "@/lib/learner/snapshot";
-import { recentProgress, progressSignals } from "@/lib/learner/recentProgress";
+import {
+  recentProgress,
+  progressSignals,
+  RECENT_WINDOW_DAYS,
+} from "@/lib/learner/recentProgress";
 import { studyDayKey, DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
 
 /**
@@ -10,7 +14,7 @@ import { studyDayKey, DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
  *
  * Computes the student's state for the current study day, stores it, derives
  * the events since the previous snapshot, and stores those too. Then answers
- * with the state plus a Recent Progress reading over the last seven days.
+ * with the state plus a Recent Progress reading over RECENT_WINDOW_DAYS.
  *
  * SAFE TO CALL REPEATEDLY. The snapshot is keyed on (user_id, study_day) and
  * every event carries a dedupe_key built from its own facts, so calling this
@@ -199,7 +203,7 @@ function recentPct(rows: { is_correct: boolean }[]): number | null {
 }
 
 /**
- * Recent Progress over the last seven days.
+ * Recent Progress over the last RECENT_WINDOW_DAYS days.
  *
  * Topics improved and priorities resolved are COUNTED FROM STORED EVENTS rather
  * than recomputed here, so a transition is counted once however many times this
@@ -212,8 +216,8 @@ async function buildProgress(
   previous: LearnerSnapshot | null,
 ) {
   const now = Date.now();
-  const startIso = new Date(now - 7 * 86_400_000).toISOString();
-  const prevStartIso = new Date(now - 14 * 86_400_000).toISOString();
+  const startIso = new Date(now - RECENT_WINDOW_DAYS * 86_400_000).toISOString();
+  const prevStartIso = new Date(now - 2 * RECENT_WINDOW_DAYS * 86_400_000).toISOString();
   const startDay = startIso.slice(0, 10);
 
   const { data: recent } = await supabase
@@ -245,6 +249,22 @@ async function buildProgress(
     .eq("type", "PRIORITY_TOPIC_RESOLVED")
     .gte("occurred_on", startDay);
 
+  // The highest milestone crossed in the window. Ordered descending and capped
+  // at one row, because crossing 10% and 25% in one period should read as 25%
+  // rather than as two separate lines saying the same thing.
+  const { data: milestoneRows } = await supabase
+    .from("learner_events")
+    .select("metadata")
+    .eq("user_id", userId)
+    .eq("type", "CONTENT_COVERAGE_MILESTONE")
+    .gte("occurred_on", startDay)
+    .order("occurred_on", { ascending: false })
+    .limit(5);
+  const coverageMilestone = (milestoneRows ?? [])
+    .map((r) => Number((r.metadata as { milestone?: number } | null)?.milestone ?? 0))
+    .filter((n) => n > 0)
+    .sort((a, b) => b - a)[0] ?? null;
+
   const { data: cardRows } = await supabase
     .from("flashcard_reviews")
     .select("flashcard_id, cloze_index")
@@ -274,6 +294,7 @@ async function buildProgress(
     lessonsCompleted: lessons ?? 0,
     coverageAtStart: previous?.coveragePercent ?? current.coveragePercent,
     coverageAtEnd: current.coveragePercent,
+    coverageMilestone,
     topicsImproved: improved ?? 0,
     priorityAreasResolved: resolved ?? 0,
   });

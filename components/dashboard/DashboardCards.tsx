@@ -309,7 +309,7 @@ export function RecentProgress({
 }) {
   return (
     <PraxCard>
-      <SectionHeader label="Recent Progress" subtitle="last seven days" />
+      <SectionHeader label="Recent Progress" subtitle="last 30 days" />
       {loading ? (
         <Empty>Working out what changed.</Empty>
       ) : signals.length === 0 ? (
