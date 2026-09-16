@@ -257,5 +257,45 @@
       "D. A protein precipitates near its pI, where net charge is zero. At pH 7.4 it is charged and stays soluble."
     ],
     "teaching_point": "Two charges decide every ion exchange question: the protein's and the resin's. Work out the protein from pH against pI, remember that an ANION exchanger is positive, and the answer follows. Getting either one backwards inverts the result."
+  },
+  {
+    "slug": "cytosol-disulfide-misfold",
+    "eyebrow": "Biochemistry: Protein Structure",
+    "stem": "A secreted protein depends on disulfide bonds. Expressed in the cytosol instead, it misfolds. Why?",
+    "options": [
+      "A. The cytosol is too acidic",
+      "B. The cytosol is a reducing environment",
+      "C. Chaperones are absent from the cytosol",
+      "D. Cytosolic proteins cannot be glycosylated"
+    ],
+    "answer": "B",
+    "answer_text": "The cytosol is a reducing environment",
+    "explanation": "A disulfide is an oxidation. The cytosol is held reducing by glutathione, so cysteines stay as free thiols and the bonds never form. Secreted proteins get theirs in the oxidizing ER lumen, where protein disulfide isomerase builds them.",
+    "distractors": [
+      "A. Cytosolic pH sits near 7.2, close to the ER. Acidity is not what separates the two compartments here.",
+      "C. The cytosol is full of chaperones, Hsp70 among them. Folding help is the one thing it does not lack.",
+      "D. True, and irrelevant. Glycosylation is an ER modification, but losing it does not explain a folding failure that traces to unformed disulfides."
+    ],
+    "teaching_point": "Ask what the compartment does to electrons, not just what it contains. A disulfide is an oxidation, so it forms where the environment is oxidizing and cannot survive where it is reducing. That single fact separates the cytosol from the ER lumen and explains most of what folds where."
+  },
+  {
+    "slug": "boat-rock-water-level",
+    "eyebrow": "Physics: Fluids",
+    "stem": "A boat floating in a pond carries a dense rock. The rock is dropped overboard and sinks. What happens to the water level?",
+    "options": [
+      "A. It rises",
+      "B. It falls",
+      "C. It stays the same",
+      "D. It depends on the rock's volume"
+    ],
+    "answer": "B",
+    "answer_text": "It falls",
+    "explanation": "In the boat, the rock displaced water equal to its WEIGHT. On the bottom, it displaces only its own VOLUME. Anything that sinks is denser than water, so that volume holds less water than its weight did. The level drops.",
+    "distractors": [
+      "A. Adding a rock to a pond sounds like adding displacement, but the pond was already holding the rock up through the boat. Nothing new arrived.",
+      "C. Displacement is not conserved when the mechanism changes. Floating displaces by weight, resting on the bottom displaces by volume, and for a rock those are different.",
+      "D. Volume sets how far the level drops, not whether it drops. Any object dense enough to sink gives the same answer."
+    ],
+    "teaching_point": "Ask what sets the displacement before you ask how much. A floating object displaces its weight, a submerged one displaces its volume, and every buoyancy question that looks like a trick is really asking you to notice which rule applies."
   }
 ]
