@@ -29,6 +29,17 @@ export interface AggregateReview {
   reviewedAt: string;
   /** Canonical topic key of the deck this card belongs to, when known. */
   topicKey: string | null;
+  /** MCAT section the deck resolves to, or null when it cannot be placed. */
+  section?: string | null;
+}
+
+/** One calendar day of first-look recall, for the time series. */
+export interface DailyRecall {
+  /** Local ISO date. */
+  date: string;
+  firstLooks: number;
+  recalled: number;
+  reviews: number;
 }
 
 export interface TopicRecall {
@@ -47,11 +58,20 @@ export interface FlashcardAggregate {
   firstLookTotal: number;
   firstLookCorrect: number;
   byTopic: TopicRecall[];
+  /**
+   * One bucket per day that had activity. Absent days are simply missing:
+   * the series builder fills the calendar and marks them null, because a day
+   * with no reviews has no recall rate, not a recall rate of zero.
+   */
+  daily: DailyRecall[];
   from: string;
   to: string;
 }
 
 export interface AggregateInput {
+  /** "all", or an MCAT section slug. Reviews whose deck cannot be placed in a
+   *  section are EXCLUDED when filtering, never guessed into the bucket. */
+  section?: string;
   /**
    * Reviews from one session gap BEFORE `fromIso` through `toIso`, oldest
    * first. The earlier margin exists only to classify first looks correctly and
@@ -72,8 +92,10 @@ export interface AggregateInput {
  */
 export function aggregateFlashcards(input: AggregateInput): FlashcardAggregate {
   const { reviews, fromIso, toIso } = input;
+  const section = input.section ?? "all";
 
   const counts: Record<Rating, number> = { again: 0, hard: 0, medium: 0, easy: 0 };
+  const daily = new Map<string, DailyRecall>();
   const lastSeen = new Map<string, number>();
   const distinct = new Set<string>();
   const topics = new Map<string, TopicRecall>();
@@ -91,14 +113,32 @@ export function aggregateFlashcards(input: AggregateInput): FlashcardAggregate {
     // The lookback margin classifies, then stops existing.
     if (r.reviewedAt < fromIso || r.reviewedAt > toIso) continue;
 
+    // Section filtering happens AFTER first-look classification, so excluding
+    // a card never turns its neighbour into a false first look.
+    if (section !== "all" && r.section !== section) continue;
+
+    // Local date, so a late-evening review stays on the day it happened.
+    const d = new Date(r.reviewedAt);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
+      d.getDate(),
+    ).padStart(2, "0")}`;
+    const day = daily.get(key) ?? { date: key, firstLooks: 0, recalled: 0, reviews: 0 };
+    day.reviews++;
+
     total++;
     counts[r.rating]++;
     distinct.add(id);
 
-    if (!isFirstLook) continue;
+    if (!isFirstLook) {
+      daily.set(key, day);
+      continue;
+    }
     firstLookTotal++;
     const recalled = r.rating !== "again";
     if (recalled) firstLookCorrect++;
+    day.firstLooks++;
+    if (recalled) day.recalled++;
+    daily.set(key, day);
 
     if (r.topicKey) {
       const t0 = topics.get(r.topicKey) ?? { key: r.topicKey, firstLooks: 0, recalled: 0 };
@@ -115,6 +155,7 @@ export function aggregateFlashcards(input: AggregateInput): FlashcardAggregate {
     firstLookTotal,
     firstLookCorrect,
     byTopic: [...topics.values()].sort((a, b) => b.firstLooks - a.firstLooks),
+    daily: [...daily.values()].sort((a, b) => a.date.localeCompare(b.date)),
     from: fromIso,
     to: toIso,
   };

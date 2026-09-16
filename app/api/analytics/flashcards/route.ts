@@ -26,6 +26,11 @@ import {
   type Rating,
 } from "@/lib/analytics/flashcardAggregate";
 import { canonicalTopicKey } from "@/lib/analytics/topicKey";
+import {
+  resolveDeckSection,
+  type McatSection,
+  type SectionResolution,
+} from "@/lib/analytics/sectionMap";
 
 export async function GET(req: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -53,27 +58,52 @@ export async function GET(req: NextRequest) {
   const params = req.nextUrl.searchParams;
   const fromIso = params.get("from") || new Date(0).toISOString();
   const toIso = params.get("to") || new Date().toISOString();
+  const section = params.get("section") || "all";
   if (Number.isNaN(Date.parse(fromIso)) || Number.isNaN(Date.parse(toIso))) {
     return NextResponse.json({ error: "Invalid range." }, { status: 400 });
+  }
+
+  // Which MCAT section does each canonical topic belong to? Read from the
+  // QUESTION bank, so the flashcard series is filtered by the same authority
+  // the question series uses rather than by a guess. See sectionMap.ts.
+  const topicSections = new Map<string, McatSection>();
+  if (section !== "all") {
+    for (let from = 0; ; from += 1000) {
+      const { data, error } = await supabase
+        .from("questions")
+        .select("section, topic")
+        .order("id", { ascending: true })
+        .range(from, from + 999);
+      if (error || !data || data.length === 0) break;
+      for (const q of data as { section: string; topic: string | null }[]) {
+        const k = canonicalTopicKey(q.topic);
+        if (k && !topicSections.has(k)) topicSections.set(k, q.section as McatSection);
+      }
+      if (data.length < 1000) break;
+    }
   }
 
   // Card to deck to canonical topic. Both tables are small and shared, so this
   // is the cheap half of the request.
   const deckKey = new Map<string, string>();
+  const deckSection = new Map<string, SectionResolution>();
   for (let from = 0; ; from += 1000) {
     const { data, error } = await supabase
       .from("flashcard_decks")
-      .select("id, subtopic")
+      .select("id, subtopic, section")
       .order("id", { ascending: true })
       .range(from, from + 999);
     if (error || !data || data.length === 0) break;
-    for (const d of data as { id: string; subtopic: string | null }[]) {
-      deckKey.set(d.id, canonicalTopicKey(d.subtopic));
+    for (const d of data as { id: string; subtopic: string | null; section: string | null }[]) {
+      const key = canonicalTopicKey(d.subtopic);
+      deckKey.set(d.id, key);
+      deckSection.set(d.id, resolveDeckSection(d.section, key, topicSections));
     }
     if (data.length < 1000) break;
   }
 
   const cardKey = new Map<string, string | null>();
+  const cardSection = new Map<string, string | null>();
   for (let from = 0; ; from += 1000) {
     const { data, error } = await supabase
       .from("flashcards")
@@ -83,6 +113,7 @@ export async function GET(req: NextRequest) {
     if (error || !data || data.length === 0) break;
     for (const c of data as { id: string; deck_id: string }[]) {
       cardKey.set(c.id, deckKey.get(c.deck_id) || null);
+      cardSection.set(c.id, deckSection.get(c.deck_id)?.section ?? null);
     }
     if (data.length < 1000) break;
   }
@@ -118,12 +149,13 @@ export async function GET(req: NextRequest) {
         rating: r.rating,
         reviewedAt: r.reviewed_at,
         topicKey: cardKey.get(r.flashcard_id) ?? null,
+        section: cardSection.get(r.flashcard_id) ?? null,
       });
     }
     if (data.length < 1000) break;
   }
 
-  return NextResponse.json(aggregateFlashcards({ reviews, fromIso, toIso }), {
+  return NextResponse.json(aggregateFlashcards({ reviews, fromIso, toIso, section }), {
     // Re-read on a range change, but not on every re-render of the page.
     headers: { "Cache-Control": "private, max-age=30" },
   });
