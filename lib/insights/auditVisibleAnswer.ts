@@ -2,6 +2,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
 import { REASONING_MODEL } from "@/lib/ai/models";
+import { expandStudyVariants, BLANK_TOKEN } from "@/lib/flashcards/studyVariants";
+import { checkRewriteSafety, sanitizeRewrite, type SafetyViolation } from "@/lib/flashcards/leakSafety";
 
 /**
  * Can this card be answered WITHOUT knowing the material?
@@ -77,6 +79,16 @@ knowledge is not a defect; that is ordinary reasoning and is fine. The test is
 whether the card supplies the answer to someone who does not have the knowledge.
 If real understanding is still required, answer false.
 
+NEVER reason about a state where one blank of the tested group is visible while
+another blank of that SAME group is hidden. The renderer cannot produce it. Two
+terms sharing a number are hidden together, which is correct design and is not a
+leak. If you find yourself describing such a state, you have misread the card.
+
+NEVER propose moving blanks that currently share a number onto separate numbers.
+That prints one answer beside a blank it gives away, which manufactures the
+defect you are looking for. Rewrites that do it are rejected before anyone reads
+them, so proposing one wastes the finding.
+
 When you propose a rewrite, strongly prefer one that keeps the same cN group
 numbers and the same group count: the study screen identifies a blank by its
 position, so changing the group set silently re-points students' saved progress
@@ -88,20 +100,70 @@ which is mainly the enumerated-set case.
 Flashcards render plain Unicode only. No LaTeX, no markdown. Never use em or en
 dashes.`;
 
+/**
+ * An audit plus the mechanical verdict on its own suggested rewrite.
+ *
+ * The model is asked about meaning. Whether its fix would put an answer on
+ * screen next to a blank it gives away is decided by rendering the fix, in
+ * code, and it overrides the model every time.
+ */
+export type CheckedVisibleAnswerAudit = VisibleAnswerAudit & {
+  /** False when the rewrite was withheld; violations say why. */
+  rewrite_safe: boolean;
+  safety_violations: SafetyViolation[];
+};
+
+/** The card written out the way a student meets it, one study card at a time. */
+function renderedCards(clozeText: string, clozeCount?: number): string {
+  const variants = expandStudyVariants(clozeText, clozeCount);
+  const blocks = variants.map((v) => {
+    const lines = [
+      `STUDY CARD ${v.activeGroup} (group c${v.activeGroup} hidden):`,
+      `  on screen: ${v.prompt}`,
+      `  hidden, all at once: ${v.hiddenAnswers.map((a) => `"${a}"`).join(", ") || "nothing"}`,
+    ];
+    if (v.visibleAnswers.length) {
+      lines.push(`  printed from other groups: ${v.visibleAnswers.map((a) => `"${a}"`).join(", ")}`);
+    }
+    return lines.join("\n");
+  });
+  return `${blocks.join("\n\n")}\n\nEach ${BLANK_TOKEN} is a blank box.`;
+}
+
 export async function auditVisibleAnswer(
   client: Anthropic,
   deck: string,
   clozeText: string,
-): Promise<VisibleAnswerAudit | null> {
+  clozeCount?: number,
+): Promise<CheckedVisibleAnswerAudit | null> {
   const response = await client.messages.parse({
     model: REASONING_MODEL,
     max_tokens: 4000,
     thinking: { type: "adaptive" },
     system: SYSTEM,
     messages: [
-      { role: "user", content: `Deck: ${deck}\n\nCard:\n${clozeText}\n\nCan this be answered without knowing the material?` },
+      {
+        role: "user",
+        content:
+          `Deck: ${deck}\n\nWHAT THE STUDENT SEES\n\n${renderedCards(clozeText, clozeCount)}\n\n` +
+          `SOURCE (for writing a corrected version only):\n${clozeText}\n\n` +
+          `Can any of these be answered without knowing the material?`,
+      },
     ],
     output_config: { format: zodOutputFormat(AuditSchema) },
   });
-  return response.parsed_output ?? null;
+  const parsed = response.parsed_output;
+  if (!parsed) return null;
+
+  const rewrite = sanitizeRewrite(parsed.suggested_rewrite, clozeText);
+  if (!rewrite) {
+    return { ...parsed, suggested_rewrite: "", rewrite_safe: true, safety_violations: [] };
+  }
+  const safety = checkRewriteSafety(clozeText, rewrite, clozeCount);
+  return {
+    ...parsed,
+    suggested_rewrite: safety.safe ? rewrite : "",
+    rewrite_safe: safety.safe,
+    safety_violations: safety.violations,
+  };
 }

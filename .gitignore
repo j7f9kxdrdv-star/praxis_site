@@ -51,6 +51,11 @@ reference-textbooks/
 reference-textbooks
 flashcard-leak-report.json
 
+# Leak audit output. Reproducible from the deck it audited, and a review queue
+# is a working document rather than a record: the fixes that come out of it are
+# what gets committed, as UPDATE-by-id SQL.
+flashcard-leak-audit-*.json
+
 # Generated Instagram images. scripts/instagram/ regenerates them from the
 # live site on demand, so tracking ~1.5MB of PNG that changes every time the
 # design does buys nothing.

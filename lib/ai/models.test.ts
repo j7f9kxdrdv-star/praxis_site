@@ -27,14 +27,15 @@ const MODEL_ID = /["'`](claude-[a-z0-9.\-]*\d[a-z0-9.\-]*)["'`]/g;
 /**
  * Files allowed to name a model, and why.
  *
- * flashcard-leak-judge is plain ESM and cannot import a TypeScript constant
- * without the loader, so it keeps a literal plus an env override. Every other
- * exception has to be argued for here, in the open.
+ * Only the constants file and its test. The one exception that used to be here,
+ * flashcard-leak-judge.mjs, was plain ESM and could not import a TypeScript
+ * constant; its replacement runs under vite-node and imports BULK_JUDGE_MODEL
+ * like everything else. Any new exception has to be argued for here, in the
+ * open.
  */
 const ALLOWED = [
   path.join("lib", "ai", "models.ts"),
   path.join("lib", "ai", "models.test.ts"),
-  path.join("scripts", "flashcard-leak-judge.mjs"),
 ];
 
 describe("MODEL IDS LIVE IN ONE PLACE", () => {

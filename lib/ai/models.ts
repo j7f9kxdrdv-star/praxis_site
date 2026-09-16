@@ -41,10 +41,9 @@ export const REASONING_MODEL = "claude-opus-5";
  * on the flashcard leak check specifically, which is the whole job: a judge
  * that cries wolf on clean cards is worse than no judge.
  *
- * scripts/flashcard-leak-judge.mjs is plain ESM and cannot import this file
- * without the TypeScript loader, so it keeps its own literal and an env
- * override. It is listed here so the inventory is complete, and
- * models.test.ts knows about that exception by name.
+ * The flashcard leak audit runs under vite-node and imports this constant
+ * directly. Its predecessor was plain ESM, kept its own literal, and was the
+ * single exception models.test.ts had to carve out; that exception is gone.
  */
 export const BULK_JUDGE_MODEL = "claude-sonnet-5";
 

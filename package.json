@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "qc:flashcards": "node scripts/flashcard-qc.mjs",
-    "qc:flashcard-leaks": "node scripts/flashcard-leak-judge.mjs",
+    "qc:flashcard-leaks": "vite-node scripts/flashcards/leak-audit.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },

@@ -12,7 +12,7 @@
 import { createClient } from "@supabase/supabase-js";
 import Anthropic from "@anthropic-ai/sdk";
 import fs from "fs";
-import { auditVisibleAnswer, type VisibleAnswerAudit } from "../../lib/insights/auditVisibleAnswer";
+import { auditVisibleAnswer, type CheckedVisibleAnswerAudit } from "../../lib/insights/auditVisibleAnswer";
 
 const env = Object.fromEntries(
   fs.readFileSync(".env.local", "utf8").split("\n")
@@ -61,7 +61,7 @@ const candidates = [...byCard.entries()]
   .map(([id]) => cardById.get(id));
 
 console.error(`candidates (never failed, seen 3+ times): ${candidates.length}\n`);
-const results: (VisibleAnswerAudit & { id: string; deck: string; clozeText: string })[] = [];
+const results: (CheckedVisibleAnswerAudit & { id: string; deck: string; clozeText: string })[] = [];
 let done = 0;
 const POOL = 8;
 async function worker(q: any[]) {
@@ -70,7 +70,7 @@ async function worker(q: any[]) {
     if (!c) return;
     const deck = deckTitle.get(c.deck_id) ?? "Unknown";
     try {
-      const a = await auditVisibleAnswer(anthropic, deck, c.cloze_text);
+      const a = await auditVisibleAnswer(anthropic, deck, c.cloze_text, c.cloze_count ?? undefined);
       if (a) results.push({ ...a, id: c.id, deck, clozeText: c.cloze_text });
     } catch (e) {
       console.error(`  failed ${c.id.slice(0, 8)}: ${e instanceof Error ? e.message : e}`);
@@ -87,4 +87,9 @@ const how = new Map<string, number>();
 bad.forEach((r) => how.set(r.how, (how.get(r.how) ?? 0) + 1));
 [...how.entries()].sort((a, b) => b[1] - a[1]).forEach(([k, n]) => console.error(`    ${String(n).padStart(4)}  ${k}`));
 console.error(`  fixes that preserve the group set: ${bad.filter((r) => r.fix_preserves_groups).length}`);
+const withheld = bad.filter((r) => !r.rewrite_safe);
+if (withheld.length) {
+  console.error(`  rewrites withheld because rendering them made a card worse: ${withheld.length}`);
+  for (const r of withheld) console.error(`    ${r.id.slice(0, 8)}  ${r.safety_violations.map((v) => v.code).join(", ")}`);
+}
 console.error(`  written to ${OUT}`);
