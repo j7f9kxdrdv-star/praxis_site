@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { buildDailyPrompt, buildWeeklyPrompt } from './prompts';
 import type { ReportMetrics } from './metrics';
+import { REASONING_MODEL } from '@/lib/ai/models';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -29,9 +30,7 @@ export async function generateReport(metrics: ReportMetrics): Promise<string> {
     : buildWeeklyPrompt(metrics);
 
   const message = await client.messages.create({
-    // Opus 5. The rest of the app (diagnoseCard, auditVisibleAnswer) was
-    // already here; reports were the one module left a generation behind.
-    model: 'claude-opus-5',
+    model: REASONING_MODEL,
     // THINKING TOKENS COUNT AGAINST THIS. The first Opus 5 run spent 385
     // tokens thinking and then hit the 1,024 ceiling partway through section
     // five, so the report was silently truncated mid-sentence. A five hundred

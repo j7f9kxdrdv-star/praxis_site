@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod";
+import { REASONING_MODEL } from "@/lib/ai/models";
 
 /**
  * Can this card be answered WITHOUT knowing the material?
@@ -93,7 +94,7 @@ export async function auditVisibleAnswer(
   clozeText: string,
 ): Promise<VisibleAnswerAudit | null> {
   const response = await client.messages.parse({
-    model: "claude-opus-5",
+    model: REASONING_MODEL,
     max_tokens: 4000,
     thinking: { type: "adaptive" },
     system: SYSTEM,
