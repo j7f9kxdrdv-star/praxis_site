@@ -317,5 +317,25 @@
       "C. Stage 2 fills most of the night, but the deep arousal threshold that leaves a sleepwalker almost impossible to wake belongs to the stage below it."
     ],
     "teaching_point": "REM paralyses the body, so anything a sleeper physically DOES happens outside REM. That one fact files sleepwalking, night terrors and bedwetting under non-REM without memorising a list."
+  },
+  {
+    "slug": "fish-gill-countercurrent",
+    "eyebrow": "Biology: Gas Exchange",
+    "stem": "In a fish gill, blood flows opposite to the water. Why does that matter?",
+    "options": [
+      "A. Water flows faster",
+      "B. Pumping costs less",
+      "C. Less surface is needed",
+      "D. The gradient never closes"
+    ],
+    "answer": "D",
+    "answer_text": "The gradient never closes",
+    "explanation": "Run blood and water the same way and they meet in the middle: the two reach the same oxygen level partway along, diffusion stops, and the rest of the gill does nothing. Run them opposite and blood always faces water slightly richer in oxygen, so a small difference survives the whole length and uptake never stalls.",
+    "distractors": [
+      "A. Flow speed is set by pumping, not by direction. Reversing the water changes the gradient it meets, not how fast it moves.",
+      "B. Countercurrent costs the same to pump. What it buys is more oxygen per breath, not a cheaper breath.",
+      "C. It makes existing surface far more productive, but gills are still elaborately folded. Countercurrent multiplies the value of surface area rather than replacing the need for it."
+    ],
+    "teaching_point": "Countercurrent exchange exists to stop a gradient from collapsing. Same-direction flow equilibrates and then stalls halfway; opposite-direction flow keeps a small difference alive end to end. The same trick runs the vasa recta in your kidney and the blood vessels in a whale's flipper."
   }
 ]
