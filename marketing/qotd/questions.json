@@ -297,5 +297,25 @@
       "D. Volume sets how far the level drops, not whether it drops. Any object dense enough to sink gives the same answer."
     ],
     "teaching_point": "Ask what sets the displacement before you ask how much. A floating object displaces its weight, a submerged one displaces its volume, and every buoyancy question that looks like a trick is really asking you to notice which rule applies."
+  },
+  {
+    "slug": "sleepwalker-which-stage",
+    "eyebrow": "Psychology: Sleep and Consciousness",
+    "stem": "Someone walks and talks during sleep and remembers none of it. Which stage?",
+    "options": [
+      "A. REM",
+      "B. Stage 1",
+      "C. Stage 2",
+      "D. Stage 3"
+    ],
+    "answer": "D",
+    "answer_text": "Stage 3",
+    "explanation": "REM is when the brain paralyses the body, so walking is the one thing REM cannot produce. Sleepwalking comes out of the deepest non-REM sleep, stage 3, early in the night. No dream is being acted out, which is why nothing is remembered.",
+    "distractors": [
+      "A. REM is where vivid dreams live, so it is the intuitive answer. It is also where muscle atonia shuts the body down. A sleeper in REM cannot stand up.",
+      "B. Stage 1 is the brief drift at sleep onset. Hypnic jerks belong here, not a walk across the house.",
+      "C. Stage 2 fills most of the night, but the deep arousal threshold that leaves a sleepwalker almost impossible to wake belongs to the stage below it."
+    ],
+    "teaching_point": "REM paralyses the body, so anything a sleeper physically DOES happens outside REM. That one fact files sleepwalking, night terrors and bedwetting under non-REM without memorising a list."
   }
 ]
