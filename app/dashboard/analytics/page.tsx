@@ -9,6 +9,8 @@ import { localDayKey } from "@/lib/analytics/dailySeries";
 import {
   buildCombinedSeries,
   runsFor,
+  bridgesFor,
+  quietCount,
   seriesCaption,
   type CombinedSeries,
   type ModalityPoint,
@@ -298,44 +300,108 @@ function PerformanceOverTime({
     [active, selectable],
   );
 
+  // The note below the chart explains bridges, so it appears only when one is
+  // actually drawn. A chart with no gaps should not carry a caption about gaps.
+  const bridged = useMemo(
+    () => ({
+      questions: bridgesFor(series.points, "questions").length > 0,
+      flashcards: bridgesFor(series.points, "flashcards").length > 0,
+      quietQuestions: quietCount(series.points, "questions"),
+      quietFlashcards: quietCount(series.points, "flashcards"),
+    }),
+    [series.points],
+  );
+  const showBridgeNote = (showQ && bridged.questions) || (showF && bridged.flashcards);
+
   const point = active !== null ? series.points[active] : null;
   const grainWord =
     series.granularity === "day" ? "" : series.granularity === "week" ? "Week of " : "";
 
-  const line = (modality: "questions" | "flashcards", color: string, dashed: boolean) =>
-    runsFor(series.points, modality).map((run, i) => {
-      const pts: [number, number][] = run.map((r) => [xFor(r.index), yFor(r.value)]);
-      return (
-        <g key={`${modality}-${i}`}>
-          <path
-            d={buildSvgPath(pts)}
-            fill="none"
-            stroke={color}
-            strokeWidth={2}
-            strokeDasharray={dashed ? "5 4" : undefined}
-            strokeLinecap="round"
-            vectorEffect="non-scaling-stroke"
-          />
-          {run.map((r) => {
-            const m = series.points[r.index][modality];
-            const thin = m.evidence === "LIMITED";
-            return (
-              <circle
-                key={r.index}
-                cx={xFor(r.index)}
-                cy={yFor(r.value)}
-                r={thin ? 2.5 : 3.5}
-                fill={thin ? "var(--color-prax-cream)" : color}
-                stroke={color}
-                strokeWidth={thin ? 1.5 : 0}
+  // ── Observed segments, and the joins between them ───────────────────────
+  //
+  // A GAP CANNOT BORROW THE FLASHCARD SERIES' DASHES. First-look recall is
+  // already drawn dashed, which is how a reader who cannot separate the two
+  // colours tells the series apart. Spending that same signal on "no data"
+  // would make a dashed flashcard line ambiguous with a bridge.
+  //
+  // So a bridge is distinguished three other ways at once, none of which the
+  // series identity is using: it is faint, it is thin, and it is STRAIGHT
+  // while every observed segment curves. Straightness is the strongest of the
+  // three, because it is the one thing real data never looks like here.
+  const line = (modality: "questions" | "flashcards", color: string, dashed: boolean) => {
+    const runs = runsFor(series.points, modality);
+    const bridges = bridgesFor(series.points, modality);
+    return (
+      <g key={modality}>
+        {bridges.map((b) => {
+          // THE MIDDLE OF A BRIDGE FADES OUT. A join drawn at one flat opacity
+          // is fine over a weekend and wrong over a month: on a real account
+          // with questions on two days out of thirty, it stretched the width of
+          // the chart at a near constant height and read as "accuracy held at
+          // 55% all month", which is the one thing a gap must never say.
+          //
+          // Fading the centre leaves the ends attached, so the eye still tracks
+          // one history, while the trail visibly goes cold where nothing was
+          // measured. Long gaps fade harder than short ones because they are
+          // less known, not because they are less important.
+          const id = `bridge-${modality}-${b.fromIndex}`;
+          const x1 = xFor(b.fromIndex);
+          const x2 = xFor(b.toIndex);
+          const centre = Math.max(0.05, 0.4 - 0.04 * b.missing);
+          return (
+            <g key={id}>
+              <defs>
+                <linearGradient id={id} gradientUnits="userSpaceOnUse" x1={x1} y1={0} x2={x2} y2={0}>
+                  <stop offset="0%" stopColor={color} stopOpacity={0.55} />
+                  <stop offset="50%" stopColor={color} stopOpacity={centre} />
+                  <stop offset="100%" stopColor={color} stopOpacity={0.55} />
+                </linearGradient>
+              </defs>
+              <path
+                d={`M${x1},${yFor(b.fromValue)} L${x2},${yFor(b.toValue)}`}
+                fill="none"
+                stroke={`url(#${id})`}
+                strokeWidth={1.25}
+                strokeDasharray="1 6"
+                strokeLinecap="round"
                 vectorEffect="non-scaling-stroke"
-                opacity={active === null || active === r.index ? 1 : 0.4}
               />
-            );
-          })}
-        </g>
-      );
-    });
+            </g>
+          );
+        })}
+        {runs.map((run, i) => (
+          <g key={`${modality}-${i}`}>
+            <path
+              d={buildSvgPath(run.map((r) => [xFor(r.index), yFor(r.value)]) as [number, number][])}
+              fill="none"
+              stroke={color}
+              strokeWidth={2}
+              strokeDasharray={dashed ? "5 4" : undefined}
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+            {run.map((r) => {
+              const m = series.points[r.index][modality];
+              const thin = m.evidence === "LIMITED";
+              return (
+                <circle
+                  key={r.index}
+                  cx={xFor(r.index)}
+                  cy={yFor(r.value)}
+                  r={thin ? 2.5 : 3.5}
+                  fill={thin ? "var(--color-prax-cream)" : color}
+                  stroke={color}
+                  strokeWidth={thin ? 1.5 : 0}
+                  vectorEffect="non-scaling-stroke"
+                  opacity={active === null || active === r.index ? 1 : 0.4}
+                />
+              );
+            })}
+          </g>
+        ))}
+      </g>
+    );
+  };
 
   return (
     <div>
@@ -518,7 +584,7 @@ function PerformanceOverTime({
                     label="First-look recall"
                     m={point.flashcards}
                     unit="recalled"
-                    absent="No card reviews"
+                    absent="No flashcard activity"
                     dot={F_COLOR}
                   />
                 )}
@@ -546,7 +612,36 @@ function PerformanceOverTime({
             <span>{series.points[series.points.length - 1]?.label}</span>
           </div>
 
-          <div className="flex justify-end items-center mt-2.5 gap-3 flex-wrap">
+          {/* The quiet-day count used to sit in the subtitle, where it read as a
+              complaint about the student every time the page loaded. It belongs
+              next to the thing it explains, said once and quietly. */}
+          <div className="flex justify-between items-center mt-2.5 gap-3 flex-wrap">
+            {showBridgeNote ? (
+              <>
+                <p className="sr-only">
+                  {showQ
+                    ? `${bridged.quietQuestions} ${series.granularity}s with no question activity. `
+                    : ""}
+                  {showF
+                    ? `${bridged.quietFlashcards} ${series.granularity}s with no flashcard activity. `
+                    : ""}
+                  Faint joins connect observed days only. No values are estimated.
+                </p>
+                <span
+                  aria-hidden="true"
+                  style={{
+                    fontSize: 9.5,
+                    letterSpacing: "0.04em",
+                    color: "var(--color-prax-ink-mute)",
+                    fontStyle: "italic",
+                  }}
+                >
+                  Faint joins span days with no activity. Nothing is estimated.
+                </span>
+              </>
+            ) : (
+              <span />
+            )}
             {/* Clicking a legend entry isolates that series, which is the same
                 thing the toggle above does. Two routes to one behaviour, since
                 a legend is where a reader's hand already is. */}
@@ -2124,13 +2219,10 @@ export default function AnalyticsPage() {
                   after the chart had become daily and range-scoped, which is
                   worse than no caption because a caption is believed.
 
-                  The quiet-day count names the modality it counted, since in
-                  compare mode two different series can each be missing on a
-                  different day. */}
+                  The quiet-day count used to hang off the end of this line. It
+                  has moved next to the legend, beside the faint joins it is
+                  actually describing. */}
               {seriesCaption(series.granularity, periodLabel)}
-              {series.points.length - series.measured > 0
-                ? ` · ${series.points.length - series.measured} with no activity`
-                : ""}
             </SmallCaps>
           </div>
 

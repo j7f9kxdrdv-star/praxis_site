@@ -189,6 +189,61 @@ export function runsFor(
   return out;
 }
 
+/**
+ * The segments that carry a line ACROSS days the student did not study.
+ *
+ * WHY THE LINE USED TO BREAK. runsFor splits a series at every unmeasured
+ * bucket, which is the honest shape of the data: there is no observation on a
+ * day nobody studied, so there is nothing to draw. Rendered, though, a student
+ * who took two days off got a chart in pieces, which reads as "something is
+ * broken" rather than "you rested".
+ *
+ * A bridge joins the last real observation to the next real one and carries NO
+ * value of its own. It is drawn faint and straight while observed segments are
+ * solid and curved, so the eye can tell a measurement from a join. Nothing is
+ * interpolated, nothing is carried forward, and no marker is placed on a day
+ * that has no data: the endpoints are the only real numbers involved.
+ *
+ * Each modality bridges on its own history. A day with questions but no cards
+ * is a gap for one series and an observation for the other.
+ */
+export interface SeriesBridge {
+  fromIndex: number;
+  toIndex: number;
+  fromValue: number;
+  toValue: number;
+  /** Unmeasured buckets spanned. Always at least 1, or it would not be a gap. */
+  missing: number;
+}
+
+export function bridgesFor(
+  points: CombinedPoint[],
+  modality: "questions" | "flashcards",
+): SeriesBridge[] {
+  const runs = runsFor(points, modality);
+  const out: SeriesBridge[] = [];
+  for (let i = 1; i < runs.length; i++) {
+    const prev = runs[i - 1][runs[i - 1].length - 1];
+    const next = runs[i][0];
+    out.push({
+      fromIndex: prev.index,
+      toIndex: next.index,
+      fromValue: prev.value,
+      toValue: next.value,
+      missing: next.index - prev.index - 1,
+    });
+  }
+  return out;
+}
+
+/** Buckets in this range where the modality recorded nothing. */
+export function quietCount(
+  points: CombinedPoint[],
+  modality: "questions" | "flashcards",
+): number {
+  return points.filter((p) => p[modality].value === null).length;
+}
+
 /** What the subtitle says, from the range and the granularity. */
 export function seriesCaption(granularity: Granularity, periodLabel: string): string {
   const grain =
