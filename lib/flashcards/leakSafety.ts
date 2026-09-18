@@ -29,6 +29,7 @@ export type LeakType =
   // proven in code
   | "NOTHING_MASKED"
   | "VERBATIM_ANSWER_VISIBLE"
+  | "COMPOSED_ANSWER_VISIBLE"
   // judged by the model
   | "COMPLEMENTARY_PAIR_VISIBLE"
   | "SYNONYM_VISIBLE"
@@ -40,6 +41,7 @@ export type LeakType =
 export const CODE_PROVEN_LEAK_TYPES: LeakType[] = [
   "NOTHING_MASKED",
   "VERBATIM_ANSWER_VISIBLE",
+  "COMPOSED_ANSWER_VISIBLE",
 ];
 
 export interface StructuralFinding {
@@ -79,6 +81,15 @@ export function structuralFindings(
         explanation: `Studying c${v.activeGroup} hides "${exposed}", but the same word is printed elsewhere on the same card.`,
       });
     }
+    for (const { answer, parts } of visibleComposition(v)) {
+      out.push({
+        activeGroup: v.activeGroup,
+        leakType: "COMPOSED_ANSWER_VISIBLE",
+        explanation:
+          `Studying c${v.activeGroup} hides "${answer}", but the card prints every piece of it ` +
+          `separately: ${parts.map((p) => `"${p}"`).join(" and ")}.`,
+      });
+    }
   }
   return out;
 }
@@ -94,6 +105,55 @@ export function visibleVerbatim(v: StudyVariant): string[] {
       seen.add(key);
       out.push(answer);
     }
+  }
+  return out;
+}
+
+/**
+ * Hidden answers that the visible text spells out one piece at a time.
+ *
+ * THE CARD THAT MOTIVATED THIS. An E/Z notation card hid "E/Z" on one group
+ * while another group printed "-> Z (zusammen)" and "-> E (entgegen)" two lines
+ * below. The answer was on screen, just not as one string, so the verbatim
+ * check compared "E/Z" against the page and found nothing.
+ *
+ * NARROWED AFTER A BANK SWEEP. The first version asked only whether the pieces
+ * appeared anywhere in the visible text, and fired on eight cards of which
+ * seven were fine: "For charge Q held at voltage V, capacitance is C = ____"
+ * hides Q/V while naming Q and V in the stem, which is the whole point of the
+ * card. The symbols are scaffolding and the ORDER is the content, so seeing
+ * them gives nothing away.
+ *
+ * The discriminator is WHERE the pieces come from. If they are other groups'
+ * ANSWERS, the card is answering itself: the E/Z card hid "E/Z" on one group
+ * while another group printed "Z" and "E". If they are plain stem text, the
+ * card is defining its terms, which is ordinary teaching. So only visible
+ * ANSWERS count here.
+ *
+ * Still limited to answers carrying an explicit separator (E/Z, cis/trans,
+ * R/S). Splitting on spaces would flag "small intestine" whenever "small"
+ * appeared, and a check that cries wolf is worse than no check.
+ *
+ * Single characters are matched even though containsWord skips them, because a
+ * one-letter answer is exactly what this class is made of. The boundary test is
+ * strict to compensate.
+ */
+export function visibleComposition(v: StudyVariant): { answer: string; parts: string[] }[] {
+  const out: { answer: string; parts: string[] }[] = [];
+  // Only the other groups' answers, not the surrounding prose.
+  const haystack = v.visibleAnswers.map(normalizeAnswer).join(" | ");
+  if (!haystack) return out;
+  for (const answer of v.hiddenAnswers) {
+    const parts = normalizeAnswer(answer)
+      .split(/\s*[/|]\s*/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    if (parts.length < 2) continue;
+    const allVisible = parts.every((p) => {
+      const esc = p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp(`(^|[^a-z0-9])${esc}([^a-z0-9]|$)`, "i").test(haystack);
+    });
+    if (allVisible) out.push({ answer, parts });
   }
   return out;
 }

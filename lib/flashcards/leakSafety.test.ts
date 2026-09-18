@@ -7,6 +7,7 @@ import {
   checkRewriteSafety,
   decideAction,
   sanitizeRewrite,
+  visibleComposition,
 } from "./leakSafety";
 import { expandStudyVariants } from "./studyVariants";
 
@@ -329,5 +330,55 @@ describe("pulling the giveaway inside the blank", () => {
     expect(checkRewriteSafety(card, shrunk).violations.map((v) => v.code)).toContain(
       "DROPS_TESTED_ANSWER",
     );
+  });
+});
+
+describe("an answer the card spells out one piece at a time", () => {
+  // From a live card: "E/Z" was hidden on one group while another group printed
+  // "-> Z (zusammen)" and "-> E (entgegen)" two lines below. The verbatim check
+  // compared the string "E/Z" against the page and found nothing.
+  const ez =
+    "Configuration is given by {{c1::E/Z}} notation: same side gives {{c2::Z}} (zusammen), opposite sides gives {{c2::E}} (entgegen).";
+
+  it("catches the answer assembled from other visible answers", () => {
+    const found = structuralFindings(ez);
+    expect(found.map((f) => f.leakType)).toContain("COMPOSED_ANSWER_VISIBLE");
+    expect(found.find((f) => f.leakType === "COMPOSED_ANSWER_VISIBLE")!.explanation).toMatch(/"e" and "z"|"z" and "e"/i);
+  });
+
+  it("goes quiet once the pieces hide with the whole", () => {
+    const fixed =
+      "Configuration is given by {{c1::E/Z}} notation: same side gives {{c1::Z}} (zusammen), opposite sides gives {{c1::E}} (entgegen).";
+    expect(structuralFindings(fixed)).toEqual([]);
+  });
+
+  it("needs every piece visible, not just one", () => {
+    const half = "Configuration is {{c1::E/Z}} notation: same side gives {{c2::Z}} (zusammen).";
+    expect(structuralFindings(half).map((f) => f.leakType)).not.toContain("COMPOSED_ANSWER_VISIBLE");
+  });
+
+  it("ignores answers with no separator, so multi-word terms do not flood it", () => {
+    const card = "The small bowel has three parts; the first is the {{c1::small intestine}} proper.";
+    expect(structuralFindings(card).map((f) => f.leakType)).not.toContain("COMPOSED_ANSWER_VISIBLE");
+  });
+
+  it("stays quiet when the pieces are stem scaffolding rather than other answers", () => {
+    // The card names Q and V so the student can assemble the relationship. The
+    // ORDER is the content; seeing the symbols gives nothing away.
+    const formula = "For charge Q held at voltage V, capacitance is C = {{c1::Q/V}}.";
+    expect(structuralFindings(formula).map((f) => f.leakType)).not.toContain("COMPOSED_ANSWER_VISIBLE");
+  });
+
+  it("works on single letters, which containsWord deliberately skips", () => {
+    expect(visibleComposition({
+      activeGroup: 1,
+      prompt: "gives R at one centre and S at the other",
+      revealed: "",
+      hiddenAnswers: ["R/S"],
+      visibleAnswers: ["R", "S"],
+      hints: [],
+      blankWidths: [3],
+      masksNothing: false,
+    })).toHaveLength(1);
   });
 });

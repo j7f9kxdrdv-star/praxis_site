@@ -337,5 +337,25 @@
       "C. It makes existing surface far more productive, but gills are still elaborately folded. Countercurrent multiplies the value of surface area rather than replacing the need for it."
     ],
     "teaching_point": "Countercurrent exchange exists to stop a gradient from collapsing. Same-direction flow equilibrates and then stalls halfway; opposite-direction flow keeps a small difference alive end to end. The same trick runs the vasa recta in your kidney and the blood vessels in a whale's flipper."
+  },
+  {
+    "slug": "spanish-intrudes-on-french",
+    "eyebrow": "Psychology: Memory",
+    "stem": "You studied Spanish for years. Learning French now, Spanish words keep intruding. This is:",
+    "options": [
+      "A. Proactive interference",
+      "B. Retroactive interference",
+      "C. Source amnesia",
+      "D. Encoding failure"
+    ],
+    "answer": "A",
+    "answer_text": "Proactive interference",
+    "explanation": "Name the direction the interference travels. Old learning reaching forward to disrupt new learning is proactive, and that is what is happening here: Spanish came first and is intruding on French. Retroactive runs the other way, new learning reaching back to disrupt something older.",
+    "distractors": [
+      "B. Retroactive interference would be French corrupting your Spanish, the newer material damaging the older. The scenario runs the opposite way.",
+      "C. Source amnesia is recalling something correctly but forgetting where it came from. Here the wrong word arrives; the problem is retrieval of the wrong language, not a missing origin.",
+      "D. Encoding failure means the material never got in. Your Spanish is encoded rather too well, which is precisely why it keeps surfacing."
+    ],
+    "teaching_point": "Read the prefix as a direction of travel. PRO goes forward, so old material disrupts new. RETRO goes back, so new material disrupts old. Fix which one came first and the label follows without memorising a definition."
   }
 ]
