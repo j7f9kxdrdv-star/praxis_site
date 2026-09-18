@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
+import { describeScope, type ResetScope } from "@/lib/account/resetScope";
 
 interface OfficialScore {
   id: string;
@@ -66,6 +67,17 @@ export default function SettingsPage() {
   const [scoreError, setScoreError] = useState<string | null>(null);
 
   const [signingOut, setSigningOut] = useState(false);
+
+  // Reset flow. `armed` is the scope the student has opened the confirmation
+  // for, and stays null until they pick one, so the destructive path needs a
+  // deliberate choice before a confirmation box even appears.
+  const [armed, setArmed] = useState<ResetScope | null>(null);
+  const [resetCounts, setResetCounts] = useState<Record<string, number> | null>(null);
+  const [resetTotal, setResetTotal] = useState<number | null>(null);
+  const [confirmText, setConfirmText] = useState("");
+  const [resetting, setResetting] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [resetDone, setResetDone] = useState<number | null>(null);
 
   useEffect(() => {
     async function loadScores() {
@@ -296,6 +308,53 @@ export default function SettingsPage() {
     setNewPassword("");
     setConfirmPassword("");
     setTimeout(() => setPasswordSaved(false), 2500);
+  }
+
+  // What a reset would destroy, counted live. Shown before the button is armed
+  // so the number is on screen while the decision is being made, not after.
+  async function armReset(scope: ResetScope) {
+    setArmed(scope);
+    setConfirmText("");
+    setResetError(null);
+    setResetDone(null);
+    setResetCounts(null);
+    setResetTotal(null);
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+    if (!token) return;
+    const res = await fetch("/api/account/reset", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return;
+    const json = await res.json();
+    setResetCounts(json.counts ?? null);
+    setResetTotal(typeof json.total === "number" ? json.total : null);
+  }
+
+  async function runReset() {
+    if (!armed) return;
+    setResetting(true);
+    setResetError(null);
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData.session?.access_token;
+    const res = await fetch("/api/account/reset", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ scope: armed, confirm: confirmText.trim() }),
+    });
+    const json = await res.json().catch(() => ({}));
+    setResetting(false);
+    if (!res.ok || !json.ok) {
+      setResetError(json.error || "The reset did not complete. Nothing was reported as cleared.");
+      return;
+    }
+    setResetDone(json.deleted ?? 0);
+    setArmed(null);
+    setConfirmText("");
+    await refreshProfile();
+    // A full reset reopens onboarding, so send them into it rather than leaving
+    // them on a settings page whose answers have just been emptied.
+    if (json.scope === "everything") router.push("/onboarding");
   }
 
   async function signOut() {
@@ -619,6 +678,140 @@ export default function SettingsPage() {
         </form>
       </Section>
 
+      {/* ─────────── Reset ───────────
+          Placed last before Sign out, and deliberately quiet: this is the only
+          control on the page that destroys something. The counts are fetched
+          and shown BEFORE the confirmation box appears, so the number is on
+          screen while the decision is being made rather than in a toast
+          afterwards. */}
+      <Section title="Reset your account">
+        <p className="text-[13px] mb-4" style={{ color: "var(--color-prax-ink-soft)" }}>
+          Clear your study history and start the decks fresh. This cannot be
+          undone.
+        </p>
+
+        {resetDone !== null && (
+          <div
+            className="mb-4 px-4 py-3 rounded-lg text-[13px]"
+            style={{ background: "var(--color-prax-green-tint)", color: "var(--color-prax-ink)" }}
+          >
+            Done. {resetDone.toLocaleString()} record{resetDone === 1 ? "" : "s"} cleared. Your decks
+            start fresh from here.
+          </div>
+        )}
+
+        {armed === null ? (
+          <div className="flex flex-col sm:flex-row gap-2.5">
+            {(["progress", "everything"] as ResetScope[]).map((scope) => (
+              <button
+                key={scope}
+                onClick={() => armReset(scope)}
+                className="px-4 py-2.5 rounded-lg font-semibold text-[13px] text-left"
+                style={{
+                  background: "transparent",
+                  color: "var(--color-prax-ink)",
+                  border: "1px solid var(--color-prax-cream-border)",
+                }}
+              >
+                {describeScope(scope).title}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div
+            className="px-4 py-4 rounded-xl"
+            style={{ border: "1px solid rgba(155,44,44,0.35)", background: "rgba(155,44,44,0.04)" }}
+          >
+            <div
+              className="text-[11px] font-semibold uppercase mb-2"
+              style={{ letterSpacing: "0.14em", color: "#9b2c2c" }}
+            >
+              {describeScope(armed).title}
+            </div>
+            <p className="text-[13px] mb-3" style={{ color: "var(--color-prax-ink)" }}>
+              {describeScope(armed).effect}
+            </p>
+
+            {resetTotal === null ? (
+              <p className="text-[12.5px] mb-3" style={{ color: "var(--color-prax-ink-soft)" }}>
+                Counting what this would clear…
+              </p>
+            ) : (
+              <div className="mb-3">
+                <p className="text-[13px] mb-1.5" style={{ color: "var(--color-prax-ink)" }}>
+                  This deletes{" "}
+                  <strong>{resetTotal.toLocaleString()} record{resetTotal === 1 ? "" : "s"}</strong>,
+                  including:
+                </p>
+                <ul
+                  className="text-[12.5px] leading-relaxed"
+                  style={{ color: "var(--color-prax-ink-soft)", fontVariantNumeric: "tabular-nums" }}
+                >
+                  {RESET_HIGHLIGHTS.filter((h) => (resetCounts?.[h.table] ?? 0) > 0).map((h) => (
+                    <li key={h.table}>
+                      {(resetCounts?.[h.table] ?? 0).toLocaleString()} {h.label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <label className="block mb-3">
+              <div
+                className="text-[11px] font-semibold uppercase mb-1.5"
+                style={{ letterSpacing: "0.14em", color: "var(--color-prax-ink-mute)" }}
+              >
+                Type RESET to confirm
+              </div>
+              <input
+                value={confirmText}
+                onChange={(e) => setConfirmText(e.target.value)}
+                autoComplete="off"
+                className="w-full px-3 py-2 rounded-lg text-[14px]"
+                style={{
+                  background: "var(--color-prax-cream-card)",
+                  border: "1px solid var(--color-prax-cream-border)",
+                  color: "var(--color-prax-ink)",
+                }}
+              />
+            </label>
+
+            {resetError && (
+              <p className="text-[12.5px] mb-3" style={{ color: "#9b2c2c" }}>
+                {resetError}
+              </p>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <button
+                onClick={runReset}
+                disabled={confirmText.trim() !== "RESET" || resetting}
+                className="px-5 py-2.5 rounded-lg font-semibold text-[13px] disabled:opacity-40"
+                style={{ background: "#9b2c2c", color: "#fff", border: 0 }}
+              >
+                {resetting ? "Clearing…" : describeScope(armed).title}
+              </button>
+              <button
+                onClick={() => {
+                  setArmed(null);
+                  setConfirmText("");
+                  setResetError(null);
+                }}
+                disabled={resetting}
+                className="px-5 py-2.5 rounded-lg font-semibold text-[13px]"
+                style={{
+                  background: "transparent",
+                  color: "var(--color-prax-ink)",
+                  border: "1px solid var(--color-prax-cream-border)",
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </Section>
+
       <Section title="Sign out">
         <p
           className="text-[13px] mb-3"
@@ -643,6 +836,20 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+/**
+ * The tables worth naming in the confirmation, in the order a student would
+ * recognise them. The reset clears twelve tables; listing all twelve reads as
+ * a database dump and buries the two numbers that actually mean something.
+ */
+const RESET_HIGHLIGHTS: { table: string; label: string }[] = [
+  { table: "flashcard_reviews", label: "flashcard reviews" },
+  { table: "flashcard_user_state", label: "card schedules" },
+  { table: "question_attempts", label: "question attempts" },
+  { table: "practice_sessions", label: "practice sessions" },
+  { table: "performance_reports", label: "saved reports" },
+  { table: "study_plan_tasks", label: "study plan tasks" },
+];
 
 /* ─────────────── tiny field helpers ─────────────── */
 

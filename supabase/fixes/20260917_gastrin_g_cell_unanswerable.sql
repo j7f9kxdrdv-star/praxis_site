@@ -115,5 +115,8 @@ WHERE id IN (
 -- that set rather than by the hormone:
 --   "Alongside parietal and chief cells, the third secretory cell type of the
 --    gastric glands is the {{c1::G}} cell."
--- Not included here: adding a card is an INSERT, not an UPDATE by id, and it puts
--- a new card into the new-card queue. Mikko's call.
+-- RESOLVED 2026-09-17: Mikko approved. See 20260917_add_g_cell_card.sql, which
+-- inserts it at position 24. The wording there differs from the sketch above:
+-- this deck already teaches surface mucous cells, so "the third secretory cell
+-- type" was wrong, and naming parietal and chief would have printed the answers
+-- to two neighbouring cards.
