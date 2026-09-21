@@ -357,5 +357,25 @@
       "D. Encoding failure means the material never got in. Your Spanish is encoded rather too well, which is precisely why it keeps surfacing."
     ],
     "teaching_point": "Read the prefix as a direction of travel. PRO goes forward, so old material disrupts new. RETRO goes back, so new material disrupts old. Fix which one came first and the label follows without memorising a definition."
+  },
+  {
+    "slug": "carrying-a-box-zero-work",
+    "eyebrow": "Physics: Work and Energy",
+    "stem": "You carry a box at steady speed across a flat floor. How much work do you do on it?",
+    "options": [
+      "A. Zero",
+      "B. Weight times distance",
+      "C. Mass times distance",
+      "D. Depends on speed"
+    ],
+    "answer": "A",
+    "answer_text": "Zero",
+    "explanation": "Work counts only the part of a force that points along the motion. Your force on the box is upward, holding it against gravity, while the box moves sideways. The two are perpendicular, so the work is zero. Your arms ache because muscles burn energy holding a load, but none of that energy goes into the box.",
+    "distractors": [
+      "B. Weight times distance is the work of LIFTING the box that far, where the force and the displacement point the same way. Carrying it sideways is the perpendicular case.",
+      "C. Mass times distance is not a unit of work at all. Force appears in the definition, and force is mass times acceleration.",
+      "D. Speed never enters the definition of work. Walking faster changes your power, not the work done on the box, and here that work is zero at any pace."
+    ],
+    "teaching_point": "Work counts only the component of force along the motion, so perpendicular means zero. The same rule explains why the normal force does no work on a sliding block, and why a satellite in a circular orbit keeps a constant speed forever."
   }
 ]
