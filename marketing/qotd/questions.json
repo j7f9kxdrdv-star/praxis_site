@@ -379,23 +379,23 @@
     "teaching_point": "Work counts only the component of force along the motion, so perpendicular means zero. The same rule explains why the normal force does no work on a sliding block, and why a satellite in a circular orbit keeps a constant speed forever."
   },
   {
-    "slug": "why-ice-floats",
-    "eyebrow": "General Chemistry: Intermolecular Forces",
-    "stem": "Almost every solid sinks in its own liquid. Ice floats. Why?",
+    "slug": "whining-intermittent-reinforcement",
+    "eyebrow": "Psychology: Learning and Conditioning",
+    "stem": "A parent tries to end their child's bedtime whining by ignoring it. Most nights they hold firm, but roughly one night in five they give in. A month later the whining is far more persistent than before. What best accounts for this?",
     "options": [
-      "A. It is colder than the water",
-      "B. Trapped air bubbles",
-      "C. An open hydrogen-bonded lattice",
-      "D. Water expands when heated"
+      "A. Ignoring the whining negatively reinforced it",
+      "B. The nights the parent gave in produced spontaneous recovery",
+      "C. The child was shaped by successive approximations",
+      "D. The unpredictable payoff put the whining on a variable-ratio schedule"
     ],
-    "answer": "C",
-    "answer_text": "An open hydrogen-bonded lattice",
-    "explanation": "In liquid water, hydrogen bonds break and reform constantly, so molecules slide close together. On freezing, each molecule locks into four hydrogen bonds pointing at fixed tetrahedral angles, and that geometry holds its neighbours further apart than the jostling liquid does. Fewer molecules per unit volume is lower density, so ice floats.",
+    "answer": "D",
+    "answer_text": "The unpredictable payoff put the whining on a variable-ratio schedule",
+    "explanation": "Ignoring a behaviour is extinction, and extinction only works if it is total. Every night the parent gives in, the whining is reinforced, and because the child cannot predict which night will pay off, the reward arrives after a varying number of attempts. That is a variable-ratio schedule, and of every schedule it produces the highest rate of responding and the greatest resistance to extinction. The parent has not failed to extinguish the whining. They have trained it to survive being ignored.",
     "distractors": [
-      "A. Colder is not the same as less dense. Cool almost any other liquid to its freezing point and the solid that forms still sinks.",
-      "B. Air bubbles make ice cloudy, not buoyant. Clear ice, frozen slowly with the air driven out, floats just as well.",
-      "D. True of water above 4 degrees, and beside the point. The anomaly here is that water expands as it FREEZES, which is the opposite direction."
+      "A. Negative reinforcement means removing something unpleasant in order to increase a behaviour. Ignoring removes nothing; it withholds a reward, which is extinction. This is the single most confused pair of terms in the topic.",
+      "B. Spontaneous recovery is an extinguished response reappearing after a rest interval, with no new reward. Here the response never extinguished and it was rewarded outright.",
+      "C. Shaping shapes a new behaviour by rewarding closer and closer approximations of it. The whining already existed in full and nothing was built up in steps."
     ],
-    "teaching_point": "A hydrogen bond is directional, and direction is what costs space. That single fact explains why water is densest at 4 degrees, why a lake freezes from the top down and stays liquid underneath, and why a sealed bottle cracks in the freezer."
+    "teaching_point": "The worst thing you can do to a behaviour you want gone is reward it sometimes. Consistent reward builds a habit that fades quickly once the reward stops; unpredictable reward builds one that barely fades at all. It is why slot machines pay out on a variable ratio, and why giving in just once is never just once."
   }
 ]

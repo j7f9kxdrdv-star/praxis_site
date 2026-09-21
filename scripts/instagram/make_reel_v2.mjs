@@ -271,7 +271,21 @@ export function timeA(q) {
   // What sank Reel #1 was never the timing of the options. It was running a
   // COUNTDOWN over text nobody could finish reading. Those are separable, and
   // only the clock has to wait for comprehension.
-  const read = Math.min(3, Math.max(2, Math.round(stemRead * 0.3)));
+  // The 3s ceiling belongs to the 11s default, where the clip has no room to
+  // give and the loop supplies the rest of the reading time. It is wrong once a
+  // longer clip has been ASKED for with --seconds: there the added seconds
+  // should buy calm reading FIRST, since that is the phase this file exists to
+  // protect, and only then a longer countdown. Without this, --seconds 24 hands
+  // every extra second to the timer and leaves a 42-word stem the same 3s it
+  // had at 11s, which is the arrangement that sank Reel #1.
+  //
+  // This also removes the quiet pressure to write short. A question that needed
+  // more than three seconds of reading used to render badly whatever length was
+  // requested, so the fix always looked like cutting the question.
+  const DECIDE_FLOOR = 5;
+  const read = secondsArg
+    ? Math.max(2, Math.min(Math.ceil(stemRead), secondsArg - DECIDE_FLOOR))
+    : Math.min(3, Math.max(2, Math.round(stemRead * 0.3)));
   let decide = Math.min(10, Math.max(6, Math.round(optRead + reasoningBuffer)));
 
   // THE LOOP IS THE EXTRA THINKING TIME, so the clip does not have to be.
@@ -291,7 +305,6 @@ export function timeA(q) {
   // The DECISION phase absorbs the squeeze, never the reading phase: reading
   // too little is what sank Reel #1, and it is the fix that is working.
   const MAX_TOTAL = secondsArg ?? 11;
-  const DECIDE_FLOOR = 5;
   if (read + decide > MAX_TOTAL) {
     decide = Math.max(DECIDE_FLOOR, MAX_TOTAL - read);
   }
