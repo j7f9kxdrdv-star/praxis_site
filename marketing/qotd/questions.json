@@ -377,5 +377,25 @@
       "D. Speed never enters the definition of work. Walking faster changes your power, not the work done on the box, and here that work is zero at any pace."
     ],
     "teaching_point": "Work counts only the component of force along the motion, so perpendicular means zero. The same rule explains why the normal force does no work on a sliding block, and why a satellite in a circular orbit keeps a constant speed forever."
+  },
+  {
+    "slug": "why-ice-floats",
+    "eyebrow": "General Chemistry: Intermolecular Forces",
+    "stem": "Almost every solid sinks in its own liquid. Ice floats. Why?",
+    "options": [
+      "A. It is colder than the water",
+      "B. Trapped air bubbles",
+      "C. An open hydrogen-bonded lattice",
+      "D. Water expands when heated"
+    ],
+    "answer": "C",
+    "answer_text": "An open hydrogen-bonded lattice",
+    "explanation": "In liquid water, hydrogen bonds break and reform constantly, so molecules slide close together. On freezing, each molecule locks into four hydrogen bonds pointing at fixed tetrahedral angles, and that geometry holds its neighbours further apart than the jostling liquid does. Fewer molecules per unit volume is lower density, so ice floats.",
+    "distractors": [
+      "A. Colder is not the same as less dense. Cool almost any other liquid to its freezing point and the solid that forms still sinks.",
+      "B. Air bubbles make ice cloudy, not buoyant. Clear ice, frozen slowly with the air driven out, floats just as well.",
+      "D. True of water above 4 degrees, and beside the point. The anomaly here is that water expands as it FREEZES, which is the opposite direction."
+    ],
+    "teaching_point": "A hydrogen bond is directional, and direction is what costs space. That single fact explains why water is densest at 4 degrees, why a lake freezes from the top down and stays liquid underneath, and why a sealed bottle cracks in the freezer."
   }
 ]
