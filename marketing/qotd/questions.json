@@ -379,23 +379,23 @@
     "teaching_point": "Work counts only the component of force along the motion, so perpendicular means zero. The same rule explains why the normal force does no work on a sliding block, and why a satellite in a circular orbit keeps a constant speed forever."
   },
   {
-    "slug": "whining-intermittent-reinforcement",
+    "slug": "shop-whining-who-got-conditioned",
     "eyebrow": "Psychology: Learning and Conditioning",
-    "stem": "A parent tries to end their child's bedtime whining by ignoring it. Most nights they hold firm, but roughly one night in five they give in. A month later the whining is far more persistent than before. What best accounts for this?",
+    "stem": "A child whines in a shop until the parent buys the sweet, and the whining stops. Over months the parent gives in faster and faster. What happened to the parent?",
     "options": [
-      "A. Ignoring the whining negatively reinforced it",
-      "B. The nights the parent gave in produced spontaneous recovery",
-      "C. The child was shaped by successive approximations",
-      "D. The unpredictable payoff put the whining on a variable-ratio schedule"
+      "A. Positive reinforcement",
+      "B. Positive punishment",
+      "C. Negative reinforcement",
+      "D. Negative punishment"
     ],
-    "answer": "D",
-    "answer_text": "The unpredictable payoff put the whining on a variable-ratio schedule",
-    "explanation": "Ignoring a behaviour is extinction, and extinction only works if it is total. Every night the parent gives in, the whining is reinforced, and because the child cannot predict which night will pay off, the reward arrives after a varying number of attempts. That is a variable-ratio schedule, and of every schedule it produces the highest rate of responding and the greatest resistance to extinction. The parent has not failed to extinguish the whining. They have trained it to survive being ignored.",
+    "answer": "C",
+    "answer_text": "Negative reinforcement",
+    "explanation": "Ask whose behaviour changed. The parent's giving in became more frequent, so what happened to the parent was reinforcement, not punishment, because punishment makes a behaviour less likely. Then ask what followed it: the whining stopped. Something unpleasant was removed rather than something pleasant arriving. Removal that strengthens a behaviour is negative reinforcement. The child is being positively reinforced in the same moment, with a sweet added and whining on the rise, which is why option A is the right answer to a question nobody asked.",
     "distractors": [
-      "A. Negative reinforcement means removing something unpleasant in order to increase a behaviour. Ignoring removes nothing; it withholds a reward, which is extinction. This is the single most confused pair of terms in the topic.",
-      "B. Spontaneous recovery is an extinguished response reappearing after a rest interval, with no new reward. Here the response never extinguished and it was rewarded outright.",
-      "C. Shaping shapes a new behaviour by rewarding closer and closer approximations of it. The whining already existed in full and nothing was built up in steps."
+      "A. True of the child, not the parent. The child had something pleasant added and whined more. Reading the scenario from the wrong side is the whole trap.",
+      "B. Punishment requires the behaviour to fall, and the parent's giving in rose. Positive punishment would also need something unpleasant to arrive, not to depart.",
+      "D. The sharpest miss, because negative is correct: something was removed. But punishment means the behaviour weakens, and the parent is giving in faster than ever."
     ],
-    "teaching_point": "The worst thing you can do to a behaviour you want gone is reward it sometimes. Consistent reward builds a habit that fades quickly once the reward stops; unpredictable reward builds one that barely fades at all. It is why slot machines pay out on a variable ratio, and why giving in just once is never just once."
+    "teaching_point": "In operant conditioning, positive and negative mean added and removed. They never mean good and bad. Settle whose behaviour you are tracking, then whether it went up or down, then whether something arrived or departed. In that order the four quadrants stop blurring together."
   }
 ]
