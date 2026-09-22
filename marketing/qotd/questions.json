@@ -397,5 +397,25 @@
       "D. The sharpest miss, because negative is correct: something was removed. But punishment means the behaviour weakens, and the parent is giving in faster than ever."
     ],
     "teaching_point": "In operant conditioning, positive and negative mean added and removed. They never mean good and bad. Settle whose behaviour you are tracking, then whether it went up or down, then whether something arrived or departed. In that order the four quadrants stop blurring together."
+  },
+  {
+    "slug": "ball-bounces-off-wall-conserved",
+    "eyebrow": "Physics: Momentum",
+    "stem": "A rubber ball is thrown at a wall and bounces straight back at the same speed it arrived with. Taking the ball by itself as the system, which quantity is conserved?",
+    "options": [
+      "A. Kinetic energy only",
+      "B. Momentum only",
+      "C. Both",
+      "D. Neither"
+    ],
+    "answer": "A",
+    "answer_text": "Kinetic energy only",
+    "explanation": "The speed is unchanged, and kinetic energy depends on the square of speed, so it is identical before and after. Momentum depends on velocity, which is a vector. It was mv one way and is now mv the other, a change of 2mv. The wall delivered that change as an external force, so momentum is not conserved for the ball alone. Nothing has gone wrong with the conservation law. The system was simply drawn too small to contain the wall.",
+    "distractors": [
+      "B. Exactly backwards, and the most common answer. It comes from remembering that momentum is always conserved while forgetting that this only holds when no external force acts, and the wall is one.",
+      "C. The answer you get by treating momentum like speed. Speed is unchanged, but velocity reversed, and momentum follows velocity.",
+      "D. The answer you get by assuming a bounce must lose energy. Here the problem states the speed is unchanged, so no kinetic energy was lost."
+    ],
+    "teaching_point": "Momentum is a vector and kinetic energy is a scalar, so reversing direction destroys one and leaves the other untouched. Conservation is also always a claim about a SYSTEM. Widen this one to include the wall and the Earth and momentum is conserved after all. Naming the system narrowly, then seeing whether you noticed, is one of the exam's favourite moves."
   }
 ]
