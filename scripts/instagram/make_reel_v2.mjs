@@ -110,6 +110,13 @@ const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replac
  * eye anchors to jump between, so a dense stem can be skimmed for structure
  * before it is read for meaning. It is emphasis in service of reading speed,
  * not decoration, so it is deliberately subtle: no highlight, no colour block.
+ *
+ * OPTIONS OPT OUT (emphasise = false). The justification above is about letting
+ * a DENSE STEM be skimmed for structure, and an option is neither dense nor
+ * skimmed. Leaving it on coloured only the options that happen to carry a
+ * subscript: an S_N1 / S_N2 / E1 / E2 set came out with the first two in bold
+ * green and the last two in plain black, which reads as emphasis pointing at
+ * two of the four answers rather than as notation.
  */
 const rich = (s, emphasise = true) => {
   let out = esc(s)
@@ -166,7 +173,7 @@ function options(q, shown) {
   return `<div style="display:flex;flex-direction:column;gap:${q.options.length > 4 ? 24 : 29}px">
     ${q.options.map((o, i) => `<div class="opt" style="opacity:${i < shown ? 1 : 0}">
       <div class="serif optl">${o.slice(0, 1)}</div>
-      <div style="font-size:${optSize(q)}px;line-height:1.32;color:${BRAND.inkSoft}">${rich(o.replace(/^[A-D]\.\s*/, ""))}</div>
+      <div style="font-size:${optSize(q)}px;line-height:1.32;color:${BRAND.inkSoft}">${rich(o.replace(/^[A-D]\.\s*/, ""), false)}</div>
     </div>`).join("")}
   </div>`;
 }

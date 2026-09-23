@@ -75,12 +75,29 @@ const jaccard = (a, b) => {
   return hit / (a.size + b.size - hit);
 };
 
-/** Numbers with their units: the fingerprint of a question's data. */
+/**
+ * Numbers with their units: the fingerprint of a question's data.
+ *
+ * A DIGIT GLUED TO LETTERS IS A NAME, NOT A MEASUREMENT. This used to take any
+ * run of digits anywhere, which made S_N1, S_N2, E1 and E2 look like the values
+ * {1, 2} and collided at 100% with a question whose options were the ionic
+ * charges +1, +2 and -1. Nothing was shared but the characters. The same false
+ * block would hit Type 1 vs Type 2, Class I/II, CO2, or a locant like
+ * 1-bromobutane.
+ *
+ * So a numeral counts only when it stands free: no letter immediately before
+ * it, and no letter or locant hyphen immediately after it unless a real unit
+ * follows. "0.20 M", "36.0 g" and "pH 7" still count, which is the whole point
+ * of the check.
+ */
 const numbers = (s) => {
   const out = new Set();
-  const re = /(\d+(?:\.\d+)?)\s*(mM|M|mg|g|kg|mol|nm|mL|L|kJ|kcal|mmHg|atm|°C|K|Hz|V|A|W|s|min|h|%)?/gi;
+  const flat = String(s).replace(/[_^]\{([^}]+)\}/g, "$1");
+  const re = /(?<![A-Za-z])(\d+(?:\.\d+)?)\s*(mmHg|kcal|kJ|mol|min|atm|mM|mg|kg|mL|nm|°C|Hz|M|L|K|V|A|W|g|s|h|%)?(?![A-Za-z])/gi;
   let m;
-  while ((m = re.exec(String(s).replace(/[_^]\{([^}]+)\}/g, "$1"))) !== null) {
+  while ((m = re.exec(flat)) !== null) {
+    const after = flat[m.index + m[1].length] ?? "";
+    if (!m[2] && /[-A-Za-z]/.test(after)) continue;
     out.add(m[2] ? `${m[1]}${m[2].toLowerCase()}` : m[1]);
   }
   return out;

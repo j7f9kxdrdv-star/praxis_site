@@ -417,5 +417,25 @@
       "D. The answer you get by assuming a bounce must lose energy. Here the problem states the speed is unchanged, so no kinetic energy was lost."
     ],
     "teaching_point": "Momentum is a vector and kinetic energy is a scalar, so reversing direction destroys one and leaves the other untouched. Conservation is also always a claim about a SYSTEM. Widen this one to include the wall and the Earth and momentum is conserved after all. Naming the system narrowly, then seeing whether you noticed, is one of the exam's favourite moves."
+  },
+  {
+    "slug": "primary-halide-bulky-base",
+    "eyebrow": "Organic Chemistry: Substitution and Elimination",
+    "stem": "A chemist treats 1-bromobutane, a primary alkyl halide, with potassium tert-butoxide in tert-butanol. The base is strong, and it is also extremely bulky. Which mechanism dominates?",
+    "options": [
+      "A. S_{N}1",
+      "B. S_{N}2",
+      "C. E1",
+      "D. E2"
+    ],
+    "answer": "D",
+    "answer_text": "E2",
+    "explanation": "Work the substrate first. 1-bromobutane is primary, and a primary carbocation is far too unstable to form, so both unimolecular routes are gone before the reagent matters. That leaves the two bimolecular ones, and the reagent decides between them. tert-Butoxide is a strong nucleophile on paper, but its three methyl groups make backside attack on the carbon impossible. Unable to reach the carbon, it takes an exposed beta hydrogen instead, and elimination wins. Swap in unhindered ethoxide and the very same substrate gives substitution.",
+    "distractors": [
+      "A. Needs a carbocation, and a primary one will not form. Ruled out by the substrate alone, before the reagent is even read.",
+      "B. The instinct, and the trap. Primary substrates are ideal for backside attack and tert-butoxide is a strong nucleophile, but bulk is what decides here: it physically cannot reach the carbon.",
+      "C. Needs a carbocation for the same reason A does, and also needs a weak base. tert-Butoxide is a strong one."
+    ],
+    "teaching_point": "Two questions, always in this order. The SUBSTRATE decides whether a carbocation is possible at all: primary means no, so both unimolecular routes are gone before you read the reagent. Then the REAGENT picks between the two that remain, and there the deciding property is bulk, not strength. A strong nucleophile that cannot physically reach the carbon stops being a nucleophile and acts as a base."
   }
 ]
