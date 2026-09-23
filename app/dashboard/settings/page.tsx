@@ -74,6 +74,12 @@ export default function SettingsPage() {
   const [armed, setArmed] = useState<ResetScope | null>(null);
   const [resetCounts, setResetCounts] = useState<Record<string, number> | null>(null);
   const [resetTotal, setResetTotal] = useState<number | null>(null);
+  // Whether we managed to COUNT what a reset would destroy. A null total used
+  // to mean both "still counting" and "the count failed", so a failure sat on
+  // "Counting what this would clear…" forever while the confirm box stayed
+  // live. That is backwards for something irreversible: the one moment the app
+  // cannot say what it is about to delete is the moment it must not delete.
+  const [countState, setCountState] = useState<"loading" | "ready" | "failed">("loading");
   const [confirmText, setConfirmText] = useState("");
   const [resetting, setResetting] = useState(false);
   const [resetError, setResetError] = useState<string | null>(null);
@@ -319,16 +325,23 @@ export default function SettingsPage() {
     setResetDone(null);
     setResetCounts(null);
     setResetTotal(null);
-    const { data: sessionData } = await supabase.auth.getSession();
-    const token = sessionData.session?.access_token;
-    if (!token) return;
-    const res = await fetch("/api/account/reset", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return;
-    const json = await res.json();
-    setResetCounts(json.counts ?? null);
-    setResetTotal(typeof json.total === "number" ? json.total : null);
+    setCountState("loading");
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) { setCountState("failed"); return; }
+      const res = await fetch("/api/account/reset", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) { setCountState("failed"); return; }
+      const json = await res.json();
+      if (typeof json.total !== "number") { setCountState("failed"); return; }
+      setResetCounts(json.counts ?? null);
+      setResetTotal(json.total);
+      setCountState("ready");
+    } catch {
+      setCountState("failed");
+    }
   }
 
   async function runReset() {
@@ -732,7 +745,13 @@ export default function SettingsPage() {
               {describeScope(armed).effect}
             </p>
 
-            {resetTotal === null ? (
+            {countState === "failed" ? (
+              <p className="text-[12.5px] mb-3" style={{ color: "#9b2c2c" }}>
+                We could not count what this would clear, so the reset is held
+                back. Check your connection and try again. Nothing has been
+                deleted.
+              </p>
+            ) : resetTotal === null ? (
               <p className="text-[12.5px] mb-3" style={{ color: "var(--color-prax-ink-soft)" }}>
                 Counting what this would clear…
               </p>
@@ -785,7 +804,7 @@ export default function SettingsPage() {
             <div className="flex flex-col sm:flex-row gap-2.5">
               <button
                 onClick={runReset}
-                disabled={confirmText.trim() !== "RESET" || resetting}
+                disabled={countState !== "ready" || confirmText.trim() !== "RESET" || resetting}
                 className="px-5 py-2.5 rounded-lg font-semibold text-[13px] disabled:opacity-40"
                 style={{ background: "#9b2c2c", color: "#fff", border: 0 }}
               >
@@ -796,6 +815,7 @@ export default function SettingsPage() {
                   setArmed(null);
                   setConfirmText("");
                   setResetError(null);
+                  setCountState("loading");
                 }}
                 disabled={resetting}
                 className="px-5 py-2.5 rounded-lg font-semibold text-[13px]"
