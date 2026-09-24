@@ -90,8 +90,35 @@ ok("no cross-cutting object carries content taxonomy",
   !taxonomyRows.some((r) => nonContentIds.has(r.concept_id)));
 
 console.log("\nRELATIONSHIPS");
-ok("discipline rows = 609", (await count("concept_disciplines")) === 609);
-ok("content-category rows = 583", (await count("concept_content_categories")) === 583);
+// THESE WERE TWO MAGIC NUMBERS. They asserted 609 and 583 without ever saying
+// what would be wrong if the figure differed, so every phase that legitimately
+// added concepts broke them, and the fix was always to bump the number. That
+// buys one phase of silence and checks nothing. What they were really guarding
+// is that taxonomy rows track the concepts they describe, so it is now derived
+// and needs no maintenance as the ontology grows.
+const contentConcepts = concepts.filter((c) => c.object_type === "CONTENT");
+const discRows = await all("concept_disciplines", "concept_id,role");
+const primaryDisc = discRows.filter((r) => r.role === "PRIMARY").map((r) => r.concept_id);
+ok("no concept carries two PRIMARY disciplines",
+  new Set(primaryDisc).size === primaryDisc.length);
+// Three bioethics concepts are PSYCH_SOC with the discipline deliberately left
+// UNRESOLVED. That is a decision on record, not an omission, and it is spelled
+// out here so a fourth cannot join them unnoticed.
+const hasDisc = new Set(primaryDisc);
+const noDiscipline = contentConcepts.filter((c) => !hasDisc.has(c.id));
+ok("every content concept has a PRIMARY discipline, bar the 3 deferred",
+  noDiscipline.length === 3,
+  noDiscipline.map((c) => c.canonical_name).join(", "));
+// A PRE-EXISTING GAP, recorded so it cannot quietly widen. 34 content concepts
+// carry no AAMC content category, nearly all of them the gas-laws cluster. They
+// are still reachable by section and discipline, but a candidate search that
+// narrows on category cannot see them. This is a CEILING: new work must not add
+// to it, and closing it is its own task.
+const catRows = await all("concept_content_categories", "concept_id");
+const hasCat = new Set(catRows.map((r) => r.concept_id));
+const noCategory = contentConcepts.filter((c) => !hasCat.has(c.id));
+ok("content concepts lacking an AAMC category does not exceed 34",
+  noCategory.length <= 34, `${noCategory.length} without a category`);
 ok("concept_relationships empty (seeded by hand only)", (await count("concept_relationships")) === 0);
 
 console.log("\nDETERMINISTIC QUESTION MAPPING");
