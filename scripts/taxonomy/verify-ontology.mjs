@@ -25,7 +25,21 @@ const ok = (name, good, detail = "") => {
   good ? pass++ : fail++;
   console.log("  " + (good ? "ok  " : "FAIL") + "  " + name + (detail ? "   " + detail : ""));
 };
-const count = async (t, q = (x) => x) => (await q(db.from(t).select("*", { count: "exact", head: true }))).count;
+/**
+ * Count rows, or die saying so.
+ *
+ * This used to read `.count` and ignore `error`. A transient connection failure
+ * then returned null, null never equals the expected number, and the script
+ * reported it as "your data is wrong" - sending someone to hunt a data bug that
+ * did not exist. A verifier that turns its own failures into your failures is
+ * worse than no verifier. It happened once, on content-category rows.
+ */
+const count = async (t, q = (x) => x) => {
+  const res = await q(db.from(t).select("*", { count: "exact", head: true }));
+  if (res.error) throw new Error(`count(${t}) failed: ${res.error.message}`);
+  if (typeof res.count !== "number") throw new Error(`count(${t}) returned no count`);
+  return res.count;
+};
 
 async function all(t, c) {
   let out = [], from = 0;
