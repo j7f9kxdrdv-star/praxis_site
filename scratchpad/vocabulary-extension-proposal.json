@@ -953,9 +953,9 @@
    "name_collision": false
   },
   {
-   "concept_id": "GENE_KNOCKOUT_FUNCTIONAL_INFERENCE",
-   "canonical_name": "Gene Knockout and Functional Inference",
-   "description": "Inferring a gene's role from the phenotype of its loss.",
+   "concept_id": "GENE_KNOCKOUT_EXPERIMENTS",
+   "canonical_name": "Gene Knockout Experiments",
+   "description": "Loss-of-function manipulation: what a knockout model is, and the rescue control that shows the phenotype follows from the missing gene rather than the engineering.",
    "topic": "DNA and Biotechnology",
    "section": "BIO_BIOCHEM",
    "disciplines": [
@@ -1175,8 +1175,8 @@
    "name_collision": false
   },
   {
-   "concept_id": "CUTANEOUS_THERMOREGULATION_SET_POINT",
-   "canonical_name": "Cutaneous Thermoregulation and Set Point",
+   "concept_id": "THERMOREGULATORY_MECHANISMS",
+   "canonical_name": "Thermoregulatory Mechanisms",
    "description": "Heat exchange direction, insulation, piloerection, sweat gland populations and set-point shifts.",
    "topic": "Homeostasis",
    "section": "BIO_BIOCHEM",

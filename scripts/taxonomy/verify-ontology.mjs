@@ -55,22 +55,29 @@ async function all(t, c) {
 
 console.log("\nSEEDED VOCABULARY");
 const concepts = await all("concepts", "id,slug,canonical_name,status,split_candidate,concept_level,parent_concept_id");
-ok("488 concepts seeded", concepts.length === 488, String(concepts.length));
+ok("576 concepts (488 + 88 extension)", concepts.length === 576, String(concepts.length));
 ok("all ACTIVE_SEED", concepts.every((c) => c.status === "ACTIVE_SEED"));
 ok("200 split candidates flagged", concepts.filter((c) => c.split_candidate).length === 200);
+ok("the rename kept one concept and filed an alias",
+  concepts.some((c) => c.canonical_name === "Respiratory Thermoregulation") &&
+  !concepts.some((c) => c.canonical_name === "Thermoregulation"));
 ok("slugs unique", new Set(concepts.map((c) => c.slug)).size === concepts.length);
 ok("canonical names unique", new Set(concepts.map((c) => c.canonical_name)).size === concepts.length);
 ok("hierarchy left flat", concepts.every((c) => c.concept_level === "CONCEPT" && !c.parent_concept_id));
 
 console.log("\nRELATIONSHIPS");
-ok("discipline rows = 488", (await count("concept_disciplines")) === 488);
-ok("content-category rows = 491", (await count("concept_content_categories")) === 491);
+ok("discipline rows = 576", (await count("concept_disciplines")) === 576);
+ok("content-category rows = 579", (await count("concept_content_categories")) === 579);
 ok("concept_relationships empty (seeded by hand only)", (await count("concept_relationships")) === 0);
 
 console.log("\nDETERMINISTIC QUESTION MAPPING");
 const qc = await all("question_concepts", "question_id,concept_id,role,mapping_status,source,confidence");
-ok("2,242 mappings created", qc.length === 2242, String(qc.length));
-ok("all DETERMINISTIC_EXACT", qc.every((m) => m.source === "DETERMINISTIC_EXACT"));
+ok("2,659 mappings (2,242 + 417)", qc.length === 2659, String(qc.length));
+ok("all deterministic provenance",
+  qc.every((m) => m.source === "DETERMINISTIC_EXACT" || m.source === "DETERMINISTIC"));
+ok("2,242 by exact equality, 417 by approved lookup",
+  qc.filter((m) => m.source === "DETERMINISTIC_EXACT").length === 2242 &&
+  qc.filter((m) => m.source === "DETERMINISTIC").length === 417);
 ok("all PRIMARY", qc.every((m) => m.role === "PRIMARY"));
 ok("no duplicate PRIMARY per question", new Set(qc.map((m) => m.question_id)).size === qc.length);
 ok("none marked human-validated", qc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
@@ -78,8 +85,11 @@ ok("none marked human-validated", qc.every((m) => m.mapping_status !== "HUMAN_VA
 const Q = await all("questions", "id,subtopic,section,content_category");
 const byId = new Map(concepts.map((c) => [c.id, c]));
 const qById = new Map(Q.map((q) => [q.id, q]));
-ok("every mapping is exact string equality",
-  qc.every((m) => qById.get(m.question_id)?.subtopic === byId.get(m.concept_id)?.canonical_name));
+// Only the first 2,242 are name-equality; the 417 map through the approved
+// descriptor lookup, where the descriptor is deliberately NOT the concept name.
+ok("the exact-equality cohort really is exact",
+  qc.filter((m) => m.source === "DETERMINISTIC_EXACT")
+    .every((m) => qById.get(m.question_id)?.subtopic === byId.get(m.concept_id)?.canonical_name));
 
 const SEC = { chem_phys: "CHEM_PHYS", bio_biochem: "BIO_BIOCHEM", psych_soc: "PSYCH_SOC", cars: "CARS" };
 // MEMBERSHIP, not equality. This check originally compared a single
@@ -90,7 +100,7 @@ const sects = (await all("concept_sections", "concept_id,section_code"))
   .reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.section_code), a), {});
 ok("section compatible on every mapping",
   qc.every((m) => sects[m.concept_id]?.has(SEC[qById.get(m.question_id)?.section])));
-ok("488 concepts placed in a section", new Set(Object.keys(sects)).size === 488);
+ok("576 concepts placed in a section", new Set(Object.keys(sects)).size === 576);
 ok("cross-section concepts are represented, not flattened",
   Object.values(sects).filter((s) => s.size > 1).length === 1);
 
@@ -102,7 +112,7 @@ ok("content category compatible on every mapping",
 console.log("\nDELIBERATELY LEFT ALONE");
 const mapped = new Set(qc.map((m) => m.question_id));
 const unmapped = Q.filter((q) => !mapped.has(q.id));
-ok("439 descriptor questions unmapped", unmapped.length === 439, String(unmapped.length));
+ok("22 questions remain unmapped", unmapped.length === 22, String(unmapped.length));
 ok("no unmapped question's label is a concept name",
   unmapped.every((q) => !concepts.some((c) => c.canonical_name === q.subtopic)));
 ok("zero flashcards mapped", (await count("flashcard_concepts")) === 0);
@@ -122,8 +132,7 @@ const per = qc.reduce((a, m) => ((a[m.concept_id] = (a[m.concept_id] || 0) + 1),
 const top = Object.entries(per).sort((a, b) => b[1] - a[1]).slice(0, 5);
 top.forEach(([id, n]) => console.log("        " + String(n).padStart(3) + "  " + byId.get(id)?.canonical_name));
 ok("largest concept under 120 questions", top[0][1] < 120, top[0][1] + " max");
-ok("191 concepts carry a single question",
-  Object.values(per).filter((n) => n === 1).length + (488 - Object.keys(per).length) === 191);
+ok("no concept became a catch-all", top[0][1] <= 30, top[0][1] + " max");
 
 console.log("\nDATABASE GUARDS  (fixture: created, driven, removed)");
 let fixture = null;
@@ -166,7 +175,7 @@ try {
     await db.from("concept_aliases").delete().eq("concept_id", fixture);
     await db.from("concepts").delete().eq("id", fixture);
   }
-  const left = (await count("concepts")) === 488 && (await count("concept_aliases")) === 0;
+  const left = (await count("concepts")) === 576 && (await count("concept_aliases")) === 1;
   ok("fixture fully removed, no residue", left);
 }
 
