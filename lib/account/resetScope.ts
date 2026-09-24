@@ -62,6 +62,16 @@ export const NON_USER_TABLES: Record<string, string> = {
   flashcard_decks: "deck content",
   questions: "question bank",
   passages: "question bank",
+  // Canonical taxonomy. Content classification, not progress: a reset must
+  // leave these standing or the bank loses its concept mapping.
+  question_concepts: "canonical taxonomy, not progress",
+  flashcard_concepts: "canonical taxonomy, not progress",
+  concepts: "canonical taxonomy, shared by everyone",
+  concept_aliases: "canonical taxonomy, shared by everyone",
+  topics: "canonical taxonomy, shared by everyone",
+  disciplines: "canonical taxonomy, shared by everyone",
+  mcat_sections: "the exam's own structure",
+  legacy_taxonomy_map: "canonical taxonomy, shared by everyone",
   lessons: "course content",
   waitlist_signups: "marketing capture, not an account",
 };
