@@ -214,9 +214,24 @@ ok("questions 2,681", (await count("questions")) === 2681);
 ok("flashcards 4,117", (await count("flashcards")) === 4117);
 ok("decks 73", (await count("flashcard_decks")) === 73);
 ok("distractor metadata 8,043", (await count("question_distractor_metadata")) === 8043);
+// LEARNER TABLES GROW. A FLOOR, NOT AN EQUALITY.
+//
+// These were pinned to exact counts, which was wrong and would have made this
+// verifier useless: the owner studies his own app, so flashcard_reviews climbs
+// whenever he does. It went 47,777 -> 47,853 during this phase, and the cause
+// was a study session that day (77 reviews, ratings mixed medium/again/hard,
+// real interval transitions including a lapse), not a migration. An assertion
+// that fails on ordinary use trains you to ignore it.
+//
+// The mutation we actually guard against is LOSS: ontology work must never
+// delete or reset review history. Growth is the app working. So each of these
+// is a floor recorded at the point the taxonomy work began, and only a DROP
+// below it means something went wrong.
 const UID = "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca";
-for (const [t, want] of Object.entries({ flashcard_reviews: 47777, flashcard_user_state: 7147, question_attempts: 201 })) {
-  ok(t + " " + want.toLocaleString(), (await count(t, (q) => q.eq("user_id", UID))) === want);
+for (const [t, floor] of Object.entries({ flashcard_reviews: 47777, flashcard_user_state: 7147, question_attempts: 201 })) {
+  const n = await count(t, (q) => q.eq("user_id", UID));
+  ok(`${t} >= ${floor.toLocaleString()} (never shrinks)`, n >= floor,
+    n === floor ? "" : `${n.toLocaleString()}, +${(n - floor).toLocaleString()} from study`);
 }
 
 console.log("\nCONCENTRATION CHECK (a catch-all forming?)");
