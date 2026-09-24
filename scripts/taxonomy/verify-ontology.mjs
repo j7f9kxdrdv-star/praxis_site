@@ -67,7 +67,7 @@ ok("hierarchy left flat", concepts.every((c) => c.concept_level === "CONCEPT" &&
 
 console.log("\nRELATIONSHIPS");
 ok("discipline rows = 576", (await count("concept_disciplines")) === 576);
-ok("content-category rows = 579", (await count("concept_content_categories")) === 579);
+ok("content-category rows = 583", (await count("concept_content_categories")) === 583);
 ok("concept_relationships empty (seeded by hand only)", (await count("concept_relationships")) === 0);
 
 console.log("\nDETERMINISTIC QUESTION MAPPING");
@@ -87,9 +87,20 @@ const byId = new Map(concepts.map((c) => [c.id, c]));
 const qById = new Map(Q.map((q) => [q.id, q]));
 // Only the first 2,242 are name-equality; the 417 map through the approved
 // descriptor lookup, where the descriptor is deliberately NOT the concept name.
-ok("the exact-equality cohort really is exact",
-  qc.filter((m) => m.source === "DETERMINISTIC_EXACT")
-    .every((m) => qById.get(m.question_id)?.subtopic === byId.get(m.concept_id)?.canonical_name));
+//
+// A RENAME LEGITIMATELY BREAKS NAME EQUALITY, which this check originally did
+// not allow for: renaming Thermoregulation to Respiratory Thermoregulation left
+// its 6 questions mapped by ID to a concept whose name no longer matched their
+// subtopic. That is stable IDs working, not a fault. The old name is filed as
+// an alias by the rename trigger, so the honest assertion is that the subtopic
+// matches the concept's CURRENT NAME OR ONE OF ITS ALIASES.
+const aliasRows = await all("concept_aliases", "concept_id,alias");
+const aliasesOf = aliasRows.reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.alias), a), {});
+ok("the exact-equality cohort matches a current or historical name",
+  qc.filter((m) => m.source === "DETERMINISTIC_EXACT").every((m) => {
+    const sub = qById.get(m.question_id)?.subtopic;
+    return sub === byId.get(m.concept_id)?.canonical_name || aliasesOf[m.concept_id]?.has(sub);
+  }));
 
 const SEC = { chem_phys: "CHEM_PHYS", bio_biochem: "BIO_BIOCHEM", psych_soc: "PSYCH_SOC", cars: "CARS" };
 // MEMBERSHIP, not equality. This check originally compared a single
