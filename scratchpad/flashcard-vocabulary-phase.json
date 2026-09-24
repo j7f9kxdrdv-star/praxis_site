@@ -1,0 +1,218 @@
+{
+ "architecture": {
+  "recommendation": "Add object_type to the existing concepts table. Do NOT build a LEARNING_OBJECT supertype.",
+  "values": [
+   "CONTENT",
+   "REASONING",
+   "QUANTITATIVE"
+  ],
+  "why": "All three share every structural property already built: stable ID, canonical name, description, aliases, status, versioning, deprecation, the human-validation trigger, and the flashcard_concepts join. A supertype table would duplicate all of that and force a polymorphic foreign key in flashcard_concepts, which is strictly worse. One nullable-free column with a CHECK, defaulting to CONTENT, migrates the existing 576 rows without touching them.",
+  "guard": "Content analytics MUST filter object_type = 'CONTENT'. A reasoning or quantitative object must never enter memory-versus-application content comparison. Enforced by the verifier and by a view rather than by convention.",
+  "note": "concept_sections, concept_disciplines and concept_content_categories simply carry zero rows for REASONING and QUANTITATIVE objects, which is already legal. Those axes do not apply to a cross-cutting object, and an empty set is the honest representation."
+ },
+ "scientific_reasoning": {
+  "cards": 119,
+  "families": {
+   "REASONING_OBJECT": {
+    "objects": 11,
+    "cards": 35,
+    "list": [
+     {
+      "id": "RO_STUDY_DESIGN_TYPES",
+      "name": "Study Design Types",
+      "definition": "Distinguishing cohort, case-control, cross-sectional, descriptive and experimental designs, and what each can and cannot establish.",
+      "cards": 6
+     },
+     {
+      "id": "RO_VARIABLES_AND_CONTROLS",
+      "name": "Variables and Controls",
+      "definition": "Identifying independent and dependent variables, and the role of positive and negative controls.",
+      "cards": 2
+     },
+     {
+      "id": "RO_RANDOMIZATION_AND_SAMPLING",
+      "name": "Randomization and Sampling",
+      "definition": "Random assignment, random sampling, and the population/sample and parameter/statistic distinctions.",
+      "cards": 4
+     },
+     {
+      "id": "RO_BLINDING_AND_PLACEBO",
+      "name": "Blinding and the Placebo Effect",
+      "definition": "Single and double blinding, why blinding matters, and the placebo response.",
+      "cards": 3
+     },
+     {
+      "id": "RO_BIAS",
+      "name": "Bias in Research",
+      "definition": "Systematic error introduced during data collection: selection, detection and observation bias, and how bias differs from random error.",
+      "cards": 6
+     },
+     {
+      "id": "RO_CONFOUNDING",
+      "name": "Confounding",
+      "definition": "A third variable influencing both exposure and outcome, and how confounding differs from bias.",
+      "cards": 2
+     },
+     {
+      "id": "RO_CAUSAL_INFERENCE",
+      "name": "Causal Inference",
+      "definition": "Arguing from correlation to causation, and Hill's criteria including temporality and dose-response.",
+      "cards": 4
+     },
+     {
+      "id": "RO_VALIDITY_AND_RELIABILITY",
+      "name": "Validity and Reliability",
+      "definition": "Internal versus external validity, and accuracy versus precision.",
+      "cards": 2
+     },
+     {
+      "id": "RO_HYPOTHESIS_FORMATION",
+      "name": "Hypothesis Formation",
+      "definition": "Where a hypothesis comes from, how it is phrased, FINER, and the scientific method.",
+      "cards": 4
+     },
+     {
+      "id": "RO_SIGNIFICANCE_INTERPRETATION",
+      "name": "Statistical versus Clinical Significance",
+      "definition": "Separating a result unlikely by chance from a change large enough to matter.",
+      "cards": 1
+     },
+     {
+      "id": "RO_RESEARCH_SETTINGS",
+      "name": "Research Settings",
+      "definition": "Basic science versus applied and clinical settings, and the control each affords.",
+      "cards": 1
+     }
+    ]
+   },
+   "QUANTITATIVE_KNOWLEDGE_OBJECT": {
+    "objects": 16,
+    "cards": 77,
+    "list": [
+     {
+      "id": "QK_SIGNIFICANT_FIGURES",
+      "name": "Significant Figures",
+      "definition": "Counting significant digits and carrying them through arithmetic.",
+      "cards": 5
+     },
+     {
+      "id": "QK_EXPONENT_RULES",
+      "name": "Exponent Rules",
+      "definition": "Zero, negative, fractional exponents and the rules for combining powers.",
+      "cards": 7
+     },
+     {
+      "id": "QK_LOGARITHM_RULES",
+      "name": "Logarithm Rules",
+      "definition": "Log identities, products, quotients, powers, and common versus natural logs.",
+      "cards": 4
+     },
+     {
+      "id": "QK_TRIGONOMETRIC_VALUES",
+      "name": "Trigonometric Ratios and Values",
+      "definition": "SOH CAH TOA, inverse functions, and the standard and boundary angles.",
+      "cards": 7
+     },
+     {
+      "id": "QK_SIMULTANEOUS_EQUATIONS",
+      "name": "Solving Simultaneous Equations",
+      "definition": "Substitution, elimination, and setting equations equal.",
+      "cards": 3
+     },
+     {
+      "id": "QK_ESTIMATION_AND_NOTATION",
+      "name": "Estimation and Scientific Notation",
+      "definition": "Calculator-free estimation, root shortcuts, and scientific notation.",
+      "cards": 3
+     },
+     {
+      "id": "QK_UNITS_AND_SI_PREFIXES",
+      "name": "Units, SI Prefixes and Scale Conversion",
+      "definition": "Powers-of-ten prefixes and temperature scale conversion.",
+      "cards": 4
+     },
+     {
+      "id": "QK_PROPORTIONAL_RELATIONSHIPS",
+      "name": "Direct and Inverse Proportion",
+      "definition": "Recognising which way one quantity moves when another changes.",
+      "cards": 1
+     },
+     {
+      "id": "QK_CENTRAL_TENDENCY",
+      "name": "Measures of Central Tendency",
+      "definition": "Mean, median and mode, and which summarises a data set best.",
+      "cards": 5
+     },
+     {
+      "id": "QK_MEASURES_OF_SPREAD",
+      "name": "Measures of Spread",
+      "definition": "Range, standard deviation, interquartile range and Bessel's correction.",
+      "cards": 5
+     },
+     {
+      "id": "QK_DISTRIBUTION_SHAPES",
+      "name": "Distribution Shapes",
+      "definition": "Normal, standard normal, skewed and bimodal distributions, and the empirical rule.",
+      "cards": 7
+     },
+     {
+      "id": "QK_OUTLIER_IDENTIFICATION",
+      "name": "Outlier Identification",
+      "definition": "Standard-deviation and IQR rules for flagging outliers, and where outliers come from.",
+      "cards": 3
+     },
+     {
+      "id": "QK_PROBABILITY_RULES",
+      "name": "Probability Rules",
+      "definition": "Independence, mutual exclusivity, exhaustiveness, and the AND, OR and at-least-one rules.",
+      "cards": 6
+     },
+     {
+      "id": "QK_DATA_DISPLAY_FORMATS",
+      "name": "Data Display Formats",
+      "definition": "Pie, bar, histogram, line, box plot, and log transformations of axes.",
+      "cards": 7
+     },
+     {
+      "id": "QK_CORRELATION_COEFFICIENT",
+      "name": "Correlation Coefficient",
+      "definition": "Direction and strength of association, and the range of r.",
+      "cards": 2
+     },
+     {
+      "id": "QK_HYPOTHESIS_TESTING_TERMS",
+      "name": "Hypothesis Testing Terminology",
+      "definition": "Null and alternative hypotheses, p-value, alpha, decision rule, Type I and II errors, confidence intervals.",
+      "cards": 8
+     }
+    ]
+   },
+   "CONTENT_CONCEPT": {
+    "objects": 3,
+    "cards": 7,
+    "section": "PSYCH_SOC",
+    "note": "Bioethics is examinable Psych/Soc content, not a reasoning operation. It must be able to participate in memory-versus-application once matching questions exist.",
+    "list": [
+     {
+      "id": "BIOMEDICAL_ETHICS_PRINCIPLES",
+      "name": "Principles of Biomedical Ethics",
+      "definition": "Beneficence, nonmaleficence, autonomy and justice as the four governing principles of medical and research ethics.",
+      "cards": 5
+     },
+     {
+      "id": "INFORMED_CONSENT_RESPECT_PERSONS",
+      "name": "Informed Consent and Respect for Persons",
+      "definition": "Honesty, consent, confidentiality, and extra protection for vulnerable participants.",
+      "cards": 1
+     },
+     {
+      "id": "CLINICAL_EQUIPOISE",
+      "name": "Clinical Equipoise",
+      "definition": "The genuine uncertainty between arms that makes a head-to-head trial ethical.",
+      "cards": 1
+     }
+    ]
+   }
+  }
+ }
+}
