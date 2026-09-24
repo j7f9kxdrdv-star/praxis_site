@@ -54,7 +54,7 @@ async function all(t, c) {
 }
 
 console.log("\nSEEDED VOCABULARY");
-const concepts = await all("concepts", "id,slug,canonical_name,status,split_candidate,concept_level,parent_concept_id");
+const concepts = await all("concepts", "id,slug,canonical_name,status,split_candidate,concept_level,parent_concept_id,object_type");
 ok("576 concepts (488 + 88 extension)", concepts.length === 576, String(concepts.length));
 ok("all ACTIVE_SEED", concepts.every((c) => c.status === "ACTIVE_SEED"));
 ok("200 split candidates flagged", concepts.filter((c) => c.split_candidate).length === 200);
@@ -64,6 +64,30 @@ ok("the rename kept one concept and filed an alias",
 ok("slugs unique", new Set(concepts.map((c) => c.slug)).size === concepts.length);
 ok("canonical names unique", new Set(concepts.map((c) => c.canonical_name)).size === concepts.length);
 ok("hierarchy left flat", concepts.every((c) => c.concept_level === "CONCEPT" && !c.parent_concept_id));
+
+console.log("\nLEARNING-OBJECT TYPES");
+// Three kinds of object share this table and must never be counted together.
+// The failure guarded against is quiet: a content query forgets a filter and
+// starts reporting "confounding" as a biology weakness. Nothing errors.
+ok("content_concepts view agrees with the column",
+  (await count("content_concepts")) === concepts.filter((c) => c.object_type === "CONTENT").length);
+ok("reasoning and quantitative objects are counted separately",
+  (await count("reasoning_objects")) === concepts.filter((c) => c.object_type === "REASONING").length &&
+  (await count("quantitative_objects")) === concepts.filter((c) => c.object_type === "QUANTITATIVE").length);
+ok("the three types partition the table exactly",
+  concepts.filter((c) => ["CONTENT", "REASONING", "QUANTITATIVE"].includes(c.object_type)).length === concepts.length);
+
+// Section, discipline and AAMC category describe DISCIPLINARY content. A
+// cross-cutting object carrying them means someone invented a classification
+// to make the schema look complete, and later analytics would read it as fact.
+const nonContentIds = new Set(concepts.filter((c) => c.object_type !== "CONTENT").map((c) => c.id));
+const taxonomyRows = [
+  ...(await all("concept_sections", "concept_id")),
+  ...(await all("concept_disciplines", "concept_id")),
+  ...(await all("concept_content_categories", "concept_id")),
+];
+ok("no cross-cutting object carries content taxonomy",
+  !taxonomyRows.some((r) => nonContentIds.has(r.concept_id)));
 
 console.log("\nRELATIONSHIPS");
 ok("discipline rows = 576", (await count("concept_disciplines")) === 576);
