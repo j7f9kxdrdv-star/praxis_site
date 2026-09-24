@@ -437,5 +437,25 @@
       "C. Needs a carbocation for the same reason A does, and also needs a weak base. tert-Butoxide is a strong one."
     ],
     "teaching_point": "Two questions, always in this order. The SUBSTRATE decides whether a carbocation is possible at all: primary means no, so both unimolecular routes are gone before you read the reagent. Then the REAGENT picks between the two that remain, and there the deciding property is bulk, not strength. A strong nucleophile that cannot physically reach the carbon stops being a nucleophile and acts as a base."
+  },
+  {
+    "slug": "doctor-warm-and-detached",
+    "eyebrow": "Sociology: Social Interaction",
+    "stem": "A doctor must be warm enough to comfort a dying patient, and detached enough to make a cold clinical judgement about that same patient, in the same hour. This tension is best described as:",
+    "options": [
+      "A. Role exit",
+      "B. Role conflict",
+      "C. Role strain",
+      "D. Role set"
+    ],
+    "answer": "C",
+    "answer_text": "Role strain",
+    "explanation": "Count the statuses. There is only one here: doctor. The warmth and the detachment are both demanded by that single role, and they pull against each other from inside it. Competing demands within one role is role strain. Role conflict needs two different statuses, which is why the classic example is the surgeon called to theatre during her own child's recital: doctor against parent. Same feeling of being torn, different structural cause, and the exam is usually testing whether you counted the statuses before you answered.",
+    "distractors": [
+      "B. The trap, and the most chosen answer. Conflict requires two separate statuses pulling in different directions. Strip this scenario down and only the doctor role is present.",
+      "A. Role exit is leaving an identity-defining position and rebuilding around a new one. Nobody here is leaving anything.",
+      "D. A role set is simply the collection of roles attached to one status. It names an inventory, not a tension."
+    ],
+    "teaching_point": "Before naming the tension, count the statuses. One status with competing demands is strain; two statuses colliding is conflict. The feeling is identical from the inside, which is exactly why the exam asks, and why the answer is structural rather than emotional."
   }
 ]
