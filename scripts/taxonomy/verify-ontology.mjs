@@ -55,7 +55,7 @@ async function all(t, c) {
 
 console.log("\nSEEDED VOCABULARY");
 const concepts = await all("concepts", "id,slug,canonical_name,status,split_candidate,concept_level,parent_concept_id,object_type");
-ok("576 concepts (488 + 88 extension)", concepts.length === 576, String(concepts.length));
+ok("637 objects (576 + 61 flashcard vocabulary)", concepts.length === 637, String(concepts.length));
 ok("all ACTIVE_SEED", concepts.every((c) => c.status === "ACTIVE_SEED"));
 ok("200 split candidates flagged", concepts.filter((c) => c.split_candidate).length === 200);
 ok("the rename kept one concept and filed an alias",
@@ -90,7 +90,7 @@ ok("no cross-cutting object carries content taxonomy",
   !taxonomyRows.some((r) => nonContentIds.has(r.concept_id)));
 
 console.log("\nRELATIONSHIPS");
-ok("discipline rows = 576", (await count("concept_disciplines")) === 576);
+ok("discipline rows = 609", (await count("concept_disciplines")) === 609);
 ok("content-category rows = 583", (await count("concept_content_categories")) === 583);
 ok("concept_relationships empty (seeded by hand only)", (await count("concept_relationships")) === 0);
 
@@ -135,7 +135,7 @@ const sects = (await all("concept_sections", "concept_id,section_code"))
   .reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.section_code), a), {});
 ok("section compatible on every mapping",
   qc.every((m) => sects[m.concept_id]?.has(SEC[qById.get(m.question_id)?.section])));
-ok("576 concepts placed in a section", new Set(Object.keys(sects)).size === 576);
+ok("610 content concepts placed in a section", new Set(Object.keys(sects)).size === 610);
 ok("cross-section concepts are represented, not flattened",
   Object.values(sects).filter((s) => s.size > 1).length === 1);
 
@@ -144,13 +144,35 @@ const catsOf = cc.reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.conten
 ok("content category compatible on every mapping",
   qc.every((m) => catsOf[m.concept_id]?.has(qById.get(m.question_id)?.content_category)));
 
+console.log("\nFLASHCARD MAPPINGS");
+const fc = await all("flashcard_concepts", "flashcard_id,concept_id,mapping_status,source");
+const typeOf = Object.fromEntries(concepts.map((c) => [c.id, c.object_type]));
+const byType = fc.reduce((a, m) => ((a[typeOf[m.concept_id]] = (a[typeOf[m.concept_id]] || 0) + 1), a), {});
+ok("314 card mappings", fc.length === 314, String(fc.length));
+ok("CONTENT 202 / REASONING 35 / QUANTITATIVE 77",
+  byType.CONTENT === 202 && byType.REASONING === 35 && byType.QUANTITATIVE === 77, JSON.stringify(byType));
+// Provenance must not overstate. The vocabulary was approved; 314 individual
+// rows were not reviewed, and the status must not claim they were.
+ok("no card mapping claims HUMAN_VALIDATED", fc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
+ok("no card mapping claims deterministic provenance",
+  fc.every((m) => m.source !== "DETERMINISTIC" && m.source !== "DETERMINISTIC_EXACT"));
+ok("all card mappings are AI_PROPOSED", fc.every((m) => m.source === "AI_PROPOSED"));
+// The boundary that matters: reasoning and quantitative objects MAY be mapped
+// from a flashcard, and must still be invisible to content analytics.
+const contentIds = new Set(concepts.filter((c) => c.object_type === "CONTENT").map((c) => c.id));
+ok("reasoning and quantitative mappings exist but are outside content",
+  fc.some((m) => !contentIds.has(m.concept_id)) &&
+  fc.filter((m) => contentIds.has(m.concept_id)).length === 202);
+ok("every question mapping still points at CONTENT",
+  qc.every((m) => contentIds.has(m.concept_id)));
+
 console.log("\nDELIBERATELY LEFT ALONE");
 const mapped = new Set(qc.map((m) => m.question_id));
 const unmapped = Q.filter((q) => !mapped.has(q.id));
 ok("22 questions remain unmapped", unmapped.length === 22, String(unmapped.length));
 ok("no unmapped question's label is a concept name",
   unmapped.every((q) => !concepts.some((c) => c.canonical_name === q.subtopic)));
-ok("zero flashcards mapped", (await count("flashcard_concepts")) === 0);
+
 
 console.log("\nCONTENT AND LEARNER DATA UNCHANGED");
 ok("questions 2,681", (await count("questions")) === 2681);
@@ -210,7 +232,7 @@ try {
     await db.from("concept_aliases").delete().eq("concept_id", fixture);
     await db.from("concepts").delete().eq("id", fixture);
   }
-  const left = (await count("concepts")) === 576 && (await count("concept_aliases")) === 1;
+  const left = (await count("concepts")) === 637 && (await count("concept_aliases")) === 1;
   ok("fixture fully removed, no residue", left);
 }
 
