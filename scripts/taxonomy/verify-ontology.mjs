@@ -55,7 +55,7 @@ async function all(t, c) {
 
 console.log("\nSEEDED VOCABULARY");
 const concepts = await all("concepts", "id,slug,canonical_name,status,split_candidate,concept_level,parent_concept_id,object_type");
-ok("637 objects (576 + 61 flashcard vocabulary)", concepts.length === 637, String(concepts.length));
+ok("705 objects (637 + 67 organic chemistry + 1 reasoning)", concepts.length === 705, String(concepts.length));
 ok("all ACTIVE_SEED", concepts.every((c) => c.status === "ACTIVE_SEED"));
 ok("200 split candidates flagged", concepts.filter((c) => c.split_candidate).length === 200);
 ok("the rename kept one concept and filed an alias",
@@ -135,7 +135,7 @@ const sects = (await all("concept_sections", "concept_id,section_code"))
   .reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.section_code), a), {});
 ok("section compatible on every mapping",
   qc.every((m) => sects[m.concept_id]?.has(SEC[qById.get(m.question_id)?.section])));
-ok("610 content concepts placed in a section", new Set(Object.keys(sects)).size === 610);
+ok("677 content concepts placed in a section", new Set(Object.keys(sects)).size === 677);
 // EVERY SECTION A CONCEPT CLAIMS MUST BE EARNED. This replaces a hardcoded
 // count of cross-section concepts, which went stale the moment two concepts
 // were legitimately widened. The count was never the point: the failure mode is
@@ -183,9 +183,9 @@ console.log("\nFLASHCARD MAPPINGS");
 const fc = await all("flashcard_concepts", "flashcard_id,concept_id,mapping_status,source");
 const typeOf = Object.fromEntries(concepts.map((c) => [c.id, c.object_type]));
 const byType = fc.reduce((a, m) => ((a[typeOf[m.concept_id]] = (a[typeOf[m.concept_id]] || 0) + 1), a), {});
-ok("314 card mappings", fc.length === 314, String(fc.length));
-ok("CONTENT 202 / REASONING 35 / QUANTITATIVE 77",
-  byType.CONTENT === 202 && byType.REASONING === 35 && byType.QUANTITATIVE === 77, JSON.stringify(byType));
+ok("739 card mappings (314 + 425 organic chemistry)", fc.length === 739, String(fc.length));
+ok("CONTENT 626 / REASONING 36 / QUANTITATIVE 77",
+  byType.CONTENT === 626 && byType.REASONING === 36 && byType.QUANTITATIVE === 77, JSON.stringify(byType));
 // Provenance must not overstate. The vocabulary was approved; 314 individual
 // rows were not reviewed, and the status must not claim they were.
 ok("no card mapping claims HUMAN_VALIDATED", fc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
@@ -197,9 +197,34 @@ ok("all card mappings are AI_PROPOSED", fc.every((m) => m.source === "AI_PROPOSE
 const contentIds = new Set(concepts.filter((c) => c.object_type === "CONTENT").map((c) => c.id));
 ok("reasoning and quantitative mappings exist but are outside content",
   fc.some((m) => !contentIds.has(m.concept_id)) &&
-  fc.filter((m) => contentIds.has(m.concept_id)).length === 202);
+  fc.filter((m) => contentIds.has(m.concept_id)).length === 626);
 ok("every question mapping still points at CONTENT",
   qc.every((m) => contentIds.has(m.concept_id)));
+
+// ── The organic chemistry pass, checked rather than trusted ──────────────
+// 425 cards, one PRIMARY each, and no deck-level shortcut: a deck that resolved
+// to a single object would mean the cards were never read individually.
+const ochemCards = [...cardDeck.entries()]
+  .filter(([, d]) => decks.get(d) === "organic_chemistry").map(([id]) => id);
+const ochemMaps = fc.filter((m) => ochemCards.includes(m.flashcard_id));
+ok("425 organic chemistry cards", ochemCards.length === 425, String(ochemCards.length));
+ok("every organic chemistry card carries exactly one mapping",
+  ochemMaps.length === 425 && new Set(ochemMaps.map((m) => m.flashcard_id)).size === 425,
+  String(ochemMaps.length));
+// THE INVARIANT THE WIDENING EXISTS FOR. A card sits in a Chem/Phys deck, so
+// the concept it resolves to must admit it is examined in Chem/Phys. Twelve
+// biochemistry concepts are reused by these cards, and each was widened for
+// exactly this reason. Without the check the widening is a claim; with it, a
+// future reuse that forgets to widen fails here instead of silently making a
+// concept unreachable from the section its cards actually live in.
+const wrongSection = ochemMaps.filter((m) =>
+  contentIds.has(m.concept_id) && !sects[m.concept_id]?.has("CHEM_PHYS"));
+ok("every organic chemistry content mapping is reachable from Chem/Phys",
+  wrongSection.length === 0,
+  wrongSection.map((m) => byId.get(m.concept_id)?.canonical_name).join(", "));
+// The reasoning object stays off the content tree, as its type requires.
+ok("the organic chemistry reasoning object carries no taxonomy",
+  !sects[[...concepts].find((c) => c.slug === "RO_REACTION_MECHANISM_ANALYSIS")?.id]);
 
 console.log("\nDELIBERATELY LEFT ALONE");
 const mapped = new Set(qc.map((m) => m.question_id));
@@ -282,7 +307,7 @@ try {
     await db.from("concept_aliases").delete().eq("concept_id", fixture);
     await db.from("concepts").delete().eq("id", fixture);
   }
-  const left = (await count("concepts")) === 637 && (await count("concept_aliases")) === 1;
+  const left = (await count("concepts")) === 705 && (await count("concept_aliases")) === 1;
   ok("fixture fully removed, no residue", left);
 }
 
