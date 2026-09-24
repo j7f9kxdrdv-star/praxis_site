@@ -1,0 +1,1940 @@
+{
+ "generated_at": "2026-09-24T16:13:41.608Z",
+ "note": "DESIGN ONLY. Nothing written to the database.",
+ "existing_vocabulary": 488,
+ "proposed_new": 89,
+ "estimated_total": 577,
+ "questions_covered": 417,
+ "concepts": [
+  {
+   "concept_id": "LUMINAL_BRUSH_BORDER_DIGESTION",
+   "canonical_name": "Luminal and Brush-Border Digestion",
+   "description": "Where each class of macromolecule is cleaved, and the division between lumenal enzymes and membrane-anchored final steps.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Membrane anchored final digestion step",
+    "Surface loss and membrane-stage digestion",
+    "Two lumen consequences of disaccharidase loss",
+    "Starch relay across the acidic compartment",
+    "Physical breakup versus bond cleavage",
+    "Intracellular versus luminal digestion",
+    "Consequence of losing salivary secretion",
+    "Consequence of being the first processing stop",
+    "Quantitative distribution of digestive work",
+    "Consequence of staggered first attack"
+   ],
+   "questions": 10,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GASTRIC_ACID_SECRETION",
+   "canonical_name": "Gastric Acid Secretion",
+   "description": "Parietal cell proton pump, its energetics, stoichiometry and blockade, and the alkaline tide that accompanies it.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Gastric proton pump energetics and blockade",
+    "Alkaline tide and secretory stoichiometry",
+    "A second parietal cell product and the site of B12 uptake",
+    "Attributing a juice change to one cell arm",
+    "Limits of gastric absorption"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GASTROINTESTINAL_HORMONAL_CONTROL",
+   "canonical_name": "Gastrointestinal Hormonal Control",
+   "description": "Gastrin, secretin, CCK and somatostatin as feed-forward and feedback regulators of secretion.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Acid negative feedback on gastrin release",
+    "Feed forward gastrin release by peptides",
+    "Gut somatostatin as secretory brake",
+    "Duodenal acid restrains gastric acid output",
+    "Dual organ targets of one signal",
+    "Self-limiting feedback in secretin release"
+   ],
+   "questions": 6,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "PHASES_DIGESTION",
+   "canonical_name": "Phases of Digestion",
+   "description": "Cephalic, gastric and intestinal phases, and why the last is inhibitory.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Cephalic phase anticipatory gastric secretion",
+    "Anticipatory stomach signal versus fuel gauge",
+    "Why the final digestive phase inhibits"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GASTRIC_EMPTYING_STORAGE",
+   "canonical_name": "Gastric Emptying and Storage",
+   "description": "Reservoir capacity and the feedback that sets the rate of delivery to the duodenum.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Fat load, CCK and stomach exit rate",
+    "Feedback braking of gastric outflow",
+    "Meal composition and emptying rate",
+    "Gastric reservoir capacity and meal size"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GASTRIC_MUCOSAL_PROTECTION",
+   "canonical_name": "Gastric Mucosal Protection",
+   "description": "How the stomach lining resists the acid it secretes.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Gastric mucosal barrier: acid load versus mucosal defense",
+    "Gastric self-digestion and the maintained lining",
+    "Epithelial renewal as a component of gastric protection"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "PANCREATIC_EXOCRINE_SECRETION",
+   "canonical_name": "Pancreatic Exocrine Secretion",
+   "description": "Acinar enzyme output versus ductal bicarbonate, and the consequences of losing either.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Division of secretory labour within pancreas",
+    "Anion exchange and blocked ductal secretion",
+    "Timing of alkaline delivery to duodenum",
+    "Separating enzyme loss from bile loss"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "BILE_BILIRUBIN_HANDLING",
+   "canonical_name": "Bile and Bilirubin Handling",
+   "description": "Bile storage and delivery, and the hepatic conjugation that lets pigment be excreted.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Storage capacity from bile concentration",
+    "Pump failure versus open outlet in bile delivery",
+    "Positive control in a bile diversion study",
+    "Hepatic modification enabling pigment excretion",
+    "Germ-free gut and pigment colour loss",
+    "One duct lesion, two downstream consequences"
+   ],
+   "questions": 6,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "INTESTINAL_NUTRIENT_TRANSPORT",
+   "canonical_name": "Intestinal Nutrient Transport",
+   "description": "Secondary active uptake at the apical surface, facilitated exit at the basolateral, and carrier competition.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Energy source behind uphill sugar uptake",
+    "Ceiling on uncoupled monosaccharide uptake",
+    "Why the exit step needs no coupling",
+    "Shared carrier competition between similar nutrients",
+    "Peptide uptake outpacing free amino acids",
+    "Designing a test for carrier mediated uptake",
+    "Sugar salt coupling in rehydration fluid"
+   ],
+   "questions": 7,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "INTESTINAL_ABSORPTIVE_SURFACE",
+   "canonical_name": "Intestinal Absorptive Surface",
+   "description": "The multiplicative anatomy of folds, villi and microvilli, and the unstirred layer over it.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Multiplicative tiers of absorptive surface",
+    "Aqueous diffusion barrier at the absorptive surface",
+    "Route dependent amplification of nutrient signalling"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "VITAMIN_ABSORPTION_DEFICIENCY",
+   "canonical_name": "Vitamin Absorption and Deficiency",
+   "description": "Site-specific vitamin uptake, the B12 relay, and how a deficiency localises the lesion.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Pancreatic step in the B12 relay",
+    "Localising a vitamin absorption defect",
+    "Two lesion routes to one deficiency",
+    "Which fat soluble vitamin fails first",
+    "Uptake failure behind a bleeding tendency",
+    "Antibiotic loss of bacterial vitamin production",
+    "Pattern separating obstruction from red cell loss"
+   ],
+   "questions": 7,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "LARGE_INTESTINE_WATER_RECOVERY",
+   "canonical_name": "Large Intestine and Water Recovery",
+   "description": "Colonic water and electrolyte handling, fermentation, and residence time.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Colonic mucosa fuelled by luminal fermentation",
+    "Colonic residence time and stool consistency",
+    "Colonic transport machinery versus nutrient uptake",
+    "Daily fluid load and colonic reserve",
+    "Driving force versus route for colonic water",
+    "Redundant bulk uptake versus unique distal recovery",
+    "One way flow into the large intestine",
+    "Fasting test separating two fluid losses"
+   ],
+   "questions": 8,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GASTROINTESTINAL_MOTILITY",
+   "canonical_name": "Gastrointestinal Motility",
+   "description": "Segmentation versus peristalsis, sphincter behaviour, and voluntary versus reflex control.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Segmentation versus propulsive intestinal motility",
+    "Oesophageal transport independent of gravity",
+    "Reflux at the oesophagogastric junction",
+    "Voluntary and reflex control of evacuation",
+    "Ruling out a purely muscular explanation"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "ENTERIC_NERVOUS_SYSTEM",
+   "canonical_name": "Enteric Nervous System",
+   "description": "Intramural plexuses and reflex arcs complete within the gut wall.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Complete reflex arcs within the gut wall",
+    "Testing intramural signalling in isolated gut",
+    "Positional inference for two wall networks"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GASTROINTESTINAL_WALL_LAYERS",
+   "canonical_name": "Gastrointestinal Wall Layers",
+   "description": "The serial layers of the gut wall and what is lost when each is damaged.",
+   "topic": "The Digestive System",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Wall layer depth and lost function"
+   ],
+   "questions": 1,
+   "confidence": "NEEDS_REVIEW",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GENETIC_CODE_READING_FRAME",
+   "canonical_name": "The Genetic Code and Reading Frame",
+   "description": "Triplet architecture, degeneracy, wobble tolerance by codon position, and how frame is set and lost.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "Triplet code architecture and consequences",
+    "Degeneracy preserving protein sequence",
+    "Codon position substitution tolerance",
+    "Codon regrouping after nucleotide removal",
+    "Initiating AUG sets reading frame",
+    "Deriving a peptide from an ORF"
+   ],
+   "questions": 6,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "TRANSFER_RNA_STRUCTURE_WOBBLE",
+   "canonical_name": "Transfer RNA Structure and Wobble",
+   "description": "The two-ended adapter, anticodon pairing direction, and the tRNA economy wobble permits.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "Antiparallel anticodon sequence derivation",
+    "Minimum tRNA count under wobble",
+    "Wobble pairing and tRNA economy",
+    "Transfer RNA two ended adapter logic",
+    "Labeled tRNA itinerary through sites"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "RNA_CLASSES_SECONDARY_STRUCTURE",
+   "canonical_name": "RNA Classes and Secondary Structure",
+   "description": "Division of labour among RNA classes, and why single-strandedness permits intramolecular folding and catalysis.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "RNA class functional division of labor",
+    "Identity of heterogeneous nuclear RNA",
+    "Single strandedness enables intramolecular folding",
+    "Hairpin prediction from sequence data",
+    "Reactive sugar hydroxyl underlying catalysis"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "RIBOSOME_STRUCTURE_RIBOZYME_ACTIVITY",
+   "canonical_name": "Ribosome Structure and Ribozyme Activity",
+   "description": "Subunit composition and assembly, and the evidence that rRNA rather than protein is catalytic.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "Ribosomal RNA scaffold and catalyst roles",
+    "stripped subunit ribozyme evidence",
+    "ribosomal subunit assembly order",
+    "subunit division of labor",
+    "reconstituting ribosomes from subunits"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "TRANSLATION_INITIATION",
+   "canonical_name": "Translation Initiation",
+   "description": "How the small subunit is positioned: Shine-Dalgarno in prokaryotes, cap recognition in eukaryotes.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "Shine Dalgarno ribosome positioning",
+    "cap directed small subunit recruitment",
+    "diagnostic features of initiation systems"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "TRANSLATION_ELONGATION_TERMINATION",
+   "canonical_name": "Translation Elongation and Termination",
+   "description": "Peptidyl transfer, the GTP cost per cycle, and release-factor hydrolysis without a tRNA.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "elongation GTP cost counting",
+    "elongation snapshot residue count",
+    "peptidyl transfer intermediate state",
+    "Stop codon recognition without tRNA",
+    "release factor water addition",
+    "nascent transcript ribosome loading"
+   ],
+   "questions": 6,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "TRANSCRIPTION_MECHANISM_STRAND_ROLES",
+   "canonical_name": "Transcription Mechanism and Strand Roles",
+   "description": "Template versus coding strand, polymerase direction, intrinsic melting and primer independence.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "antiparallel template reading direction",
+    "template versus coding strand roles",
+    "polymerase intrinsic duplex melting",
+    "primer independent transcription initiation",
+    "transcript derivation from labeled duplex",
+    "polymerase assignment for messenger RNA",
+    "inverted promoter directionality consequence"
+   ],
+   "questions": 7,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "EUKARYOTIC_PROMOTERS_GENERAL_TRANSCRIPTION_FACTORS",
+   "canonical_name": "Eukaryotic Promoters and General Transcription Factors",
+   "description": "TATA positioning, TBP recognition and the assembly order of the pre-initiation complex.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "TATA spacing sets start site",
+    "TBP mediated polymerase recruitment",
+    "TFIID omission assembly failure"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "ENHANCERS_TRANSCRIPTIONAL_ACTIVATORS",
+   "canonical_name": "Enhancers and Transcriptional Activators",
+   "description": "Position-independent elements, cognate specificity, and transferring a response element to a new gene.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "enhancer position and orientation independence",
+    "activator cognate element specificity",
+    "shared response element transferred to a new gene",
+    "repressor bound distant element identification",
+    "cAMP independent activator variant"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "OPERONS_PROKARYOTIC_GENE_REGULATION",
+   "canonical_name": "Operons and Prokaryotic Gene Regulation",
+   "description": "Inducible and repressible logic, operator mutants, and coordinate control of a pathway.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "operon coordinate pathway control",
+    "promoter operator functional distinction",
+    "constitutive operator mutant diagnosis",
+    "inducer double negative logic",
+    "lactose absent state prediction",
+    "uninducible repressor expression table",
+    "end product corepressor shutdown",
+    "novel operon control classification",
+    "polycistronic message multiple proteins"
+   ],
+   "questions": 9,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "EUKARYOTIC_RNA_PROCESSING",
+   "canonical_name": "Eukaryotic RNA Processing",
+   "description": "Capping, polyadenylation, splicing by snRNPs, alternative splicing and export licensing.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "cap shielding the nascent transcript",
+    "adenosine tail lifetime data",
+    "nuclear processing gates export",
+    "terminal marks identify processed message",
+    "snRNP intron excision machinery",
+    "spliceosome blockade intermediate prediction",
+    "combinatorial exon isoform expansion",
+    "shared peptide splicing evidence"
+   ],
+   "questions": 8,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "RNA_INTERFERENCE",
+   "canonical_name": "RNA Interference",
+   "description": "Small RNAs directing transcript degradation or translational silencing.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "siRNA knockdown readout",
+    "small RNA target fate"
+   ],
+   "questions": 2,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "POST_TRANSLATIONAL_PROCESSING_TARGETING",
+   "canonical_name": "Post-Translational Processing and Targeting",
+   "description": "Signal peptides, proteolytic maturation, glycosylation and lipid anchoring.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "signal peptide deletion swap predictions",
+    "mature secreted protein shortening",
+    "blocked prenyl anchor consequence",
+    "covalent sugar maturation mark",
+    "combined sugar expression prediction",
+    "chaperone dilution refolding interpretation"
+   ],
+   "questions": 6,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GENE_DOSAGE_EXPRESSION_OUTPUT",
+   "canonical_name": "Gene Dosage and Expression Output",
+   "description": "How copy number and sequence changes scale or localise functional output.",
+   "topic": "RNA and the Genetic Code",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1B",
+   "content_category": "Gene Expression",
+   "descriptors": [
+    "copy number output scaling",
+    "Compensatory mutations localize function to shape"
+   ],
+   "questions": 2,
+   "confidence": "NEEDS_REVIEW",
+   "name_collision": false
+  },
+  {
+   "concept_id": "NUCLEIC_ACID_STRUCTURE_POLARITY",
+   "canonical_name": "Nucleic Acid Structure and Polarity",
+   "description": "Antiparallel strands, phosphodiester directionality, base pairing chemistry and the sugar that distinguishes RNA.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "Antiparallel architecture of the double helix",
+    "Complementary strand derivation with correct polarity",
+    "Donor acceptor complementarity in base pairing",
+    "Phosphodiester backbone strand directionality",
+    "Backbone polyanion charge behavior prediction",
+    "Base composition strandedness inference",
+    "Sugar composition distinguishing RNA from DNA",
+    "Uracil as compositional marker of RNA",
+    "Nucleoside to nucleotide phosphate conversion",
+    "Huckel rule applied to base analogs",
+    "Coenzymes as adenine nucleotide derivatives"
+   ],
+   "questions": 11,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "DUPLEX_STABILITY_DENATURATION",
+   "canonical_name": "Duplex Stability and Denaturation",
+   "description": "Base stacking and GC content as determinants of melting, and the kinetics of reannealing.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "Base stacking contribution to duplex stability",
+    "GC content melting temperature ranking",
+    "Thermal denaturation and slow reannealing",
+    "Probe hybridization requires denatured target"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "CHROMATIN_STRUCTURE_PACKAGING",
+   "canonical_name": "Chromatin Structure and Packaging",
+   "description": "Histone octamer, electrostatic binding, H1, and the euchromatin/heterochromatin distinction.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "Chromatin compaction hierarchy levels",
+    "Histone octamer core particle composition",
+    "Electrostatic basis of histone DNA binding",
+    "Linker histone H1 structural role",
+    "Heterochromatin packing and probe accessibility",
+    "Chromosomal region classification from properties",
+    "Centromeric DNA sequence composition"
+   ],
+   "questions": 7,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "TELOMERES_TELOMERASE",
+   "canonical_name": "Telomeres and Telomerase",
+   "description": "Repetitive end structure, the internal RNA template, and repeat instability.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "Telomere repetitive structure and end protection",
+    "telomerase internal RNA template",
+    "repeat tract intergenerational expansion"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "REPLICATION_FORK_MECHANICS",
+   "canonical_name": "Replication Fork Mechanics",
+   "description": "Helicase, topological strain, supercoil relief and processivity at the moving fork.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "Helicase inactivation fork consequence",
+    "fork geometry strand identification",
+    "fork strand reannealing diagnosis",
+    "replication fork asymmetry logic",
+    "torsional strain ahead of fork",
+    "Supercoiling strain relief by nicking enzymes",
+    "sliding clamp processivity definition"
+   ],
+   "questions": 7,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "ORIGINS_REPLICATION",
+   "canonical_name": "Origins of Replication",
+   "description": "Sequence specificity, AT-richness, multiple origins and plasmid maintenance.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "origin AT richness and duplex opening",
+    "origin sequence specificity bubble pattern",
+    "multiple origins replication time",
+    "origin requirement for plasmid maintenance"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "LAGGING_STRAND_SYNTHESIS",
+   "canonical_name": "Lagging Strand Synthesis",
+   "description": "Primers, Okazaki fragments, excision and ligation of the discontinuous strand.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "lagging strand junction sealing",
+    "lagging strand primer counting",
+    "primase primer initiation requirement",
+    "pulse label fragment origin",
+    "new strand excision rationale",
+    "ligase deficient extract interpretation"
+   ],
+   "questions": 6,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "DNA_POLYMERASE_CHEMISTRY_FIDELITY",
+   "canonical_name": "DNA Polymerase Chemistry and Fidelity",
+   "description": "Substrate selection, 5' to 3' extension, proofreading direction and layered error rates.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "polymerase reading direction chemistry",
+    "labeled template extension direction",
+    "deoxyribonucleoside triphosphate substrate selection",
+    "proofreading exonuclease directionality",
+    "layered replication fidelity rates"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "DNA_REPAIR_PATHWAYS",
+   "canonical_name": "DNA Repair Pathways",
+   "description": "Base excision, mismatch strand discrimination and nucleotide excision of helix-distorting lesions.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "deaminated cytosine repair steps",
+    "methyl directed strand discrimination",
+    "thymine damage discrimination rationale",
+    "helix distortion pathway routing",
+    "xeroderma repair synthesis assay"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "RESTRICTION_ENZYMES_CLONING",
+   "canonical_name": "Restriction Enzymes and Cloning",
+   "description": "Palindromic sites, compatible overhangs, vector ligation and selection.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "palindromic recognition site identification",
+    "compatible overhang ligation logic",
+    "double digest restriction site mapping",
+    "empty vector self ligation diagnosis",
+    "methylation based self nonself discrimination",
+    "antibiotic plate selection logic",
+    "cDNA insert for bacterial expression"
+   ],
+   "questions": 7,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "POLYMERASE_CHAIN_REACTION",
+   "canonical_name": "Polymerase Chain Reaction",
+   "description": "Cycle steps, exponential amplification arithmetic and primer design failure modes.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "PCR annealing step purpose",
+    "PCR cycle fold amplification arithmetic",
+    "in vitro versus in vivo amplification",
+    "same strand primer pair failure"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "DNA_SEQUENCING",
+   "canonical_name": "DNA Sequencing",
+   "description": "Chain termination chemistry and reading a sequencing ladder.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "dideoxy chain termination",
+    "sequencing ladder read reconstruction"
+   ],
+   "questions": 2,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "ELECTROPHORESIS_BLOTTING_PROBES",
+   "canonical_name": "Electrophoresis, Blotting and Probes",
+   "description": "Size-based migration, probe specificity, blot targets and density labelling.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "agarose size only migration ordering",
+    "blot target discrimination",
+    "probe sequence specificity",
+    "density label design discrimination",
+    "first generation hybrid band interpretation"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "REVERSE_TRANSCRIPTION_CDNA",
+   "canonical_name": "Reverse Transcription and cDNA",
+   "description": "Making DNA from an RNA template and what cDNA lacks.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "cDNA first strand enzyme requirement"
+   ],
+   "questions": 1,
+   "confidence": "NEEDS_REVIEW",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GENE_KNOCKOUT_FUNCTIONAL_INFERENCE",
+   "canonical_name": "Gene Knockout and Functional Inference",
+   "description": "Inferring a gene's role from the phenotype of its loss.",
+   "topic": "DNA and Biotechnology",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Nucleic Acids",
+   "descriptors": [
+    "knockout phenotype functional inference"
+   ],
+   "questions": 1,
+   "confidence": "NEEDS_REVIEW",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GLOMERULAR_FILTRATION",
+   "canonical_name": "Glomerular Filtration",
+   "description": "Barrier layers, charge and size selectivity, and the pressures that set filtration rate.",
+   "topic": "Homeostasis",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Barrier conductance as a determinant of filtration rate",
+    "Capsular pressure in glomerular filtration",
+    "Fixed anionic charge and charge selectivity",
+    "Size limit of the filtration barrier and routes into tubular fluid",
+    "Layer specific failure of the serial barrier",
+    "Downstream obstruction and filtration rate",
+    "Protein binding and filtrate solute composition",
+    "Bladder compliance and upstream drainage"
+   ],
+   "questions": 8,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "RENAL_CLEARANCE_FILTERED_LOAD",
+   "canonical_name": "Renal Clearance and Filtered Load",
+   "description": "Clearance as a measure of filtration, filtered load, and what appears in urine.",
+   "topic": "Homeostasis",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Clearance as a filtration rate marker",
+    "Filtered load sets urinary appearance",
+    "Distinguishing tubular secretion from tubular reabsorption for a test solute",
+    "Proximal secretion adds to what is filtered"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "PROXIMAL_TUBULE_REABSORPTION",
+   "canonical_name": "Proximal Tubule Reabsorption",
+   "description": "Isosmotic bulk reabsorption, the basolateral pump that drives it, and carrier saturation.",
+   "topic": "Homeostasis",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Basolateral pump failure in proximal reabsorption",
+    "Composition of fluid leaving the proximal tubule",
+    "Isosmotic bulk reabsorption in proximal tubule",
+    "Saturable carrier ceiling and solute spillover",
+    "Renal oxygen supply versus transport work"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "LOOP_HENLE_COUNTERCURRENT_MULTIPLICATION",
+   "canonical_name": "Loop of Henle and Countercurrent Multiplication",
+   "description": "Limb asymmetry, how loop length multiplies a single-level difference, and the medullary gradient.",
+   "topic": "Homeostasis",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Ascending limb dilution sets urine floor",
+    "Ascending limb transport block and urine volume",
+    "Descending limb volume loss at constant solute",
+    "Loop depth versus maximal urine concentration",
+    "Loop length multiplies a single level difference",
+    "Why the medullary gradient is regional",
+    "Urea contribution to the medullary gradient",
+    "Medullary blood flow rate and gradient washout",
+    "Consequence of nephron segment order",
+    "Reading an osmolarity profile along the nephron"
+   ],
+   "questions": 10,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "URINE_CONCENTRATION_DILUTION",
+   "canonical_name": "Urine Concentration and Dilution",
+   "description": "The two requirements for concentrating urine, obligatory volume, and osmotic diuresis.",
+   "topic": "Homeostasis",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Ceiling on maximal urine concentration",
+    "Two requirements for concentrating urine",
+    "Obligatory urine volume caps water conservation",
+    "Obligatory urine volume from solute load",
+    "Osmotic diuresis from unreabsorbed solute",
+    "Water load and collecting duct permeability",
+    "Water deprivation then exogenous hormone challenge",
+    "Why regulated water exit comes last",
+    "Tonicity of fluid lost predicts urine"
+   ],
+   "questions": 9,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "DISTAL_NEPHRON_POTASSIUM_HANDLING",
+   "canonical_name": "Distal Nephron and Potassium Handling",
+   "description": "Distal sodium delivery as the driver of potassium secretion.",
+   "topic": "Homeostasis",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Distal sodium delivery and potassium secretion"
+   ],
+   "questions": 1,
+   "confidence": "NEEDS_REVIEW",
+   "name_collision": false
+  },
+  {
+   "concept_id": "RENAL_AUTOREGULATION",
+   "canonical_name": "Renal Autoregulation",
+   "description": "Myogenic and tubuloglomerular feedback holding filtration steady across a pressure range.",
+   "topic": "Homeostasis",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Isolating the arteriolar myogenic stretch response",
+    "Renal autoregulation across a pressure range",
+    "Macula densa position and luminal salt sensing",
+    "Designing a test for a local tubular sensor"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "VOLUME_VERSUS_OSMOLARITY_DEFENCE",
+   "canonical_name": "Volume Versus Osmolarity Defence",
+   "description": "Which variable the body protects when the two conflict, and nitrogen waste as a water cost.",
+   "topic": "Homeostasis",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Volume defence overriding osmolarity defence",
+    "Nitrogen waste toxicity versus water cost",
+    "Cumulative sweat sodium loss and the limits of tubular conservation",
+    "Sweat tonicity and rehydration osmolarity swing",
+    "Dialysate composition and gradient design"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "SKIN_STRUCTURE_BARRIER_FUNCTION",
+   "canonical_name": "Skin Structure and Barrier Function",
+   "description": "Layers, avascular epidermis, cornification and the water barrier.",
+   "topic": "Homeostasis",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Avascular epidermis fed by diffusion",
+    "Cornification as intracellular chemical transformation",
+    "Stratum corneum as the water barrier",
+    "Supranuclear pigment cap geometry",
+    "Burn area scaling of fluid loss"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "THERMOREGULATORY_MECHANISMS",
+   "canonical_name": "Thermoregulatory Mechanisms",
+   "description": "Heat exchange direction, insulation, piloerection, sweat gland populations and set-point shifts.",
+   "topic": "Homeostasis",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Direction of heat exchange when the surroundings are hotter than the skin",
+    "Hypodermal fat depth and heat loss rate",
+    "Piloerection and trapped still air",
+    "Fever as an elevated set point",
+    "Separating set point shift from heat overload",
+    "Distinguishing the two sweat gland populations by their deficits"
+   ],
+   "questions": 6,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "CUTANEOUS_MECHANORECEPTORS",
+   "canonical_name": "Cutaneous Mechanoreceptors",
+   "description": "Receptor depth, spatial resolution and temporal filtering by encapsulation.",
+   "topic": "Homeostasis",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOLOGY"
+   ],
+   "foundation": "3B",
+   "content_category": "Organ Systems",
+   "descriptors": [
+    "Lamellar capsule as temporal filter",
+    "Receptor depth and spatial resolution",
+    "Deficit pattern localizing receptor loss"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "FLUID_MOSAIC_MODEL_MEMBRANE_DYNAMICS",
+   "canonical_name": "Fluid Mosaic Model and Membrane Dynamics",
+   "description": "Lateral versus transverse movement, phase behaviour and the experiments that demonstrated fluidity.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "Fluid mosaic model dynamic predictions",
+    "Cell fusion protein intermixing experiment",
+    "Lateral versus transverse lipid movement",
+    "Protein versus lipid lateral mobility",
+    "Bilayer phase transition diffusion data",
+    "Self-sealing bilayer edge energetics"
+   ],
+   "questions": 6,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "MEMBRANE_LIPID_ASYMMETRY",
+   "canonical_name": "Membrane Lipid Asymmetry",
+   "description": "Flippase maintenance of leaflet composition and what its loss reveals.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "Flippase loss and asymmetry decay",
+    "Glycan sidedness accessibility evidence"
+   ],
+   "questions": 2,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "LIPID_RAFTS",
+   "canonical_name": "Lipid Rafts",
+   "description": "Ordered microdomains and the co-clustering of signalling partners.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "Lipid raft physical organization",
+    "Raft co-clustering of signaling partners"
+   ],
+   "questions": 2,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "MEMBRANE_PROTEIN_CLASSIFICATION_TOPOLOGY",
+   "canonical_name": "Membrane Protein Classification and Topology",
+   "description": "Integral versus peripheral versus lipid-anchored, extraction criteria, hydropathy and stop-transfer logic.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "Extraction condition anchoring forces",
+    "Extraction data protein classification",
+    "Lipid anchored protein classification logic",
+    "Hydropathy plot topology prediction",
+    "Alternating topogenic sequence membrane passes",
+    "Stop-transfer sequence terminus orientation",
+    "Protease protection sidedness assay",
+    "GPI leaflet and phospholipase release",
+    "Bilayer span requirement for channels"
+   ],
+   "questions": 9,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "MEMBRANE_COMPOSITION_SPECIALISATION",
+   "canonical_name": "Membrane Composition and Specialisation",
+   "description": "Protein-to-lipid ratio, organelle-specific composition and porins.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "Protein-to-lipid ratio versus membrane function",
+    "Inner mitochondrial membrane compositional contrast",
+    "Porin basis of outer membrane leakiness"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "PASSIVE_TRANSPORT_PERMEABILITY",
+   "canonical_name": "Passive Transport and Permeability",
+   "description": "Unaided permeability ranking, channels versus carriers, saturation and facilitated diffusion.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "unaided bilayer solute permeability ranking",
+    "channel versus carrier classification",
+    "carrier saturation rate plateau",
+    "GLUT1 down gradient passive uptake",
+    "aquaporin water flux inference",
+    "multi-ion permeability equation selection",
+    "vesicle anion equilibrium potential sign"
+   ],
+   "questions": 7,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "ACTIVE_TRANSPORT_ENERGY_COUPLING",
+   "canonical_name": "Active Transport and Energy Coupling",
+   "description": "Primary versus secondary sources, uphill accumulation and the order in which transport fails without ATP.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "uphill accumulation energy requirement",
+    "primary versus secondary energy source",
+    "ATP depletion transporter failure order",
+    "liposome transporter direction terminology"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "OSMOSIS_TONICITY",
+   "canonical_name": "Osmosis and Tonicity",
+   "description": "Particle count, dissociation, permeant solutes and predicting cell volume change.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "particle count osmosis direction",
+    "dissociation osmotic pressure comparison",
+    "permeant solute tonicity distinction",
+    "red cell dilute saline outcome"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "CELL_JUNCTIONS",
+   "canonical_name": "Cell Junctions",
+   "description": "Tight junction seal and fence roles, gap junction connexons and anchoring junctions.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "tight junction paracellular seal",
+    "tight junction fence function",
+    "connexon hemichannel assembly",
+    "hemidesmosome anchoring target contrast"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "ENDOCYTOSIS_EXOCYTOSIS",
+   "canonical_name": "Endocytosis and Exocytosis",
+   "description": "Bulk versus receptor-mediated uptake, cargo enrichment, membrane area balance and lumenal topology.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "nonselective fluid uptake classification",
+    "receptor clustering cargo enrichment",
+    "secretory membrane area balance",
+    "lumenal tag exocytosis fate"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GLYCOCALYX_CELL_RECOGNITION",
+   "canonical_name": "Glycocalyx and Cell Recognition",
+   "description": "Surface carbohydrate in recognition and protection.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "Glycocalyx surface recognition role"
+   ],
+   "questions": 1,
+   "confidence": "NEEDS_REVIEW",
+   "name_collision": false
+  },
+  {
+   "concept_id": "MEMBRANE_RECEPTOR_CLASSIFICATION",
+   "canonical_name": "Membrane Receptor Classification",
+   "description": "Distinguishing channel-linked, enzyme-linked and other receptor families.",
+   "topic": "Biological Membranes",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "2A",
+   "content_category": "Plasma Membrane",
+   "descriptors": [
+    "receptor channel versus enzyme classification"
+   ],
+   "questions": 1,
+   "confidence": "NEEDS_REVIEW",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GLYCOLYTIC_PATHWAY_ENERGY_YIELD",
+   "canonical_name": "Glycolytic Pathway and Energy Yield",
+   "description": "Net ATP and NADH, the site of NAD+ reduction, substrate-level phosphorylation and the bisphosphoglycerate detour.",
+   "topic": "Carbohydrate Metabolism I",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1D",
+   "content_category": "Glycolysis, Gluconeogenesis, and the Pentose Phosphate Pathway",
+   "descriptors": [
+    "Net glycolytic ATP and NADH yield",
+    "Site of NAD+ reduction in glycolysis",
+    "Phosphoglycerate kinase ATP synthesis mechanism",
+    "ATP cost of the bisphosphoglycerate detour",
+    "Glycolytic stall without NAD regeneration"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "HEXOKINASE_GLUCOKINASE",
+   "canonical_name": "Hexokinase and Glucokinase",
+   "description": "Tissue distribution, saturation profiles and product inhibition distinguishing the isozymes.",
+   "topic": "Carbohydrate Metabolism I",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1D",
+   "content_category": "Glycolysis, Gluconeogenesis, and the Pentose Phosphate Pathway",
+   "descriptors": [
+    "Hexokinase glucokinase saturation profiles",
+    "Glucokinase tissue restriction consequences",
+    "Glucose 6-phosphate product inhibition contrast"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GLYCOLYTIC_REGULATION_PFK_1",
+   "canonical_name": "Glycolytic Regulation at PFK-1",
+   "description": "Citrate and ATP inhibition, AMP signalling and the fructose-2,6-bisphosphate override.",
+   "topic": "Carbohydrate Metabolism I",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1D",
+   "content_category": "Glycolysis, Gluconeogenesis, and the Pentose Phosphate Pathway",
+   "descriptors": [
+    "Citrate feedback inhibition of PFK-1",
+    "Potent allosteric override of ATP inhibition",
+    "Bifunctional PFK-2 kinase phosphatase domains",
+    "AMP as amplified low energy signal",
+    "Feed-forward activation of pyruvate kinase"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "FRUCTOSE_GALACTOSE_METABOLISM",
+   "canonical_name": "Fructose and Galactose Metabolism",
+   "description": "Entry points for dietary hexoses and the lesions that block them.",
+   "topic": "Carbohydrate Metabolism I",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1D",
+   "content_category": "Glycolysis, Gluconeogenesis, and the Pentose Phosphate Pathway",
+   "descriptors": [
+    "Aldolase B cleavage of fructose 1-phosphate",
+    "Fructose bypass of the PFK-1 checkpoint",
+    "GLUT5 mediated fructose uptake",
+    "First enzymatic step of galactose catabolism",
+    "Tracer localization of classic galactosemia"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GLUCONEOGENESIS_BYPASS_REACTIONS",
+   "canonical_name": "Gluconeogenesis and its Bypass Reactions",
+   "description": "The irreversible steps requiring bypass, the enzymes that perform them and where they occur.",
+   "topic": "Carbohydrate Metabolism I",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1D",
+   "content_category": "Glycolysis, Gluconeogenesis, and the Pentose Phosphate Pathway",
+   "descriptors": [
+    "Irreversible glycolytic steps requiring bypass",
+    "bypass enzyme to step mapping",
+    "gluconeogenesis compartment span and organs",
+    "pyruvate carboxylase reaction package",
+    "acetyl CoA activation of pyruvate carboxylase",
+    "oxaloacetate malate exit route",
+    "convergent final glucose release step",
+    "glucose-6-phosphatase endoplasmic reticulum compartment",
+    "reciprocal effector control at FBPase-1",
+    "Pyruvate fate enzyme and compartment map"
+   ],
+   "questions": 10,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GLYCOGEN_SYNTHESIS",
+   "canonical_name": "Glycogen Synthesis",
+   "description": "Glycogenin priming, UDP-glucose recycling, branching and the driving force from pyrophosphate hydrolysis.",
+   "topic": "Carbohydrate Metabolism I",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1D",
+   "content_category": "Glycolysis, Gluconeogenesis, and the Pentose Phosphate Pathway",
+   "descriptors": [
+    "glycogen synthase primer dependence",
+    "glycogenin tyrosine autoglucosylation",
+    "Catalytic recycling of UDP-glucose",
+    "branching enzyme block transfer",
+    "pyrophosphate hydrolysis driving force"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GLYCOGEN_BREAKDOWN_REGULATION",
+   "canonical_name": "Glycogen Breakdown and Regulation",
+   "description": "Phosphorylase control, debranching, limit dextrin and the junction into glycolysis.",
+   "topic": "Carbohydrate Metabolism I",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1D",
+   "content_category": "Glycolysis, Gluconeogenesis, and the Pentose Phosphate Pathway",
+   "descriptors": [
+    "phosphorylase stall producing limit dextrin",
+    "debranching dual activity product count",
+    "AMP calcium muscle phosphorylase activation",
+    "phosphoglucomutase glycogen glycolysis junction"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "PENTOSE_PHOSPHATE_PATHWAY",
+   "canonical_name": "Pentose Phosphate Pathway",
+   "description": "Oxidative and non-oxidative branches, NADPH production, carbon accounting and NADP+ control.",
+   "topic": "Carbohydrate Metabolism I",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1D",
+   "content_category": "Glycolysis, Gluconeogenesis, and the Pentose Phosphate Pathway",
+   "descriptors": [
+    "Oxidative phase carbon accounting",
+    "NADP ratio control of committed step",
+    "second oxidative NADPH step probed by substrate entry",
+    "non-oxidative branch reverse flux",
+    "transketolase and transaldolase carbon transfers",
+    "pentose phosphate pathway product ledger"
+   ],
+   "questions": 6,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "NADPH_OXIDATIVE_DEFENCE",
+   "canonical_name": "NADPH in Oxidative Defence",
+   "description": "The glutathione peroxide chain and the haemolysis that follows its failure.",
+   "topic": "Carbohydrate Metabolism I",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "1D",
+   "content_category": "Glycolysis, Gluconeogenesis, and the Pentose Phosphate Pathway",
+   "descriptors": [
+    "NADPH glutathione peroxide defense chain",
+    "oxidant stress hemolysis enzyme lesion"
+   ],
+   "questions": 2,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "LIPID_CLASSIFICATION_CRITERIA",
+   "canonical_name": "Lipid Classification Criteria",
+   "description": "Solubility as the defining criterion, and glycerol versus sphingosine backbones.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Solubility as the lipid class criterion",
+    "Glycerol versus sphingosine backbone classification",
+    "Fat solubility drives tissue accumulation",
+    "Water affinity ranking across lipid classes"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "GLYCEROPHOSPHOLIPID_STRUCTURE_NAMING",
+   "canonical_name": "Glycerophospholipid Structure and Naming",
+   "description": "Phosphatidic acid as the parent, phosphodiester head-group linkage and head-group charge.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Phosphatidic acid as parent structure in glycerophospholipid naming",
+    "Phosphodiester linkage to head group",
+    "Head group charge and electrophoretic migration"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "SPHINGOLIPIDS_GLYCOSPHINGOLIPIDS",
+   "canonical_name": "Sphingolipids and Glycosphingolipids",
+   "description": "Sphingosine-based lipids and the phosphate-free glycosidic heads.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Phosphate-free glycosidic heads of glycosphingolipids",
+    "Sphingomyelin as a glycerol-free phospholipid",
+    "Sphingomyelin structure in myelin insulation",
+    "Two-attribute sphingolipid classification from data"
+   ],
+   "questions": 4,
+   "confidence": "NEEDS_REVIEW",
+   "name_collision": false
+  },
+  {
+   "concept_id": "AMPHIPATHICITY_MICELLE_FORMATION",
+   "canonical_name": "Amphipathicity and Micelle Formation",
+   "description": "Head versus tail contributions, critical micelle concentration, micelle geometry and the entropic driving force.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Amphipathic structure and micelle dispersal",
+    "Head versus tail solubility contributions",
+    "Critical micelle concentration monomer plateau",
+    "Soap micelle self-assembly geometry",
+    "Entropic driving force of micellization",
+    "Grease sequestration cleaning mechanism evidence",
+    "Tail number dictating micelle versus bilayer"
+   ],
+   "questions": 7,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "SAPONIFICATION_SOAPS",
+   "canonical_name": "Saponification and Soaps",
+   "description": "Base-mediated ester cleavage, its irreversibility, products, and hard-water failure.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Irreversibility of base-mediated ester cleavage",
+    "Saponification assay for lipid linkage type",
+    "Saponification product identification",
+    "Hard water soap failure experiment",
+    "Doubled carboxylate calcium chelation logic"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "CHOLESTEROL_STRUCTURE_MEMBRANE_ROLE",
+   "canonical_name": "Cholesterol Structure and Membrane Role",
+   "description": "The fused-ring hydrophobic architecture, bilayer orientation and bidirectional fluidity buffering.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Cholesterol's hydrophobic architecture",
+    "Cholesterol orientation in the bilayer",
+    "Cholesterol bidirectional fluidity buffering"
+   ],
+   "questions": 3,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "TERPENES_ISOPRENE_UNITS",
+   "canonical_name": "Terpenes and Isoprene Units",
+   "description": "Isoprene counting and terpene classification.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Isoprene unit counting in terpenes",
+    "Squalene as hexaisoprenoid steroid precursor",
+    "Terpene unit counting convention",
+    "Terpene versus steroid structural discrimination"
+   ],
+   "questions": 4,
+   "confidence": "NEEDS_REVIEW",
+   "name_collision": false
+  },
+  {
+   "concept_id": "FAT_SOLUBLE_VITAMINS_CAROTENOIDS",
+   "canonical_name": "Fat-Soluble Vitamins and Carotenoids",
+   "description": "Retinal as chromophore, retinoic acid in development, and conjugation length setting colour.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Retinal aldehyde as visual chromophore",
+    "Retinoic acid supports epithelial development",
+    "Conjugation length sets carotene color",
+    "Tocopherol chain-breaking site in membranes",
+    "Vitamin K glutamate carboxylation chemistry"
+   ],
+   "questions": 5,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "EICOSANOID_SIGNALLING",
+   "canonical_name": "Eicosanoid Signalling",
+   "description": "Prostaglandin autocrine and paracrine action, and blockade revealing function.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Prostaglandin autocrine paracrine locality",
+    "Enzyme blockade reveals mediator function"
+   ],
+   "questions": 2,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "STEROID_STRUCTURE_DERIVATIVES",
+   "canonical_name": "Steroid Structure and Derivatives",
+   "description": "The fused four-ring nucleus, recognising it in an unknown, and ring-opened derivatives such as vitamin D3.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Steroid nucleus recognition in novel isolates",
+    "Vitamin D3 as a ring-opened steroid derivative"
+   ],
+   "questions": 2,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "FATTY_ACID_STRUCTURE_CHAIN_PACKING",
+   "canonical_name": "Fatty Acid Structure and Chain Packing",
+   "description": "How saturation and double-bond geometry govern packing and melting behaviour.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Trans double bond chain packing"
+   ],
+   "questions": 1,
+   "confidence": "NEEDS_REVIEW",
+   "name_collision": false
+  },
+  {
+   "concept_id": "TRIACYLGLYCEROL_STRUCTURE_HYDROLYSIS",
+   "canonical_name": "Triacylglycerol Structure and Hydrolysis",
+   "description": "The glycerol tri-ester backbone and its complete hydrolysis stoichiometry.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Triacylglycerol backbone structure",
+    "Triacylglycerol complete hydrolysis stoichiometry"
+   ],
+   "questions": 2,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  },
+  {
+   "concept_id": "WAXES",
+   "canonical_name": "Waxes",
+   "description": "Long-chain ester structure, chemical inertness and the barrier role that follows.",
+   "topic": "Lipid Structure and Function",
+   "section": "BIO_BIOCHEM",
+   "disciplines": [
+    "BIOCHEMISTRY"
+   ],
+   "foundation": "5D",
+   "content_category": "Lipids",
+   "descriptors": [
+    "Wax barrier against water loss",
+    "Wax ester structure and inertness",
+    "Wax versus triacylglycerol backbone identity",
+    "Wax classification from hydrolysis products"
+   ],
+   "questions": 4,
+   "confidence": "HIGH_CONFIDENCE",
+   "name_collision": false
+  }
+ ]
+}
