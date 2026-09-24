@@ -2,9 +2,9 @@
  "generated_at": "2026-09-24T16:13:41.608Z",
  "note": "DESIGN ONLY. Nothing written to the database.",
  "existing_vocabulary": 488,
- "proposed_new": 89,
- "estimated_total": 577,
- "questions_covered": 417,
+ "proposed_new": 88,
+ "estimated_total": 576,
+ "questions_covered": 412,
  "concepts": [
   {
    "concept_id": "LUMINAL_BRUSH_BORDER_DIGESTION",
@@ -161,8 +161,8 @@
    "name_collision": false
   },
   {
-   "concept_id": "BILE_BILIRUBIN_HANDLING",
-   "canonical_name": "Bile and Bilirubin Handling",
+   "concept_id": "BILIRUBIN_CONJUGATION_EXCRETION",
+   "canonical_name": "Bilirubin Conjugation and Excretion",
    "description": "Bile storage and delivery, and the hepatic conjugation that lets pigment be excreted.",
    "topic": "The Digestive System",
    "section": "BIO_BIOCHEM",
@@ -172,14 +172,11 @@
    "foundation": "3B",
    "content_category": "Organ Systems",
    "descriptors": [
-    "Storage capacity from bile concentration",
-    "Pump failure versus open outlet in bile delivery",
-    "Positive control in a bile diversion study",
     "Hepatic modification enabling pigment excretion",
     "Germ-free gut and pigment colour loss",
     "One duct lesion, two downstream consequences"
    ],
-   "questions": 6,
+   "questions": 3,
    "confidence": "HIGH_CONFIDENCE",
    "name_collision": false
   },
@@ -397,9 +394,10 @@
     "Identity of heterogeneous nuclear RNA",
     "Single strandedness enables intramolecular folding",
     "Hairpin prediction from sequence data",
-    "Reactive sugar hydroxyl underlying catalysis"
+    "Reactive sugar hydroxyl underlying catalysis",
+    "Compensatory mutations localize function to shape"
    ],
-   "questions": 5,
+   "questions": 6,
    "confidence": "HIGH_CONFIDENCE",
    "name_collision": false
   },
@@ -628,8 +626,8 @@
    "name_collision": false
   },
   {
-   "concept_id": "GENE_DOSAGE_EXPRESSION_OUTPUT",
-   "canonical_name": "Gene Dosage and Expression Output",
+   "concept_id": "GENE_DOSAGE",
+   "canonical_name": "Gene Dosage",
    "description": "How copy number and sequence changes scale or localise functional output.",
    "topic": "RNA and the Genetic Code",
    "section": "BIO_BIOCHEM",
@@ -639,10 +637,9 @@
    "foundation": "1B",
    "content_category": "Gene Expression",
    "descriptors": [
-    "copy number output scaling",
-    "Compensatory mutations localize function to shape"
+    "copy number output scaling"
    ],
-   "questions": 2,
+   "questions": 1,
    "confidence": "NEEDS_REVIEW",
    "name_collision": false
   },
@@ -1178,8 +1175,8 @@
    "name_collision": false
   },
   {
-   "concept_id": "THERMOREGULATORY_MECHANISMS",
-   "canonical_name": "Thermoregulatory Mechanisms",
+   "concept_id": "CUTANEOUS_THERMOREGULATION_SET_POINT",
+   "canonical_name": "Cutaneous Thermoregulation and Set Point",
    "description": "Heat exchange direction, insulation, piloerection, sweat gland populations and set-point shifts.",
    "topic": "Homeostasis",
    "section": "BIO_BIOCHEM",
@@ -1301,9 +1298,10 @@
     "Stop-transfer sequence terminus orientation",
     "Protease protection sidedness assay",
     "GPI leaflet and phospholipase release",
-    "Bilayer span requirement for channels"
+    "Bilayer span requirement for channels",
+    "receptor channel versus enzyme classification"
    ],
-   "questions": 9,
+   "questions": 10,
    "confidence": "HIGH_CONFIDENCE",
    "name_collision": false
   },
@@ -1343,11 +1341,9 @@
     "channel versus carrier classification",
     "carrier saturation rate plateau",
     "GLUT1 down gradient passive uptake",
-    "aquaporin water flux inference",
-    "multi-ion permeability equation selection",
-    "vesicle anion equilibrium potential sign"
+    "aquaporin water flux inference"
    ],
-   "questions": 7,
+   "questions": 5,
    "confidence": "HIGH_CONFIDENCE",
    "name_collision": false
   },
@@ -1448,24 +1444,6 @@
    "content_category": "Plasma Membrane",
    "descriptors": [
     "Glycocalyx surface recognition role"
-   ],
-   "questions": 1,
-   "confidence": "NEEDS_REVIEW",
-   "name_collision": false
-  },
-  {
-   "concept_id": "MEMBRANE_RECEPTOR_CLASSIFICATION",
-   "canonical_name": "Membrane Receptor Classification",
-   "description": "Distinguishing channel-linked, enzyme-linked and other receptor families.",
-   "topic": "Biological Membranes",
-   "section": "BIO_BIOCHEM",
-   "disciplines": [
-    "BIOCHEMISTRY"
-   ],
-   "foundation": "2A",
-   "content_category": "Plasma Membrane",
-   "descriptors": [
-    "receptor channel versus enzyme classification"
    ],
    "questions": 1,
    "confidence": "NEEDS_REVIEW",
@@ -1728,7 +1706,7 @@
     "Two-attribute sphingolipid classification from data"
    ],
    "questions": 4,
-   "confidence": "NEEDS_REVIEW",
+   "confidence": "HIGH_CONFIDENCE",
    "name_collision": false
   },
   {
@@ -1815,7 +1793,7 @@
     "Terpene versus steroid structural discrimination"
    ],
    "questions": 4,
-   "confidence": "NEEDS_REVIEW",
+   "confidence": "HIGH_CONFIDENCE",
    "name_collision": false
   },
   {
@@ -1879,8 +1857,8 @@
    "name_collision": false
   },
   {
-   "concept_id": "FATTY_ACID_STRUCTURE_CHAIN_PACKING",
-   "canonical_name": "Fatty Acid Structure and Chain Packing",
+   "concept_id": "FATTY_ACID_SATURATION_PACKING",
+   "canonical_name": "Fatty Acid Saturation and Packing",
    "description": "How saturation and double-bond geometry govern packing and melting behaviour.",
    "topic": "Lipid Structure and Function",
    "section": "BIO_BIOCHEM",
@@ -1936,5 +1914,12 @@
    "confidence": "HIGH_CONFIDENCE",
    "name_collision": false
   }
- ]
+ ],
+ "reused_existing": {
+  "Storage capacity from bile concentration": "Lipid Digestion & Bile",
+  "Pump failure versus open outlet in bile delivery": "Lipid Digestion & Bile",
+  "Positive control in a bile diversion study": "Lipid Digestion & Bile",
+  "multi-ion permeability equation selection": "Resting Membrane Potential",
+  "vesicle anion equilibrium potential sign": "Ion Channels"
+ }
 }
