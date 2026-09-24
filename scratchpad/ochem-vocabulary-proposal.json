@@ -1,0 +1,658 @@
+{
+ "proposal": {
+  "Alcohols": [
+   [
+    "Alcohols and Phenols: Structure and Nomenclature",
+    "new",
+    4
+   ],
+   [
+    "Alcohol Physical Properties",
+    "new",
+    3
+   ],
+   [
+    "Acidity of Alcohols and Phenols",
+    "new",
+    3
+   ],
+   [
+    "Alcohol Oxidation",
+    "new",
+    6
+   ],
+   [
+    "Alcohol Activation and Protection",
+    "new",
+    2
+   ],
+   [
+    "Acetal and Ketal Protection",
+    "new",
+    2
+   ],
+   [
+    "Quinones",
+    "new",
+    7
+   ]
+  ],
+  "Aldehydes and Ketones I": [
+   [
+    "Aldehyde and Ketone Structure and Nomenclature",
+    "new",
+    4
+   ],
+   [
+    "Carbonyl Reactivity",
+    "new",
+    3
+   ],
+   [
+    "Alcohol Oxidation",
+    "reuse-ochem",
+    1
+   ],
+   [
+    "Nucleophilic Addition to Carbonyls",
+    "new",
+    3
+   ],
+   [
+    "Hydration of Carbonyls",
+    "new",
+    1
+   ],
+   [
+    "Acetal and Ketal Protection",
+    "reuse-ochem",
+    4
+   ],
+   [
+    "Imine and Enamine Formation",
+    "new",
+    3
+   ],
+   [
+    "Cyanohydrin Formation",
+    "new",
+    1
+   ],
+   [
+    "Carbonyl Oxidation",
+    "new",
+    2
+   ],
+   [
+    "Carbonyl Reduction",
+    "new",
+    3
+   ]
+  ],
+  "Aldehydes and Ketones II: Enolates": [
+   [
+    "Alpha Carbon Acidity and Enolates",
+    "new",
+    7
+   ],
+   [
+    "Keto-Enol Tautomerism",
+    "new",
+    4
+   ],
+   [
+    "Kinetic versus Thermodynamic Enolates",
+    "new",
+    2
+   ],
+   [
+    "Michael Addition",
+    "new",
+    1
+   ],
+   [
+    "Imine and Enamine Formation",
+    "reuse-ochem",
+    1
+   ],
+   [
+    "Aldol Addition and Condensation",
+    "new",
+    6
+   ]
+  ],
+  "Analyzing Organic Reactions": [
+   [
+    "Lewis Acids & Bases",
+    "reuse-existing",
+    2
+   ],
+   [
+    "Definitions & Conjugate Acid-Base Pairs",
+    "reuse-existing",
+    2
+   ],
+   [
+    "Strong vs Weak Acids/Bases; Ka and Kb",
+    "reuse-existing",
+    2
+   ],
+   [
+    "Acidity of Organic Functional Groups",
+    "new",
+    3
+   ],
+   [
+    "Nucleophilicity and Electrophilicity",
+    "new",
+    6
+   ],
+   [
+    "Leaving Groups",
+    "new",
+    2
+   ],
+   [
+    "Nucleophilic Substitution: SN1 and SN2",
+    "new",
+    8
+   ],
+   [
+    "Oxidation/Reduction & Identifying Agents",
+    "reuse-existing",
+    2
+   ],
+   [
+    "Carbon Oxidation States",
+    "new",
+    2
+   ],
+   [
+    "Common Oxidizing & Reducing Agents",
+    "reuse-existing",
+    2
+   ],
+   [
+    "Chemoselectivity and Protecting Groups",
+    "new",
+    2
+   ],
+   [
+    "Carbonyl Reactivity",
+    "reuse-ochem",
+    2
+   ],
+   [
+    "AMBIGUOUS: six-step reaction analysis procedure",
+    "ambiguous",
+    1
+   ],
+   [
+    "Stereospecificity and Stereoselectivity",
+    "new",
+    1
+   ]
+  ],
+  "Bonding": [
+   [
+    "Quantum Model & Quantum Numbers",
+    "reuse-existing",
+    9
+   ],
+   [
+    "Molecular Orbital Theory",
+    "new",
+    2
+   ],
+   [
+    "Sigma/Pi Bonds & Hybridization",
+    "reuse-existing",
+    12
+   ],
+   [
+    "Bond Length & Bond Energy",
+    "reuse-existing",
+    2
+   ],
+   [
+    "Resonance & Delocalization",
+    "reuse-existing",
+    7
+   ]
+  ],
+  "Carboxylic Acid Derivatives": [
+   [
+    "Condensation Reactions",
+    "new",
+    1
+   ],
+   [
+    "Amides and Lactams",
+    "new",
+    7
+   ],
+   [
+    "Esters and Lactones",
+    "new",
+    4
+   ],
+   [
+    "Anhydrides",
+    "new",
+    6
+   ],
+   [
+    "Carboxylic Acid Derivative Reactivity",
+    "new",
+    3
+   ],
+   [
+    "Steric and Electronic Effects on Reactivity",
+    "new",
+    3
+   ],
+   [
+    "Beta-Lactams and Ring Strain",
+    "new",
+    2
+   ],
+   [
+    "Nucleophilic Acyl Substitution",
+    "new",
+    2
+   ]
+  ],
+  "Carboxylic Acids": [
+   [
+    "Carboxylic Acid Structure and Nomenclature",
+    "new",
+    3
+   ],
+   [
+    "Carboxylic Acid Physical Properties",
+    "new",
+    2
+   ],
+   [
+    "Carboxylic Acid Acidity",
+    "new",
+    5
+   ],
+   [
+    "Carbonyl Oxidation",
+    "reuse-ochem",
+    1
+   ],
+   [
+    "Nucleophilic Acyl Substitution",
+    "reuse-ochem",
+    2
+   ],
+   [
+    "Amides and Lactams",
+    "reuse-ochem",
+    3
+   ],
+   [
+    "Esters and Lactones",
+    "reuse-ochem",
+    3
+   ],
+   [
+    "Anhydrides",
+    "reuse-ochem",
+    1
+   ],
+   [
+    "Carbonyl Reduction",
+    "reuse-ochem",
+    1
+   ],
+   [
+    "Decarboxylation",
+    "new",
+    2
+   ],
+   [
+    "Saponification and Soaps",
+    "reuse-existing",
+    2
+   ],
+   [
+    "Amphipathicity and Micelle Formation",
+    "reuse-existing",
+    1
+   ],
+   [
+    "Hell-Volhard-Zelinskii Reaction",
+    "new",
+    1
+   ]
+  ],
+  "Isomerism & Stereochemistry": [
+   [
+    "Isomer Classification",
+    "new",
+    5
+   ],
+   [
+    "Conformational Analysis and Newman Projections",
+    "new",
+    5
+   ],
+   [
+    "Cyclohexane Conformations and Ring Strain",
+    "new",
+    8
+   ],
+   [
+    "Chirality and Stereocenters",
+    "new",
+    4
+   ],
+   [
+    "Enantiomers and Optical Activity",
+    "new",
+    6
+   ],
+   [
+    "Diastereomers and Meso Compounds",
+    "new",
+    7
+   ],
+   [
+    "Absolute Configuration: CIP, R/S and Fischer Projections",
+    "new",
+    9
+   ]
+  ],
+  "Naming Organic Molecules": [
+   [
+    "IUPAC Naming System",
+    "new",
+    3
+   ],
+   [
+    "Parent Chain Selection",
+    "new",
+    2
+   ],
+   [
+    "Functional Group Priority",
+    "new",
+    4
+   ],
+   [
+    "Locant Numbering Rules",
+    "new",
+    3
+   ],
+   [
+    "Substituent Naming",
+    "new",
+    5
+   ],
+   [
+    "Alkane, Alkene and Alkyne Nomenclature",
+    "new",
+    4
+   ],
+   [
+    "Alcohols and Phenols: Structure and Nomenclature",
+    "reuse-ochem",
+    5
+   ],
+   [
+    "Aldehyde and Ketone Structure and Nomenclature",
+    "reuse-ochem",
+    6
+   ],
+   [
+    "Carboxylic Acid Structure and Nomenclature",
+    "reuse-ochem",
+    2
+   ],
+   [
+    "Esters and Lactones",
+    "reuse-ochem",
+    2
+   ],
+   [
+    "Amides and Lactams",
+    "reuse-ochem",
+    2
+   ],
+   [
+    "Anhydrides",
+    "reuse-ochem",
+    2
+   ]
+  ],
+  "Nitrogen and Phosphorus Containing Compounds": [
+   [
+    "Amino Acid Structure & Stereochemistry",
+    "reuse-existing",
+    4
+   ],
+   [
+    "Zwitterions & Titration Curves",
+    "reuse-existing",
+    4
+   ],
+   [
+    "Side-Chain Classification",
+    "reuse-existing",
+    7
+   ],
+   [
+    "Peptide Bond Formation & Hydrolysis",
+    "reuse-existing",
+    5
+   ],
+   [
+    "Strecker Synthesis",
+    "new",
+    6
+   ],
+   [
+    "Gabriel Synthesis",
+    "new",
+    11
+   ],
+   [
+    "Phosphoric Acid and Phosphate Buffers",
+    "new",
+    6
+   ],
+   [
+    "Phosphate Esters and Anhydride Bonds",
+    "new",
+    4
+   ],
+   [
+    "ATP & High-Energy Carriers",
+    "reuse-existing",
+    2
+   ]
+  ],
+  "Separations and Purifications": [
+   [
+    "Extraction",
+    "new",
+    7
+   ],
+   [
+    "Filtration and Solvent Removal",
+    "new",
+    4
+   ],
+   [
+    "Recrystallization",
+    "new",
+    1
+   ],
+   [
+    "Distillation",
+    "new",
+    7
+   ],
+   [
+    "Chromatography",
+    "reuse-existing",
+    9
+   ],
+   [
+    "Thin-Layer and Reverse-Phase Chromatography",
+    "new",
+    3
+   ],
+   [
+    "Ion-Exchange Chromatography",
+    "reuse-existing",
+    1
+   ],
+   [
+    "Size-Exclusion Chromatography",
+    "reuse-existing",
+    1
+   ],
+   [
+    "Affinity Chromatography",
+    "reuse-existing",
+    2
+   ],
+   [
+    "Gas Chromatography",
+    "new",
+    4
+   ],
+   [
+    "High-Performance Liquid Chromatography",
+    "new",
+    2
+   ]
+  ],
+  "Spectroscopy": [
+   [
+    "Infrared Spectroscopy",
+    "new",
+    16
+   ],
+   [
+    "Ultraviolet-Visible Spectroscopy",
+    "new",
+    10
+   ],
+   [
+    "NMR Principles",
+    "new",
+    10
+   ],
+   [
+    "NMR Chemical Shift and Integration",
+    "new",
+    14
+   ],
+   [
+    "NMR Spin-Spin Coupling",
+    "new",
+    4
+   ]
+  ]
+ },
+ "new": {
+  "Alcohols and Phenols: Structure and Nomenclature": 9,
+  "Alcohol Physical Properties": 3,
+  "Acidity of Alcohols and Phenols": 3,
+  "Alcohol Oxidation": 7,
+  "Alcohol Activation and Protection": 2,
+  "Acetal and Ketal Protection": 6,
+  "Quinones": 7,
+  "Aldehyde and Ketone Structure and Nomenclature": 10,
+  "Carbonyl Reactivity": 5,
+  "Nucleophilic Addition to Carbonyls": 3,
+  "Hydration of Carbonyls": 1,
+  "Imine and Enamine Formation": 4,
+  "Cyanohydrin Formation": 1,
+  "Carbonyl Oxidation": 3,
+  "Carbonyl Reduction": 4,
+  "Alpha Carbon Acidity and Enolates": 7,
+  "Keto-Enol Tautomerism": 4,
+  "Kinetic versus Thermodynamic Enolates": 2,
+  "Michael Addition": 1,
+  "Aldol Addition and Condensation": 6,
+  "Acidity of Organic Functional Groups": 3,
+  "Nucleophilicity and Electrophilicity": 6,
+  "Leaving Groups": 2,
+  "Nucleophilic Substitution: SN1 and SN2": 8,
+  "Carbon Oxidation States": 2,
+  "Chemoselectivity and Protecting Groups": 2,
+  "Stereospecificity and Stereoselectivity": 1,
+  "Molecular Orbital Theory": 2,
+  "Condensation Reactions": 1,
+  "Amides and Lactams": 12,
+  "Esters and Lactones": 9,
+  "Anhydrides": 9,
+  "Carboxylic Acid Derivative Reactivity": 3,
+  "Steric and Electronic Effects on Reactivity": 3,
+  "Beta-Lactams and Ring Strain": 2,
+  "Nucleophilic Acyl Substitution": 4,
+  "Carboxylic Acid Structure and Nomenclature": 5,
+  "Carboxylic Acid Physical Properties": 2,
+  "Carboxylic Acid Acidity": 5,
+  "Decarboxylation": 2,
+  "Hell-Volhard-Zelinskii Reaction": 1,
+  "Isomer Classification": 5,
+  "Conformational Analysis and Newman Projections": 5,
+  "Cyclohexane Conformations and Ring Strain": 8,
+  "Chirality and Stereocenters": 4,
+  "Enantiomers and Optical Activity": 6,
+  "Diastereomers and Meso Compounds": 7,
+  "Absolute Configuration: CIP, R/S and Fischer Projections": 9,
+  "IUPAC Naming System": 3,
+  "Parent Chain Selection": 2,
+  "Functional Group Priority": 4,
+  "Locant Numbering Rules": 3,
+  "Substituent Naming": 5,
+  "Alkane, Alkene and Alkyne Nomenclature": 4,
+  "Strecker Synthesis": 6,
+  "Gabriel Synthesis": 11,
+  "Phosphoric Acid and Phosphate Buffers": 6,
+  "Phosphate Esters and Anhydride Bonds": 4,
+  "Extraction": 7,
+  "Filtration and Solvent Removal": 4,
+  "Recrystallization": 1,
+  "Distillation": 7,
+  "Thin-Layer and Reverse-Phase Chromatography": 3,
+  "Gas Chromatography": 4,
+  "High-Performance Liquid Chromatography": 2,
+  "Infrared Spectroscopy": 16,
+  "Ultraviolet-Visible Spectroscopy": 10,
+  "NMR Principles": 10,
+  "NMR Chemical Shift and Integration": 14,
+  "NMR Spin-Spin Coupling": 4
+ },
+ "reused_existing": {
+  "Lewis Acids & Bases": 2,
+  "Definitions & Conjugate Acid-Base Pairs": 2,
+  "Strong vs Weak Acids/Bases; Ka and Kb": 2,
+  "Oxidation/Reduction & Identifying Agents": 2,
+  "Common Oxidizing & Reducing Agents": 2,
+  "Quantum Model & Quantum Numbers": 9,
+  "Sigma/Pi Bonds & Hybridization": 12,
+  "Bond Length & Bond Energy": 2,
+  "Resonance & Delocalization": 7,
+  "Saponification and Soaps": 2,
+  "Amphipathicity and Micelle Formation": 1,
+  "Amino Acid Structure & Stereochemistry": 4,
+  "Zwitterions & Titration Curves": 4,
+  "Side-Chain Classification": 7,
+  "Peptide Bond Formation & Hydrolysis": 5,
+  "ATP & High-Energy Carriers": 2,
+  "Chromatography": 9,
+  "Ion-Exchange Chromatography": 1,
+  "Size-Exclusion Chromatography": 1,
+  "Affinity Chromatography": 2
+ },
+ "ambiguous": 1
+}
