@@ -40,14 +40,13 @@ async function all(t, c) {
 }
 
 console.log("\nSEEDED VOCABULARY");
-const concepts = await all("concepts", "id,slug,canonical_name,status,section_code,split_candidate,concept_level,parent_concept_id");
+const concepts = await all("concepts", "id,slug,canonical_name,status,split_candidate,concept_level,parent_concept_id");
 ok("488 concepts seeded", concepts.length === 488, String(concepts.length));
 ok("all ACTIVE_SEED", concepts.every((c) => c.status === "ACTIVE_SEED"));
 ok("200 split candidates flagged", concepts.filter((c) => c.split_candidate).length === 200);
 ok("slugs unique", new Set(concepts.map((c) => c.slug)).size === concepts.length);
 ok("canonical names unique", new Set(concepts.map((c) => c.canonical_name)).size === concepts.length);
 ok("hierarchy left flat", concepts.every((c) => c.concept_level === "CONCEPT" && !c.parent_concept_id));
-ok("every concept has a section", concepts.every((c) => c.section_code));
 
 console.log("\nRELATIONSHIPS");
 ok("discipline rows = 488", (await count("concept_disciplines")) === 488);
@@ -69,8 +68,17 @@ ok("every mapping is exact string equality",
   qc.every((m) => qById.get(m.question_id)?.subtopic === byId.get(m.concept_id)?.canonical_name));
 
 const SEC = { chem_phys: "CHEM_PHYS", bio_biochem: "BIO_BIOCHEM", psych_soc: "PSYCH_SOC", cars: "CARS" };
+// MEMBERSHIP, not equality. This check originally compared a single
+// concepts.section_code and failed on 4 mappings, which looked like a mapping
+// bug and was really a schema one: "Isoelectric Focusing" is examined in two
+// MCAT sections, so no single value could have been right.
+const sects = (await all("concept_sections", "concept_id,section_code"))
+  .reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.section_code), a), {});
 ok("section compatible on every mapping",
-  qc.every((m) => byId.get(m.concept_id)?.section_code === SEC[qById.get(m.question_id)?.section]));
+  qc.every((m) => sects[m.concept_id]?.has(SEC[qById.get(m.question_id)?.section])));
+ok("488 concepts placed in a section", new Set(Object.keys(sects)).size === 488);
+ok("cross-section concepts are represented, not flattened",
+  Object.values(sects).filter((s) => s.size > 1).length === 1);
 
 const cc = await all("concept_content_categories", "concept_id,content_category");
 const catsOf = cc.reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.content_category), a), {});
@@ -107,7 +115,7 @@ console.log("\nDATABASE GUARDS  (fixture: created, driven, removed)");
 let fixture = null;
 try {
   const { data: f, error } = await db.from("concepts")
-    .insert({ slug: "__FIXTURE_DELETE_ME__", canonical_name: "Fixture Delete Me", status: "DRAFT", section_code: "CHEM_PHYS" })
+    .insert({ slug: "__FIXTURE_DELETE_ME__", canonical_name: "Fixture Delete Me", status: "DRAFT" })
     .select("id").single();
   if (error) throw new Error("fixture insert: " + error.message);
   fixture = f.id;
