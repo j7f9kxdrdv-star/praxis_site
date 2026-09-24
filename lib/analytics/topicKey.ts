@@ -66,6 +66,34 @@ const ALIASES: Record<string, string> = {
   // The question bank's Reproduction chapter is the deck library's Cell
   // Division and Reproduction.
   reproduction: "cell_division_and_reproduction",
+
+  // ─── Added 2026-09-24, after the flashcard audit ──────────────────────
+  //
+  // Four decks failed this join on spelling rather than substance, so 212
+  // cards read as having no chapter when their chapter was there all along.
+  // Each was checked by reading the deck's cards against the chapter's
+  // concepts, not by comparing the two strings.
+  //
+  // AN ALIAS RESOLVES A DECK TO A CHAPTER. IT ASSIGNS NOTHING TO A CARD.
+  // All it does is narrow which concepts a card MAY be mapped to; which one
+  // it actually gets is still decided card by card. topicKey.test.ts pins
+  // that distinction, because the tempting shortcut once a deck resolves is
+  // to hand every card in it the chapter's concepts.
+  //
+  // Only a hyphen separated these two.
+  nonenzymatic_protein_function_and_protein_analysis:
+    "non_enzymatic_protein_function_and_protein_analysis",
+  // The deck's cards are neutrons, mass number, isotopes and ions, which is
+  // the Atomic Structure chapter under a friendlier name.
+  inside_the_atom: "atomic_structure",
+  // Mendeleev, Moseley and electronegativity trends: The Periodic Table.
+  periodic_trends_and_chemical_families: "the_periodic_table",
+  // PARTIAL BY DESIGN. The chapter is right, but this deck is individual
+  // residue cards (tyrosine, serine, threonine) and the chapter's concepts
+  // are about structure, classification and titration. Some of these cards
+  // will still turn out to need a concept that does not exist yet, which is
+  // exactly why an alias must not imply a mapping.
+  amino_acids: "amino_acids_peptides_and_proteins",
 };
 
 /** A topic that exists on one side of the join and not the other. */

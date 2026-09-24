@@ -140,7 +140,15 @@ describe("legacy behaviour is untouched", () => {
   });
 
   it("does not make the legacy resolver agree with things it never agreed with", () => {
-    expect(canonicalTopicKey("Atomic Structure")).not.toBe(canonicalTopicKey("inside_the_atom"));
+    // This used to use inside_the_atom, which was a fair example until that
+    // deck was DELIBERATELY aliased to Atomic Structure on 2026-09-24 after the
+    // flashcard audit showed its cards are neutrons, isotopes and ions. The
+    // assertion is still worth keeping, so it now uses a pair that was examined
+    // and deliberately left unaliased: the physics deck Atomic and Nuclear
+    // Phenomena teaches the photoelectric effect and work function, which is not
+    // the general chemistry Atomic Structure chapter.
+    expect(canonicalTopicKey("Atomic Structure")).not.toBe(canonicalTopicKey("atomic_and_nuclear_phenomena"));
+    expect(canonicalTopicKey("The Cell")).not.toBe(canonicalTopicKey("the_periodic_table"));
   });
 });
 

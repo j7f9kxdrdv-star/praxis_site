@@ -1,0 +1,273 @@
+{
+ "chapter_passes": {
+  "The Gas Phase": {
+   "deck_cards": 50,
+   "new_concepts": [
+    {
+     "concept_id": "GAS_PRESSURE_AND_MEASUREMENT",
+     "canonical_name": "Gas Pressure and Its Measurement",
+     "definition": "Pressure as force per area, its units and conversions, and how barometers and manometers read it.",
+     "cards": 6,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "GAS_STATE_AND_STANDARD_CONDITIONS",
+     "canonical_name": "Gas State and Standard Conditions",
+     "definition": "Absolute zero and the Kelvin requirement, STP, standard molar volume, and what makes a gas ideal.",
+     "cards": 6,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "IDEAL_GAS_LAW",
+     "canonical_name": "The Ideal Gas Law",
+     "definition": "PV = nRT, the gas constant in both unit systems, and the density and molar-mass rearrangements.",
+     "cards": 7,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "SIMPLE_AND_COMBINED_GAS_LAWS",
+     "canonical_name": "The Simple and Combined Gas Laws",
+     "definition": "Boyle, Charles, Gay-Lussac and Avogadro as the ideal gas law with variables held constant, and the combined law.",
+     "cards": 7,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "PARTIAL_PRESSURE_AND_MOLE_FRACTION",
+     "canonical_name": "Partial Pressure and Mole Fraction",
+     "definition": "Dalton's law, the independence of each component, and partial pressure from mole fraction.",
+     "cards": 5,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "HENRYS_LAW",
+     "canonical_name": "Henry's Law",
+     "definition": "Dissolved gas concentration as proportional to the partial pressure above the liquid.",
+     "cards": 2,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "KINETIC_MOLECULAR_THEORY",
+     "canonical_name": "Kinetic Molecular Theory",
+     "definition": "The assumptions behind ideal behaviour, average kinetic energy set by temperature, and root-mean-square speed.",
+     "cards": 9,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "DIFFUSION_AND_EFFUSION",
+     "canonical_name": "Diffusion and Effusion",
+     "definition": "Graham's law and the distinction between spreading through a medium and escaping through an aperture.",
+     "cards": 2,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "REAL_GAS_DEVIATIONS",
+     "canonical_name": "Real Gas Deviations",
+     "definition": "Where and why real gases depart from ideality, and what each van der Waals constant corrects for.",
+     "cards": 6,
+     "confidence": "HIGH_CONFIDENCE"
+    }
+   ],
+   "reused_existing": []
+  },
+  "Thermochemistry": {
+   "deck_cards": 52,
+   "new_concepts": [
+    {
+     "concept_id": "HEAT_TEMPERATURE_THERMAL_EQUILIBRIUM",
+     "canonical_name": "Heat, Temperature and Thermal Equilibrium",
+     "definition": "Heat as energy in transit, temperature as average kinetic energy, and the zeroth law.",
+     "cards": 3,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "ENTHALPY_AND_REACTION_ENTHALPY",
+     "canonical_name": "Enthalpy and Reaction Enthalpy",
+     "definition": "Exothermic and endothermic signs, enthalpy at constant pressure, standard states, and enthalpy of formation.",
+     "cards": 7,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "CALORIMETRY_AND_HEAT_CAPACITY",
+     "canonical_name": "Calorimetry and Heat Capacity",
+     "definition": "q = mcDeltaT, specific versus molar heat capacity, and what constant-pressure and constant-volume calorimeters each measure.",
+     "cards": 6,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "PHASE_CHANGES_AND_LATENT_HEAT",
+     "canonical_name": "Phase Changes and Latent Heat",
+     "definition": "Why temperature holds constant during a phase change, and the heats of fusion and vaporisation.",
+     "cards": 3,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "HESSS_LAW",
+     "canonical_name": "Hess's Law",
+     "definition": "Adding step enthalpies, and the consequences of reversing or scaling a reaction.",
+     "cards": 4,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "BOND_ENERGIES_AND_REACTION_ENTHALPY",
+     "canonical_name": "Bond Energies and Reaction Enthalpy",
+     "definition": "Estimating reaction enthalpy from bonds broken and formed, and why breaking costs and forming releases.",
+     "cards": 4,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "ENTROPY",
+     "canonical_name": "Entropy",
+     "definition": "Entropy as dispersal and microstate count, the second and third laws, and what raises it.",
+     "cards": 7,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "GIBBS_FREE_ENERGY_AND_SPONTANEITY",
+     "canonical_name": "Gibbs Free Energy and Spontaneity",
+     "definition": "DeltaG = DeltaH - TDeltaS, the sign of DeltaG, and the four enthalpy/entropy combinations with their temperature dependence.",
+     "cards": 8,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "PHASE_DIAGRAMS",
+     "canonical_name": "Phase Diagrams",
+     "definition": "Reading a pressure-temperature diagram, the triple point and the critical point.",
+     "cards": 2,
+     "confidence": "HIGH_CONFIDENCE"
+    }
+   ],
+   "reused_existing": [
+    {
+     "concept": "Thermodynamics: Systems & Free Energy",
+     "cards": 8,
+     "currently_in": "Bioenergetics and Regulation of Metabolism / Principles of Bioenergetics",
+     "taxonomy_extension_needed": "YES: add topic Thermochemistry, discipline GENERAL_CHEMISTRY, and the general chemistry content category. Its 8 questions are open/closed systems, first law, endothermic identification and spontaneity, which is exactly cards 1 to 8."
+    }
+   ]
+  },
+  "Solutions": {
+   "deck_cards": 65,
+   "new_concepts": [
+    {
+     "concept_id": "SOLUTION_FORMATION_AND_SOLVATION",
+     "canonical_name": "Solution Formation and Solvation",
+     "definition": "Solvent and solute, hydration, the energetic steps of dissolving, and why like dissolves like.",
+     "cards": 8,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "SOLUBILITY_AND_SATURATION",
+     "canonical_name": "Solubility and Saturation",
+     "definition": "Saturated, unsaturated and supersaturated states, and how temperature moves solid and gas solubility in opposite directions.",
+     "cards": 7,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "SOLUBILITY_RULES",
+     "canonical_name": "Solubility Rules",
+     "definition": "Which salts dissolve, and the standard exceptions worth memorising.",
+     "cards": 6,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "CONCENTRATION_UNITS_AND_DILUTION",
+     "canonical_name": "Concentration Units and Dilution",
+     "definition": "Molarity, molality, mole fraction, percent and normality, which each is used for, and the dilution equation.",
+     "cards": 11,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "SOLUBILITY_PRODUCT_AND_PRECIPITATION",
+     "canonical_name": "Solubility Product and Precipitation",
+     "definition": "Ksp, the ion product, and predicting dissolution or precipitation by comparing them.",
+     "cards": 10,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "COMMON_ION_EFFECT",
+     "canonical_name": "Common Ion Effect and Selective Precipitation",
+     "definition": "How a shared ion suppresses solubility, and separating ions by precipitating them in order.",
+     "cards": 4,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "COMPLEX_IONS_AND_FORMATION_CONSTANTS",
+     "canonical_name": "Complex Ions and Formation Constants",
+     "definition": "Ligands as Lewis bases, coordinate covalent bonding, coordination number, and Kf raising solubility.",
+     "cards": 7,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "PH_EFFECTS_ON_SOLUBILITY",
+     "canonical_name": "pH Effects on Solubility",
+     "definition": "Why salts of basic anions dissolve more readily as pH falls.",
+     "cards": 1,
+     "confidence": "NEEDS_REVIEW"
+    },
+    {
+     "concept_id": "COLLIGATIVE_PROPERTIES",
+     "canonical_name": "Colligative Properties",
+     "definition": "Vapour-pressure lowering, boiling elevation, freezing depression, osmotic pressure, and the van't Hoff factor.",
+     "cards": 11,
+     "confidence": "HIGH_CONFIDENCE"
+    }
+   ],
+   "reused_existing": []
+  },
+  "Equilibrium": {
+   "deck_cards": 28,
+   "new_concepts": [
+    {
+     "concept_id": "DYNAMIC_EQUILIBRIUM",
+     "canonical_name": "Dynamic Equilibrium",
+     "definition": "Reversibility, equal forward and reverse rates, and equilibrium as a free-energy minimum rather than a stop.",
+     "cards": 4,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "THE_EQUILIBRIUM_CONSTANT",
+     "canonical_name": "The Equilibrium Constant",
+     "definition": "The law of mass action, Kc against Kp, what is omitted from the expression, what K depends on, and what its magnitude does and does not tell you.",
+     "cards": 9,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "REACTION_QUOTIENT",
+     "canonical_name": "The Reaction Quotient",
+     "definition": "Q against K as the predictor of which direction a system will move.",
+     "cards": 4,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "LE_CHATELIERS_PRINCIPLE",
+     "canonical_name": "Le Chatelier's Principle",
+     "definition": "Predicting the shift from concentration, pressure, volume and temperature stresses, and why a catalyst shifts nothing.",
+     "cards": 7,
+     "confidence": "HIGH_CONFIDENCE"
+    },
+    {
+     "concept_id": "KINETIC_VERSUS_THERMODYNAMIC_PRODUCT",
+     "canonical_name": "Kinetic versus Thermodynamic Product",
+     "definition": "Which product dominates at low and at high temperature, and why reversibility decides it.",
+     "cards": 3,
+     "confidence": "HIGH_CONFIDENCE"
+    }
+   ],
+   "reused_existing": [
+    {
+     "concept": "Free Energy & Equilibrium",
+     "cards": 1,
+     "currently_in": "Bioenergetics and Regulation of Metabolism / Principles of Bioenergetics",
+     "taxonomy_extension_needed": "YES: add topic Equilibrium, discipline GENERAL_CHEMISTRY, and the general chemistry content category. Its questions are DeltaG = -RT ln K and DeltaG = DeltaG + RT ln Q, which is exactly card 9."
+    }
+   ]
+  }
+ },
+ "summary": {
+  "new_concepts": 32,
+  "reused": 2,
+  "cards_new": 186,
+  "cards_reused": 9,
+  "cards_total": 195
+ }
+}
