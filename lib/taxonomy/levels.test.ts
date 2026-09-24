@@ -143,3 +143,51 @@ describe("legacy behaviour is untouched", () => {
     expect(canonicalTopicKey("Atomic Structure")).not.toBe(canonicalTopicKey("inside_the_atom"));
   });
 });
+
+describe("psych_soc stays at section level, deliberately", () => {
+  it("resolves the section with certainty", () => {
+    expect(resolveLegacyValue("flashcard_decks", "section", "psych_soc").section).toBe("PSYCH_SOC");
+  });
+
+  it("marks the discipline UNRESOLVED, not UNKNOWN", () => {
+    // The distinction is the point: UNRESOLVED is a decision deferred, and the
+    // section around it is still trustworthy. UNKNOWN is a value nobody mapped
+    // and nothing about it can be relied on. Collapsing them to null loses that.
+    const m = resolveLegacyValue("flashcard_decks", "section", "psych_soc");
+    expect(m.discipline).toBeNull();
+    expect(m.disciplineStatus).toBe("UNRESOLVED");
+  });
+
+  it("is not confused with a value that was never recognised", () => {
+    const nonsense = resolveLegacyValue("flashcard_decks", "section", "psychsoc");
+    expect(nonsense.disciplineStatus).toBe("UNKNOWN");
+    expect(nonsense.section).toBeNull();
+  });
+
+  it("never guesses psychology or sociology from a deck", () => {
+    for (const slug of ["psych_soc"]) {
+      const m = resolveLegacyValue("flashcard_decks", "section", slug);
+      expect(m.discipline).not.toBe("PSYCHOLOGY");
+      expect(m.discipline).not.toBe("SOCIOLOGY");
+    }
+  });
+
+  it("still resolves psychology and sociology when a QUESTION states them outright", () => {
+    // The deferral is about decks, which do not say. A question that does say
+    // must still resolve, or the deferral would spread where it is not needed.
+    expect(resolveLegacyValue("questions", "discipline", "psychology").disciplineStatus).toBe("RESOLVED");
+    expect(resolveLegacyValue("questions", "discipline", "sociology").discipline).toBe("SOCIOLOGY");
+  });
+});
+
+describe("an unresolved discipline does not block concept mapping", () => {
+  it("comparability depends on concepts alone, never on discipline", () => {
+    // A psych_soc card carries no discipline. It must still be comparable to a
+    // question once both are mapped, otherwise the deferral would quietly
+    // exclude 778 cards from the learner model.
+    const shared: ConceptRef[] = [
+      { conceptId: "c9", slug: "s", canonicalName: "S", role: "PRIMARY", mappingStatus: "HUMAN_VALIDATED", source: "HUMAN_REVIEWED", confidence: 1 },
+    ];
+    expect(comparability(shared, shared)).toEqual({ comparable: true, reason: "OK" });
+  });
+});

@@ -19,6 +19,7 @@ import {
   resolveLegacyValue,
   sectionForDiscipline,
   type DisciplineCode,
+  type DisciplineStatus,
   type McatSection,
 } from "./levels";
 
@@ -48,6 +49,15 @@ export interface LegacyClassification {
 export interface CanonicalClassification {
   mcatSection: McatSection | null;
   discipline: DisciplineCode | null;
+  /**
+   * WHY the discipline is absent, when it is. UNRESOLVED means a decision was
+   * deliberately deferred and the section is still trustworthy; UNKNOWN means
+   * the legacy value was not recognised and nothing about it should be relied
+   * on. Callers must not treat them alike, and must not treat either as a
+   * reason to withhold concept mapping: concepts hang off the item, not off
+   * its discipline.
+   */
+  disciplineStatus: DisciplineStatus;
   /** True when the item sits on the reasoning axis rather than in content. */
   isCrossCutting: boolean;
   aamcFoundation?: string | null;
@@ -125,6 +135,7 @@ export async function resolveQuestionClassification(
       // questions.section is already authoritative; discipline only fills a gap.
       mcatSection: bySection.section ?? sectionForDiscipline(byDiscipline.discipline),
       discipline: byDiscipline.discipline,
+      disciplineStatus: byDiscipline.disciplineStatus,
       isCrossCutting: byDiscipline.isCrossCutting,
       aamcFoundation: q.foundation ?? null,
       contentCategory: q.content_category ?? null,
@@ -170,6 +181,7 @@ export async function resolveFlashcardClassification(
     canonical: {
       mcatSection: meaning.section ?? sectionForDiscipline(meaning.discipline),
       discipline: meaning.discipline,
+      disciplineStatus: meaning.disciplineStatus,
       isCrossCutting: meaning.isCrossCutting,
       concepts,
       conceptStatus: concepts.length ? "MAPPED" : "UNMAPPED",
