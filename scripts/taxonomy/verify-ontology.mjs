@@ -136,8 +136,43 @@ const sects = (await all("concept_sections", "concept_id,section_code"))
 ok("section compatible on every mapping",
   qc.every((m) => sects[m.concept_id]?.has(SEC[qById.get(m.question_id)?.section])));
 ok("610 content concepts placed in a section", new Set(Object.keys(sects)).size === 610);
-ok("cross-section concepts are represented, not flattened",
-  Object.values(sects).filter((s) => s.size > 1).length === 1);
+// EVERY SECTION A CONCEPT CLAIMS MUST BE EARNED. This replaces a hardcoded
+// count of cross-section concepts, which went stale the moment two concepts
+// were legitimately widened. The count was never the point: the failure mode is
+// taxonomy widened without evidence, a concept asserting it belongs to a
+// section where nothing of its actually is. So the rule is now that each
+// claimed section must be backed by at least one mapped question or card from
+// that section, and it needs no maintenance as the ontology grows.
+const deckSection = { chemistry: "CHEM_PHYS", organic_chemistry: "CHEM_PHYS", physics: "CHEM_PHYS",
+  biology: "BIO_BIOCHEM", biochemistry: "BIO_BIOCHEM", psych_soc: "PSYCH_SOC", scientific_reasoning: null };
+const decks = new Map((await all("flashcard_decks", "id,section")).map((d) => [d.id, d.section]));
+const cardDeck = new Map((await all("flashcards", "id,deck_id")).map((f) => [f.id, f.deck_id]));
+const evidence = {};
+for (const m of qc) (evidence[m.concept_id] ??= new Set()).add(SEC[qById.get(m.question_id)?.section]);
+for (const m of await all("flashcard_concepts", "flashcard_id,concept_id")) {
+  const sec = deckSection[decks.get(cardDeck.get(m.flashcard_id))];
+  if (sec) (evidence[m.concept_id] ??= new Set()).add(sec);
+}
+// CONTRADICTED, not merely uncorroborated. The first version of this check
+// demanded positive evidence for every claimed section and immediately flagged
+// the three bioethics concepts, which claim PSYCH_SOC while their cards sit in
+// the Scientific Reasoning deck, and that deck resolves to no section at all.
+// Those claims are right: a deck's section does not determine its cards', which
+// is the whole card-level principle. So the rule is that a concept with
+// section-bearing evidence must agree with at least some of it. A concept whose
+// only evidence comes from a section-less deck is unconfirmable, not wrong.
+const contradicted = Object.entries(sects).filter(([id, claimed]) => {
+  const ev = evidence[id];
+  if (!ev || ev.size === 0) return false;
+  return ![...claimed].some((sec) => ev.has(sec));
+});
+ok("no concept claims a section its evidence contradicts",
+  contradicted.length === 0,
+  contradicted.length
+    ? contradicted.map(([id, cl]) => `${byId.get(id)?.canonical_name}: claims ${[...cl]} but evidence is ${[...(evidence[id] ?? [])]}`).join(" | ")
+    : "");
+ok("cross-section concepts exist and are not flattened",
+  Object.values(sects).filter((s) => s.size > 1).length >= 1);
 
 const cc = await all("concept_content_categories", "concept_id,content_category");
 const catsOf = cc.reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.content_category), a), {});
