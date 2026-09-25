@@ -325,29 +325,43 @@ ok("every psych/soc card carries exactly one mapping",
 // three carry BIOLOGY alone. This check asserts the corrected model survives: the
 // concepts these cards resolve to are all examined in PSYCH_SOC, and at least one
 // of them carries no psychology or sociology discipline at all.
-// SEEDED BY THIS PHASE, not "sits in PSYCH_SOC". The physics pass made the
-// broader mistake once already: a check that asks which concepts carry a section
-// also catches the three bioethics concepts, which claim PSYCH_SOC, carry no
-// category, and belong to the uncategorized backlog that must not be backfilled.
-// The 239 seeded here all have a PRIMARY discipline; the bioethics three
-// deliberately have none, so that is the discriminator.
+// SEEDED BY THIS PHASE, not "sits in PSYCH_SOC". This check has now been wrong
+// twice for the same reason, so it states its discriminator explicitly. Asking
+// which concepts carry the section catches three populations: the 239 seeded
+// here, the three bioethics concepts (section but no discipline, and in the
+// uncategorized backlog), and the eight reused Biology objects widened into the
+// section. A concept seeded here is the only one with BOTH a primary PSYCH_SOC
+// section row and a PRIMARY discipline; a widened one carries the section as
+// SECONDARY, which is exactly what widening means.
+const psPrimarySection = new Set(
+  (await all("concept_sections", "concept_id,section_code,is_primary"))
+    .filter((r) => r.section_code === "PSYCH_SOC" && r.is_primary).map((r) => r.concept_id),
+);
 const hasPrimaryDiscipline = new Set(
   (await all("concept_disciplines", "concept_id,role"))
     .filter((r) => r.role === "PRIMARY").map((r) => r.concept_id),
 );
 const psSeeded = concepts.filter((c) =>
-  sects[c.id]?.has("PSYCH_SOC") && c.object_type === "CONTENT" && hasPrimaryDiscipline.has(c.id));
+  psPrimarySection.has(c.id) && c.object_type === "CONTENT" && hasPrimaryDiscipline.has(c.id));
 const psWrongSection = psMaps.filter((m) =>
   contentIds.has(m.concept_id) && !sects[m.concept_id]?.has("PSYCH_SOC"));
 ok("every psych/soc mapping is reachable from the Psych/Soc section",
   psWrongSection.length === 0,
   psWrongSection.map((m) => byId.get(m.concept_id)?.canonical_name).join(", "));
-const bioOnly = psSeeded.filter((c) => {
-  const d = disciplinesOf[c.id];
-  return d?.has("BIOLOGY") && !d.has("PSYCHOLOGY") && !d.has("SOCIOLOGY");
-});
-ok("biology-only concepts exist inside the psych/soc section",
+const isBioOnly = (id) => {
+  const d = disciplinesOf[id];
+  return !!d?.has("BIOLOGY") && !d.has("PSYCHOLOGY") && !d.has("SOCIOLOGY");
+};
+const bioOnly = psSeeded.filter((c) => isBioOnly(c.id));
+ok("3 biology-only concepts were seeded into the psych/soc section",
   bioOnly.length === 3, `${bioOnly.length}: ${bioOnly.map((c) => c.canonical_name).join(", ")}`);
+// The widened pair earns its own line. Natural Selection & Fitness and
+// Neurulation & Neural Crest gained the PSYCH_SOC section but deliberately NOT
+// a psychology discipline, so the section holds five biology-only concepts in
+// total. If either ever acquires psychology, that decision has been undone.
+const bioOnlyInSection = concepts.filter((c) => sects[c.id]?.has("PSYCH_SOC") && isBioOnly(c.id));
+ok("5 biology-only concepts sit in the section once widening is counted",
+  bioOnlyInSection.length === 5, String(bioOnlyInSection.length));
 // The deferral that must NOT have been resolved to tidy the hierarchy.
 const ethics = concepts.find((c) => c.canonical_name === "Principles of Biomedical Ethics");
 ok("biomedical ethics discipline is still UNRESOLVED",
