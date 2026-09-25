@@ -1,20 +1,100 @@
 [
  {
   "class": "C. NEW_CONTENT_CONCEPT_CANDIDATE",
-  "name": "Polyprotic Acids",
+  "name": "Resting Membrane Potential",
   "positions": [
-   9,
-   44,
-   45,
-   46
+   52,
+   53,
+   54,
+   55,
+   56
   ],
-  "why": "Stepwise dissociation with successive Ka values, amphoteric intermediates, and multiple equivalence points. Not covered by 'Strong vs Weak Acids/Bases; Ka and Kb' (a strength-classification concept) nor by 'Titration & Titration Curves' (which teaches curve shape). Polyvalency is a separate axis from strength.",
-  "deck": "Acids and Bases",
+  "why": "What establishes the resting potential (Na/K pump plus K leak), its value near -70 mV, and how it is quantified by the Nernst and Goldman-Hodgkin-Katz equations. The ontology has Voltage-Gated Na+ Channels & Depolarization, Threshold Depolarization & Summation and Repolarization & Hyperpolarization, but all three describe the action potential, which is what happens when the resting state is DISTURBED. None covers the resting state itself. Ion Channels and Active Transport and Energy Coupling each hold one mechanism but neither is the potential. Expect the Biology Nervous System deck to add more cards here.",
+  "deck": "Biological Membranes",
   "cards": [
-   "c9d056ca-1c66-48f6-8ba5-ef09ab72bbce",
-   "97c0060b-2f8a-489c-8256-61f084503549",
-   "475b6f2a-eaac-4ce2-97a2-4a4a7cd627c6",
-   "aeb2ef82-2728-4711-b19e-015c2ab81df7"
+   "ba1aa579-4752-49bc-be77-783b4298eb16",
+   "56808180-6902-43ce-bf2e-95c0e3de6d2e",
+   "151879a3-2854-4c60-81e1-93e004ad9111",
+   "ee7ea217-2be1-4cc0-a489-88692ded6596",
+   "f992da01-53f9-48e5-bc2b-cb1c38c695db"
+  ]
+ },
+ {
+  "class": "C. NEW_CONTENT_CONCEPT_CANDIDATE",
+  "name": "Protein Structure Determination",
+  "positions": [
+   56,
+   57,
+   58
+  ],
+  "why": "X-ray crystallography, solution NMR and circular dichroism as methods for determining protein structure. The chapter's analysis concepts cover separation (Electrophoresis, the PAGE variants, Isoelectric Focusing, the Chromatography family), purification (Multi-Step Purification) and quantification (Quantitative Analysis), but nothing covers structure determination. The organic chemistry NMR objects are small-molecule structure elucidation from chemical shift and coupling, which is a different learning objective from choosing a technique to solve a protein fold.",
+  "deck": "Nonenzymatic Protein Function and Protein Analysis",
+  "cards": [
+   "a688df1d-62a0-46b8-8ffa-31cedcdc3b1e",
+   "e502ae02-5d30-4850-9f1e-f260fa2181dd",
+   "45096a8b-af67-482f-9c8c-978554a383e8"
+  ]
+ },
+ {
+  "class": "G. AMBIGUOUS",
+  "name": "Structural proteins overview card",
+  "positions": [
+   1
+  ],
+  "why": "Defines structural proteins by repetitive secondary structure and lists collagen, elastin, keratin, actin and tubulin. Two plausible primaries and no clear winner: Secondary Structure (alpha-helix & beta-sheet), which owns the distinguishing claim, or a structural-protein family concept that does not exist. Its five examples are split across four different concepts in this deck, so any single choice would misrepresent it. Held rather than forced.",
+  "deck": "Nonenzymatic Protein Function and Protein Analysis",
+  "cards": [
+   "4d56a412-90d2-47cb-b0d8-db3a3a06f232"
+  ]
+ },
+ {
+  "class": "C. NEW_CONTENT_CONCEPT_CANDIDATE",
+  "name": "Amino Acid Recognition and Abbreviations",
+  "positions": [
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21,
+   22
+  ],
+  "why": "Twenty cards, one per proteinogenic residue, each pairing a structure image with the name, three-letter code and one-letter code. The objective is recognition and naming, which nothing in the ontology covers. Amino Acid Structure & Stereochemistry is the general alpha-carbon and chirality concept; Side-Chain Classification groups residues by property; Hydrophobicity & Unique Residues covers the outliers. A student can classify side chains correctly and still not recognise tryptophan's indole ring or know that glutamine is Q. This is the case the alias comment predicted when the deck was resolved: a resolved chapter does not mean the chapter's concepts fit the cards.",
+  "deck": "Amino Acids",
+  "cards": [
+   "205b5268-9f18-499e-bb5f-62dc0eaac552",
+   "9d5a2496-3b31-4f3c-85a6-3ef2384e6eeb",
+   "a029228d-86bb-4c21-be81-3430c4d84be0",
+   "74772ce2-062e-4454-831c-4d67c00a46c9",
+   "b626244e-4686-4831-b771-1e8d404e44df",
+   "305d2abf-1ad7-48aa-a27c-2dc7160124d7",
+   "b250bb89-2a52-4b38-9da5-34d17c5da33e",
+   "33261743-c9c1-4d66-b137-c159a08c4772",
+   "5da8efd6-2c04-4a74-b6bf-e0b6b5b89d71",
+   "276aee79-2e40-4fd8-a08b-d05d00c209f2",
+   "a7c5ea00-fa87-4a6f-9fb4-67b570fd1ef8",
+   "b22cf8be-3dcd-455a-8a28-d2eeac4cfefa",
+   "302272dd-0eff-4898-add3-b57a7f0d2b04",
+   "8e8ec0bb-aa2c-4a9c-a119-b29bd877fac6",
+   "4dd80918-99a1-436b-b908-0db7c4d9fc29",
+   "2b9ffe55-3845-4dc1-914f-ade50077265e",
+   "e6ac7a68-5615-4afa-bc1a-4a9b2f7b35ae",
+   "84001854-6c71-45be-8805-79d0df949bca",
+   "7c09f351-94db-4dc3-aa23-eb65f8aef76c",
+   "9bac7565-f9fb-4e67-9ad5-c2ba2396a78b"
   ]
  }
 ]

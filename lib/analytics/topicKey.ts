@@ -94,6 +94,21 @@ const ALIASES: Record<string, string> = {
   // will still turn out to need a concept that does not exist yet, which is
   // exactly why an alias must not imply a mapping.
   amino_acids: "amino_acids_peptides_and_proteins",
+
+  // ─── Added 2026-09-25, during the flashcard backfill ──────────────────
+  //
+  // The line above resolves the QUESTION topic "Amino Acids". This one
+  // resolves a DECK whose subtopic is spelled amino_acids_reference, which no
+  // question topic produces, so its 43 cards joined to nothing. Both now land
+  // on the same key and share the chapter's candidate pool.
+  //
+  // PARTIAL BY DESIGN, for the same reason as the line above. This deck is a
+  // residue-by-residue reference, and the chapter's concepts are about
+  // structure, classification and titration. Resolving the deck says only
+  // which concepts these cards MAY use. Several of them may still need a
+  // concept that does not exist, and the alias must never be read as having
+  // decided that.
+  amino_acids_reference: "amino_acids_peptides_and_proteins",
 };
 
 /** A topic that exists on one side of the join and not the other. */

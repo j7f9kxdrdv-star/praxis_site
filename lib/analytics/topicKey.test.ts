@@ -38,6 +38,29 @@ describe("an alias resolves a DECK to a CHAPTER and assigns nothing to a CARD", 
     }
   });
 
+  it("the amino_acids_reference deck resolves to the chapter WITHOUT assigning its 43 cards", () => {
+    // Added with the alias on 2026-09-25. The deck was unreachable from the
+    // question side, so its cards read as having no chapter. Resolving it is
+    // the whole fix, and the whole risk: a resolved deck invites handing every
+    // card in it the chapter's concepts, which is exactly what must not happen.
+    const chapter = canonicalTopicKey("Amino Acids, Peptides, and Proteins");
+    expect(canonicalTopicKey("amino_acids_reference")).toBe(chapter);
+    // The question topic reaches the same key, which is what makes the join work.
+    expect(canonicalTopicKey("Amino Acids")).toBe(chapter);
+
+    // AND NOW THE PART THAT MATTERS. Resolving the deck yields a coverage fact
+    // and nothing else. There is no concept here, no card, and no way to get
+    // from this key to either one.
+    const index = buildTopicIndex(["Amino Acids"], ["amino_acids_reference"]);
+    const entry = index.get(chapter)!;
+    expect(entry.hasQuestions).toBe(true);
+    expect(entry.hasCards).toBe(true);
+    expect(Object.keys(entry).sort()).toEqual(["hasCards", "hasQuestions", "key", "label"]);
+    // Alias resolution is not concept assignment: the index cannot name a
+    // single concept, so it cannot have assigned 43 cards to one.
+    expect(JSON.stringify(entry)).not.toMatch(/concept/i);
+  });
+
   it("buildTopicIndex reports coverage only, never a mapping", () => {
     const index = buildTopicIndex(["Atomic Structure"], ["inside_the_atom"]);
     const entry = index.get(canonicalTopicKey("Atomic Structure"))!;

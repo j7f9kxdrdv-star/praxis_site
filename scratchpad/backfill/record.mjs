@@ -21,14 +21,23 @@ export async function record(deckTitle, groups, gaps=[]){
   const byName=new Map(C.map(c=>[c.canonical_name,c]));
   const out=[], problems=[], seen=new Set();
   for(const [name,ranges] of groups){
-    const c=byName.get(name);
-    if(!c) problems.push(`unknown concept: ${name}`);
+    // "NEW:" names an APPROVED concept that does not exist yet. It is checked
+    // the opposite way round from the others: it must NOT already be in the
+    // ontology, because a new concept whose name is already taken is a
+    // duplicate waiting to happen. These carry concept:null until the
+    // migration seeds them.
+    const isNew = name.startsWith("NEW:");
+    const bare = isNew ? name.slice(4) : name;
+    const c = byName.get(bare);
+    if(isNew){ if(c) problems.push(`"${bare}" is declared NEW but already exists in the ontology`); }
+    else if(!c) problems.push(`unknown concept: ${name}`);
     else if(c.status==="DEPRECATED") problems.push(`deprecated target: ${name}`);
     for(const {a,b} of ranges) for(let i=a;i<=b;i++){
       if(!cards[i-1]){problems.push(`${deckTitle} pos ${i} does not exist`);continue;}
       if(seen.has(i)) problems.push(`${deckTitle} pos ${i} assigned twice`);
       seen.add(i);
-      if(c) out.push({card:cards[i-1].id, concept:c.id, name, type:c.object_type, deck:deckTitle});
+      if(isNew) out.push({card:cards[i-1].id, concept:null, name:bare, type:"CONTENT", isNew:true, deck:deckTitle});
+      else if(c) out.push({card:cards[i-1].id, concept:c.id, name:bare, type:c.object_type, deck:deckTitle});
     }
   }
   const gapPos=new Set(gaps.flatMap(x=>x.positions));
@@ -43,6 +52,8 @@ export async function record(deckTitle, groups, gaps=[]){
   fs.writeFileSync(GAPS, JSON.stringify(gl.filter(x=>x.deck!==deckTitle).concat(
     gaps.map(x=>({...x, deck:deckTitle, cards:x.positions.map(i=>cards[i-1].id)}))),null,1));
   const byType=out.reduce((a,r)=>((a[r.type]=(a[r.type]||0)+1),a),{});
+  const newCount=new Set(out.filter(r=>r.isNew).map(r=>r.name)).size;
   console.log(`${deckTitle}: ${out.length} assigned of ${cards.length} unmapped  ${JSON.stringify(byType)}`
-    + (gapPos.size?`  | ${gapPos.size} held for review`:"") + `  | accumulator now ${kept.length}`);
+    + (gapPos.size?`  | ${gapPos.size} held for review`:"")
+    + (newCount?`  | ${newCount} approved new concept(s)`:"") + `  | accumulator now ${kept.length}`);
 }
