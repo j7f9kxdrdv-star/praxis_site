@@ -55,7 +55,7 @@ async function all(t, c) {
 
 console.log("\nSEEDED VOCABULARY");
 const concepts = await all("concepts", "id,slug,canonical_name,status,split_candidate,concept_level,parent_concept_id,object_type");
-ok("846 objects (705 + 137 physics content + 4 quantitative)", concepts.length === 846, String(concepts.length));
+ok("1,085 objects (846 + 239 psych/soc)", concepts.length === 1085, String(concepts.length));
 ok("all ACTIVE_SEED", concepts.every((c) => c.status === "ACTIVE_SEED"));
 ok("200 split candidates flagged", concepts.filter((c) => c.split_candidate).length === 200);
 ok("the rename kept one concept and filed an alias",
@@ -162,7 +162,7 @@ const sects = (await all("concept_sections", "concept_id,section_code"))
   .reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.section_code), a), {});
 ok("section compatible on every mapping",
   qc.every((m) => sects[m.concept_id]?.has(SEC[qById.get(m.question_id)?.section])));
-ok("814 content concepts placed in a section", new Set(Object.keys(sects)).size === 814);
+ok("1,053 content concepts placed in a section", new Set(Object.keys(sects)).size === 1053);
 // EVERY SECTION A CONCEPT CLAIMS MUST BE EARNED. This replaces a hardcoded
 // count of cross-section concepts, which went stale the moment two concepts
 // were legitimately widened. The count was never the point: the failure mode is
@@ -204,6 +204,7 @@ ok("cross-section concepts exist and are not flattened",
 const disciplinesOf = (await all("concept_disciplines", "concept_id,discipline_code"))
   .reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.discipline_code), a), {});
 const catRows2 = await all("concept_content_categories", "concept_id,content_category");
+const catNames = new Set(catRows2.map((r) => r.content_category));
 const cc = catRows2;
 const catsOf = cc.reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.content_category), a), {});
 ok("content category compatible on every mapping",
@@ -213,9 +214,9 @@ console.log("\nFLASHCARD MAPPINGS");
 const fc = await all("flashcard_concepts", "flashcard_id,concept_id,mapping_status,source");
 const typeOf = Object.fromEntries(concepts.map((c) => [c.id, c.object_type]));
 const byType = fc.reduce((a, m) => ((a[typeOf[m.concept_id]] = (a[typeOf[m.concept_id]] || 0) + 1), a), {});
-ok("1,183 card mappings (739 + 444 physics)", fc.length === 1183, String(fc.length));
-ok("CONTENT 1056 / REASONING 36 / QUANTITATIVE 91",
-  byType.CONTENT === 1056 && byType.REASONING === 36 && byType.QUANTITATIVE === 91, JSON.stringify(byType));
+ok("1,961 card mappings (1,183 + 778 psych/soc)", fc.length === 1961, String(fc.length));
+ok("CONTENT 1834 / REASONING 36 / QUANTITATIVE 91",
+  byType.CONTENT === 1834 && byType.REASONING === 36 && byType.QUANTITATIVE === 91, JSON.stringify(byType));
 // Provenance must not overstate. The vocabulary was approved; 314 individual
 // rows were not reviewed, and the status must not claim they were.
 ok("no card mapping claims HUMAN_VALIDATED", fc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
@@ -227,7 +228,7 @@ ok("all card mappings are AI_PROPOSED", fc.every((m) => m.source === "AI_PROPOSE
 const contentIds = new Set(concepts.filter((c) => c.object_type === "CONTENT").map((c) => c.id));
 ok("reasoning and quantitative mappings exist but are outside content",
   fc.some((m) => !contentIds.has(m.concept_id)) &&
-  fc.filter((m) => contentIds.has(m.concept_id)).length === 1056);
+  fc.filter((m) => contentIds.has(m.concept_id)).length === 1834);
 ok("every question mapping still points at CONTENT",
   qc.every((m) => contentIds.has(m.concept_id)));
 
@@ -288,7 +289,7 @@ const FOUR_SERIES = [
   "How light and sound interact with matter",
   "Atoms, nuclear decay, electronic structure, and atomic chemical behavior",
 ];
-const catNames = new Set(catRows2.map((r) => r.content_category));
+
 ok("all five AAMC physics categories are present", FOUR_SERIES.every((c) => catNames.has(c)),
   FOUR_SERIES.filter((c) => !catNames.has(c)).join(" | "));
 // PRIMARY, not "has physics anywhere". The first version of this asked whether
@@ -308,6 +309,59 @@ const physNoCat = concepts.filter((c) => physPrimary.has(c.id) && !catsOf[c.id])
 ok("all 137 seeded physics concepts carry an AAMC category",
   physPrimary.size === 137 && physNoCat.length === 0,
   `${physPrimary.size} seeded, ${physNoCat.length} without: ${physNoCat.map((c) => c.canonical_name).join(", ")}`);
+
+// ── The psych/soc pass ──────────────────────────────────────────────────
+const psCards = [...cardDeck.entries()]
+  .filter(([, d]) => decks.get(d) === "psych_soc").map(([id]) => id);
+const psSet = new Set(psCards);
+const psMaps = fc.filter((m) => psSet.has(m.flashcard_id));
+ok("778 psych/soc cards", psCards.length === 778, String(psCards.length));
+ok("every psych/soc card carries exactly one mapping",
+  psMaps.length === 778 && new Set(psMaps.map((m) => m.flashcard_id)).size === 778,
+  String(psMaps.length));
+// SECTION IS NOT DISCIPLINE. The first psych/soc design forced all 268 proposed
+// concepts into psychology or sociology because their cards sit in the psych/soc
+// curriculum. 62 of them are biological psychology or evolutionary behaviour, and
+// three carry BIOLOGY alone. This check asserts the corrected model survives: the
+// concepts these cards resolve to are all examined in PSYCH_SOC, and at least one
+// of them carries no psychology or sociology discipline at all.
+// SEEDED BY THIS PHASE, not "sits in PSYCH_SOC". The physics pass made the
+// broader mistake once already: a check that asks which concepts carry a section
+// also catches the three bioethics concepts, which claim PSYCH_SOC, carry no
+// category, and belong to the uncategorized backlog that must not be backfilled.
+// The 239 seeded here all have a PRIMARY discipline; the bioethics three
+// deliberately have none, so that is the discriminator.
+const hasPrimaryDiscipline = new Set(
+  (await all("concept_disciplines", "concept_id,role"))
+    .filter((r) => r.role === "PRIMARY").map((r) => r.concept_id),
+);
+const psSeeded = concepts.filter((c) =>
+  sects[c.id]?.has("PSYCH_SOC") && c.object_type === "CONTENT" && hasPrimaryDiscipline.has(c.id));
+const psWrongSection = psMaps.filter((m) =>
+  contentIds.has(m.concept_id) && !sects[m.concept_id]?.has("PSYCH_SOC"));
+ok("every psych/soc mapping is reachable from the Psych/Soc section",
+  psWrongSection.length === 0,
+  psWrongSection.map((m) => byId.get(m.concept_id)?.canonical_name).join(", "));
+const bioOnly = psSeeded.filter((c) => {
+  const d = disciplinesOf[c.id];
+  return d?.has("BIOLOGY") && !d.has("PSYCHOLOGY") && !d.has("SOCIOLOGY");
+});
+ok("biology-only concepts exist inside the psych/soc section",
+  bioOnly.length === 3, `${bioOnly.length}: ${bioOnly.map((c) => c.canonical_name).join(", ")}`);
+// The deferral that must NOT have been resolved to tidy the hierarchy.
+const ethics = concepts.find((c) => c.canonical_name === "Principles of Biomedical Ethics");
+ok("biomedical ethics discipline is still UNRESOLVED",
+  ethics && !disciplinesOf[ethics.id], JSON.stringify([...(disciplinesOf[ethics?.id] ?? [])]));
+const PS_CATS = ["Sensing the environment", "Making sense of the environment", "Responding to the world",
+  "Individual influences on behavior", "Social processes that influence human behavior",
+  "Attitude and behavior change", "Self-identity", "Social thinking", "Social interactions",
+  "Understanding social structure", "Demographic characteristics and processes", "Social inequality"];
+ok("all twelve AAMC psych/soc categories are present",
+  PS_CATS.every((c) => catNames.has(c)), PS_CATS.filter((c) => !catNames.has(c)).join(" | "));
+const psNoCat = psSeeded.filter((c) => !catsOf[c.id]);
+ok("all 239 seeded psych/soc concepts carry an AAMC category",
+  psSeeded.length === 239 && psNoCat.length === 0,
+  `${psSeeded.length} seeded, ${psNoCat.length} without`);
 
 console.log("\nDELIBERATELY LEFT ALONE");
 const mapped = new Set(qc.map((m) => m.question_id));
@@ -390,7 +444,7 @@ try {
     await db.from("concept_aliases").delete().eq("concept_id", fixture);
     await db.from("concepts").delete().eq("id", fixture);
   }
-  const left = (await count("concepts")) === 846 && (await count("concept_aliases")) === 1;
+  const left = (await count("concepts")) === 1085 && (await count("concept_aliases")) === 1;
   ok("fixture fully removed, no residue", left);
 }
 
