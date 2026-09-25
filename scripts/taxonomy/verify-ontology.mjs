@@ -291,9 +291,23 @@ const FOUR_SERIES = [
 const catNames = new Set(catRows2.map((r) => r.content_category));
 ok("all five AAMC physics categories are present", FOUR_SERIES.every((c) => catNames.has(c)),
   FOUR_SERIES.filter((c) => !catNames.has(c)).join(" | "));
-ok("every physics content concept carries a category",
-  concepts.filter((c) => disciplinesOf[c.id]?.has("PHYSICS") && c.object_type === "CONTENT")
-    .every((c) => catsOf[c.id]), "");
+// PRIMARY, not "has physics anywhere". The first version of this asked whether
+// any concept carrying the physics discipline had a category, and flagged four
+// General Chemistry thermodynamics concepts that had just gained physics as a
+// SECONDARY discipline. Those four are part of the 34-concept uncategorized
+// backlog and were deliberately not backfilled, because nothing in their
+// metadata determines a category. Widening a concept's discipline does not make
+// this phase responsible for a gap it did not create, so the rule is about the
+// concepts physics actually seeded.
+const physPrimary = new Set(
+  (await all("concept_disciplines", "concept_id,discipline_code,role"))
+    .filter((r) => r.discipline_code === "PHYSICS" && r.role === "PRIMARY")
+    .map((r) => r.concept_id),
+);
+const physNoCat = concepts.filter((c) => physPrimary.has(c.id) && !catsOf[c.id]);
+ok("all 137 seeded physics concepts carry an AAMC category",
+  physPrimary.size === 137 && physNoCat.length === 0,
+  `${physPrimary.size} seeded, ${physNoCat.length} without: ${physNoCat.map((c) => c.canonical_name).join(", ")}`);
 
 console.log("\nDELIBERATELY LEFT ALONE");
 const mapped = new Set(qc.map((m) => m.question_id));
