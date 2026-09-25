@@ -1,0 +1,20 @@
+[
+ {
+  "class": "C. NEW_CONTENT_CONCEPT_CANDIDATE",
+  "name": "Polyprotic Acids",
+  "positions": [
+   9,
+   44,
+   45,
+   46
+  ],
+  "why": "Stepwise dissociation with successive Ka values, amphoteric intermediates, and multiple equivalence points. Not covered by 'Strong vs Weak Acids/Bases; Ka and Kb' (a strength-classification concept) nor by 'Titration & Titration Curves' (which teaches curve shape). Polyvalency is a separate axis from strength.",
+  "deck": "Acids and Bases",
+  "cards": [
+   "c9d056ca-1c66-48f6-8ba5-ef09ab72bbce",
+   "97c0060b-2f8a-489c-8256-61f084503549",
+   "475b6f2a-eaac-4ce2-97a2-4a4a7cd627c6",
+   "aeb2ef82-2728-4711-b19e-015c2ab81df7"
+  ]
+ }
+]
