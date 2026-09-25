@@ -55,7 +55,7 @@ async function all(t, c) {
 
 console.log("\nSEEDED VOCABULARY");
 const concepts = await all("concepts", "id,slug,canonical_name,status,split_candidate,concept_level,parent_concept_id,object_type");
-ok("705 objects (637 + 67 organic chemistry + 1 reasoning)", concepts.length === 705, String(concepts.length));
+ok("846 objects (705 + 137 physics content + 4 quantitative)", concepts.length === 846, String(concepts.length));
 ok("all ACTIVE_SEED", concepts.every((c) => c.status === "ACTIVE_SEED"));
 ok("200 split candidates flagged", concepts.filter((c) => c.split_candidate).length === 200);
 ok("the rename kept one concept and filed an alias",
@@ -162,7 +162,7 @@ const sects = (await all("concept_sections", "concept_id,section_code"))
   .reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.section_code), a), {});
 ok("section compatible on every mapping",
   qc.every((m) => sects[m.concept_id]?.has(SEC[qById.get(m.question_id)?.section])));
-ok("677 content concepts placed in a section", new Set(Object.keys(sects)).size === 677);
+ok("814 content concepts placed in a section", new Set(Object.keys(sects)).size === 814);
 // EVERY SECTION A CONCEPT CLAIMS MUST BE EARNED. This replaces a hardcoded
 // count of cross-section concepts, which went stale the moment two concepts
 // were legitimately widened. The count was never the point: the failure mode is
@@ -201,7 +201,10 @@ ok("no concept claims a section its evidence contradicts",
 ok("cross-section concepts exist and are not flattened",
   Object.values(sects).filter((s) => s.size > 1).length >= 1);
 
-const cc = await all("concept_content_categories", "concept_id,content_category");
+const disciplinesOf = (await all("concept_disciplines", "concept_id,discipline_code"))
+  .reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.discipline_code), a), {});
+const catRows2 = await all("concept_content_categories", "concept_id,content_category");
+const cc = catRows2;
 const catsOf = cc.reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.content_category), a), {});
 ok("content category compatible on every mapping",
   qc.every((m) => catsOf[m.concept_id]?.has(qById.get(m.question_id)?.content_category)));
@@ -210,9 +213,9 @@ console.log("\nFLASHCARD MAPPINGS");
 const fc = await all("flashcard_concepts", "flashcard_id,concept_id,mapping_status,source");
 const typeOf = Object.fromEntries(concepts.map((c) => [c.id, c.object_type]));
 const byType = fc.reduce((a, m) => ((a[typeOf[m.concept_id]] = (a[typeOf[m.concept_id]] || 0) + 1), a), {});
-ok("739 card mappings (314 + 425 organic chemistry)", fc.length === 739, String(fc.length));
-ok("CONTENT 626 / REASONING 36 / QUANTITATIVE 77",
-  byType.CONTENT === 626 && byType.REASONING === 36 && byType.QUANTITATIVE === 77, JSON.stringify(byType));
+ok("1,183 card mappings (739 + 444 physics)", fc.length === 1183, String(fc.length));
+ok("CONTENT 1056 / REASONING 36 / QUANTITATIVE 91",
+  byType.CONTENT === 1056 && byType.REASONING === 36 && byType.QUANTITATIVE === 91, JSON.stringify(byType));
 // Provenance must not overstate. The vocabulary was approved; 314 individual
 // rows were not reviewed, and the status must not claim they were.
 ok("no card mapping claims HUMAN_VALIDATED", fc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
@@ -224,7 +227,7 @@ ok("all card mappings are AI_PROPOSED", fc.every((m) => m.source === "AI_PROPOSE
 const contentIds = new Set(concepts.filter((c) => c.object_type === "CONTENT").map((c) => c.id));
 ok("reasoning and quantitative mappings exist but are outside content",
   fc.some((m) => !contentIds.has(m.concept_id)) &&
-  fc.filter((m) => contentIds.has(m.concept_id)).length === 626);
+  fc.filter((m) => contentIds.has(m.concept_id)).length === 1056);
 ok("every question mapping still points at CONTENT",
   qc.every((m) => contentIds.has(m.concept_id)));
 
@@ -252,6 +255,45 @@ ok("every organic chemistry content mapping is reachable from Chem/Phys",
 // The reasoning object stays off the content tree, as its type requires.
 ok("the organic chemistry reasoning object carries no taxonomy",
   !sects[[...concepts].find((c) => c.slug === "RO_REACTION_MECHANISM_ANALYSIS")?.id]);
+
+// ── The physics pass ────────────────────────────────────────────────────
+const physCards = [...cardDeck.entries()]
+  .filter(([, d]) => decks.get(d) === "physics").map(([id]) => id);
+const physSet = new Set(physCards);
+const physMaps = fc.filter((m) => physSet.has(m.flashcard_id));
+ok("444 physics cards", physCards.length === 444, String(physCards.length));
+ok("every physics card carries exactly one mapping",
+  physMaps.length === 444 && new Set(physMaps.map((m) => m.flashcard_id)).size === 444,
+  String(physMaps.length));
+const physWrongSection = physMaps.filter((m) =>
+  contentIds.has(m.concept_id) && !sects[m.concept_id]?.has("CHEM_PHYS"));
+ok("every physics content mapping is reachable from Chem/Phys",
+  physWrongSection.length === 0,
+  physWrongSection.map((m) => byId.get(m.concept_id)?.canonical_name).join(", "));
+// THE SEPARATION THAT EARNS ITS KEEP. Vector mathematics is a tool, not
+// physics. 14 cards open the Motion & Forces deck before any physics appears.
+// If these ever acquire a physics discipline, the tool has been misfiled as
+// content and one root cause will read as four separate weaknesses.
+const quantIds = new Set(concepts.filter((c) => c.object_type === "QUANTITATIVE").map((c) => c.id));
+const physQuant = physMaps.filter((m) => quantIds.has(m.concept_id));
+ok("14 physics cards resolve to quantitative tools, not content",
+  physQuant.length === 14, String(physQuant.length));
+ok("no quantitative object carries a section or discipline",
+  ![...quantIds].some((id) => sects[id] || disciplinesOf[id]));
+// AAMC 4-series. 4E already existed and must NOT have been duplicated.
+const FOUR_SERIES = [
+  "Translational motion, forces, work, energy, and equilibrium in living systems",
+  "Importance of fluids for the circulation of blood, gas movement, and gas exchange",
+  "Electrochemistry and electrical circuits and their elements",
+  "How light and sound interact with matter",
+  "Atoms, nuclear decay, electronic structure, and atomic chemical behavior",
+];
+const catNames = new Set(catRows2.map((r) => r.content_category));
+ok("all five AAMC physics categories are present", FOUR_SERIES.every((c) => catNames.has(c)),
+  FOUR_SERIES.filter((c) => !catNames.has(c)).join(" | "));
+ok("every physics content concept carries a category",
+  concepts.filter((c) => disciplinesOf[c.id]?.has("PHYSICS") && c.object_type === "CONTENT")
+    .every((c) => catsOf[c.id]), "");
 
 console.log("\nDELIBERATELY LEFT ALONE");
 const mapped = new Set(qc.map((m) => m.question_id));
@@ -334,7 +376,7 @@ try {
     await db.from("concept_aliases").delete().eq("concept_id", fixture);
     await db.from("concepts").delete().eq("id", fixture);
   }
-  const left = (await count("concepts")) === 705 && (await count("concept_aliases")) === 1;
+  const left = (await count("concepts")) === 846 && (await count("concept_aliases")) === 1;
   ok("fixture fully removed, no residue", left);
 }
 
