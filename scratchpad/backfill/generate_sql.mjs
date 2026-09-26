@@ -31,22 +31,20 @@ for(const n of newNames){
 const bySlug={}; newNames.forEach(n=>{const s=slug(n); if(bySlug[s]) problems.push(`slug clash ${s}`); bySlug[s]=n;});
 if(problems.length){console.error("PROBLEMS:");problems.forEach(p=>console.error("  "+p));process.exit(1);}
 
-// ── flashcard mappings, grouped by target for readability ────────────────────
-const rowsByTarget=new Map();
+// ── flashcard mappings ───────────────────────────────────────────────────────
+// Emitted as (card_uuid, concept_slug) pairs resolved by ONE join rather than a
+// correlated subquery per row. Smaller file, a single index scan instead of
+// 2,154 lookups, and a slug that fails to resolve becomes a row-count shortfall
+// the assertion catches rather than a silently dropped mapping.
+const slugOfId=new Map(C.map(c=>[c.id,c.slug]));
+const pairs=[];
 for(const r of A){
-  const key=r.isNew?`NEW:${slug(r.name)}`:`ID:${r.concept}`;
-  if(!rowsByTarget.has(key)) rowsByTarget.set(key,{name:r.name,cards:[]});
-  rowsByTarget.get(key).cards.push(r.card);
+  const sl = r.isNew ? slug(r.name) : slugOfId.get(r.concept);
+  if(!sl) problems.push(`no slug resolves for card ${r.card}`);
+  else pairs.push([r.card, sl]);
 }
-const mapLines=[];
-for(const [key,v] of [...rowsByTarget.entries()].sort((a,b)=>a[1].name.localeCompare(b[1].name))){
-  const target = key.startsWith("NEW:")
-    ? `(SELECT id FROM public.concepts WHERE slug = ${q(key.slice(4))})`
-    : `${q(key.slice(3))}::uuid`;
-  mapLines.push(`  -- ${v.name}  (${v.cards.length})`);
-  for(const c of v.cards) mapLines.push(`  (${q(c)}::uuid, ${target}, 'PRIMARY', 'AI_PROPOSED', 'AI_PROPOSED'),`);
-}
-mapLines[mapLines.length-1]=mapLines[mapLines.length-1].replace(/,$/,";");
+if(problems.length){console.error("PROBLEMS:");problems.forEach(x=>console.error("  "+x));process.exit(1);}
+const mapLines=pairs.map(([c,sl])=>`  (${q(c)}, ${q(sl)})`);
 
 const L=[];
 const P=s=>L.push(s);
@@ -162,11 +160,26 @@ END $$;`);
 
 P(`
 -- ────────────────────────────────────────────────────────────
--- 4. The 2,154 card mappings. One PRIMARY per card.
+-- 4. The 2,154 card mappings, one PRIMARY per card.
+--
+--    Pairs of (flashcard, concept slug) resolved by a single join. Every slug
+--    below either already existed or was created in step 1, so a shortfall in
+--    the inserted row count means a slug did not resolve.
 -- ────────────────────────────────────────────────────────────
 INSERT INTO public.flashcard_concepts (flashcard_id, concept_id, role, mapping_status, source)
-VALUES`);
-P(mapLines.join("\n"));
+SELECT v.card::uuid, c.id, 'PRIMARY', 'AI_PROPOSED', 'AI_PROPOSED'
+FROM (VALUES`);
+P(mapLines.join(",\n"));
+P(`) AS v(card, slug)
+JOIN public.concepts c ON c.slug = v.slug;
+
+-- Every pair must have resolved. A slug that did not would silently drop rows.
+DO $$
+DECLARE n int;
+BEGIN
+  SELECT count(*) INTO n FROM public.flashcard_concepts WHERE source = 'AI_PROPOSED';
+  IF n <> 4115 THEN RAISE EXCEPTION 'expected 4115 AI_PROPOSED card mappings, found %', n; END IF;
+END $$;`);
 
 P(`
 -- ────────────────────────────────────────────────────────────
