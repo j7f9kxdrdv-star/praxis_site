@@ -1,0 +1,44 @@
+import { all } from "./record.mjs";
+import fs from "node:fs";
+const A=JSON.parse(fs.readFileSync("/tmp/backfill_map.json","utf8"));
+const G=JSON.parse(fs.readFileSync("/tmp/backfill_gaps.json","utf8"));
+const C=await all("concepts","id,canonical_name,object_type");
+const byId=new Map(C.map(c=>[c.id,c]));
+const QC=await all("question_concepts","question_id,concept_id");
+const F=await all("flashcards","id");
+const FCr=await all("flashcard_concepts","flashcard_id,concept_id");
+const qOf={}; QC.forEach(r=>(qOf[r.concept_id]=qOf[r.concept_id]||[]).push(r.question_id));
+const Q=await all("questions","id,topic");
+const chapLabels=t=>new Set(QC.filter(r=>new Set(Q.filter(x=>x.topic===t).map(x=>x.id)).has(r.question_id)).map(r=>r.concept_id));
+const imL=chapLabels("The Immune System"), cvL=chapLabels("The Cardiovascular System");
+const newNames=new Set(A.filter(r=>r.isNew).map(r=>r.name));
+const existing=new Set(A.filter(r=>r.concept).map(r=>r.concept));
+console.log("=== WHOLE BACKFILL ===");
+console.log(`total cards processed        ${2156}`);
+console.log(`total assigned              ${A.length}`);
+let held=0; G.forEach(g=>held+=(g.cards||[]).length);
+console.log(`CARD_TOO_BROAD / unmapped   ${held}`);
+const types={}; A.forEach(r=>types[r.type]=(types[r.type]||0)+1);
+console.log(`object types                ${JSON.stringify(types)}`);
+console.log(`new concepts proposed       ${newNames.size}`);
+console.log(`existing concepts reused    ${existing.size}`);
+// durable vs weak
+const weak=A.filter(r=>r.concept&&(qOf[r.concept]||[]).length===1);
+const zero=A.filter(r=>r.concept&&!(qOf[r.concept]||[]).length);
+const strong=A.filter(r=>r.concept&&(qOf[r.concept]||[]).length>=2);
+console.log(`\nmappings to curriculum-grade existing concepts (q>=2)  ${strong.length}`);
+console.log(`mappings to 1-question concepts                        ${weak.length}`);
+console.log(`mappings to concepts with no question evidence         ${zero.length}`);
+console.log(`mappings to NEW concepts pending seed                  ${A.filter(r=>r.isNew).length}`);
+console.log(`still targeting an immune or cardio question-label     ${A.filter(r=>r.concept&&(imL.has(r.concept)||cvL.has(r.concept))).length}`);
+// coverage
+const T=F.length, mappedNow=new Set(FCr.map(r=>r.flashcard_id)).size;
+console.log(`\ncoverage now      ${mappedNow} / ${T}  (${(mappedNow/T*100).toFixed(1)}%)`);
+console.log(`after migration   ${mappedNow+A.length} / ${T}  (${((mappedNow+A.length)/T*100).toFixed(2)}%)`);
+// dual modality
+const fAfter=new Set([...FCr.map(r=>r.concept_id), ...A.filter(r=>r.concept).map(r=>r.concept)]);
+const qSet=new Set(QC.map(r=>r.concept_id));
+const bothBefore=C.filter(c=>qSet.has(c.id)&&new Set(FCr.map(r=>r.concept_id)).has(c.id)).length;
+const bothAfterExisting=C.filter(c=>qSet.has(c.id)&&fAfter.has(c.id)).length;
+console.log(`\nexisting concepts with BOTH modalities: ${bothBefore} -> ${bothAfterExisting}`);
+console.log(`new concepts that gain both once the question side migrates: 19 immune + 14 cardio = 33 of ${newNames.size}`);

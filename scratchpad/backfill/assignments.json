@@ -9583,16 +9583,18 @@
  },
  {
   "card": "b6cafb67-a798-4773-aa49-4b1ee53c9a9f",
-  "concept": "ff3dc903-0723-4c2f-aa32-516b74787196",
-  "name": "Hypophyseal Portal Architecture",
+  "concept": null,
+  "name": "Portal Circulations",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Endocrine System"
  },
  {
   "card": "fd3c501f-d8e0-46c6-a091-f446749ca196",
-  "concept": "ff3dc903-0723-4c2f-aa32-516b74787196",
-  "name": "Hypophyseal Portal Architecture",
+  "concept": null,
+  "name": "Portal Circulations",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Endocrine System"
  },
  {
@@ -10570,261 +10572,297 @@
  },
  {
   "card": "a2314901-9781-4c0c-95e9-84bfcfff6d44",
-  "concept": "3fa5fdc5-7d00-4316-b833-58651cdc6bca",
-  "name": "Plasma Fraction and Plasma Protein Content",
+  "concept": null,
+  "name": "Blood Composition: Plasma and Formed Elements",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "11ab8742-c3f4-4955-a6f2-37f1d178c6ca",
-  "concept": "3fa5fdc5-7d00-4316-b833-58651cdc6bca",
-  "name": "Plasma Fraction and Plasma Protein Content",
+  "concept": null,
+  "name": "Blood Composition: Plasma and Formed Elements",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "c34f98d3-faa5-4643-afa8-5edcd7a46937",
-  "concept": "3fa5fdc5-7d00-4316-b833-58651cdc6bca",
-  "name": "Plasma Fraction and Plasma Protein Content",
+  "concept": null,
+  "name": "Blood Composition: Plasma and Formed Elements",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "5e0f566d-2b06-43f7-a04e-2d8f388138da",
-  "concept": "4eedd715-6d7e-4c2b-966b-02621cc3efbf",
-  "name": "Pacemaker Hierarchy",
+  "concept": null,
+  "name": "Cardiac Conduction and Pacemaker Hierarchy",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "6ca4a350-0977-479e-80c5-8d5636cf859e",
-  "concept": "4eedd715-6d7e-4c2b-966b-02621cc3efbf",
-  "name": "Pacemaker Hierarchy",
+  "concept": null,
+  "name": "Cardiac Conduction and Pacemaker Hierarchy",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "b848ccd8-98c5-4a80-a3b4-8ef4c5fe83b7",
-  "concept": "4eedd715-6d7e-4c2b-966b-02621cc3efbf",
-  "name": "Pacemaker Hierarchy",
+  "concept": null,
+  "name": "Cardiac Conduction and Pacemaker Hierarchy",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "a82c530d-be51-433c-b3de-cf13436c1481",
-  "concept": "eeb8ab39-037e-4e87-81fc-df38aca94fab",
-  "name": "Conduction Timing and the ECG",
+  "concept": null,
+  "name": "Cardiac Conduction and Pacemaker Hierarchy",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "2d68afb2-806b-454a-93e1-caddb706720a",
-  "concept": "6f83a337-c6a3-4915-8725-a8db78254b7a",
-  "name": "Atrial Systole and Ventricular Filling",
+  "concept": null,
+  "name": "The Cardiac Cycle and Heart Sounds",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "6dbf69da-3a0c-4268-bbba-b3e14eedd962",
-  "concept": "893d0b16-cdb1-4b61-8b2a-47600317d865",
-  "name": "Heart Sounds and Valve Closure",
+  "concept": null,
+  "name": "The Cardiac Cycle and Heart Sounds",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "7e5c4c8c-dd99-4c54-baef-1e3c9a35911f",
-  "concept": "893d0b16-cdb1-4b61-8b2a-47600317d865",
-  "name": "Heart Sounds and Valve Closure",
+  "concept": null,
+  "name": "The Cardiac Cycle and Heart Sounds",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "6e442598-4834-4668-9b64-d25430341559",
-  "concept": "939765bc-f157-41c3-8b93-99caea4de8c3",
-  "name": "Cardiac Output Calculation",
+  "concept": null,
+  "name": "Cardiac Output and Stroke Volume",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "90df191d-e942-4c21-bb80-a1908747893c",
-  "concept": "939765bc-f157-41c3-8b93-99caea4de8c3",
-  "name": "Cardiac Output Calculation",
+  "concept": null,
+  "name": "Cardiac Output and Stroke Volume",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "e2dcd3e5-247d-495e-a9e5-bee1eab9dffc",
-  "concept": "939765bc-f157-41c3-8b93-99caea4de8c3",
-  "name": "Cardiac Output Calculation",
+  "concept": null,
+  "name": "Cardiac Output and Stroke Volume",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "b3a48805-a061-4029-9159-a71ff751ab13",
-  "concept": "fb21fff7-6f96-48a9-8331-50c14ed6898d",
-  "name": "Heart Rate and Cardiac Output",
+  "concept": null,
+  "name": "Baroreflex and Autonomic Cardiovascular Control",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "eec8d735-04ef-49e0-99cb-1d308146e11b",
-  "concept": "fb21fff7-6f96-48a9-8331-50c14ed6898d",
-  "name": "Heart Rate and Cardiac Output",
+  "concept": null,
+  "name": "Baroreflex and Autonomic Cardiovascular Control",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "fca2eb63-c23c-4dba-a7ac-0cf7f6c55fbf",
-  "concept": "fb21fff7-6f96-48a9-8331-50c14ed6898d",
-  "name": "Heart Rate and Cardiac Output",
+  "concept": null,
+  "name": "Baroreflex and Autonomic Cardiovascular Control",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "7c987ece-8264-4b83-a15c-f4e4b22cb933",
-  "concept": "f2cbaec1-73ad-4664-b62a-c64bdc0d0055",
-  "name": "Pulmonary And Systemic Circuits In Series",
+  "concept": null,
+  "name": "Pulmonary and Systemic Circuits",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "6bd68f05-c0b2-4b8b-9663-995cb81bcf8d",
-  "concept": "f2cbaec1-73ad-4664-b62a-c64bdc0d0055",
-  "name": "Pulmonary And Systemic Circuits In Series",
+  "concept": null,
+  "name": "Pulmonary and Systemic Circuits",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "4cf8269c-4425-4bd1-848d-74fdf054d578",
-  "concept": "f2cbaec1-73ad-4664-b62a-c64bdc0d0055",
-  "name": "Pulmonary And Systemic Circuits In Series",
+  "concept": null,
+  "name": "Pulmonary and Systemic Circuits",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "06b234dc-35ec-4105-a62d-14b8c2b38d93",
-  "concept": "f2cbaec1-73ad-4664-b62a-c64bdc0d0055",
-  "name": "Pulmonary And Systemic Circuits In Series",
+  "concept": null,
+  "name": "Pulmonary and Systemic Circuits",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "bdb1e1de-f855-4b63-88dd-5ba01ab9c78f",
-  "concept": "f2cbaec1-73ad-4664-b62a-c64bdc0d0055",
-  "name": "Pulmonary And Systemic Circuits In Series",
+  "concept": null,
+  "name": "Pulmonary and Systemic Circuits",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "705db1b2-99e8-43e1-bd2c-df26d71f784f",
-  "concept": "4cf59e87-6218-415b-830f-909ff3c5a336",
-  "name": "Afterload and Ventricular Wall Thickness",
+  "concept": null,
+  "name": "Pulmonary and Systemic Circuits",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "72f3efcb-84ce-4bd6-8621-baeaff9d9163",
-  "concept": "5bf958ba-45de-4be5-84b0-d194a7cd2dc0",
-  "name": "Matched Ventricular Outputs",
+  "concept": null,
+  "name": "Cardiac Output and Stroke Volume",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "ec00176c-44ad-442f-b151-566144a7e73f",
-  "concept": "66109142-1b34-40ef-929b-e0136cfa05c4",
-  "name": "Capillary Wall Architecture and Exchange",
+  "concept": null,
+  "name": "Capillary Structure and Exchange",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "53530123-3c82-4bab-b030-f054f20c1051",
-  "concept": "66109142-1b34-40ef-929b-e0136cfa05c4",
-  "name": "Capillary Wall Architecture and Exchange",
+  "concept": null,
+  "name": "Capillary Structure and Exchange",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "d403a529-b781-4cd0-80ac-4b9c1c0189bd",
-  "concept": "66109142-1b34-40ef-929b-e0136cfa05c4",
-  "name": "Capillary Wall Architecture and Exchange",
+  "concept": null,
+  "name": "Capillary Structure and Exchange",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "0fa2b992-6aee-4763-8c68-e8a1c435e806",
-  "concept": "a2ac2241-84eb-49f3-8cc8-d96b77872916",
-  "name": "Comparing Starling Forces Across Capillary Beds",
+  "concept": null,
+  "name": "Starling Forces and Capillary Fluid Balance",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "d5b6e293-fd72-41ab-bddc-3692c4d274bc",
-  "concept": "a2ac2241-84eb-49f3-8cc8-d96b77872916",
-  "name": "Comparing Starling Forces Across Capillary Beds",
+  "concept": null,
+  "name": "Starling Forces and Capillary Fluid Balance",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "90fec2b4-b044-44b9-a05b-969bf55a7fca",
-  "concept": "a2ac2241-84eb-49f3-8cc8-d96b77872916",
-  "name": "Comparing Starling Forces Across Capillary Beds",
+  "concept": null,
+  "name": "Starling Forces and Capillary Fluid Balance",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "3136c8c1-9f10-4e63-8363-06cbd059a6bd",
-  "concept": "04cdc833-fb0e-4ad2-ad23-f500b62aee63",
-  "name": "Total Cross-Sectional Area and Flow Velocity",
+  "concept": null,
+  "name": "Hemodynamics: Resistance, Flow and Velocity",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "79e320a3-a489-47e2-b47a-0522d9750185",
-  "concept": "95ae149a-0577-4e39-87aa-2f0f832adf76",
-  "name": "Endothelial Control of Tissue Perfusion",
+  "concept": "1eedb534-243b-4a8f-bc20-a92225af96bd",
+  "name": "Thermoregulatory Mechanisms",
   "type": "CONTENT",
   "deck": "The Cardiovascular System"
  },
  {
   "card": "0c0543b8-a4af-4285-aca6-9707cf685d21",
-  "concept": "fab9d741-1289-4261-8275-de8311e673b3",
-  "name": "Mean Arterial Pressure",
+  "concept": null,
+  "name": "Blood Pressure and Its Measurement",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "ae47344e-9992-4665-a0d6-a19ab4d920cf",
-  "concept": "fab9d741-1289-4261-8275-de8311e673b3",
-  "name": "Mean Arterial Pressure",
+  "concept": null,
+  "name": "Blood Pressure and Its Measurement",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "063bbd6e-95ed-463f-b01c-514307512c89",
-  "concept": "fab9d741-1289-4261-8275-de8311e673b3",
-  "name": "Mean Arterial Pressure",
+  "concept": null,
+  "name": "Blood Pressure and Its Measurement",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "3af6739b-9de8-49b3-a696-c34088b32d47",
-  "concept": "7e7db27d-c791-4c82-b322-2ccb8527b7f9",
-  "name": "Site Of Greatest Vascular Resistance",
+  "concept": null,
+  "name": "Hemodynamics: Resistance, Flow and Velocity",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "4699b2ef-566e-4b1b-b82d-90c365291d4f",
-  "concept": "b434a58b-0e49-4c9b-bced-a6f17dc40c25",
-  "name": "Carotid Sinus Compression",
+  "concept": null,
+  "name": "Baroreflex and Autonomic Cardiovascular Control",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "b653d34d-d2d9-4de1-88d4-faab64be1bbd",
-  "concept": "3da30815-5963-412e-a0bf-a70354861b8a",
-  "name": "Mean Arterial Pressure And Total Peripheral Resistance",
+  "concept": null,
+  "name": "Hemodynamics: Resistance, Flow and Velocity",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
@@ -10843,51 +10881,58 @@
  },
  {
   "card": "5f29286e-dd35-48f9-a234-b7f87260667d",
-  "concept": "21f65b31-30df-4aaf-9fd5-cfc24b324e00",
-  "name": "Erythrocyte Deformability and Capillary Transit",
+  "concept": null,
+  "name": "Erythrocytes: Structure, Lifecycle and Turnover",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "61273f49-fbeb-40d9-a0b3-abaff0cb748b",
-  "concept": "a6b00df5-740e-4a0d-a0b7-570d16303261",
-  "name": "Interpreting an Elevated Hematocrit",
+  "concept": null,
+  "name": "Erythrocytes: Structure, Lifecycle and Turnover",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "c987cc87-e64d-41da-bd60-bbb31e6b1c55",
-  "concept": "a87fec0b-bfa5-446b-801b-0bdcd5bfcbcd",
-  "name": "Erythrocyte Turnover And Survival Time",
+  "concept": null,
+  "name": "Erythrocytes: Structure, Lifecycle and Turnover",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "afe7f7c6-a148-47ba-9916-0519938d4088",
-  "concept": "89e6f1fc-624f-439c-a7b8-ac80f8d891e4",
-  "name": "Iron Recycling And Heme Breakdown",
+  "concept": null,
+  "name": "Erythrocytes: Structure, Lifecycle and Turnover",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "aee1eeaa-fbf2-424a-89e1-11b46585c568",
-  "concept": "f1f25479-ad20-4813-a85b-d9228f80b513",
-  "name": "Granulocyte Fraction Of A Differential Count",
+  "concept": null,
+  "name": "Leukocytes and Platelets in Blood",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "e10ef36e-5831-4450-87a2-4854d12aeb2c",
-  "concept": "c6fe0742-326c-46ba-b59d-f609ace97860",
-  "name": "Anucleate Erythrocyte Lifespan",
+  "concept": null,
+  "name": "Erythrocytes: Structure, Lifecycle and Turnover",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "81ea9671-030b-47d8-87ef-f204d6efdac7",
-  "concept": "8e6b5744-3f12-4bed-b93b-d1597b750958",
-  "name": "Platelet Origin From Megakaryocytes",
+  "concept": null,
+  "name": "Leukocytes and Platelets in Blood",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
@@ -10948,58 +10993,66 @@
  },
  {
   "card": "39bcdab1-b94a-46f9-90b0-75b8bc540bc4",
-  "concept": "fba39e9f-5c8e-4738-9bde-0ac91916929b",
-  "name": "Platelet Plug Versus Fibrin Reinforcement",
+  "concept": null,
+  "name": "Hemostasis, Coagulation and Fibrinolysis",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "d3331036-cdd1-4735-9299-a36ead663625",
-  "concept": "fba39e9f-5c8e-4738-9bde-0ac91916929b",
-  "name": "Platelet Plug Versus Fibrin Reinforcement",
+  "concept": null,
+  "name": "Hemostasis, Coagulation and Fibrinolysis",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "a64746a2-a191-431e-8d16-52cfabdf878c",
-  "concept": "fba39e9f-5c8e-4738-9bde-0ac91916929b",
-  "name": "Platelet Plug Versus Fibrin Reinforcement",
+  "concept": null,
+  "name": "Hemostasis, Coagulation and Fibrinolysis",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "337a9006-3a93-4c55-88db-104c3dd3f78c",
-  "concept": "fba39e9f-5c8e-4738-9bde-0ac91916929b",
-  "name": "Platelet Plug Versus Fibrin Reinforcement",
+  "concept": null,
+  "name": "Hemostasis, Coagulation and Fibrinolysis",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "d010c926-2fb2-41ea-a745-07e33969f754",
-  "concept": "413f074e-3d20-4a7f-b477-289addce4d2b",
-  "name": "Enzymatic Clot Dissolution",
+  "concept": null,
+  "name": "Hemostasis, Coagulation and Fibrinolysis",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "31c3ab5e-54b3-4bdc-8f79-463f5280c5a4",
-  "concept": "1eb98774-4438-4143-b9b1-a39d49aaa8b6",
-  "name": "Hepatic Portal Route",
+  "concept": null,
+  "name": "Portal Circulations",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "fb1ae08a-31d6-400c-aec6-2304ea6a23e4",
-  "concept": "1eb98774-4438-4143-b9b1-a39d49aaa8b6",
-  "name": "Hepatic Portal Route",
+  "concept": null,
+  "name": "Portal Circulations",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
   "card": "d29109a4-fe74-4e10-9acb-96da8603ea7e",
-  "concept": "ff3dc903-0723-4c2f-aa32-516b74787196",
-  "name": "Hypophyseal Portal Architecture",
+  "concept": null,
+  "name": "Portal Circulations",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Cardiovascular System"
  },
  {
@@ -11536,9 +11589,10 @@
  },
  {
   "card": "f04c64a7-ccc5-4824-ba75-2096963113b7",
-  "concept": "fc410694-a488-4eaa-8552-4d73cde96fbd",
-  "name": "Venous Return and the Skeletal Muscle Pump",
+  "concept": null,
+  "name": "Blood Vessel Structure and Types",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Musculoskeletal System"
  },
  {
@@ -12908,29 +12962,30 @@
  },
  {
   "card": "c8fb36db-3b2a-476b-9380-0adc56283a1e",
-  "concept": "1e3614c2-4449-46bf-a9be-c840092629e4",
-  "name": "Layered Surface Defences and Response Timing",
+  "concept": "8dd8bea0-89b7-4974-bda3-f4fb1398c39e",
+  "name": "Respiratory Immune Defense",
   "type": "CONTENT",
   "deck": "The Respiratory System"
  },
  {
   "card": "8094794d-17ac-4306-a057-d0785f2e440e",
-  "concept": "1e3614c2-4449-46bf-a9be-c840092629e4",
-  "name": "Layered Surface Defences and Response Timing",
+  "concept": "8dd8bea0-89b7-4974-bda3-f4fb1398c39e",
+  "name": "Respiratory Immune Defense",
   "type": "CONTENT",
   "deck": "The Respiratory System"
  },
  {
   "card": "39d6a5fb-96c7-4577-b828-3373fa805007",
-  "concept": "1e3614c2-4449-46bf-a9be-c840092629e4",
-  "name": "Layered Surface Defences and Response Timing",
+  "concept": null,
+  "name": "Hypersensitivity and Allergy",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Respiratory System"
  },
  {
   "card": "9f969b60-bd4a-49da-ad87-b892822085d1",
-  "concept": "1e3614c2-4449-46bf-a9be-c840092629e4",
-  "name": "Layered Surface Defences and Response Timing",
+  "concept": "8dd8bea0-89b7-4974-bda3-f4fb1398c39e",
+  "name": "Respiratory Immune Defense",
   "type": "CONTENT",
   "deck": "The Respiratory System"
  },
@@ -13314,16 +13369,18 @@
  },
  {
   "card": "629b7868-3454-4d19-b010-058abbc76fe1",
-  "concept": "3fa5fdc5-7d00-4316-b833-58651cdc6bca",
-  "name": "Plasma Fraction and Plasma Protein Content",
+  "concept": null,
+  "name": "Blood Composition: Plasma and Formed Elements",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Digestive System"
  },
  {
   "card": "622bbda0-2b81-42c7-a290-b86bab7ceefc",
-  "concept": "1eb98774-4438-4143-b9b1-a39d49aaa8b6",
-  "name": "Hepatic Portal Route",
+  "concept": null,
+  "name": "Portal Circulations",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "The Digestive System"
  },
  {
@@ -13531,30 +13588,34 @@
  },
  {
   "card": "48e11005-808d-49a6-b61c-4c1006c151d1",
-  "concept": "cdc10795-b431-4f3e-a4ea-b4fe061f8896",
-  "name": "Renal Portal Hemodynamics",
+  "concept": null,
+  "name": "Portal Circulations",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "Homeostasis"
  },
  {
   "card": "6e812eb0-ffc0-489e-bd4d-9e100aef3ba7",
-  "concept": "cdc10795-b431-4f3e-a4ea-b4fe061f8896",
-  "name": "Renal Portal Hemodynamics",
+  "concept": null,
+  "name": "Portal Circulations",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "Homeostasis"
  },
  {
   "card": "0a9b4193-5d71-4059-8e10-79bba30eef20",
-  "concept": "cdc10795-b431-4f3e-a4ea-b4fe061f8896",
-  "name": "Renal Portal Hemodynamics",
+  "concept": null,
+  "name": "Portal Circulations",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "Homeostasis"
  },
  {
   "card": "11f14abc-31f9-4276-8bae-9851d69e2992",
-  "concept": "cdc10795-b431-4f3e-a4ea-b4fe061f8896",
-  "name": "Renal Portal Hemodynamics",
+  "concept": null,
+  "name": "Portal Circulations",
   "type": "CONTENT",
+  "isNew": true,
   "deck": "Homeostasis"
  },
  {
@@ -13832,8 +13893,8 @@
  },
  {
   "card": "0263c19c-8bf8-42d8-ba5d-132d697b614d",
-  "concept": "00bd59c2-cc4d-4c5b-9385-a454cc8800eb",
-  "name": "Skin as a Physical Barrier",
+  "concept": "73f65e81-a7e5-4dda-9e1c-8f3aa931974f",
+  "name": "Skin Structure and Barrier Function",
   "type": "CONTENT",
   "deck": "Homeostasis"
  },
@@ -14356,118 +14417,6 @@
   "deck": "Embryonic Development & Gestation"
  },
  {
-  "card": "0d4c32f2-add7-44a3-b1c4-ed2b5b0bc21f",
-  "concept": "00bd59c2-cc4d-4c5b-9385-a454cc8800eb",
-  "name": "Skin as a Physical Barrier",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "2dff6d79-8126-487f-a3e8-dd90a81c4afc",
-  "concept": "8dd8bea0-89b7-4974-bda3-f4fb1398c39e",
-  "name": "Respiratory Immune Defense",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "4275eadc-15a0-4561-90dd-2e66122a42cf",
-  "concept": "118bbbdd-7d90-4aa4-878d-b38057f402e2",
-  "name": "Gastric Acid as a Chemical Barrier",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "24eadc85-341b-4f16-8ae3-070800015f78",
-  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
-  "name": "Immunoglobulins",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "dc2d7128-a7b4-49eb-a02c-d2d1fb12df3c",
-  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
-  "name": "Immunoglobulins",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "cfe24520-1a51-44bf-ba39-bde2d2d8d0bb",
-  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
-  "name": "Immunoglobulins",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "83616a23-0b11-43a4-ace5-e246f8c8b67a",
-  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
-  "name": "Immunoglobulins",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "7b4c1bb9-5a15-4a3f-be4d-e9198881b2cf",
-  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
-  "name": "Immunoglobulins",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "d48fa85b-514d-49ed-9a43-fda6a77642e7",
-  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
-  "name": "Immunoglobulins",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "56880073-764f-4f69-8712-0e98c355b137",
-  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
-  "name": "Immunoglobulins",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "76705a9f-9910-4290-9c7b-9a864bb6916f",
-  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
-  "name": "Immunoglobulins",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "836edbc4-5f2f-4ec1-86c2-ce031cd6db0a",
-  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
-  "name": "Immunoglobulins",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "de42defe-0c0d-4cc9-816d-209514737633",
-  "concept": "8e7b7ee3-2be6-4025-a4fc-09e138499560",
-  "name": "Daily Lymph Return Volume",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "336297b6-561a-4e0f-8326-b689b8512777",
-  "concept": "428c408b-82c0-4622-8d85-f987f8e90e1e",
-  "name": "Interstitial Protein Retention After Lymphatic Loss",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "95e16184-6322-47cf-9de6-cd71d91c78c3",
-  "concept": "705117a1-e20d-4807-8ea0-d9f48d882cbc",
-  "name": "Lacteal Routing Of Absorbed Lipid",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
-  "card": "016609a7-e2a5-4c54-9eb3-1d0b97164103",
-  "concept": "705117a1-e20d-4807-8ea0-d9f48d882cbc",
-  "name": "Lacteal Routing Of Absorbed Lipid",
-  "type": "CONTENT",
-  "deck": "The Immune System"
- },
- {
   "card": "d1363bc7-f3ae-4816-bf24-3da61669a69a",
   "concept": null,
   "name": "Renin-Angiotensin-Aldosterone System",
@@ -14714,5 +14663,603 @@
   "type": "CONTENT",
   "isNew": true,
   "deck": "The Cardiovascular System"
+ },
+ {
+  "card": "d64ad6b5-3cb3-4c54-b2d8-31481fb415fd",
+  "concept": null,
+  "name": "Innate versus Adaptive Immunity",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "c320c691-0bbc-44a1-8c26-6a08d61a4b76",
+  "concept": null,
+  "name": "Innate versus Adaptive Immunity",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "4494a10d-e7f6-4bdb-8d00-4e7a1f5c681f",
+  "concept": null,
+  "name": "Innate versus Adaptive Immunity",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "08b30b0f-5d15-4e14-9c91-670835ddcb2e",
+  "concept": null,
+  "name": "Leukocyte Lineages and Lymphoid Organs",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "a40456c4-56c5-4c26-9d70-b861ad4f7bcd",
+  "concept": null,
+  "name": "Leukocyte Lineages and Lymphoid Organs",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "8e2c44b1-2137-4c27-8992-9a58a6ec59cd",
+  "concept": null,
+  "name": "Leukocyte Lineages and Lymphoid Organs",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "d5536c06-124b-43ee-b02c-ff2d57c4c5db",
+  "concept": null,
+  "name": "Leukocyte Lineages and Lymphoid Organs",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "1696778c-6389-4d12-8257-7e670f902fd2",
+  "concept": null,
+  "name": "Leukocyte Lineages and Lymphoid Organs",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "a430fc26-eec1-4548-adac-8a89c0ac8623",
+  "concept": null,
+  "name": "Leukocyte Lineages and Lymphoid Organs",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "e5ef8682-e5be-4dea-a231-39a0b86f4f26",
+  "concept": null,
+  "name": "Leukocyte Lineages and Lymphoid Organs",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "f5f6746c-7bb0-4d9b-afe9-9330db84087e",
+  "concept": null,
+  "name": "Leukocyte Lineages and Lymphoid Organs",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "0d4c32f2-add7-44a3-b1c4-ed2b5b0bc21f",
+  "concept": null,
+  "name": "Surface Barriers to Infection",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "06abbd9c-3f21-4506-bb36-932294a9d92e",
+  "concept": null,
+  "name": "Surface Barriers to Infection",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "4275eadc-15a0-4561-90dd-2e66122a42cf",
+  "concept": null,
+  "name": "Surface Barriers to Infection",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "674ff34d-f8ee-436a-8a62-cc4cbe222344",
+  "concept": null,
+  "name": "Surface Barriers to Infection",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "c3cf1bb5-d4eb-4bbf-b000-b1a4dcb4e0d4",
+  "concept": null,
+  "name": "Phagocytes and Granulocytes",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "3054b33b-dc5a-458b-83db-9ccfcf676ff7",
+  "concept": null,
+  "name": "Phagocytes and Granulocytes",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "b1da0f41-4357-4b85-8bc5-a7e0fe139678",
+  "concept": null,
+  "name": "Phagocytes and Granulocytes",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "3a933b96-4767-408c-af11-3ef46aa5a117",
+  "concept": null,
+  "name": "Phagocytes and Granulocytes",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "a1334c1f-74da-494f-9410-3839b57f2e61",
+  "concept": null,
+  "name": "Phagocytes and Granulocytes",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "5365c595-7c0d-41ee-b6e1-9f6680ab712e",
+  "concept": null,
+  "name": "Phagocytes and Granulocytes",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "87d9f422-32ff-4143-9a6b-78416e0e3c8a",
+  "concept": null,
+  "name": "Phagocytes and Granulocytes",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "06cd5876-6988-477f-8311-508d3ffe1ee2",
+  "concept": null,
+  "name": "The Complement System",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "db998493-79a2-4fc6-aed6-5459b6986eda",
+  "concept": null,
+  "name": "Cytokines and Interferons",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "859d0180-d66c-4784-a104-8d2bb73c9a4b",
+  "concept": null,
+  "name": "Cytokines and Interferons",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "335826e8-65c8-48fc-bec7-a04f78a9fe43",
+  "concept": null,
+  "name": "Natural Killer Cells",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "d48051cb-20b2-4fc8-8c6d-c49a63875b53",
+  "concept": null,
+  "name": "Natural Killer Cells",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "73716be0-1697-4c5f-acd7-7c282c9ec713",
+  "concept": null,
+  "name": "Pattern Recognition and Acute Inflammation",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "068e99d2-acb4-4bdc-9d72-026e692f6ba6",
+  "concept": null,
+  "name": "Pattern Recognition and Acute Inflammation",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "a777f730-76fe-4725-a483-39fb90d09478",
+  "concept": null,
+  "name": "Antigens and Epitopes",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "49b2af3f-c588-4d12-914a-8cff29e63e9c",
+  "concept": null,
+  "name": "Antigens and Epitopes",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "b816ab84-6e06-4344-b9b1-8707d76c4b38",
+  "concept": null,
+  "name": "MHC and Antigen Presentation",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "3f30ca0b-63de-4acd-947e-bb56c2f7e2e2",
+  "concept": null,
+  "name": "MHC and Antigen Presentation",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "fdf63d2e-e7b3-474a-b8d4-25cab8e90909",
+  "concept": null,
+  "name": "MHC and Antigen Presentation",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "a40c159b-d27c-4e15-8c92-ded35532e953",
+  "concept": null,
+  "name": "MHC and Antigen Presentation",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "617169d2-e0be-409a-9b50-4ad32f8538f3",
+  "concept": null,
+  "name": "B Cell Activation and Antibody Diversity",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "21345242-4d40-4f29-86bc-0946a439d020",
+  "concept": null,
+  "name": "B Cell Activation and Antibody Diversity",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "036943ed-35d4-4448-819b-ba61a86b01d2",
+  "concept": null,
+  "name": "B Cell Activation and Antibody Diversity",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "2828561c-313c-406b-857a-ccb12dfba988",
+  "concept": null,
+  "name": "T Cell Subsets and Effector Function",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "0ed8545e-c518-42d2-82be-4a6afcafd90d",
+  "concept": null,
+  "name": "T Cell Subsets and Effector Function",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "78b3cc3e-d3c3-4424-8ea5-7cb3eeb5ae6a",
+  "concept": null,
+  "name": "T Cell Subsets and Effector Function",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "e5ec5099-9727-4b13-acf3-7b7586dac7e0",
+  "concept": null,
+  "name": "T Cell Subsets and Effector Function",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "9d1fd14b-1091-415e-99a5-f71e5595597a",
+  "concept": null,
+  "name": "T Cell Subsets and Effector Function",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "5033dfd9-a933-4bdb-98d3-62a586b01970",
+  "concept": null,
+  "name": "T Cell Subsets and Effector Function",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "5ea49b46-bf33-41aa-a320-a2466ef4fb5f",
+  "concept": null,
+  "name": "Thymic Selection and Self-Tolerance",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "7dcac40f-a0d9-4289-a0cc-b5c298a15961",
+  "concept": null,
+  "name": "Thymic Selection and Self-Tolerance",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "33d7d791-400f-451d-a2fa-db26c67bce82",
+  "concept": null,
+  "name": "Thymic Selection and Self-Tolerance",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "ffb766be-001f-47d2-8179-49aec767aecf",
+  "concept": null,
+  "name": "Clonal Selection and Immunologic Memory",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "9bf423ba-87dd-452d-a20e-09ea71df183d",
+  "concept": null,
+  "name": "Clonal Selection and Immunologic Memory",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "d53e0129-1a1c-4f46-a9ae-c40a7801ab5c",
+  "concept": null,
+  "name": "Clonal Selection and Immunologic Memory",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "0fdb3b6a-f652-4b38-a747-efa6b35a62d8",
+  "concept": null,
+  "name": "Clonal Selection and Immunologic Memory",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "4f45beec-066a-4fac-845f-7b47cbcac9a2",
+  "concept": null,
+  "name": "Autoimmune Disease",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "70d6beca-1d58-4abd-ac71-cb1d8c41078b",
+  "concept": null,
+  "name": "Hypersensitivity and Allergy",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "66dc5554-8325-40ad-97eb-ac7aaf38676d",
+  "concept": null,
+  "name": "Hypersensitivity and Allergy",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "9e1d6770-6875-4ad6-9947-6d75ccb3aeb7",
+  "concept": null,
+  "name": "Active and Passive Immunity",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "d6b76e2a-9fee-4be1-9d18-b9dbd0b34d36",
+  "concept": null,
+  "name": "Active and Passive Immunity",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "3883d8a2-c78b-4ce6-9744-5618b69e2210",
+  "concept": null,
+  "name": "Active and Passive Immunity",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "a10fb606-2509-4119-982d-651ec1b4dff4",
+  "concept": null,
+  "name": "Vaccination",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "b3ba841e-f90c-4f3b-ad41-66029d18db22",
+  "concept": null,
+  "name": "Vaccination",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "de42defe-0c0d-4cc9-816d-209514737633",
+  "concept": null,
+  "name": "The Lymphatic System",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "336297b6-561a-4e0f-8326-b689b8512777",
+  "concept": null,
+  "name": "The Lymphatic System",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "95e16184-6322-47cf-9de6-cd71d91c78c3",
+  "concept": null,
+  "name": "The Lymphatic System",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "016609a7-e2a5-4c54-9eb3-1d0b97164103",
+  "concept": null,
+  "name": "The Lymphatic System",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "926c228c-b8b1-4a68-99fa-b3dd93d18586",
+  "concept": null,
+  "name": "The Lymphatic System",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "45968b99-bd5f-4c3c-858e-4d0e49af42ca",
+  "concept": null,
+  "name": "The Lymphatic System",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "c2bb5de0-f328-4365-b33b-cf36069b5ab0",
+  "concept": null,
+  "name": "The Lymphatic System",
+  "type": "CONTENT",
+  "isNew": true,
+  "deck": "The Immune System"
+ },
+ {
+  "card": "2dff6d79-8126-487f-a3e8-dd90a81c4afc",
+  "concept": "8dd8bea0-89b7-4974-bda3-f4fb1398c39e",
+  "name": "Respiratory Immune Defense",
+  "type": "CONTENT",
+  "deck": "The Immune System"
+ },
+ {
+  "card": "24eadc85-341b-4f16-8ae3-070800015f78",
+  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
+  "name": "Immunoglobulins",
+  "type": "CONTENT",
+  "deck": "The Immune System"
+ },
+ {
+  "card": "dc2d7128-a7b4-49eb-a02c-d2d1fb12df3c",
+  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
+  "name": "Immunoglobulins",
+  "type": "CONTENT",
+  "deck": "The Immune System"
+ },
+ {
+  "card": "cfe24520-1a51-44bf-ba39-bde2d2d8d0bb",
+  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
+  "name": "Immunoglobulins",
+  "type": "CONTENT",
+  "deck": "The Immune System"
+ },
+ {
+  "card": "83616a23-0b11-43a4-ace5-e246f8c8b67a",
+  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
+  "name": "Immunoglobulins",
+  "type": "CONTENT",
+  "deck": "The Immune System"
+ },
+ {
+  "card": "7b4c1bb9-5a15-4a3f-be4d-e9198881b2cf",
+  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
+  "name": "Immunoglobulins",
+  "type": "CONTENT",
+  "deck": "The Immune System"
+ },
+ {
+  "card": "d48fa85b-514d-49ed-9a43-fda6a77642e7",
+  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
+  "name": "Immunoglobulins",
+  "type": "CONTENT",
+  "deck": "The Immune System"
+ },
+ {
+  "card": "56880073-764f-4f69-8712-0e98c355b137",
+  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
+  "name": "Immunoglobulins",
+  "type": "CONTENT",
+  "deck": "The Immune System"
+ },
+ {
+  "card": "76705a9f-9910-4290-9c7b-9a864bb6916f",
+  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
+  "name": "Immunoglobulins",
+  "type": "CONTENT",
+  "deck": "The Immune System"
+ },
+ {
+  "card": "836edbc4-5f2f-4ec1-86c2-ce031cd6db0a",
+  "concept": "b30b1d54-48c4-4754-a098-ae0dbc3306c7",
+  "name": "Immunoglobulins",
+  "type": "CONTENT",
+  "deck": "The Immune System"
  }
 ]
