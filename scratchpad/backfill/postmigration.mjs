@@ -1,0 +1,41 @@
+import { all } from "./record.mjs";
+const C=await all("concepts","id,slug,canonical_name,object_type,status");
+const FC=await all("flashcard_concepts","flashcard_id,concept_id,role,mapping_status,source");
+const QC=await all("question_concepts","concept_id");
+const F=await all("flashcards","id,deck_id,cloze_text,front_text,back_text");
+const D=await all("flashcard_decks","id,title,section");
+const CD=await all("concept_disciplines","concept_id,discipline_code,role");
+const CS=await all("concept_sections","concept_id,section_code,is_primary");
+const CCC=await all("concept_content_categories","concept_id,content_category,is_primary");
+const AL=await all("concept_aliases","id");
+const byId=new Map(C.map(c=>[c.id,c]));
+const dt=new Map(D.map(d=>[d.id,d]));
+const t={}; C.forEach(c=>t[c.object_type]=(t[c.object_type]||0)+1);
+console.log("=== LIVE STATE ===");
+console.log(`ontology objects: ${C.length}   ${JSON.stringify(t)}`);
+console.log(`all ACTIVE_SEED: ${C.every(c=>c.status==="ACTIVE_SEED")}`);
+console.log(`card mappings: ${FC.length} | question mappings: ${QC.length} | aliases: ${AL.length}`);
+const mt={}; FC.forEach(m=>{const o=byId.get(m.concept_id); mt[o.object_type]=(mt[o.object_type]||0)+1;});
+console.log(`card mappings by object_type: ${JSON.stringify(mt)}`);
+const pv={}; FC.forEach(m=>pv[`${m.mapping_status}/${m.source}`]=(pv[`${m.mapping_status}/${m.source}`]||0)+1);
+console.log(`provenance: ${JSON.stringify(pv)}`);
+const mapped=new Set(FC.map(m=>m.flashcard_id));
+const un=F.filter(f=>!mapped.has(f.id));
+console.log(`\nflashcards ${F.length} | mapped ${mapped.size} | unmapped ${un.length}  (${(mapped.size/F.length*100).toFixed(2)}%)`);
+un.forEach(f=>{const d=dt.get(f.deck_id);
+  console.log(`  UNMAPPED [${d.title}] ${String(f.cloze_text||[f.front_text,f.back_text].filter(Boolean).join(" >> ")).replace(/\s+/g," ").slice(0,120)}`);});
+// dual modality
+const qSet=new Set(QC.map(r=>r.concept_id)), fSet=new Set(FC.map(r=>r.concept_id));
+console.log(`\nconcepts with question evidence: ${qSet.size} | with card evidence: ${fSet.size}`);
+console.log(`concepts holding BOTH: ${C.filter(c=>qSet.has(c.id)&&fSet.has(c.id)).length}`);
+// cross-discipline
+const prim={}; CD.filter(r=>r.role==="PRIMARY").forEach(r=>prim[r.concept_id]=r.discipline_code);
+const S2D={biology:"BIOLOGY",biochemistry:"BIOCHEMISTRY",chemistry:"GENERAL_CHEMISTRY",organic_chemistry:"ORGANIC_CHEMISTRY",physics:"PHYSICS"};
+let cross=0; FC.forEach(m=>{const d=dt.get(F.find(f=>f.id===m.flashcard_id)?.deck_id); if(!d)return;
+  const want=S2D[d.section]; const got=prim[m.concept_id]; if(want&&got&&want!==got) cross++;});
+console.log(`cross-discipline card mappings: ${cross}`);
+console.log(`\ntaxonomy rows: sections ${CS.length} (${CS.filter(r=>!r.is_primary).length} secondary) | disciplines ${CD.length} (${CD.filter(r=>r.role==="SECONDARY").length} secondary) | categories ${CCC.length}`);
+const nc=C.filter(c=>["VENOUS_RETURN_PRELOAD","PORTAL_CIRCULATIONS","LYMPHATIC_SYSTEM","MHC_ANTIGEN_PRESENTATION"].includes(c.slug));
+console.log(`\nspot check of new objects:`); nc.forEach(c=>{
+  const cards=FC.filter(m=>m.concept_id===c.id).length;
+  console.log(`  ${c.slug}  ${cards} cards  sect=${CS.filter(r=>r.concept_id===c.id).map(r=>r.section_code)}  disc=${CD.filter(r=>r.concept_id===c.id).map(r=>r.discipline_code)}  cat=${CCC.filter(r=>r.concept_id===c.id).map(r=>r.content_category)}`);});

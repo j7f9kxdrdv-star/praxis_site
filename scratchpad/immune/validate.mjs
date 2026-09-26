@@ -10,7 +10,13 @@ const byId=new Map(C.map(c=>[c.id,c]));
 const labelNames=new Set(QC.filter(r=>imQ.has(r.question_id)).map(r=>byId.get(r.concept_id).canonical_name));
 
 // 1. no proposed name may already exist
-for(const p of PROPOSED) if(live.has(p.name)) P.push(`proposed "${p.name}" ALREADY EXISTS in the ontology`);
+// PRE-SEED GUARD. Before the migration runs, a proposed name that already
+// exists is a duplicate waiting to happen. Once it has run, every proposed name
+// exists BY DESIGN, so the guard would report the success as a failure. Detect
+// which side of the migration we are on and say so instead.
+const seeded = PROPOSED.filter((p) => live.has(p.name)).length;
+const APPLIED = seeded === PROPOSED.length;
+if (!APPLIED && seeded > 0) P.push(`${seeded} of ${PROPOSED.length} proposed names exist: partially applied`);
 // 2. every card position 1..76 covered exactly once across PROPOSED + KEEP_EXISTING
 const seen=new Map();
 for(const p of PROPOSED) for(const c of p.cards){ if(seen.has(c)) P.push(`card ${c} claimed by "${p.name}" and "${seen.get(c)}"`); seen.set(c,p.name); }
@@ -31,7 +37,7 @@ for(const [k,arr] of Object.entries(LABELS)) for(const n of arr){
 const unclassified=[...labelNames].filter(n=>!cls.has(n));
 
 if(P.length){console.log("PROBLEMS:");P.forEach(p=>console.log("  "+p));process.exit(1);}
-console.log("VALID");
+console.log(APPLIED ? "VALID (migration APPLIED: all proposed concepts are seeded)" : "VALID");
 console.log(`  proposed concepts: ${PROPOSED.length}`);
 console.log(`  cards on proposed: ${PROPOSED.reduce((s,p)=>s+p.cards.length,0)}`);
 console.log(`  cards kept on existing: ${KEEP_EXISTING.reduce((s,k)=>s+k.cards.length,0)}`);
