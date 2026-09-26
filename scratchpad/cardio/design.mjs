@@ -115,3 +115,31 @@ export const CARD_GAPS = [
 
 CARD_GAPS.push({objective:"Endothelial control of vascular tone", questions:["Endothelial Control of Tissue Perfusion","Testing Endothelial Function in Isolated Vessels","Consequences of Endothelial Denudation","Flow Redistribution And Vascular Resistance"],
  why:"Four questions test endothelium-derived vasodilation matching perfusion to demand. The deck's endothelium cards (29, 30) are structural and sit on Blood Vessel Structure and Types. No card teaches local flow control, so there is nothing to anchor a concept to yet. Report, do not mint."});
+
+// ─── Pre-SQL forensic check on the skeletal-muscle-pump card ──────────────────
+// The card: "Contracting skeletal muscles compress the blood vessels running
+// through them; their one-way valves block backflow, so this pump raises
+// {{c1::venous return}}."
+//
+// The cloze is on VENOUS RETURN. The valves appear in the stem as given
+// information, not as the tested content, so performance on this card is
+// evidence about the physiological mechanism raising venous return, not about
+// venous wall architecture. A learner could answer it correctly knowing nothing
+// about the tunica media, the artery/vein classification or capacitance, which
+// is what Blood Vessel Structure and Types is for (its cards 28 to 34).
+//
+// Searched the whole ontology for venous return, preload, filling, capacitance
+// and Frank-Starling. The only matches are the two one-question cardio labels
+// this pass is retiring. No durable home exists.
+//
+// So the mapping is NOT defensible and this card is held rather than forced.
+export const PENDING_CANDIDATE = {
+ name:"Venous Return and Preload",
+ def:"The peripheral determinants of the volume returning to the heart: the skeletal-muscle pump acting through one-way valves, venoconstriction mobilising the venous reservoir, and the effect on ventricular filling.",
+ cards:[["The Musculoskeletal System",76]],
+ conf:"MEDIUM",
+ q:[["Venous Return and the Skeletal Muscle Pump",true],["Venoconstriction and Venous Resistance",true],
+    ["Head-Up Tilt And Resistance Adjustment",false],["Atrial Systole and Ventricular Filling",false],["Matched Ventricular Outputs",false]],
+ why:"One card and two exact questions. Narrow, but a distinct objective: a learner can know cardiac output as HR times SV perfectly and still not know that the muscle pump or venoconstriction raises return. Folding it into Cardiac Output and Stroke Volume would make a peripheral-circulation weakness read as a cardiac-output weakness, which is the same argument used to keep Types of Reactions separate from Reaction Types & Classification.",
+ alsoChanges:"If approved, the two exact questions move off Blood Vessel Structure and Types in ALIGN_APPROVED and onto this concept. That is a note for the later question migration, not a change to the backfill.",
+};
