@@ -1,481 +1,501 @@
 [
-  {
-    "slug": "competitive-inhibition",
-    "eyebrow": "Biochemistry: Enzyme Kinetics",
-    "stem": "Adding compound X to an enzyme assay raises the apparent K_{m} from 2 mM to 8 mM while V_{max} is unchanged. Flooding the assay with substrate fully restores the original reaction rate. Where does X most likely bind?",
-    "options": [
-      "A. The active site, reversibly",
-      "B. An allosteric site, lowering k_{cat}",
-      "C. Only the enzyme-substrate complex",
-      "D. The catalytic residue, covalently"
-    ],
-    "answer": "A",
-    "answer_text": "The active site, reversibly",
-    "explanation": "K_{m} rises, V_{max} holds, and excess substrate rescues the rate. That combination only describes competition for the active site.",
-    "distractors": [
-      "B. An allosteric inhibitor lowers V_{max} by slowing turnover. K_{m} would be unchanged, and no amount of substrate would rescue it.",
-      "C. Binding only the ES complex is uncompetitive inhibition, which lowers K_{m} AND V_{max} together. Here V_{max} did not move.",
-      "D. Covalent modification is irreversible. The enzyme is out of commission permanently, so flooding with substrate changes nothing."
-    ],
-    "teaching_point": "Read the three numbers together, not one at a time. K_{m} alone cannot tell you the mechanism; it is K_{m} moving while V_{max} stays put that rules out everything except competition."
-  },
-  {
-    "slug": "weak-acid-ka",
-    "eyebrow": "General Chemistry: Acids and Bases",
-    "stem": "A 0.10 M solution of a weak monoprotic acid has a pH of 3.0. What is the approximate K_{a} of the acid?",
-    "options": [
-      "A. 1 × 10^{-3}",
-      "B. 1 × 10^{-5}",
-      "C. 1 × 10^{-7}",
-      "D. 1 × 10^{-9}"
-    ],
-    "answer": "B",
-    "answer_text": "1 × 10^{-5}",
-    "explanation": "pH 3.0 gives [H^{+}] = 10^{-3} M. For HA ⇌ H^{+} + A^{-}, both products sit at 10^{-3}, and [HA] stays near 0.10 M. So K_{a} ≈ (10^{-3})² / 0.10 = 10^{-5}.",
-    "distractors": [
-      "A. This is [H^{+}] itself, not K_{a}. The concentration of protons is what you measured, not the equilibrium constant that produced it.",
-      "C. This is (10^{-3})² with the 0.10 M forgotten. Dividing by 0.10 moves the exponent by one, not none.",
-      "D. Off by four orders of magnitude, which would make the acid far weaker than a pH of 3.0 could produce at this concentration."
-    ],
-    "teaching_point": "Check the approximation before you trust it. Here 10^{-3} is 1% of 0.10 M, comfortably inside the 5% rule, so treating [HA] as unchanged is safe. Above 5% you would need the quadratic."
-  },
-  {
-    "slug": "parallel-power",
-    "eyebrow": "Physics: Circuits",
-    "stem": "A 4 Ω resistor and a 12 Ω resistor are connected in parallel across a battery. Which resistor dissipates more power, and by what factor?",
-    "options": [
-      "A. The 4 Ω, by a factor of 3",
-      "B. The 12 Ω, by a factor of 3",
-      "C. The 4 Ω, by a factor of 9",
-      "D. They dissipate equal power"
-    ],
-    "answer": "A",
-    "answer_text": "The 4 Ω, by a factor of 3",
-    "explanation": "Parallel means both resistors see the same voltage, so use P = V²/R. Power is then inversely proportional to resistance: 12/4 = 3. The smaller resistor dissipates three times more.",
-    "distractors": [
-      "B. This inverts the relationship. More resistance in parallel means less current through that branch, and therefore less power, not more.",
-      "C. A factor of 9 comes from squaring the ratio, which happens with P = I²R in SERIES, where current is shared and resistance is not.",
-      "D. Parallel guarantees equal voltage, not equal power. Equal power would require equal resistance."
-    ],
-    "teaching_point": "Pick the power formula that uses the quantity the circuit holds constant. Parallel holds voltage constant, so P = V²/R. Series holds current constant, so P = I²R. Choosing the wrong one is the fastest way to invert your answer."
-  },
-  {
-    "slug": "reinforcement-contact-zone",
-    "eyebrow": "Biology: Evolution and Speciation",
-    "stem": "Two long-separated salamander populations meet again. Hybrids form but rarely survive to breed. Over forty generations, females of each population become less willing to court males from the other. This change is best described as:",
-    "options": [
-      "A. Founder effect",
-      "B. Genetic drift",
-      "C. Reinforcement",
-      "D. Sympatric speciation"
-    ],
-    "answer": "C",
-    "answer_text": "Reinforcement",
-    "explanation": "Hybrids rarely breed, so a female that courts across the zone wastes her reproductive effort. Alleles for choosier courtship spread in both populations, strengthening a barrier that acts before mating. That is reinforcement.",
-    "distractors": [
-      "A. A founder effect needs a few individuals starting a new population. These are two established populations meeting again, not founding anything.",
-      "B. Drift is random and would not push BOTH populations toward the same outcome. A shared direction is the signature of selection.",
-      "D. Sympatric speciation means diverging without geographic separation. These populations were separated first, so the divergence began allopatrically."
-    ],
-    "teaching_point": "When a reproductive barrier gets STRONGER over time, ask who pays the cost of ignoring it. Reinforcement happens because hybridising is expensive, so choosiness is rewarded. Drift explains divergence, but never divergence running the same direction in two separate populations."
-  },
-  {
-    "slug": "lens-inside-focal-length",
-    "eyebrow": "Physics: Light and Optics",
-    "stem": "A 5 cm tall object sits 20 cm from a converging lens with a focal length of 30 cm. How tall is the image?",
-    "options": [
-      "A. 1.7 cm",
-      "B. 3 cm",
-      "C. 7.5 cm",
-      "D. 15 cm"
-    ],
-    "answer": "D",
-    "answer_text": "15 cm",
-    "explanation": "1/f = 1/do + 1/di gives 1/di = 1/30 - 1/20 = -1/60, so di = -60 cm. The negative sign means the image is virtual and on the same side as the object. Magnification is -di/do = +3, so a 5 cm object gives a 15 cm upright image. This is the magnifying glass case: the object sits inside the focal length.",
-    "distractors": [
-      "A. 1.7 cm inverts the magnification, using 1/3 instead of 3. Worth checking the direction: an object inside the focal length is always magnified, never shrunk.",
-      "B. 3 cm comes from adding instead of subtracting in the lens equation, 1/30 + 1/20, which puts di at +12 cm and makes the image real and smaller. A converging lens cannot do that with the object inside f.",
-      "C. 7.5 cm uses f/do as the magnification. That shortcut is not the magnification, and it happens to give 1.5 here."
-    ],
-    "teaching_point": "Object inside the focal length is the one case every MCAT student should recognise on sight: the image is virtual, upright and magnified. If your arithmetic returns a shrunken or inverted image there, the sign went wrong, not the physics."
-  },
-  {
-    "slug": "calorimetry-final-temp",
-    "eyebrow": "General Chemistry: Thermochemistry",
-    "stem": "A 250 g water sample at 18 °C absorbs 5225 J of heat. The specific heat of water is 4.18 J/g°C. What is the final temperature?",
-    "options": [
-      "A. 5 °C",
-      "B. 13 °C",
-      "C. 23 °C",
-      "D. 28 °C"
-    ],
-    "answer": "C",
-    "answer_text": "23 °C",
-    "explanation": "q = mcΔT, so ΔT = 5225 / (250 × 4.18) = 5225 / 1045 = 5 °C. That is the CHANGE, not the answer. The sample absorbs heat, so it warms: 18 + 5 = 23 °C.",
-    "distractors": [
-      "A. 5 °C is ΔT itself. The question asks for the final temperature, and stopping one step early is the most common way this is lost under time pressure.",
-      "B. 13 °C subtracts the change instead of adding it. The sample ABSORBS heat, so it can only get warmer.",
-      "D. 28 °C doubles the change, which happens if you halve the mass or drop a factor in 250 × 4.18."
-    ],
-    "teaching_point": "q = mcΔT returns a CHANGE in temperature, never a temperature. Whenever a calorimetry question asks for a final value, the last step is adding to or subtracting from the starting point, and the direction is set by whether heat went in or out."
-  },
-  {
-    "slug": "molecular-mimicry",
-    "eyebrow": "Biology: The Immune System",
-    "stem": "Weeks after a streptococcal throat infection clears, a patient's own antibodies begin attacking heart valve tissue. The bacterium carries a surface protein resembling a cardiac protein. This is best described as:",
-    "options": [
-      "A. Clonal deletion",
-      "B. Molecular mimicry",
-      "C. Central tolerance",
-      "D. Clonal anergy"
-    ],
-    "answer": "B",
-    "answer_text": "Molecular mimicry",
-    "explanation": "Antibodies raised against the bacterial protein cross-react with the structurally similar host protein, so an appropriate response to a pathogen becomes an attack on self. This is the mechanism behind rheumatic heart disease.",
-    "distractors": [
-      "A. Clonal deletion removes self-reactive lymphocytes during development. Here the damage happens because a foreign target resembles self, not because deletion failed.",
-      "C. Central tolerance is the training that prevents self-attack in the first place. It describes what normally stops this, not what caused it.",
-      "D. Clonal anergy silences a lymphocyte that binds antigen without costimulation. These cells are fully active, which is the whole problem."
-    ],
-    "teaching_point": "When self-damage follows an infection, ask whether the immune system made a mistake or was fooled. Mimicry is being fooled: the response was correct for the pathogen and the host protein simply looked too much like it."
-  },
-  {
-    "slug": "chewing-bread-amylase",
-    "eyebrow": "Biochemistry: Carbohydrate Metabolism",
-    "stem": "Bread tastes sweeter the longer you chew it, even though nothing sweet has been added. Which process explains the change?",
-    "options": [
-      "A. Denaturation of salivary proteins",
-      "B. Enzymatic hydrolysis of starch",
-      "C. Fermentation by oral bacteria",
-      "D. Oxidation of glucose"
-    ],
-    "answer": "B",
-    "answer_text": "Enzymatic hydrolysis of starch",
-    "explanation": "Salivary amylase cleaves the glycosidic bonds in starch, releasing maltose and shorter sugars. Starch itself does not taste sweet because the receptors respond to small sugars, so the sweetness appears only once the chain has been broken up.",
-    "distractors": [
-      "A. Denaturation unfolds proteins. It would disable amylase rather than produce sugar, and starch is not a protein.",
-      "C. Bacteria in the mouth do ferment sugars, but over hours, and fermentation consumes sugar rather than creating it.",
-      "D. Oxidation breaks glucose down for energy inside cells. It removes sugar rather than releasing it, and it does not happen in the mouth."
-    ],
-    "teaching_point": "Sweetness reports molecular size, not carbohydrate content. Starch is already made of glucose; you simply cannot taste it until amylase cuts the chain into pieces small enough for the receptor."
-  },
-  {
-    "slug": "warm-soda-goes-flat",
-    "eyebrow": "General Chemistry: Solutions",
-    "stem": "An open soda goes flat faster on a warm counter than in the fridge. What explains the difference?",
-    "options": [
-      "A. Reaction of carbon dioxide with water",
-      "B. Evaporation of water carrying gas away",
-      "C. Slower diffusion of gas in warm liquid",
-      "D. Lower solubility of gas at higher temperature"
-    ],
-    "answer": "D",
-    "answer_text": "Lower solubility of gas at higher temperature",
-    "explanation": "Dissolving a gas releases heat, so warming the liquid pushes that equilibrium back toward the gas phase. Carbon dioxide that stayed dissolved in the cold can now comes out of solution and escapes, which is what going flat is.",
-    "distractors": [
-      "A. Carbon dioxide does form a little carbonic acid in water, but that equilibrium lies far to the left and the gas is not consumed. It leaves as gas.",
-      "B. Evaporation removes water, not the gas dissolved in it, and a soda goes flat long before it dries out.",
-      "C. Diffusion gets faster when warm, not slower. And slower diffusion would keep the gas in, not let it out."
-    ],
-    "teaching_point": "Solids and gases move in opposite directions with heat. Warming usually dissolves more of a solid and less of a gas, so \"warm dissolves more\" is a rule that only half works."
-  },
-  {
-    "slug": "helium-balloon-sags",
-    "eyebrow": "General Chemistry: The Gas Phase",
-    "stem": "A helium balloon sags overnight, but the same balloon filled with air stays up for days. Why?",
-    "options": [
-      "A. Helium cools and contracts",
-      "B. Helium dissolves into the latex",
-      "C. Helium escapes through the latex faster",
-      "D. Helium is lighter so it floats out"
-    ],
-    "answer": "C",
-    "answer_text": "Helium escapes through the latex faster",
-    "explanation": "Helium atoms are small and, being light, move faster at the same temperature. They slip through the gaps in the latex far more readily than the larger nitrogen and oxygen molecules in air, so the balloon empties itself.",
-    "distractors": [
-      "A. Cooling would shrink the balloon overnight and it would come back in the morning. A helium balloon does not recover, because the gas is gone.",
-      "B. The gas leaves as gas. Dissolving into the rubber is not what empties the balloon.",
-      "D. Lower density is why it rises, not why it deflates. Buoyancy lifts the balloon; it does not push gas through the wall."
-    ],
-    "teaching_point": "Lighter gases move faster at a given temperature, so they leak, effuse and diffuse faster. The same fact explains why the balloon floats and why it does not stay floating, which are two different questions people tend to merge."
-  },
-  {
-    "slug": "parachute-acceleration",
-    "eyebrow": "Physics: Force and Motion",
-    "stem": "A skydiver falling at terminal velocity opens their parachute. Immediately after, their acceleration is:",
-    "options": [
-      "A. Upward, opposite their motion",
-      "B. Downward, at g",
-      "C. Downward, but less than g",
-      "D. Zero, because they are at terminal velocity"
-    ],
-    "answer": "A",
-    "answer_text": "Upward, opposite their motion",
-    "explanation": "Opening the parachute multiplies the drag force at once, while weight is unchanged. Drag now exceeds weight, so the net force points up and so does the acceleration. They are still moving downward the whole time, just slowing.",
-    "distractors": [
-      "D. Terminal velocity meant zero net force with the old drag. Changing the area changes the drag instantly, so the balance is broken the moment the canopy opens.",
-      "B and C. Both keep the acceleration pointing down, which would mean speeding up. A parachute that made you fall faster would not be a parachute."
-    ],
-    "teaching_point": "Acceleration follows net force, never velocity. Moving down and accelerating up happen together every time something slows on its way down, and that split is what most of these questions are really testing."
-  },
-  {
-    "slug": "sodium-pump-cardiac-force",
-    "eyebrow": "Biology: The Cardiovascular System",
-    "stem": "A drug blocks the sodium potassium pump in cardiac muscle. Each contraction becomes stronger. What best explains this?",
-    "options": [
-      "A. Spared ATP powers more cross bridges",
-      "B. Potassium builds up inside the cell",
-      "C. The sodium gradient exporting calcium weakens",
-      "D. The pacemaker fires more often"
-    ],
-    "answer": "C",
-    "answer_text": "The sodium gradient exporting calcium weakens",
-    "explanation": "The pump is what maintains the sodium gradient. Calcium leaves the cell on an exchanger that runs on that gradient, so weakening it strands calcium in the cytosol. More calcium per beat is a stronger beat. This is how digoxin works.",
-    "distractors": [
-      "A. Blocking an ATPase does spare ATP, but ATP is not what limits contractile force in a beating heart. Calcium availability is.",
-      "B. The pump moves potassium IN. Blocking it leaves potassium outside the cell, not stacked up inside.",
-      "D. Rate and force are different things. The pacemaker sets how often the heart beats, and the question describes how hard each beat is."
-    ],
-    "teaching_point": "When a pump is blocked, follow the gradient it maintained rather than the ATP it consumed. Secondary transporters run on that gradient, so the real effect usually lands one step downstream, on whatever the gradient was quietly powering."
-  },
-  {
-    "slug": "anion-exchange-pi",
-    "eyebrow": "Biochemistry: Separation Techniques",
-    "stem": "A protein with a pI of 9.0 is loaded onto an anion exchange column at pH 7.4. What happens to it?",
-    "options": [
-      "A. It binds, and salt elutes it",
-      "B. It passes through unbound",
-      "C. It binds until the pH drops",
-      "D. It precipitates on the column"
-    ],
-    "answer": "B",
-    "answer_text": "It passes through unbound",
-    "explanation": "Below its pI a protein carries net positive charge, so at pH 7.4 this one is positive. An anion exchange resin is itself positively charged, because it is built to hold anions. Like charges repel, so the protein never binds and leaves in the flow-through.",
-    "distractors": [
-      "A. Binding would need the protein to be negative, which only happens ABOVE its pI. At pH 7.4 it is well below 9.0.",
-      "C. Lowering the pH makes the protein MORE positive, so it would bind even less. Raising it toward 9.0 is what would make it stick.",
-      "D. A protein precipitates near its pI, where net charge is zero. At pH 7.4 it is charged and stays soluble."
-    ],
-    "teaching_point": "Two charges decide every ion exchange question: the protein's and the resin's. Work out the protein from pH against pI, remember that an ANION exchanger is positive, and the answer follows. Getting either one backwards inverts the result."
-  },
-  {
-    "slug": "cytosol-disulfide-misfold",
-    "eyebrow": "Biochemistry: Protein Structure",
-    "stem": "A secreted protein depends on disulfide bonds. Expressed in the cytosol instead, it misfolds. Why?",
-    "options": [
-      "A. The cytosol is too acidic",
-      "B. The cytosol is a reducing environment",
-      "C. Chaperones are absent from the cytosol",
-      "D. Cytosolic proteins cannot be glycosylated"
-    ],
-    "answer": "B",
-    "answer_text": "The cytosol is a reducing environment",
-    "explanation": "A disulfide is an oxidation. The cytosol is held reducing by glutathione, so cysteines stay as free thiols and the bonds never form. Secreted proteins get theirs in the oxidizing ER lumen, where protein disulfide isomerase builds them.",
-    "distractors": [
-      "A. Cytosolic pH sits near 7.2, close to the ER. Acidity is not what separates the two compartments here.",
-      "C. The cytosol is full of chaperones, Hsp70 among them. Folding help is the one thing it does not lack.",
-      "D. True, and irrelevant. Glycosylation is an ER modification, but losing it does not explain a folding failure that traces to unformed disulfides."
-    ],
-    "teaching_point": "Ask what the compartment does to electrons, not just what it contains. A disulfide is an oxidation, so it forms where the environment is oxidizing and cannot survive where it is reducing. That single fact separates the cytosol from the ER lumen and explains most of what folds where."
-  },
-  {
-    "slug": "boat-rock-water-level",
-    "eyebrow": "Physics: Fluids",
-    "stem": "A boat floating in a pond carries a dense rock. The rock is dropped overboard and sinks. What happens to the water level?",
-    "options": [
-      "A. It rises",
-      "B. It falls",
-      "C. It stays the same",
-      "D. It depends on the rock's volume"
-    ],
-    "answer": "B",
-    "answer_text": "It falls",
-    "explanation": "In the boat, the rock displaced water equal to its WEIGHT. On the bottom, it displaces only its own VOLUME. Anything that sinks is denser than water, so that volume holds less water than its weight did. The level drops.",
-    "distractors": [
-      "A. Adding a rock to a pond sounds like adding displacement, but the pond was already holding the rock up through the boat. Nothing new arrived.",
-      "C. Displacement is not conserved when the mechanism changes. Floating displaces by weight, resting on the bottom displaces by volume, and for a rock those are different.",
-      "D. Volume sets how far the level drops, not whether it drops. Any object dense enough to sink gives the same answer."
-    ],
-    "teaching_point": "Ask what sets the displacement before you ask how much. A floating object displaces its weight, a submerged one displaces its volume, and every buoyancy question that looks like a trick is really asking you to notice which rule applies."
-  },
-  {
-    "slug": "sleepwalker-which-stage",
-    "eyebrow": "Psychology: Sleep and Consciousness",
-    "stem": "Someone walks and talks during sleep and remembers none of it. Which stage?",
-    "options": [
-      "A. REM",
-      "B. Stage 1",
-      "C. Stage 2",
-      "D. Stage 3"
-    ],
-    "answer": "D",
-    "answer_text": "Stage 3",
-    "explanation": "REM is when the brain paralyses the body, so walking is the one thing REM cannot produce. Sleepwalking comes out of the deepest non-REM sleep, stage 3, early in the night. No dream is being acted out, which is why nothing is remembered.",
-    "distractors": [
-      "A. REM is where vivid dreams live, so it is the intuitive answer. It is also where muscle atonia shuts the body down. A sleeper in REM cannot stand up.",
-      "B. Stage 1 is the brief drift at sleep onset. Hypnic jerks belong here, not a walk across the house.",
-      "C. Stage 2 fills most of the night, but the deep arousal threshold that leaves a sleepwalker almost impossible to wake belongs to the stage below it."
-    ],
-    "teaching_point": "REM paralyses the body, so anything a sleeper physically DOES happens outside REM. That one fact files sleepwalking, night terrors and bedwetting under non-REM without memorising a list."
-  },
-  {
-    "slug": "fish-gill-countercurrent",
-    "eyebrow": "Biology: Gas Exchange",
-    "stem": "In a fish gill, blood flows opposite to the water. Why does that matter?",
-    "options": [
-      "A. Water flows faster",
-      "B. Pumping costs less",
-      "C. Less surface is needed",
-      "D. The gradient never closes"
-    ],
-    "answer": "D",
-    "answer_text": "The gradient never closes",
-    "explanation": "Run blood and water the same way and they meet in the middle: the two reach the same oxygen level partway along, diffusion stops, and the rest of the gill does nothing. Run them opposite and blood always faces water slightly richer in oxygen, so a small difference survives the whole length and uptake never stalls.",
-    "distractors": [
-      "A. Flow speed is set by pumping, not by direction. Reversing the water changes the gradient it meets, not how fast it moves.",
-      "B. Countercurrent costs the same to pump. What it buys is more oxygen per breath, not a cheaper breath.",
-      "C. It makes existing surface far more productive, but gills are still elaborately folded. Countercurrent multiplies the value of surface area rather than replacing the need for it."
-    ],
-    "teaching_point": "Countercurrent exchange exists to stop a gradient from collapsing. Same-direction flow equilibrates and then stalls halfway; opposite-direction flow keeps a small difference alive end to end. The same trick runs the vasa recta in your kidney and the blood vessels in a whale's flipper."
-  },
-  {
-    "slug": "spanish-intrudes-on-french",
-    "eyebrow": "Psychology: Memory",
-    "stem": "You studied Spanish for years. Learning French now, Spanish words keep intruding. This is:",
-    "options": [
-      "A. Proactive interference",
-      "B. Retroactive interference",
-      "C. Source amnesia",
-      "D. Encoding failure"
-    ],
-    "answer": "A",
-    "answer_text": "Proactive interference",
-    "explanation": "Name the direction the interference travels. Old learning reaching forward to disrupt new learning is proactive, and that is what is happening here: Spanish came first and is intruding on French. Retroactive runs the other way, new learning reaching back to disrupt something older.",
-    "distractors": [
-      "B. Retroactive interference would be French corrupting your Spanish, the newer material damaging the older. The scenario runs the opposite way.",
-      "C. Source amnesia is recalling something correctly but forgetting where it came from. Here the wrong word arrives; the problem is retrieval of the wrong language, not a missing origin.",
-      "D. Encoding failure means the material never got in. Your Spanish is encoded rather too well, which is precisely why it keeps surfacing."
-    ],
-    "teaching_point": "Read the prefix as a direction of travel. PRO goes forward, so old material disrupts new. RETRO goes back, so new material disrupts old. Fix which one came first and the label follows without memorising a definition."
-  },
-  {
-    "slug": "carrying-a-box-zero-work",
-    "eyebrow": "Physics: Work and Energy",
-    "stem": "You carry a box at steady speed across a flat floor. How much work do you do on it?",
-    "options": [
-      "A. Zero",
-      "B. Weight times distance",
-      "C. Mass times distance",
-      "D. Depends on speed"
-    ],
-    "answer": "A",
-    "answer_text": "Zero",
-    "explanation": "Work counts only the part of a force that points along the motion. Your force on the box is upward, holding it against gravity, while the box moves sideways. The two are perpendicular, so the work is zero. Your arms ache because muscles burn energy holding a load, but none of that energy goes into the box.",
-    "distractors": [
-      "B. Weight times distance is the work of LIFTING the box that far, where the force and the displacement point the same way. Carrying it sideways is the perpendicular case.",
-      "C. Mass times distance is not a unit of work at all. Force appears in the definition, and force is mass times acceleration.",
-      "D. Speed never enters the definition of work. Walking faster changes your power, not the work done on the box, and here that work is zero at any pace."
-    ],
-    "teaching_point": "Work counts only the component of force along the motion, so perpendicular means zero. The same rule explains why the normal force does no work on a sliding block, and why a satellite in a circular orbit keeps a constant speed forever."
-  },
-  {
-    "slug": "shop-whining-who-got-conditioned",
-    "eyebrow": "Psychology: Learning and Conditioning",
-    "stem": "A child whines in a shop until the parent buys the sweet, and the whining stops. Over months the parent gives in faster and faster. What happened to the parent?",
-    "options": [
-      "A. Positive reinforcement",
-      "B. Positive punishment",
-      "C. Negative reinforcement",
-      "D. Negative punishment"
-    ],
-    "answer": "C",
-    "answer_text": "Negative reinforcement",
-    "explanation": "Ask whose behaviour changed. The parent's giving in became more frequent, so what happened to the parent was reinforcement, not punishment, because punishment makes a behaviour less likely. Then ask what followed it: the whining stopped. Something unpleasant was removed rather than something pleasant arriving. Removal that strengthens a behaviour is negative reinforcement. The child is being positively reinforced in the same moment, with a sweet added and whining on the rise, which is why option A is the right answer to a question nobody asked.",
-    "distractors": [
-      "A. True of the child, not the parent. The child had something pleasant added and whined more. Reading the scenario from the wrong side is the whole trap.",
-      "B. Punishment requires the behaviour to fall, and the parent's giving in rose. Positive punishment would also need something unpleasant to arrive, not to depart.",
-      "D. The sharpest miss, because negative is correct: something was removed. But punishment means the behaviour weakens, and the parent is giving in faster than ever."
-    ],
-    "teaching_point": "In operant conditioning, positive and negative mean added and removed. They never mean good and bad. Settle whose behaviour you are tracking, then whether it went up or down, then whether something arrived or departed. In that order the four quadrants stop blurring together."
-  },
-  {
-    "slug": "ball-bounces-off-wall-conserved",
-    "eyebrow": "Physics: Momentum",
-    "stem": "A rubber ball is thrown at a wall and bounces straight back at the same speed it arrived with. Taking the ball by itself as the system, which quantity is conserved?",
-    "options": [
-      "A. Kinetic energy only",
-      "B. Momentum only",
-      "C. Both",
-      "D. Neither"
-    ],
-    "answer": "A",
-    "answer_text": "Kinetic energy only",
-    "explanation": "The speed is unchanged, and kinetic energy depends on the square of speed, so it is identical before and after. Momentum depends on velocity, which is a vector. It was mv one way and is now mv the other, a change of 2mv. The wall delivered that change as an external force, so momentum is not conserved for the ball alone. Nothing has gone wrong with the conservation law. The system was simply drawn too small to contain the wall.",
-    "distractors": [
-      "B. Exactly backwards, and the most common answer. It comes from remembering that momentum is always conserved while forgetting that this only holds when no external force acts, and the wall is one.",
-      "C. The answer you get by treating momentum like speed. Speed is unchanged, but velocity reversed, and momentum follows velocity.",
-      "D. The answer you get by assuming a bounce must lose energy. Here the problem states the speed is unchanged, so no kinetic energy was lost."
-    ],
-    "teaching_point": "Momentum is a vector and kinetic energy is a scalar, so reversing direction destroys one and leaves the other untouched. Conservation is also always a claim about a SYSTEM. Widen this one to include the wall and the Earth and momentum is conserved after all. Naming the system narrowly, then seeing whether you noticed, is one of the exam's favourite moves."
-  },
-  {
-    "slug": "primary-halide-bulky-base",
-    "eyebrow": "Organic Chemistry: Substitution and Elimination",
-    "stem": "A chemist treats 1-bromobutane, a primary alkyl halide, with potassium tert-butoxide in tert-butanol. The base is strong, and it is also extremely bulky. Which mechanism dominates?",
-    "options": [
-      "A. S_{N}1",
-      "B. S_{N}2",
-      "C. E1",
-      "D. E2"
-    ],
-    "answer": "D",
-    "answer_text": "E2",
-    "explanation": "Work the substrate first. 1-bromobutane is primary, and a primary carbocation is far too unstable to form, so both unimolecular routes are gone before the reagent matters. That leaves the two bimolecular ones, and the reagent decides between them. tert-Butoxide is a strong nucleophile on paper, but its three methyl groups make backside attack on the carbon impossible. Unable to reach the carbon, it takes an exposed beta hydrogen instead, and elimination wins. Swap in unhindered ethoxide and the very same substrate gives substitution.",
-    "distractors": [
-      "A. Needs a carbocation, and a primary one will not form. Ruled out by the substrate alone, before the reagent is even read.",
-      "B. The instinct, and the trap. Primary substrates are ideal for backside attack and tert-butoxide is a strong nucleophile, but bulk is what decides here: it physically cannot reach the carbon.",
-      "C. Needs a carbocation for the same reason A does, and also needs a weak base. tert-Butoxide is a strong one."
-    ],
-    "teaching_point": "Two questions, always in this order. The SUBSTRATE decides whether a carbocation is possible at all: primary means no, so both unimolecular routes are gone before you read the reagent. Then the REAGENT picks between the two that remain, and there the deciding property is bulk, not strength. A strong nucleophile that cannot physically reach the carbon stops being a nucleophile and acts as a base."
-  },
-  {
-    "slug": "doctor-warm-and-detached",
-    "eyebrow": "Sociology: Social Interaction",
-    "stem": "A doctor must be warm enough to comfort a dying patient, and detached enough to make a cold clinical judgement about that same patient, in the same hour. This tension is best described as:",
-    "options": [
-      "A. Role exit",
-      "B. Role conflict",
-      "C. Role strain",
-      "D. Role set"
-    ],
-    "answer": "C",
-    "answer_text": "Role strain",
-    "explanation": "Count the statuses. There is only one here: doctor. The warmth and the detachment are both demanded by that single role, and they pull against each other from inside it. Competing demands within one role is role strain. Role conflict needs two different statuses, which is why the classic example is the surgeon called to theatre during her own child's recital: doctor against parent. Same feeling of being torn, different structural cause, and the exam is usually testing whether you counted the statuses before you answered.",
-    "distractors": [
-      "B. The trap, and the most chosen answer. Conflict requires two separate statuses pulling in different directions. Strip this scenario down and only the doctor role is present.",
-      "A. Role exit is leaving an identity-defining position and rebuilding around a new one. Nobody here is leaving anything.",
-      "D. A role set is simply the collection of roles attached to one status. It names an inventory, not a tension."
-    ],
-    "teaching_point": "Before naming the tension, count the statuses. One status with competing demands is strain; two statuses colliding is conflict. The feeling is identical from the inside, which is exactly why the exam asks, and why the answer is structural rather than emotional."
-  },
-  {
-    "slug": "humiliated-on-rounds-snaps-at-flatmate",
-    "eyebrow": "Psychology: Defense Mechanisms",
-    "stem": "A resident is humiliated by a senior doctor on rounds. She says nothing. That evening she snaps at her flatmate over the dishes. Which defense mechanism?",
-    "options": [
-      "A. Projection",
-      "B. Displacement",
-      "C. Sublimation",
-      "D. Regression"
-    ],
-    "answer": "B",
-    "answer_text": "Displacement",
-    "explanation": "The feeling never changed. The target did. She could not safely direct anger at the person who caused it, so the ego redirected it onto someone who carries no risk. Anger moving from a dangerous target to a safe one is displacement, and the giveaway is that the emotion arrives intact while the object of it is swapped.",
-    "distractors": [
-      "A. Projection would mean deciding her flatmate was the angry one. She knows perfectly well that she is angry; she has only pointed it somewhere else.",
-      "C. Sublimation redirects the impulse into something productive, like running it off or channelling it into work. Snapping over dishes produces nothing.",
-      "D. Regression means retreating to behaviour from an earlier stage of development, such as sulking or a tantrum. Getting short with a flatmate is ordinary adult irritation, just misaimed."
-    ],
-    "teaching_point": "For any defense mechanism, ask what got changed: the feeling, the target, or the story. Displacement keeps the feeling and swaps the target. Sublimation keeps the target and changes the outlet. Rationalization keeps both and rewrites the story. Naming which piece moved separates the whole family quickly."
-  }
+ {
+  "slug": "competitive-inhibition",
+  "eyebrow": "Biochemistry: Enzyme Kinetics",
+  "stem": "Adding compound X to an enzyme assay raises the apparent K_{m} from 2 mM to 8 mM while V_{max} is unchanged. Flooding the assay with substrate fully restores the original reaction rate. Where does X most likely bind?",
+  "options": [
+   "A. The active site, reversibly",
+   "B. An allosteric site, lowering k_{cat}",
+   "C. Only the enzyme-substrate complex",
+   "D. The catalytic residue, covalently"
+  ],
+  "answer": "A",
+  "answer_text": "The active site, reversibly",
+  "explanation": "K_{m} rises, V_{max} holds, and excess substrate rescues the rate. That combination only describes competition for the active site.",
+  "distractors": [
+   "B. An allosteric inhibitor lowers V_{max} by slowing turnover. K_{m} would be unchanged, and no amount of substrate would rescue it.",
+   "C. Binding only the ES complex is uncompetitive inhibition, which lowers K_{m} AND V_{max} together. Here V_{max} did not move.",
+   "D. Covalent modification is irreversible. The enzyme is out of commission permanently, so flooding with substrate changes nothing."
+  ],
+  "teaching_point": "Read the three numbers together, not one at a time. K_{m} alone cannot tell you the mechanism; it is K_{m} moving while V_{max} stays put that rules out everything except competition."
+ },
+ {
+  "slug": "weak-acid-ka",
+  "eyebrow": "General Chemistry: Acids and Bases",
+  "stem": "A 0.10 M solution of a weak monoprotic acid has a pH of 3.0. What is the approximate K_{a} of the acid?",
+  "options": [
+   "A. 1 × 10^{-3}",
+   "B. 1 × 10^{-5}",
+   "C. 1 × 10^{-7}",
+   "D. 1 × 10^{-9}"
+  ],
+  "answer": "B",
+  "answer_text": "1 × 10^{-5}",
+  "explanation": "pH 3.0 gives [H^{+}] = 10^{-3} M. For HA ⇌ H^{+} + A^{-}, both products sit at 10^{-3}, and [HA] stays near 0.10 M. So K_{a} ≈ (10^{-3})² / 0.10 = 10^{-5}.",
+  "distractors": [
+   "A. This is [H^{+}] itself, not K_{a}. The concentration of protons is what you measured, not the equilibrium constant that produced it.",
+   "C. This is (10^{-3})² with the 0.10 M forgotten. Dividing by 0.10 moves the exponent by one, not none.",
+   "D. Off by four orders of magnitude, which would make the acid far weaker than a pH of 3.0 could produce at this concentration."
+  ],
+  "teaching_point": "Check the approximation before you trust it. Here 10^{-3} is 1% of 0.10 M, comfortably inside the 5% rule, so treating [HA] as unchanged is safe. Above 5% you would need the quadratic."
+ },
+ {
+  "slug": "parallel-power",
+  "eyebrow": "Physics: Circuits",
+  "stem": "A 4 Ω resistor and a 12 Ω resistor are connected in parallel across a battery. Which resistor dissipates more power, and by what factor?",
+  "options": [
+   "A. The 4 Ω, by a factor of 3",
+   "B. The 12 Ω, by a factor of 3",
+   "C. The 4 Ω, by a factor of 9",
+   "D. They dissipate equal power"
+  ],
+  "answer": "A",
+  "answer_text": "The 4 Ω, by a factor of 3",
+  "explanation": "Parallel means both resistors see the same voltage, so use P = V²/R. Power is then inversely proportional to resistance: 12/4 = 3. The smaller resistor dissipates three times more.",
+  "distractors": [
+   "B. This inverts the relationship. More resistance in parallel means less current through that branch, and therefore less power, not more.",
+   "C. A factor of 9 comes from squaring the ratio, which happens with P = I²R in SERIES, where current is shared and resistance is not.",
+   "D. Parallel guarantees equal voltage, not equal power. Equal power would require equal resistance."
+  ],
+  "teaching_point": "Pick the power formula that uses the quantity the circuit holds constant. Parallel holds voltage constant, so P = V²/R. Series holds current constant, so P = I²R. Choosing the wrong one is the fastest way to invert your answer."
+ },
+ {
+  "slug": "reinforcement-contact-zone",
+  "eyebrow": "Biology: Evolution and Speciation",
+  "stem": "Two long-separated salamander populations meet again. Hybrids form but rarely survive to breed. Over forty generations, females of each population become less willing to court males from the other. This change is best described as:",
+  "options": [
+   "A. Founder effect",
+   "B. Genetic drift",
+   "C. Reinforcement",
+   "D. Sympatric speciation"
+  ],
+  "answer": "C",
+  "answer_text": "Reinforcement",
+  "explanation": "Hybrids rarely breed, so a female that courts across the zone wastes her reproductive effort. Alleles for choosier courtship spread in both populations, strengthening a barrier that acts before mating. That is reinforcement.",
+  "distractors": [
+   "A. A founder effect needs a few individuals starting a new population. These are two established populations meeting again, not founding anything.",
+   "B. Drift is random and would not push BOTH populations toward the same outcome. A shared direction is the signature of selection.",
+   "D. Sympatric speciation means diverging without geographic separation. These populations were separated first, so the divergence began allopatrically."
+  ],
+  "teaching_point": "When a reproductive barrier gets STRONGER over time, ask who pays the cost of ignoring it. Reinforcement happens because hybridising is expensive, so choosiness is rewarded. Drift explains divergence, but never divergence running the same direction in two separate populations."
+ },
+ {
+  "slug": "lens-inside-focal-length",
+  "eyebrow": "Physics: Light and Optics",
+  "stem": "A 5 cm tall object sits 20 cm from a converging lens with a focal length of 30 cm. How tall is the image?",
+  "options": [
+   "A. 1.7 cm",
+   "B. 3 cm",
+   "C. 7.5 cm",
+   "D. 15 cm"
+  ],
+  "answer": "D",
+  "answer_text": "15 cm",
+  "explanation": "1/f = 1/do + 1/di gives 1/di = 1/30 - 1/20 = -1/60, so di = -60 cm. The negative sign means the image is virtual and on the same side as the object. Magnification is -di/do = +3, so a 5 cm object gives a 15 cm upright image. This is the magnifying glass case: the object sits inside the focal length.",
+  "distractors": [
+   "A. 1.7 cm inverts the magnification, using 1/3 instead of 3. Worth checking the direction: an object inside the focal length is always magnified, never shrunk.",
+   "B. 3 cm comes from adding instead of subtracting in the lens equation, 1/30 + 1/20, which puts di at +12 cm and makes the image real and smaller. A converging lens cannot do that with the object inside f.",
+   "C. 7.5 cm uses f/do as the magnification. That shortcut is not the magnification, and it happens to give 1.5 here."
+  ],
+  "teaching_point": "Object inside the focal length is the one case every MCAT student should recognise on sight: the image is virtual, upright and magnified. If your arithmetic returns a shrunken or inverted image there, the sign went wrong, not the physics."
+ },
+ {
+  "slug": "calorimetry-final-temp",
+  "eyebrow": "General Chemistry: Thermochemistry",
+  "stem": "A 250 g water sample at 18 °C absorbs 5225 J of heat. The specific heat of water is 4.18 J/g°C. What is the final temperature?",
+  "options": [
+   "A. 5 °C",
+   "B. 13 °C",
+   "C. 23 °C",
+   "D. 28 °C"
+  ],
+  "answer": "C",
+  "answer_text": "23 °C",
+  "explanation": "q = mcΔT, so ΔT = 5225 / (250 × 4.18) = 5225 / 1045 = 5 °C. That is the CHANGE, not the answer. The sample absorbs heat, so it warms: 18 + 5 = 23 °C.",
+  "distractors": [
+   "A. 5 °C is ΔT itself. The question asks for the final temperature, and stopping one step early is the most common way this is lost under time pressure.",
+   "B. 13 °C subtracts the change instead of adding it. The sample ABSORBS heat, so it can only get warmer.",
+   "D. 28 °C doubles the change, which happens if you halve the mass or drop a factor in 250 × 4.18."
+  ],
+  "teaching_point": "q = mcΔT returns a CHANGE in temperature, never a temperature. Whenever a calorimetry question asks for a final value, the last step is adding to or subtracting from the starting point, and the direction is set by whether heat went in or out."
+ },
+ {
+  "slug": "molecular-mimicry",
+  "eyebrow": "Biology: The Immune System",
+  "stem": "Weeks after a streptococcal throat infection clears, a patient's own antibodies begin attacking heart valve tissue. The bacterium carries a surface protein resembling a cardiac protein. This is best described as:",
+  "options": [
+   "A. Clonal deletion",
+   "B. Molecular mimicry",
+   "C. Central tolerance",
+   "D. Clonal anergy"
+  ],
+  "answer": "B",
+  "answer_text": "Molecular mimicry",
+  "explanation": "Antibodies raised against the bacterial protein cross-react with the structurally similar host protein, so an appropriate response to a pathogen becomes an attack on self. This is the mechanism behind rheumatic heart disease.",
+  "distractors": [
+   "A. Clonal deletion removes self-reactive lymphocytes during development. Here the damage happens because a foreign target resembles self, not because deletion failed.",
+   "C. Central tolerance is the training that prevents self-attack in the first place. It describes what normally stops this, not what caused it.",
+   "D. Clonal anergy silences a lymphocyte that binds antigen without costimulation. These cells are fully active, which is the whole problem."
+  ],
+  "teaching_point": "When self-damage follows an infection, ask whether the immune system made a mistake or was fooled. Mimicry is being fooled: the response was correct for the pathogen and the host protein simply looked too much like it."
+ },
+ {
+  "slug": "chewing-bread-amylase",
+  "eyebrow": "Biochemistry: Carbohydrate Metabolism",
+  "stem": "Bread tastes sweeter the longer you chew it, even though nothing sweet has been added. Which process explains the change?",
+  "options": [
+   "A. Denaturation of salivary proteins",
+   "B. Enzymatic hydrolysis of starch",
+   "C. Fermentation by oral bacteria",
+   "D. Oxidation of glucose"
+  ],
+  "answer": "B",
+  "answer_text": "Enzymatic hydrolysis of starch",
+  "explanation": "Salivary amylase cleaves the glycosidic bonds in starch, releasing maltose and shorter sugars. Starch itself does not taste sweet because the receptors respond to small sugars, so the sweetness appears only once the chain has been broken up.",
+  "distractors": [
+   "A. Denaturation unfolds proteins. It would disable amylase rather than produce sugar, and starch is not a protein.",
+   "C. Bacteria in the mouth do ferment sugars, but over hours, and fermentation consumes sugar rather than creating it.",
+   "D. Oxidation breaks glucose down for energy inside cells. It removes sugar rather than releasing it, and it does not happen in the mouth."
+  ],
+  "teaching_point": "Sweetness reports molecular size, not carbohydrate content. Starch is already made of glucose; you simply cannot taste it until amylase cuts the chain into pieces small enough for the receptor."
+ },
+ {
+  "slug": "warm-soda-goes-flat",
+  "eyebrow": "General Chemistry: Solutions",
+  "stem": "An open soda goes flat faster on a warm counter than in the fridge. What explains the difference?",
+  "options": [
+   "A. Reaction of carbon dioxide with water",
+   "B. Evaporation of water carrying gas away",
+   "C. Slower diffusion of gas in warm liquid",
+   "D. Lower solubility of gas at higher temperature"
+  ],
+  "answer": "D",
+  "answer_text": "Lower solubility of gas at higher temperature",
+  "explanation": "Dissolving a gas releases heat, so warming the liquid pushes that equilibrium back toward the gas phase. Carbon dioxide that stayed dissolved in the cold can now comes out of solution and escapes, which is what going flat is.",
+  "distractors": [
+   "A. Carbon dioxide does form a little carbonic acid in water, but that equilibrium lies far to the left and the gas is not consumed. It leaves as gas.",
+   "B. Evaporation removes water, not the gas dissolved in it, and a soda goes flat long before it dries out.",
+   "C. Diffusion gets faster when warm, not slower. And slower diffusion would keep the gas in, not let it out."
+  ],
+  "teaching_point": "Solids and gases move in opposite directions with heat. Warming usually dissolves more of a solid and less of a gas, so \"warm dissolves more\" is a rule that only half works."
+ },
+ {
+  "slug": "helium-balloon-sags",
+  "eyebrow": "General Chemistry: The Gas Phase",
+  "stem": "A helium balloon sags overnight, but the same balloon filled with air stays up for days. Why?",
+  "options": [
+   "A. Helium cools and contracts",
+   "B. Helium dissolves into the latex",
+   "C. Helium escapes through the latex faster",
+   "D. Helium is lighter so it floats out"
+  ],
+  "answer": "C",
+  "answer_text": "Helium escapes through the latex faster",
+  "explanation": "Helium atoms are small and, being light, move faster at the same temperature. They slip through the gaps in the latex far more readily than the larger nitrogen and oxygen molecules in air, so the balloon empties itself.",
+  "distractors": [
+   "A. Cooling would shrink the balloon overnight and it would come back in the morning. A helium balloon does not recover, because the gas is gone.",
+   "B. The gas leaves as gas. Dissolving into the rubber is not what empties the balloon.",
+   "D. Lower density is why it rises, not why it deflates. Buoyancy lifts the balloon; it does not push gas through the wall."
+  ],
+  "teaching_point": "Lighter gases move faster at a given temperature, so they leak, effuse and diffuse faster. The same fact explains why the balloon floats and why it does not stay floating, which are two different questions people tend to merge."
+ },
+ {
+  "slug": "parachute-acceleration",
+  "eyebrow": "Physics: Force and Motion",
+  "stem": "A skydiver falling at terminal velocity opens their parachute. Immediately after, their acceleration is:",
+  "options": [
+   "A. Upward, opposite their motion",
+   "B. Downward, at g",
+   "C. Downward, but less than g",
+   "D. Zero, because they are at terminal velocity"
+  ],
+  "answer": "A",
+  "answer_text": "Upward, opposite their motion",
+  "explanation": "Opening the parachute multiplies the drag force at once, while weight is unchanged. Drag now exceeds weight, so the net force points up and so does the acceleration. They are still moving downward the whole time, just slowing.",
+  "distractors": [
+   "D. Terminal velocity meant zero net force with the old drag. Changing the area changes the drag instantly, so the balance is broken the moment the canopy opens.",
+   "B and C. Both keep the acceleration pointing down, which would mean speeding up. A parachute that made you fall faster would not be a parachute."
+  ],
+  "teaching_point": "Acceleration follows net force, never velocity. Moving down and accelerating up happen together every time something slows on its way down, and that split is what most of these questions are really testing."
+ },
+ {
+  "slug": "sodium-pump-cardiac-force",
+  "eyebrow": "Biology: The Cardiovascular System",
+  "stem": "A drug blocks the sodium potassium pump in cardiac muscle. Each contraction becomes stronger. What best explains this?",
+  "options": [
+   "A. Spared ATP powers more cross bridges",
+   "B. Potassium builds up inside the cell",
+   "C. The sodium gradient exporting calcium weakens",
+   "D. The pacemaker fires more often"
+  ],
+  "answer": "C",
+  "answer_text": "The sodium gradient exporting calcium weakens",
+  "explanation": "The pump is what maintains the sodium gradient. Calcium leaves the cell on an exchanger that runs on that gradient, so weakening it strands calcium in the cytosol. More calcium per beat is a stronger beat. This is how digoxin works.",
+  "distractors": [
+   "A. Blocking an ATPase does spare ATP, but ATP is not what limits contractile force in a beating heart. Calcium availability is.",
+   "B. The pump moves potassium IN. Blocking it leaves potassium outside the cell, not stacked up inside.",
+   "D. Rate and force are different things. The pacemaker sets how often the heart beats, and the question describes how hard each beat is."
+  ],
+  "teaching_point": "When a pump is blocked, follow the gradient it maintained rather than the ATP it consumed. Secondary transporters run on that gradient, so the real effect usually lands one step downstream, on whatever the gradient was quietly powering."
+ },
+ {
+  "slug": "anion-exchange-pi",
+  "eyebrow": "Biochemistry: Separation Techniques",
+  "stem": "A protein with a pI of 9.0 is loaded onto an anion exchange column at pH 7.4. What happens to it?",
+  "options": [
+   "A. It binds, and salt elutes it",
+   "B. It passes through unbound",
+   "C. It binds until the pH drops",
+   "D. It precipitates on the column"
+  ],
+  "answer": "B",
+  "answer_text": "It passes through unbound",
+  "explanation": "Below its pI a protein carries net positive charge, so at pH 7.4 this one is positive. An anion exchange resin is itself positively charged, because it is built to hold anions. Like charges repel, so the protein never binds and leaves in the flow-through.",
+  "distractors": [
+   "A. Binding would need the protein to be negative, which only happens ABOVE its pI. At pH 7.4 it is well below 9.0.",
+   "C. Lowering the pH makes the protein MORE positive, so it would bind even less. Raising it toward 9.0 is what would make it stick.",
+   "D. A protein precipitates near its pI, where net charge is zero. At pH 7.4 it is charged and stays soluble."
+  ],
+  "teaching_point": "Two charges decide every ion exchange question: the protein's and the resin's. Work out the protein from pH against pI, remember that an ANION exchanger is positive, and the answer follows. Getting either one backwards inverts the result."
+ },
+ {
+  "slug": "cytosol-disulfide-misfold",
+  "eyebrow": "Biochemistry: Protein Structure",
+  "stem": "A secreted protein depends on disulfide bonds. Expressed in the cytosol instead, it misfolds. Why?",
+  "options": [
+   "A. The cytosol is too acidic",
+   "B. The cytosol is a reducing environment",
+   "C. Chaperones are absent from the cytosol",
+   "D. Cytosolic proteins cannot be glycosylated"
+  ],
+  "answer": "B",
+  "answer_text": "The cytosol is a reducing environment",
+  "explanation": "A disulfide is an oxidation. The cytosol is held reducing by glutathione, so cysteines stay as free thiols and the bonds never form. Secreted proteins get theirs in the oxidizing ER lumen, where protein disulfide isomerase builds them.",
+  "distractors": [
+   "A. Cytosolic pH sits near 7.2, close to the ER. Acidity is not what separates the two compartments here.",
+   "C. The cytosol is full of chaperones, Hsp70 among them. Folding help is the one thing it does not lack.",
+   "D. True, and irrelevant. Glycosylation is an ER modification, but losing it does not explain a folding failure that traces to unformed disulfides."
+  ],
+  "teaching_point": "Ask what the compartment does to electrons, not just what it contains. A disulfide is an oxidation, so it forms where the environment is oxidizing and cannot survive where it is reducing. That single fact separates the cytosol from the ER lumen and explains most of what folds where."
+ },
+ {
+  "slug": "boat-rock-water-level",
+  "eyebrow": "Physics: Fluids",
+  "stem": "A boat floating in a pond carries a dense rock. The rock is dropped overboard and sinks. What happens to the water level?",
+  "options": [
+   "A. It rises",
+   "B. It falls",
+   "C. It stays the same",
+   "D. It depends on the rock's volume"
+  ],
+  "answer": "B",
+  "answer_text": "It falls",
+  "explanation": "In the boat, the rock displaced water equal to its WEIGHT. On the bottom, it displaces only its own VOLUME. Anything that sinks is denser than water, so that volume holds less water than its weight did. The level drops.",
+  "distractors": [
+   "A. Adding a rock to a pond sounds like adding displacement, but the pond was already holding the rock up through the boat. Nothing new arrived.",
+   "C. Displacement is not conserved when the mechanism changes. Floating displaces by weight, resting on the bottom displaces by volume, and for a rock those are different.",
+   "D. Volume sets how far the level drops, not whether it drops. Any object dense enough to sink gives the same answer."
+  ],
+  "teaching_point": "Ask what sets the displacement before you ask how much. A floating object displaces its weight, a submerged one displaces its volume, and every buoyancy question that looks like a trick is really asking you to notice which rule applies."
+ },
+ {
+  "slug": "sleepwalker-which-stage",
+  "eyebrow": "Psychology: Sleep and Consciousness",
+  "stem": "Someone walks and talks during sleep and remembers none of it. Which stage?",
+  "options": [
+   "A. REM",
+   "B. Stage 1",
+   "C. Stage 2",
+   "D. Stage 3"
+  ],
+  "answer": "D",
+  "answer_text": "Stage 3",
+  "explanation": "REM is when the brain paralyses the body, so walking is the one thing REM cannot produce. Sleepwalking comes out of the deepest non-REM sleep, stage 3, early in the night. No dream is being acted out, which is why nothing is remembered.",
+  "distractors": [
+   "A. REM is where vivid dreams live, so it is the intuitive answer. It is also where muscle atonia shuts the body down. A sleeper in REM cannot stand up.",
+   "B. Stage 1 is the brief drift at sleep onset. Hypnic jerks belong here, not a walk across the house.",
+   "C. Stage 2 fills most of the night, but the deep arousal threshold that leaves a sleepwalker almost impossible to wake belongs to the stage below it."
+  ],
+  "teaching_point": "REM paralyses the body, so anything a sleeper physically DOES happens outside REM. That one fact files sleepwalking, night terrors and bedwetting under non-REM without memorising a list."
+ },
+ {
+  "slug": "fish-gill-countercurrent",
+  "eyebrow": "Biology: Gas Exchange",
+  "stem": "In a fish gill, blood flows opposite to the water. Why does that matter?",
+  "options": [
+   "A. Water flows faster",
+   "B. Pumping costs less",
+   "C. Less surface is needed",
+   "D. The gradient never closes"
+  ],
+  "answer": "D",
+  "answer_text": "The gradient never closes",
+  "explanation": "Run blood and water the same way and they meet in the middle: the two reach the same oxygen level partway along, diffusion stops, and the rest of the gill does nothing. Run them opposite and blood always faces water slightly richer in oxygen, so a small difference survives the whole length and uptake never stalls.",
+  "distractors": [
+   "A. Flow speed is set by pumping, not by direction. Reversing the water changes the gradient it meets, not how fast it moves.",
+   "B. Countercurrent costs the same to pump. What it buys is more oxygen per breath, not a cheaper breath.",
+   "C. It makes existing surface far more productive, but gills are still elaborately folded. Countercurrent multiplies the value of surface area rather than replacing the need for it."
+  ],
+  "teaching_point": "Countercurrent exchange exists to stop a gradient from collapsing. Same-direction flow equilibrates and then stalls halfway; opposite-direction flow keeps a small difference alive end to end. The same trick runs the vasa recta in your kidney and the blood vessels in a whale's flipper."
+ },
+ {
+  "slug": "spanish-intrudes-on-french",
+  "eyebrow": "Psychology: Memory",
+  "stem": "You studied Spanish for years. Learning French now, Spanish words keep intruding. This is:",
+  "options": [
+   "A. Proactive interference",
+   "B. Retroactive interference",
+   "C. Source amnesia",
+   "D. Encoding failure"
+  ],
+  "answer": "A",
+  "answer_text": "Proactive interference",
+  "explanation": "Name the direction the interference travels. Old learning reaching forward to disrupt new learning is proactive, and that is what is happening here: Spanish came first and is intruding on French. Retroactive runs the other way, new learning reaching back to disrupt something older.",
+  "distractors": [
+   "B. Retroactive interference would be French corrupting your Spanish, the newer material damaging the older. The scenario runs the opposite way.",
+   "C. Source amnesia is recalling something correctly but forgetting where it came from. Here the wrong word arrives; the problem is retrieval of the wrong language, not a missing origin.",
+   "D. Encoding failure means the material never got in. Your Spanish is encoded rather too well, which is precisely why it keeps surfacing."
+  ],
+  "teaching_point": "Read the prefix as a direction of travel. PRO goes forward, so old material disrupts new. RETRO goes back, so new material disrupts old. Fix which one came first and the label follows without memorising a definition."
+ },
+ {
+  "slug": "carrying-a-box-zero-work",
+  "eyebrow": "Physics: Work and Energy",
+  "stem": "You carry a box at steady speed across a flat floor. How much work do you do on it?",
+  "options": [
+   "A. Zero",
+   "B. Weight times distance",
+   "C. Mass times distance",
+   "D. Depends on speed"
+  ],
+  "answer": "A",
+  "answer_text": "Zero",
+  "explanation": "Work counts only the part of a force that points along the motion. Your force on the box is upward, holding it against gravity, while the box moves sideways. The two are perpendicular, so the work is zero. Your arms ache because muscles burn energy holding a load, but none of that energy goes into the box.",
+  "distractors": [
+   "B. Weight times distance is the work of LIFTING the box that far, where the force and the displacement point the same way. Carrying it sideways is the perpendicular case.",
+   "C. Mass times distance is not a unit of work at all. Force appears in the definition, and force is mass times acceleration.",
+   "D. Speed never enters the definition of work. Walking faster changes your power, not the work done on the box, and here that work is zero at any pace."
+  ],
+  "teaching_point": "Work counts only the component of force along the motion, so perpendicular means zero. The same rule explains why the normal force does no work on a sliding block, and why a satellite in a circular orbit keeps a constant speed forever."
+ },
+ {
+  "slug": "shop-whining-who-got-conditioned",
+  "eyebrow": "Psychology: Learning and Conditioning",
+  "stem": "A child whines in a shop until the parent buys the sweet, and the whining stops. Over months the parent gives in faster and faster. What happened to the parent?",
+  "options": [
+   "A. Positive reinforcement",
+   "B. Positive punishment",
+   "C. Negative reinforcement",
+   "D. Negative punishment"
+  ],
+  "answer": "C",
+  "answer_text": "Negative reinforcement",
+  "explanation": "Ask whose behaviour changed. The parent's giving in became more frequent, so what happened to the parent was reinforcement, not punishment, because punishment makes a behaviour less likely. Then ask what followed it: the whining stopped. Something unpleasant was removed rather than something pleasant arriving. Removal that strengthens a behaviour is negative reinforcement. The child is being positively reinforced in the same moment, with a sweet added and whining on the rise, which is why option A is the right answer to a question nobody asked.",
+  "distractors": [
+   "A. True of the child, not the parent. The child had something pleasant added and whined more. Reading the scenario from the wrong side is the whole trap.",
+   "B. Punishment requires the behaviour to fall, and the parent's giving in rose. Positive punishment would also need something unpleasant to arrive, not to depart.",
+   "D. The sharpest miss, because negative is correct: something was removed. But punishment means the behaviour weakens, and the parent is giving in faster than ever."
+  ],
+  "teaching_point": "In operant conditioning, positive and negative mean added and removed. They never mean good and bad. Settle whose behaviour you are tracking, then whether it went up or down, then whether something arrived or departed. In that order the four quadrants stop blurring together."
+ },
+ {
+  "slug": "ball-bounces-off-wall-conserved",
+  "eyebrow": "Physics: Momentum",
+  "stem": "A rubber ball is thrown at a wall and bounces straight back at the same speed it arrived with. Taking the ball by itself as the system, which quantity is conserved?",
+  "options": [
+   "A. Kinetic energy only",
+   "B. Momentum only",
+   "C. Both",
+   "D. Neither"
+  ],
+  "answer": "A",
+  "answer_text": "Kinetic energy only",
+  "explanation": "The speed is unchanged, and kinetic energy depends on the square of speed, so it is identical before and after. Momentum depends on velocity, which is a vector. It was mv one way and is now mv the other, a change of 2mv. The wall delivered that change as an external force, so momentum is not conserved for the ball alone. Nothing has gone wrong with the conservation law. The system was simply drawn too small to contain the wall.",
+  "distractors": [
+   "B. Exactly backwards, and the most common answer. It comes from remembering that momentum is always conserved while forgetting that this only holds when no external force acts, and the wall is one.",
+   "C. The answer you get by treating momentum like speed. Speed is unchanged, but velocity reversed, and momentum follows velocity.",
+   "D. The answer you get by assuming a bounce must lose energy. Here the problem states the speed is unchanged, so no kinetic energy was lost."
+  ],
+  "teaching_point": "Momentum is a vector and kinetic energy is a scalar, so reversing direction destroys one and leaves the other untouched. Conservation is also always a claim about a SYSTEM. Widen this one to include the wall and the Earth and momentum is conserved after all. Naming the system narrowly, then seeing whether you noticed, is one of the exam's favourite moves."
+ },
+ {
+  "slug": "primary-halide-bulky-base",
+  "eyebrow": "Organic Chemistry: Substitution and Elimination",
+  "stem": "A chemist treats 1-bromobutane, a primary alkyl halide, with potassium tert-butoxide in tert-butanol. The base is strong, and it is also extremely bulky. Which mechanism dominates?",
+  "options": [
+   "A. S_{N}1",
+   "B. S_{N}2",
+   "C. E1",
+   "D. E2"
+  ],
+  "answer": "D",
+  "answer_text": "E2",
+  "explanation": "Work the substrate first. 1-bromobutane is primary, and a primary carbocation is far too unstable to form, so both unimolecular routes are gone before the reagent matters. That leaves the two bimolecular ones, and the reagent decides between them. tert-Butoxide is a strong nucleophile on paper, but its three methyl groups make backside attack on the carbon impossible. Unable to reach the carbon, it takes an exposed beta hydrogen instead, and elimination wins. Swap in unhindered ethoxide and the very same substrate gives substitution.",
+  "distractors": [
+   "A. Needs a carbocation, and a primary one will not form. Ruled out by the substrate alone, before the reagent is even read.",
+   "B. The instinct, and the trap. Primary substrates are ideal for backside attack and tert-butoxide is a strong nucleophile, but bulk is what decides here: it physically cannot reach the carbon.",
+   "C. Needs a carbocation for the same reason A does, and also needs a weak base. tert-Butoxide is a strong one."
+  ],
+  "teaching_point": "Two questions, always in this order. The SUBSTRATE decides whether a carbocation is possible at all: primary means no, so both unimolecular routes are gone before you read the reagent. Then the REAGENT picks between the two that remain, and there the deciding property is bulk, not strength. A strong nucleophile that cannot physically reach the carbon stops being a nucleophile and acts as a base."
+ },
+ {
+  "slug": "doctor-warm-and-detached",
+  "eyebrow": "Sociology: Social Interaction",
+  "stem": "A doctor must be warm enough to comfort a dying patient, and detached enough to make a cold clinical judgement about that same patient, in the same hour. This tension is best described as:",
+  "options": [
+   "A. Role exit",
+   "B. Role conflict",
+   "C. Role strain",
+   "D. Role set"
+  ],
+  "answer": "C",
+  "answer_text": "Role strain",
+  "explanation": "Count the statuses. There is only one here: doctor. The warmth and the detachment are both demanded by that single role, and they pull against each other from inside it. Competing demands within one role is role strain. Role conflict needs two different statuses, which is why the classic example is the surgeon called to theatre during her own child's recital: doctor against parent. Same feeling of being torn, different structural cause, and the exam is usually testing whether you counted the statuses before you answered.",
+  "distractors": [
+   "B. The trap, and the most chosen answer. Conflict requires two separate statuses pulling in different directions. Strip this scenario down and only the doctor role is present.",
+   "A. Role exit is leaving an identity-defining position and rebuilding around a new one. Nobody here is leaving anything.",
+   "D. A role set is simply the collection of roles attached to one status. It names an inventory, not a tension."
+  ],
+  "teaching_point": "Before naming the tension, count the statuses. One status with competing demands is strain; two statuses colliding is conflict. The feeling is identical from the inside, which is exactly why the exam asks, and why the answer is structural rather than emotional."
+ },
+ {
+  "slug": "humiliated-on-rounds-snaps-at-flatmate",
+  "eyebrow": "Psychology: Defense Mechanisms",
+  "stem": "A resident is humiliated by a senior doctor on rounds. She says nothing. That evening she snaps at her flatmate over the dishes. Which defense mechanism?",
+  "options": [
+   "A. Projection",
+   "B. Displacement",
+   "C. Sublimation",
+   "D. Regression"
+  ],
+  "answer": "B",
+  "answer_text": "Displacement",
+  "explanation": "The feeling never changed. The target did. She could not safely direct anger at the person who caused it, so the ego redirected it onto someone who carries no risk. Anger moving from a dangerous target to a safe one is displacement, and the giveaway is that the emotion arrives intact while the object of it is swapped.",
+  "distractors": [
+   "A. Projection would mean deciding her flatmate was the angry one. She knows perfectly well that she is angry; she has only pointed it somewhere else.",
+   "C. Sublimation redirects the impulse into something productive, like running it off or channelling it into work. Snapping over dishes produces nothing.",
+   "D. Regression means retreating to behaviour from an earlier stage of development, such as sulking or a tantrum. Getting short with a flatmate is ordinary adult irritation, just misaimed."
+  ],
+  "teaching_point": "For any defense mechanism, ask what got changed: the feeling, the target, or the story. Displacement keeps the feeling and swaps the target. Sublimation keeps the target and changes the outlet. Rationalization keeps both and rewrites the story. Naming which piece moved separates the whole family quickly."
+ },
+ {
+  "slug": "tray-weights-just-noticeable",
+  "eyebrow": "Psychology: Sensation and Perception",
+  "stem": "A tray at 50 g must reach 55 g before she feels it heavier. At 100 g, she needs 110 g. Which principle?",
+  "options": [
+   "A. Absolute threshold",
+   "B. Difference threshold",
+   "C. Weber’s law",
+   "D. Sensory adaptation"
+  ],
+  "answer": "C",
+  "answer_text": "Weber’s law",
+  "explanation": "Do the two ratios. 5 g on 50 g is 10 percent. 10 g on 100 g is also 10 percent. The amount she needed doubled, but the fraction did not move. That constant fraction is Weber’s law: the smallest detectable change scales with the size of the stimulus you are already holding, rather than being a fixed number of grams.",
+  "distractors": [
+   "A. Absolute threshold is the least stimulation detectable against nothing at all, like the faintest weight she could feel on an empty tray. Both trays here already have weight on them.",
+   "B. Difference threshold is the quantity she measured, 5 g and then 10 g. It names each answer but predicts neither, because on its own it gives no reason the number should change with the load.",
+   "D. Sensory adaptation is a response fading while a stimulus stays constant, like ceasing to feel a watch. Her sensitivity did not fade here; it rescaled to a heavier starting load."
+  ],
+  "teaching_point": "When a question gives you the same measurement at two magnitudes, convert both to fractions before reading the options. A difference threshold is a number, and Weber’s law is what that number does as the baseline grows. Any item showing you two baselines is asking about the rule, not the reading."
+ }
 ]
