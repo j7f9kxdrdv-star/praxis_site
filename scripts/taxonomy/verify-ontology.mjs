@@ -55,7 +55,7 @@ async function all(t, c) {
 
 console.log("\nSEEDED VOCABULARY");
 const concepts = await all("concepts", "id,slug,canonical_name,status,split_candidate,concept_level,parent_concept_id,object_type");
-ok("1,085 objects (846 + 239 psych/soc)", concepts.length === 1085, String(concepts.length));
+ok("1,127 objects (846 + 239 psych/soc + 42 backfill)", concepts.length === 1127, String(concepts.length));
 ok("all ACTIVE_SEED", concepts.every((c) => c.status === "ACTIVE_SEED"));
 ok("200 split candidates flagged", concepts.filter((c) => c.split_candidate).length === 200);
 ok("the rename kept one concept and filed an alias",
@@ -133,7 +133,7 @@ ok("all PRIMARY", qc.every((m) => m.role === "PRIMARY"));
 ok("no duplicate PRIMARY per question", new Set(qc.map((m) => m.question_id)).size === qc.length);
 ok("none marked human-validated", qc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
 
-const Q = await all("questions", "id,subtopic,section,content_category");
+const Q = await all("questions", "id,subtopic,section,content_category,topic");
 const byId = new Map(concepts.map((c) => [c.id, c]));
 const qById = new Map(Q.map((q) => [q.id, q]));
 // Only the first 2,242 are name-equality; the 417 map through the approved
@@ -162,7 +162,7 @@ const sects = (await all("concept_sections", "concept_id,section_code"))
   .reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.section_code), a), {});
 ok("section compatible on every mapping",
   qc.every((m) => sects[m.concept_id]?.has(SEC[qById.get(m.question_id)?.section])));
-ok("1,053 content concepts placed in a section", new Set(Object.keys(sects)).size === 1053);
+ok("1,095 content concepts placed in a section", new Set(Object.keys(sects)).size === 1095);
 // EVERY SECTION A CONCEPT CLAIMS MUST BE EARNED. This replaces a hardcoded
 // count of cross-section concepts, which went stale the moment two concepts
 // were legitimately widened. The count was never the point: the failure mode is
@@ -214,9 +214,9 @@ console.log("\nFLASHCARD MAPPINGS");
 const fc = await all("flashcard_concepts", "flashcard_id,concept_id,mapping_status,source");
 const typeOf = Object.fromEntries(concepts.map((c) => [c.id, c.object_type]));
 const byType = fc.reduce((a, m) => ((a[typeOf[m.concept_id]] = (a[typeOf[m.concept_id]] || 0) + 1), a), {});
-ok("1,961 card mappings (1,183 + 778 psych/soc)", fc.length === 1961, String(fc.length));
-ok("CONTENT 1834 / REASONING 36 / QUANTITATIVE 91",
-  byType.CONTENT === 1834 && byType.REASONING === 36 && byType.QUANTITATIVE === 91, JSON.stringify(byType));
+ok("4,115 card mappings (1,183 + 778 psych/soc + 2,154 backfill)", fc.length === 4115, String(fc.length));
+ok("CONTENT 3987 / REASONING 36 / QUANTITATIVE 92",
+  byType.CONTENT === 3987 && byType.REASONING === 36 && byType.QUANTITATIVE === 92, JSON.stringify(byType));
 // Provenance must not overstate. The vocabulary was approved; 314 individual
 // rows were not reviewed, and the status must not claim they were.
 ok("no card mapping claims HUMAN_VALIDATED", fc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
@@ -228,7 +228,7 @@ ok("all card mappings are AI_PROPOSED", fc.every((m) => m.source === "AI_PROPOSE
 const contentIds = new Set(concepts.filter((c) => c.object_type === "CONTENT").map((c) => c.id));
 ok("reasoning and quantitative mappings exist but are outside content",
   fc.some((m) => !contentIds.has(m.concept_id)) &&
-  fc.filter((m) => contentIds.has(m.concept_id)).length === 1834);
+  fc.filter((m) => contentIds.has(m.concept_id)).length === 3987);
 ok("every question mapping still points at CONTENT",
   qc.every((m) => contentIds.has(m.concept_id)));
 
@@ -377,6 +377,99 @@ ok("all 239 seeded psych/soc concepts carry an AAMC category",
   psSeeded.length === 239 && psNoCat.length === 0,
   `${psSeeded.length} seeded, ${psNoCat.length} without`);
 
+// The 42 objects the final backfill seeds. Listed rather than derived so a
+// concept quietly vanishing from the migration fails this check.
+const BACKFILL_SLUGS = [
+  "ABO_RH_BLOOD_TYPES", "ACTIVE_PASSIVE_IMMUNITY", "AMINO_ACID_RECOGNITION_ABBREVIATIONS",
+  "ANTIGENS_EPITOPES", "AUTOIMMUNE_DISEASE", "B_CELL_ACTIVATION_ANTIBODY_DIVERSITY",
+  "BAROREFLEX_AUTONOMIC_CARDIOVASCULAR_CONTROL", "BLOOD_COMPOSITION_PLASMA_FORMED_ELEMENTS", "BLOOD_PRESSURE_MEASUREMENT",
+  "BLOOD_VESSEL_STRUCTURE_TYPES", "CAPILLARY_STRUCTURE_EXCHANGE", "CARDIAC_CONDUCTION_PACEMAKER_HIERARCHY",
+  "CARDIAC_OUTPUT_STROKE_VOLUME", "CLONAL_SELECTION_IMMUNOLOGIC_MEMORY", "CYTOKINES_INTERFERONS",
+  "ERYTHROCYTES_STRUCTURE_LIFECYCLE_TURNOVER", "HEART_CHAMBERS_VALVES", "HEMODYNAMICS_RESISTANCE_FLOW_VELOCITY",
+  "HEMOSTASIS_COAGULATION_FIBRINOLYSIS", "HYPERSENSITIVITY_ALLERGY", "INNATE_ADAPTIVE_IMMUNITY",
+  "LEUKOCYTE_LINEAGES_LYMPHOID_ORGANS", "LEUKOCYTES_PLATELETS_BLOOD", "MHC_ANTIGEN_PRESENTATION",
+  "NATURAL_KILLER_CELLS", "PATTERN_RECOGNITION_ACUTE_INFLAMMATION", "PHAGOCYTES_GRANULOCYTES",
+  "POLYPROTIC_ACIDS_STEPWISE_DISSOCIATION", "PORTAL_CIRCULATIONS", "PROTEIN_STRUCTURE_DETERMINATION",
+  "PULMONARY_SYSTEMIC_CIRCUITS", "RENIN_ANGIOTENSIN_ALDOSTERONE_SYSTEM", "STARLING_FORCES_CAPILLARY_FLUID_BALANCE",
+  "SURFACE_BARRIERS_INFECTION", "T_CELL_SUBSETS_EFFECTOR_FUNCTION", "CARDIAC_CYCLE_HEART_SOUNDS",
+  "COMPLEMENT_SYSTEM", "LYMPHATIC_SYSTEM", "THYMIC_SELECTION_SELF_TOLERANCE",
+  "URINARY_TRACT_MICTURITION", "VACCINATION", "VENOUS_RETURN_PRELOAD"
+];
+
+console.log("\nTHE FINAL FLASHCARD BACKFILL");
+// 2,154 cards across all 33 remaining decks, and 42 new CONTENT objects. The
+// checks below are the ones that would have caught the mistakes this pass
+// actually made, not a restatement of its totals.
+const backfillSlugs = BACKFILL_SLUGS;
+const backfilled = concepts.filter((c) => backfillSlugs.includes(c.slug));
+ok("42 backfill concepts seeded", backfilled.length === 42, String(backfilled.length));
+ok("every backfill concept is CONTENT", backfilled.every((c) => c.object_type === "CONTENT"));
+ok("every backfill concept carries a section, a discipline and a category",
+  backfilled.every((c) => sects[c.id] && disciplinesOf[c.id] && catsOf[c.id]),
+  backfilled.filter((c) => !(sects[c.id] && disciplinesOf[c.id] && catsOf[c.id])).map((c) => c.slug).join(", "));
+
+// ONE PRIMARY PER CARD. The whole learner model assumes a card resolves to one
+// concept. Two PRIMARY rows would double-count every review of that card.
+const primaryPerCard = fc.filter((m) => m.role === "PRIMARY")
+  .reduce((a, m) => ((a[m.flashcard_id] = (a[m.flashcard_id] || 0) + 1), a), {});
+const doubled = Object.entries(primaryPerCard).filter(([, n]) => n > 1);
+ok("no card carries two PRIMARY concepts", doubled.length === 0, String(doubled.length));
+
+// THE TWO DELIBERATE GAPS. Both are authoring repairs, not ontology gaps: one
+// card defines a class then names examples from four different concepts, the
+// other compares all three cytoskeletal filament classes at once. If this count
+// ever moves, either a card was force-mapped or a new card went unmapped.
+const mappedCards = new Set(fc.map((m) => m.flashcard_id));
+const unmappedCards = [...cardDeck.keys()].filter((id) => !mappedCards.has(id));
+ok("exactly 2 flashcards remain unmapped (CARD_TOO_BROAD)",
+  unmappedCards.length === 2, String(unmappedCards.length));
+
+// THE INVARIANT THIS PASS EXISTS FOR.
+//
+// The Immune System and The Cardiovascular System each carried one concept per
+// question: 89 and 99 objects, every one with an empty description and a name
+// copied verbatim from its question's subtopic. They are a question index, not a
+// vocabulary, and a card mapped onto one inherits an identity that dies with the
+// question. 95 cards were provisionally mapped that way before this pass and all
+// 95 were moved. A future mapping that reaches for one of these labels because
+// the words match fails here.
+const qPerConcept = qc.reduce((a, m) => ((a[m.concept_id] ??= []).push(m.question_id), a), {});
+const chapterOf = new Map(Q.map((q) => [q.id, q.topic]));
+const LABEL_CHAPTERS = new Set(["The Immune System", "The Cardiovascular System"]);
+const questionInstanceLabels = new Set(Object.entries(qPerConcept)
+  .filter(([, qs]) => qs.length === 1 && LABEL_CHAPTERS.has(chapterOf.get(qs[0])))
+  .map(([cid]) => cid));
+const onLabels = fc.filter((m) => questionInstanceLabels.has(m.concept_id));
+ok("188 question-instance labels identified in the two affected chapters",
+  questionInstanceLabels.size === 188, String(questionInstanceLabels.size));
+ok("no card maps onto an immune or cardiovascular question-instance label",
+  onLabels.length === 0,
+  onLabels.map((m) => byId.get(m.concept_id)?.canonical_name).slice(0, 8).join(", "));
+
+// SECTION REACHABILITY ACROSS THE WHOLE CARD SIDE. The ochem and physics passes
+// each check this for their own deck; the backfill reused 376 existing concepts
+// across five sections, so it needs the check globally. A card in a biology deck
+// whose concept does not admit BIO_BIOCHEM is unreachable from where it lives,
+// which is exactly what the 38 widening rows prevent.
+const DECK_SEC = { biology: "BIO_BIOCHEM", biochemistry: "BIO_BIOCHEM", chemistry: "CHEM_PHYS",
+  organic_chemistry: "CHEM_PHYS", physics: "CHEM_PHYS", psych_soc: "PSYCH_SOC" };
+const unreachable = fc.filter((m) => {
+  if (!contentIds.has(m.concept_id)) return false;
+  const want = DECK_SEC[decks.get(cardDeck.get(m.flashcard_id))];
+  return want && !sects[m.concept_id]?.has(want);
+});
+ok("every content card mapping is reachable from its deck's section",
+  unreachable.length === 0,
+  unreachable.map((m) => byId.get(m.concept_id)?.canonical_name).slice(0, 8).join(", "));
+
+// Widening is additive only. A widening row that overwrote a primary would move
+// a concept's home section, which is a silent reclassification.
+const multiPrimarySect = (await all("concept_sections", "concept_id,is_primary"))
+  .filter((r) => r.is_primary)
+  .reduce((a, r) => ((a[r.concept_id] = (a[r.concept_id] || 0) + 1), a), {});
+ok("no concept has two primary sections",
+  Object.values(multiPrimarySect).every((n) => n === 1));
+
 console.log("\nDELIBERATELY LEFT ALONE");
 const mapped = new Set(qc.map((m) => m.question_id));
 const unmapped = Q.filter((q) => !mapped.has(q.id));
@@ -458,7 +551,7 @@ try {
     await db.from("concept_aliases").delete().eq("concept_id", fixture);
     await db.from("concepts").delete().eq("id", fixture);
   }
-  const left = (await count("concepts")) === 1085 && (await count("concept_aliases")) === 1;
+  const left = (await count("concepts")) === 1127 && (await count("concept_aliases")) === 1;
   ok("fixture fully removed, no residue", left);
 }
 

@@ -11,7 +11,7 @@ const A=JSON.parse(fs.readFileSync("/tmp/backfill_map.json","utf8"));
 const PHASE_A = {
  "Amino Acid Recognition and Abbreviations": ["BIO_BIOCHEM","BIOCHEMISTRY","Structure and Function of Proteins and Their Constituent Amino Acids"],
  "Polyprotic Acids and Stepwise Dissociation": ["CHEM_PHYS","GENERAL_CHEMISTRY","Acid-Base Equilibria (GC, BC)"],
- "Protein Structure Determination": ["BIO_BIOCHEM","BIOCHEMISTRY","Separation and Purification Methods (BC)"],
+ "Protein Structure Determination": ["BIO_BIOCHEM","BIOCHEMISTRY","Structure and Function of Proteins and Their Constituent Amino Acids"],
 };
 const PHASE_B = ["Renin-Angiotensin-Aldosterone System","Blood Vessel Structure and Types","Heart Chambers and Valves","Urinary Tract and Micturition","ABO and Rh Blood Types"];
 const imNames=new Set(IM.map(p=>p.name)), cvNames=new Set(CV.map(p=>p.name));

@@ -45,6 +45,11 @@ export const PROPOSED = [
   cards:[[CV,41],[CV,46],[CV,48]],
   q:[["Total Cross-Sectional Area and Flow Velocity",true],["Site Of Greatest Vascular Resistance",true],["Poiseuille Determinants of Vascular Resistance",true],["Vessel Radius and Blood Flow",true],["Blood Viscosity and Vascular Resistance",true],["Mean Arterial Pressure And Total Peripheral Resistance",true],["Flow Redistribution And Vascular Resistance",false],["Turbulence and Vascular Sound",false]]},
 
+ {name:"Venous Return and Preload", conf:"MEDIUM",
+  def:"The peripheral determinants of blood returning to the heart: the skeletal-muscle pump acting through one-way venous valves, venoconstriction mobilising the venous reservoir, and the resulting effect on ventricular filling and preload.",
+  cards:[["The Musculoskeletal System",76]],
+  q:[["Venous Return and the Skeletal Muscle Pump",true],["Venoconstriction and Venous Resistance",true],
+     ["Head-Up Tilt And Resistance Adjustment",false],["Atrial Systole and Ventricular Filling",false],["Matched Ventricular Outputs",false]]},
  {name:"Blood Pressure and Its Measurement", conf:"HIGH",
   def:"Systolic and diastolic pressure, typical adult values, mean arterial pressure and pulse pressure, and how cuff measurement obtains them.",
   cards:[[CV,43],[CV,44],[CV,45]],
@@ -80,8 +85,6 @@ export const PROPOSED = [
 export const REUSE = [
  {concept:"Thermoregulatory Mechanisms", cards:[["The Cardiovascular System",42]], approvedNew:false,
   why:"Caught on a reuse check against curriculum-grade concepts. Thermoregulatory Mechanisms already has 6 questions (sweat gland populations, heat exchange direction, hypodermal fat, piloerection, fever set point) and 5 cards. Cutaneous vasomotion for heat loss or conservation belongs to that family, so a new Local Control of Blood Flow and Thermoregulation concept would have been a duplicate. Dropped it."},
- {concept:"Blood Vessel Structure and Types", cards:[["The Musculoskeletal System",76]], approvedNew:true,
-  why:"The skeletal-muscle pump acts through the venous valves and capacitance this concept already covers (its cards 33 and 34). Reusing an approved concept rather than minting a venous-return one."},
 ];
 
 // The 99 cardio labels, classified. Unlisted names are class B.
@@ -99,7 +102,7 @@ export const LABELS = {
 // evidence from this chapter.
 export const ALIGN_APPROVED = [
  {concept:"Heart Chambers and Valves", q:[["Atrioventricular Valve Anchoring",true],["Semilunar Valve Competence",true],["Murmur Timing And Valve Lesions",false]]},
- {concept:"Blood Vessel Structure and Types", q:[["Venous Return and the Skeletal Muscle Pump",true],["Venoconstriction and Venous Resistance",true],["Elastic Arteries and Diastolic Flow",true],["Consequences of Endothelial Denudation",false]]},
+ {concept:"Blood Vessel Structure and Types", q:[["Elastic Arteries and Diastolic Flow",true],["Consequences of Endothelial Denudation",false]]},
  {concept:"ABO and Rh Blood Types", q:[["Screening Donor Units Against A Recipient Antibody Profile",true],["Sensitization Timing After Rh Exposure",true],["Vessel Obstruction During A Mismatched Transfusion",true],["Donor Plasma Antibody Load In Whole Blood",true]]},
  {concept:"Thermoregulatory Mechanisms", q:[["Role In Thermoregulation",true],["Countercurrent Vascular Heat Exchange In A Limb",true]]},
  {concept:"The Lymphatic System", q:[["Daily Lymph Return Volume",true],["Interstitial Protein Retention After Lymphatic Loss",true],["Lacteal Routing Of Absorbed Lipid",true],["Starling Forces And Lymph Formation Rate",false],["Cannulated Lymph Sampling As A Permeability Assay",false]]},
@@ -133,13 +136,6 @@ CARD_GAPS.push({objective:"Endothelial control of vascular tone", questions:["En
 // this pass is retiring. No durable home exists.
 //
 // So the mapping is NOT defensible and this card is held rather than forced.
-export const PENDING_CANDIDATE = {
- name:"Venous Return and Preload",
- def:"The peripheral determinants of the volume returning to the heart: the skeletal-muscle pump acting through one-way valves, venoconstriction mobilising the venous reservoir, and the effect on ventricular filling.",
- cards:[["The Musculoskeletal System",76]],
- conf:"MEDIUM",
- q:[["Venous Return and the Skeletal Muscle Pump",true],["Venoconstriction and Venous Resistance",true],
-    ["Head-Up Tilt And Resistance Adjustment",false],["Atrial Systole and Ventricular Filling",false],["Matched Ventricular Outputs",false]],
- why:"One card and two exact questions. Narrow, but a distinct objective: a learner can know cardiac output as HR times SV perfectly and still not know that the muscle pump or venoconstriction raises return. Folding it into Cardiac Output and Stroke Volume would make a peripheral-circulation weakness read as a cardiac-output weakness, which is the same argument used to keep Types of Reactions separate from Reaction Types & Classification.",
- alsoChanges:"If approved, the two exact questions move off Blood Vessel Structure and Types in ALIGN_APPROVED and onto this concept. That is a note for the later question migration, not a change to the backfill.",
-};
+// The forensic check's candidate was APPROVED and now sits in PROPOSED above as
+// Venous Return and Preload. Its two exact questions moved off Blood Vessel
+// Structure and Types in ALIGN_APPROVED, a note for the later question migration.
