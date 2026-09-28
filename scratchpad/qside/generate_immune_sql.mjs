@@ -102,7 +102,10 @@ P(`
 -- ────────────────────────────────────────────────────────────
 INSERT INTO public.question_concepts (question_id, concept_id, role, mapping_status, source)
 VALUES`);
-P(M.secondary.map(r=>`  (${q(r.question_id)}::uuid, ${q(r.concept_id)}::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED')  -- ${r.label}`).join(",\n")+";");
+// The label goes on its OWN line. A trailing "-- label" comments out whatever
+// follows it on that line, which is how the first version of this file ate the
+// comma after every row and the semicolon after the last one.
+P(M.secondary.map((r,i)=>`  -- ${r.label}\n  (${q(r.question_id)}::uuid, ${q(r.concept_id)}::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED')${i<M.secondary.length-1?",":";"}`).join("\n"));
 
 P(`
 -- ────────────────────────────────────────────────────────────

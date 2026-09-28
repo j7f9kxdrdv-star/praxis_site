@@ -179,12 +179,18 @@ VALUES
 -- ────────────────────────────────────────────────────────────
 INSERT INTO public.question_concepts (question_id, concept_id, role, mapping_status, source)
 VALUES
-  ('cc61ca2d-83ab-4371-b0e6-c19bcba36a31'::uuid, '00bd59c2-cc4d-4c5b-9385-a454cc8800eb'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED')  -- Skin as a Physical Barrier,
-  ('ef369695-bec7-4a26-ac6f-d3d7a8317aeb'::uuid, '118bbbdd-7d90-4aa4-878d-b38057f402e2'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED')  -- Gastric Acid as a Chemical Barrier,
-  ('f1f984a4-c6ab-43db-8421-6285098111e1'::uuid, 'fdcc5b4b-f4bf-48d5-85cc-33030ee41771'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED')  -- Colonization Resistance by Resident Flora,
-  ('26e09ba7-77f9-4834-b1c1-2bacc1de5451'::uuid, '67c0365a-6973-4d88-af0c-dbe7a9a45a0c'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED')  -- Chemotaxis and Gradient Sensing,
-  ('a72d6b7c-220b-4ea1-9657-107d608292d5'::uuid, '42f39dae-087b-4403-b33d-0a1f377ec022'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED')  -- Population Value of MHC Allele Diversity,
-  ('34957a90-a7d5-42ff-9b34-889ecdfe209d'::uuid, '88563bf9-780b-4f19-893b-9f049d659a47'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED')  -- Epitope Size and Response Diversity;
+  -- Skin as a Physical Barrier
+  ('cc61ca2d-83ab-4371-b0e6-c19bcba36a31'::uuid, '00bd59c2-cc4d-4c5b-9385-a454cc8800eb'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED'),
+  -- Gastric Acid as a Chemical Barrier
+  ('ef369695-bec7-4a26-ac6f-d3d7a8317aeb'::uuid, '118bbbdd-7d90-4aa4-878d-b38057f402e2'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED'),
+  -- Colonization Resistance by Resident Flora
+  ('f1f984a4-c6ab-43db-8421-6285098111e1'::uuid, 'fdcc5b4b-f4bf-48d5-85cc-33030ee41771'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED'),
+  -- Chemotaxis and Gradient Sensing
+  ('26e09ba7-77f9-4834-b1c1-2bacc1de5451'::uuid, '67c0365a-6973-4d88-af0c-dbe7a9a45a0c'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED'),
+  -- Population Value of MHC Allele Diversity
+  ('a72d6b7c-220b-4ea1-9657-107d608292d5'::uuid, '42f39dae-087b-4403-b33d-0a1f377ec022'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED'),
+  -- Epitope Size and Response Diversity
+  ('34957a90-a7d5-42ff-9b34-889ecdfe209d'::uuid, '88563bf9-780b-4f19-893b-9f049d659a47'::uuid, 'SECONDARY', 'AI_PROPOSED', 'AI_PROPOSED');
 
 -- ────────────────────────────────────────────────────────────
 -- 4. Aliases, for the four merged labels that name a real searchable term.
