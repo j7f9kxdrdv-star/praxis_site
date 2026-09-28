@@ -497,5 +497,25 @@
    "D. Sensory adaptation is a response fading while a stimulus stays constant, like ceasing to feel a watch. Her sensitivity did not fade here; it rescaled to a heavier starting load."
   ],
   "teaching_point": "When a question gives you the same measurement at two magnitudes, convert both to fractions before reading the options. A difference threshold is a number, and Weber’s law is what that number does as the baseline grows. Any item showing you two baselines is asking about the rule, not the reading."
+ },
+ {
+  "slug": "interviews-that-predict-nothing",
+  "eyebrow": "Sociology: Theoretical Perspectives",
+  "stem": "Interviews predict performance no better than grades, yet no medical school drops them. A sociologist says they let established elites recognize their own. Which perspective?",
+  "options": [
+   "A. Functionalism",
+   "B. Conflict theory",
+   "C. Symbolic interactionism",
+   "D. Social constructionism"
+  ],
+  "answer": "B",
+  "answer_text": "Conflict theory",
+  "explanation": "The first sentence removes the obvious functional defense: if interviews sorted candidates better than grades, keeping them would need no further explanation. They do not, and schools keep them anyway. The sociologist explains that gap by who benefits, saying the practice survives because it reproduces the advantage of a group already on top. Explaining a persistent arrangement by the interests it serves, rather than by a need it meets, is conflict theory.",
+  "distractors": [
+   "A. Functionalism would argue the interview meets some real need, perhaps screening for communication or professionalism. The stem has already closed that door by telling you it predicts nothing extra.",
+   "C. Symbolic interactionism works at the scale of the encounter itself: how the candidate reads the room, manages impressions, and performs the part. It would study what happens inside the interview, not why the interview exists.",
+   "D. Social constructionism would ask how we came to treat a category such as the good candidate as real. That is a claim about the idea, not about who gains from keeping the practice."
+  ],
+  "teaching_point": "These four perspectives answer different questions, so match the question before matching the vocabulary. Functionalism asks what need this meets. Conflict theory asks who benefits and at whose expense. Symbolic interactionism asks what it means to the people in the room. Social constructionism asks how the category itself came to count as real. Any stem that names a beneficiary is pointing at conflict theory."
  }
 ]
