@@ -1,0 +1,25 @@
+import { all } from "../backfill/record.mjs";
+import fs from "node:fs";
+const M=JSON.parse(fs.readFileSync("/tmp/immune_manifest.json","utf8"));
+const C=await all("concepts","id,slug,canonical_name,status,deprecated_by");
+const byId=new Map(C.map(c=>[c.id,c]));
+const QC=await all("question_concepts","question_id,concept_id,role");
+const FC=await all("flashcard_concepts","concept_id");
+const Q=await all("questions","id,topic");
+const imIds=new Set(Q.filter(q=>q.topic==="The Immune System").map(q=>q.id));
+const qP={}; QC.filter(m=>m.role==="PRIMARY").forEach(m=>qP[m.concept_id]=(qP[m.concept_id]||0)+1);
+const cards={}; FC.forEach(m=>cards[m.concept_id]=(cards[m.concept_id]||0)+1);
+const targets=[...new Set([...M.repoint.map(r=>r.new_concept_id),...M.insert.map(r=>r.new_concept_id)])];
+console.log("| Durable concept | Questions | Flashcards | Modality |");
+console.log("| --- | --- | --- | --- |");
+const t={};
+targets.map(id=>({c:byId.get(id),q:qP[id]||0,f:cards[id]||0})).sort((a,b)=>b.q-a.q).forEach(r=>{
+  const s=r.q>0&&r.f>0?"BOTH_MODALITIES":r.q>0?"QUESTION_ONLY":r.f>0?"MEMORY_ONLY":"NO_ITEM_EVIDENCE";
+  t[s]=(t[s]||0)+1;
+  console.log(`| \`${r.c.canonical_name}\` | ${r.q} | ${r.f} | ${s} |`);});
+console.log(`\nmodality tally: ${JSON.stringify(t)}`);
+const dep=C.filter(c=>c.status==="DEPRECATED");
+console.log(`\ndeprecated: ${dep.length} | all with successor: ${dep.every(c=>c.deprecated_by)}`);
+console.log(`retained sub-objectives still ACTIVE: ${M.secondary.filter(s=>byId.get(s.concept_id).status!=="DEPRECATED").length} of ${M.secondary.length}`);
+const im=QC.filter(m=>imIds.has(m.question_id));
+console.log(`immune questions: ${imIds.size} | with a PRIMARY: ${new Set(im.filter(m=>m.role==="PRIMARY").map(m=>m.question_id)).size} | SECONDARY rows: ${im.filter(m=>m.role==="SECONDARY").length}`);
