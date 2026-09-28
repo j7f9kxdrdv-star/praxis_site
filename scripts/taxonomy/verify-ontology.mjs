@@ -234,15 +234,19 @@ const catRows2 = await all("concept_content_categories", "concept_id,content_cat
 const catNames = new Set(catRows2.map((r) => r.content_category));
 const cc = catRows2;
 const catsOf = cc.reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.content_category), a), {});
-// A CEILING, not an equality. One immune question was repointed onto
-// Immunoglobulins, which is categorised under protein structure rather than
-// Organ Systems, so it needs the same SECONDARY category widening the flashcard
-// side already gave that concept for discipline. Recorded here so it cannot
-// quietly grow while it waits for that migration.
+// BACK TO AN EQUALITY. This was briefly a ceiling of 1: repointing an immune
+// question onto Immunoglobulins left a mapping reachable by section and
+// discipline but not by category, because that concept carried only protein
+// structure. The SECONDARY widening closed it, so the invariant is zero again
+// and a future repoint that forgets to widen fails here.
 const catIncompatible = qc.filter((m) => !catsOf[m.concept_id]?.has(qById.get(m.question_id)?.content_category));
-ok("category-incompatible question mappings does not exceed 1",
-  catIncompatible.length <= 1,
+ok("category compatible on every question mapping",
+  catIncompatible.length === 0,
   catIncompatible.map((m) => byId.get(m.concept_id)?.canonical_name).join(", "));
+// The widening is additive: protein structure is still what Immunoglobulins IS.
+const igCats = catsOf[concepts.find((c) => c.slug === "IMMUNOGLOBULINS")?.id];
+ok("Immunoglobulins carries both its categories",
+  igCats?.has("Structure and Function of Proteins and Their Constituent Amino Acids") && igCats?.has("Organ Systems"));
 
 console.log("\nFLASHCARD MAPPINGS");
 const fc = await all("flashcard_concepts", "flashcard_id,concept_id,mapping_status,source");
