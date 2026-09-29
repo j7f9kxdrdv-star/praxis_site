@@ -55,14 +55,14 @@ async function all(t, c) {
 
 console.log("\nSEEDED VOCABULARY");
 const concepts = await all("concepts", "id,slug,canonical_name,description,status,deprecated_by,split_candidate,concept_level,parent_concept_id,object_type");
-ok("1,127 objects (846 + 239 psych/soc + 42 backfill)", concepts.length === 1127, String(concepts.length));
+ok("1,129 objects (846 + 239 psych/soc + 42 backfill + 2 question-only)", concepts.length === 1129, String(concepts.length));
 // 83 immune labels are DEPRECATED by the question-side reconciliation. Every
 // other object is still ACTIVE_SEED, and a deprecated one must name a successor
 // so an attempt recorded against it can still be explained.
 const deprecated = concepts.filter((c) => c.status === "DEPRECATED");
 ok("every object is ACTIVE_SEED or DEPRECATED", concepts.every((c) => c.status === "ACTIVE_SEED" || c.status === "DEPRECATED"));
-ok("83 deprecated, each naming a successor",
-  deprecated.length === 83 && deprecated.every((c) => c.deprecated_by),
+ok("176 deprecated, each naming a successor",
+  deprecated.length === 176 && deprecated.every((c) => c.deprecated_by),
   `${deprecated.length} deprecated, ${deprecated.filter((c) => !c.deprecated_by).length} without a successor`);
 ok("200 split candidates flagged", concepts.filter((c) => c.split_candidate).length === 200);
 ok("the rename kept one concept and filed an alias",
@@ -131,31 +131,36 @@ ok("concept_relationships empty (seeded by hand only)", (await count("concept_re
 console.log("\nDETERMINISTIC QUESTION MAPPING");
 const qc = await all("question_concepts", "question_id,concept_id,role,mapping_status,source,confidence");
 const qById0 = new Map((await all("questions", "id,topic")).map((q) => [q.id, q]));
-ok("2,666 mappings (2,659 + 1 V(D)J + 6 secondary)", qc.length === 2666, String(qc.length));
+ok("2,673 mappings (2,659 + 2 inserts + 12 secondary)", qc.length === 2673, String(qc.length));
 // PROVENANCE NOW HAS THREE POPULATIONS. The original mappings were derived by
 // exact subtopic match or approved lookup. The 96 immune mappings were chosen by
 // analysis during the question-side reconciliation, so they are AI_PROPOSED, and
 // labelling them DETERMINISTIC would claim a derivation that did not happen.
 ok("provenance is deterministic or AI_PROPOSED, never human-validated",
   qc.every((m) => ["DETERMINISTIC_EXACT", "DETERMINISTIC", "AI_PROPOSED"].includes(m.source)));
-ok("2,153 exact + 417 lookup + 96 AI_PROPOSED",
-  qc.filter((m) => m.source === "DETERMINISTIC_EXACT").length === 2153 &&
+ok("2,054 exact + 417 lookup + 202 AI_PROPOSED",
+  qc.filter((m) => m.source === "DETERMINISTIC_EXACT").length === 2054 &&
   qc.filter((m) => m.source === "DETERMINISTIC").length === 417 &&
-  qc.filter((m) => m.source === "AI_PROPOSED").length === 96,
+  qc.filter((m) => m.source === "AI_PROPOSED").length === 202,
   JSON.stringify(qc.reduce((a, m) => ((a[m.source] = (a[m.source] || 0) + 1), a), {})));
-// Every AI_PROPOSED question mapping is an immune one. If this ever catches a
-// different chapter, an unreviewed pass has written somewhere it should not.
-ok("every AI_PROPOSED question mapping belongs to the immune chapter",
+// Every AI_PROPOSED question mapping belongs to one of the two reconciled
+// chapters. If this ever catches a third, an unreviewed pass has written
+// somewhere it should not.
+const RECONCILED = new Set(["The Immune System", "The Cardiovascular System"]);
+ok("every AI_PROPOSED question mapping belongs to a reconciled chapter",
   qc.filter((m) => m.source === "AI_PROPOSED")
-    .every((m) => qById0.get(m.question_id)?.topic === "The Immune System"));
+    .every((m) => RECONCILED.has(qById0.get(m.question_id)?.topic)),
+  [...new Set(qc.filter((m) => m.source === "AI_PROPOSED")
+    .map((m) => qById0.get(m.question_id)?.topic).filter((t) => !RECONCILED.has(t)))].join(", "));
 // ROLE-AWARE. This pair used to assume every mapping was PRIMARY and compared
 // distinct question_ids against the row count. Six retained sub-objectives now
 // hold SECONDARY rows, which made the old form fail on correct data. The
 // invariant that matters is one PRIMARY per question, which is what the
 // question_concepts_one_primary index enforces.
 const qcPrimary = qc.filter((m) => m.role === "PRIMARY");
-ok("6 secondary mappings, the retained immune sub-objectives",
-  qc.filter((m) => m.role === "SECONDARY").length === 6);
+ok("12 secondary mappings, the retained sub-objectives of both chapters",
+  qc.filter((m) => m.role === "SECONDARY").length === 12,
+  String(qc.filter((m) => m.role === "SECONDARY").length));
 ok("no question carries two PRIMARY concepts",
   new Set(qcPrimary.map((m) => m.question_id)).size === qcPrimary.length);
 ok("none marked human-validated", qc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
@@ -189,7 +194,7 @@ const sects = (await all("concept_sections", "concept_id,section_code"))
   .reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.section_code), a), {});
 ok("section compatible on every mapping",
   qc.every((m) => sects[m.concept_id]?.has(SEC[qById.get(m.question_id)?.section])));
-ok("1,095 content concepts placed in a section", new Set(Object.keys(sects)).size === 1095);
+ok("1,097 content concepts placed in a section", new Set(Object.keys(sects)).size === 1097);
 // EVERY SECTION A CONCEPT CLAIMS MUST BE EARNED. This replaces a hardcoded
 // count of cross-section concepts, which went stale the moment two concepts
 // were legitimately widened. The count was never the point: the failure mode is
@@ -489,10 +494,23 @@ const questionInstanceLabels = new Set(Object.entries(primaryOf)
     && subtopics.has(byId.get(cid)?.canonical_name))
   .map(([cid]) => cid));
 const onLabels = fc.filter((m) => questionInstanceLabels.has(m.concept_id));
-ok("99 question-instance labels remain, all cardiovascular, pending their own pass",
-  questionInstanceLabels.size === 99, String(questionInstanceLabels.size));
-ok("no immune label survives with a PRIMARY question",
-  [...questionInstanceLabels].every((cid) => chapterOf.get(primaryOf[cid][0]) === "The Cardiovascular System"));
+// BANK-WIDE NOW, AND STRONGER FOR IT. While the two chapters were being
+// reconciled this counted only within them, which would freeze the moment both
+// were done. Dropping the chapter filter asks the real question: does the defect
+// signature exist ANYWHERE. Three concepts match, in three different chapters,
+// and they are the same three the backfill's residual audit examined one by one
+// and judged durable. A ceiling, so a new label appearing anywhere fails here.
+const bankWideLabels = new Set(Object.entries(primaryOf)
+  .filter(([cid, qs]) => qs.length === 1
+    && byId.get(cid)?.status === "ACTIVE_SEED"
+    && !String(byId.get(cid)?.description || "").trim()
+    && subtopics.has(byId.get(cid)?.canonical_name))
+  .map(([cid]) => cid));
+ok("question-instance signature does not exceed 3 bank-wide",
+  bankWideLabels.size <= 3, String(bankWideLabels.size));
+ok("no label survives in either reconciled chapter",
+  [...bankWideLabels].every((cid) => !LABEL_CHAPTERS.has(chapterOf.get(primaryOf[cid][0]))),
+  [...bankWideLabels].map((cid) => byId.get(cid)?.canonical_name).join(", "));
 ok("every deprecated object has lost all its evidence",
   deprecated.every((c) => !qc.some((m) => m.concept_id === c.id) && !fc.some((m) => m.concept_id === c.id)));
 ok("no card maps onto a surviving question-instance label",
@@ -526,7 +544,7 @@ ok("no concept has two primary sections",
 console.log("\nDELIBERATELY LEFT ALONE");
 const mapped = new Set(qc.map((m) => m.question_id));
 const unmapped = Q.filter((q) => !mapped.has(q.id));
-ok("21 questions remain unmapped (the V(D)J one is now mapped)", unmapped.length === 21, String(unmapped.length));
+ok("20 questions remain unmapped", unmapped.length === 20, String(unmapped.length));
 ok("no unmapped question's label is a concept name",
   unmapped.every((q) => !concepts.some((c) => c.canonical_name === q.subtopic)));
 
@@ -604,7 +622,7 @@ try {
     await db.from("concept_aliases").delete().eq("concept_id", fixture);
     await db.from("concepts").delete().eq("id", fixture);
   }
-  const left = (await count("concepts")) === 1127 && (await count("concept_aliases")) === 5;
+  const left = (await count("concepts")) === 1129 && (await count("concept_aliases")) === 5;
   ok("fixture fully removed, no residue", left);
 }
 
