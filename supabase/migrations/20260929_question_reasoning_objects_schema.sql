@@ -111,9 +111,14 @@ CREATE POLICY "read taxonomy" ON public.question_reasoning_objects
 -- 5. Prove the guards guard.
 --
 --    A trigger that has never rejected anything is not known to work. Each block
---    attempts a write that MUST fail and raises if it succeeds. Everything here
---    runs against real rows and is undone by the savepoint, so the table is
---    still empty at COMMIT.
+--    below attempts a write that MUST fail and raises if it succeeds, and one
+--    that MUST succeed, because a guard refusing everything proves nothing.
+--
+--    UNDO IS DONE WITH A PL/pgSQL SUBTRANSACTION, NOT A SAVEPOINT. SAVEPOINT and
+--    ROLLBACK TO SAVEPOINT are SQL-level commands and are rejected inside a DO
+--    block. The equivalent here is a nested BEGIN ... EXCEPTION, which is an
+--    implicit subtransaction: raising a sentinel at the end of it discards
+--    everything the block did, so the table is empty at COMMIT.
 -- ────────────────────────────────────────────────────────────
 DO $$
 DECLARE
@@ -121,13 +126,15 @@ DECLARE
   cont  UUID;
   quant UUID;
   reas  UUID;
+  reas2 UUID;
   ok    BOOLEAN;
 BEGIN
   SELECT id INTO qid   FROM public.questions LIMIT 1;
-  SELECT id INTO cont  FROM public.concepts WHERE object_type = 'CONTENT'      AND status = 'ACTIVE_SEED' LIMIT 1;
+  SELECT id INTO cont  FROM public.concepts WHERE object_type = 'CONTENT' AND status = 'ACTIVE_SEED' LIMIT 1;
   SELECT id INTO quant FROM public.concepts WHERE object_type = 'QUANTITATIVE' LIMIT 1;
-  SELECT id INTO reas  FROM public.concepts WHERE object_type = 'REASONING'    LIMIT 1;
-  IF qid IS NULL OR cont IS NULL OR quant IS NULL OR reas IS NULL THEN
+  SELECT id INTO reas  FROM public.concepts WHERE object_type = 'REASONING' ORDER BY slug LIMIT 1;
+  SELECT id INTO reas2 FROM public.concepts WHERE object_type = 'REASONING' ORDER BY slug DESC LIMIT 1;
+  IF qid IS NULL OR cont IS NULL OR quant IS NULL OR reas IS NULL OR reas2 IS NULL OR reas = reas2 THEN
     RAISE EXCEPTION 'fixture rows missing: cannot prove the guards';
   END IF;
 
@@ -149,43 +156,47 @@ BEGIN
   END;
   IF NOT ok THEN RAISE EXCEPTION 'guard failed: a QUANTITATIVE concept was accepted'; END IF;
 
-  -- (c) a REASONING concept must be ACCEPTED, or the guard is simply refusing
-  --     everything and proves nothing.
-  SAVEPOINT probe;
-  INSERT INTO public.question_reasoning_objects (question_id, concept_id, source)
-  VALUES (qid, reas, 'AI_PROPOSED');
-
-  -- (d) a HUMAN_VALIDATED row must refuse an automated overwrite and a delete
-  UPDATE public.question_reasoning_objects
-    SET mapping_status = 'HUMAN_VALIDATED', source = 'HUMAN_REVIEWED'
-    WHERE question_id = qid AND concept_id = reas;
-
-  ok := false;
-  BEGIN
-    UPDATE public.question_reasoning_objects SET source = 'AI_PROPOSED'
-      WHERE question_id = qid AND concept_id = reas;
-  EXCEPTION WHEN OTHERS THEN ok := true;
-  END;
-  IF NOT ok THEN RAISE EXCEPTION 'guard failed: a HUMAN_VALIDATED row was overwritten by an automated source'; END IF;
-
-  ok := false;
-  BEGIN
-    DELETE FROM public.question_reasoning_objects WHERE question_id = qid AND concept_id = reas;
-  EXCEPTION WHEN OTHERS THEN ok := true;
-  END;
-  IF NOT ok THEN RAISE EXCEPTION 'guard failed: a HUMAN_VALIDATED row was deleted'; END IF;
-
-  -- (e) confidence outside zero to one must be refused
+  -- (c) confidence outside zero to one must be refused. This uses a SECOND
+  --     reasoning object on purpose: reusing the first would collide with the
+  --     primary key and pass for the wrong reason.
   ok := false;
   BEGIN
     INSERT INTO public.question_reasoning_objects (question_id, concept_id, source, confidence)
-    VALUES (qid, reas, 'AI_PROPOSED', 4.00);
+    VALUES (qid, reas2, 'AI_PROPOSED', 4.00);
   EXCEPTION WHEN OTHERS THEN ok := true;
   END;
   IF NOT ok THEN RAISE EXCEPTION 'guard failed: confidence 4.00 was accepted'; END IF;
 
-  ROLLBACK TO SAVEPOINT probe;
-  RAISE NOTICE 'all five guards proved';
+  -- (d) the accept case and the human-validated protections, then discarded.
+  BEGIN
+    INSERT INTO public.question_reasoning_objects (question_id, concept_id, source)
+    VALUES (qid, reas, 'AI_PROPOSED');
+
+    UPDATE public.question_reasoning_objects
+      SET mapping_status = 'HUMAN_VALIDATED', source = 'HUMAN_REVIEWED'
+      WHERE question_id = qid AND concept_id = reas;
+
+    ok := false;
+    BEGIN
+      UPDATE public.question_reasoning_objects SET source = 'AI_PROPOSED'
+        WHERE question_id = qid AND concept_id = reas;
+    EXCEPTION WHEN OTHERS THEN ok := true;
+    END;
+    IF NOT ok THEN RAISE EXCEPTION 'guard failed: a HUMAN_VALIDATED row was overwritten by an automated source'; END IF;
+
+    ok := false;
+    BEGIN
+      DELETE FROM public.question_reasoning_objects WHERE question_id = qid AND concept_id = reas;
+    EXCEPTION WHEN OTHERS THEN ok := true;
+    END;
+    IF NOT ok THEN RAISE EXCEPTION 'guard failed: a HUMAN_VALIDATED row was deleted'; END IF;
+
+    RAISE EXCEPTION 'PROBE_ROLLBACK';
+  EXCEPTION WHEN OTHERS THEN
+    IF SQLERRM <> 'PROBE_ROLLBACK' THEN RAISE; END IF;
+  END;
+
+  RAISE NOTICE 'all five guards proved, probe discarded';
 END $$;
 
 -- ────────────────────────────────────────────────────────────
