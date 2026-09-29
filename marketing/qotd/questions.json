@@ -499,23 +499,23 @@
   "teaching_point": "When a question gives you the same measurement at two magnitudes, convert both to fractions before reading the options. A difference threshold is a number, and Weber’s law is what that number does as the baseline grows. Any item showing you two baselines is asking about the rule, not the reading."
  },
  {
-  "slug": "interviews-that-predict-nothing",
-  "eyebrow": "Sociology: Theoretical Perspectives",
-  "stem": "Interviews predict performance no better than grades, yet no medical school drops them. A sociologist says they let established elites recognize their own. Which perspective?",
+  "slug": "juice-in-a-taller-cup",
+  "eyebrow": "Psychology: Cognitive Development",
+  "stem": "A 7-year-old watches juice poured into a taller cup and says the amount is the same. Asked to describe a world without sleep, she has no answer. Which stage?",
   "options": [
-   "A. Functionalism",
-   "B. Conflict theory",
-   "C. Symbolic interactionism",
-   "D. Social constructionism"
+   "A. Sensorimotor",
+   "B. Preoperational",
+   "C. Concrete operational",
+   "D. Formal operational"
   ],
-  "answer": "B",
-  "answer_text": "Conflict theory",
-  "explanation": "The first sentence removes the obvious functional defense: if interviews sorted candidates better than grades, keeping them would need no further explanation. They do not, and schools keep them anyway. The sociologist explains that gap by who benefits, saying the practice survives because it reproduces the advantage of a group already on top. Explaining a persistent arrangement by the interests it serves, rather than by a need it meets, is conflict theory.",
+  "answer": "C",
+  "answer_text": "Concrete operational",
+  "explanation": "The cup tells you what she can do. Holding the amount steady while the shape changes is conservation, and a preoperational child does not have it yet. The second question tells you what she cannot do. Reasoning about a world that does not exist is abstract thinking, and that arrives last. She is past one boundary and short of the other, which puts her in concrete operational.",
   "distractors": [
-   "A. Functionalism would argue the interview meets some real need, perhaps screening for communication or professionalism. The stem has already closed that door by telling you it predicts nothing extra.",
-   "C. Symbolic interactionism works at the scale of the encounter itself: how the candidate reads the room, manages impressions, and performs the part. It would study what happens inside the interview, not why the interview exists.",
-   "D. Social constructionism would ask how we came to treat a category such as the good candidate as real. That is a claim about the idea, not about who gains from keeping the practice."
+   "A. Sensorimotor is infancy, working out that a toy still exists once it is hidden. She is reasoning about quantity across a transformation, which is years beyond that.",
+   "B. Preoperational is what the juice rules out. A child at that stage sees the higher level in the narrow cup and reports that there is more to drink.",
+   "D. Formal operational is what the sleep question rules out. That stage handles hypotheticals and what-ifs, which is precisely what she cannot do here."
   ],
-  "teaching_point": "These four perspectives answer different questions, so match the question before matching the vocabulary. Functionalism asks what need this meets. Conflict theory asks who benefits and at whose expense. Symbolic interactionism asks what it means to the people in the room. Social constructionism asks how the category itself came to count as real. Any stem that names a beneficiary is pointing at conflict theory."
+  "teaching_point": "A stage question almost always hands you one ability the child has and one they lack, and the answer sits between them. Read for both. Conservation on its own fits two stages, and only the failure at the hypothetical narrows it to one."
  }
 ]
