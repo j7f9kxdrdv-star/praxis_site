@@ -517,5 +517,25 @@
    "D. Formal operational is what the sleep question rules out. That stage handles hypotheticals and what-ifs, which is precisely what she cannot do here."
   ],
   "teaching_point": "A stage question almost always hands you one ability the child has and one they lack, and the answer sits between them. Read for both. Conservation on its own fits two stages, and only the failure at the hypothetical narrows it to one."
+ },
+ {
+  "slug": "lab-partners-but-measured-against-residents",
+  "eyebrow": "Sociology: Groups and Organizations",
+  "stem": "A first-year medical student eats lunch with her lab partners daily. But she measures how well she is doing against the residents on the wards. Which are the residents?",
+  "options": [
+   "A. Primary group",
+   "B. Secondary group",
+   "C. In-group",
+   "D. Reference group"
+  ],
+  "answer": "D",
+  "answer_text": "Reference group",
+  "explanation": "She does not belong to the residents and does not spend her days with them. She uses them as the yardstick. A reference group is the one you hold yourself against when deciding how you are doing, and membership is not required. That is what separates it from every other option here, because the other three are all groups you are in.",
+  "distractors": [
+   "A. Primary group is the small, close, face-to-face circle, which is the lab partners in the first sentence. They are there precisely so you have to notice she is judged against a different group.",
+   "B. Secondary group is a larger, impersonal one organised around a task, such as her whole entering class. The residents are not that either, and she still is not a member.",
+   "C. In-group requires belonging. She is not a resident yet, and calling them her in-group would skip the year that separates her from them."
+  ],
+  "teaching_point": "Ask one question first: is she in this group or looking at it? Primary, secondary and in-group all assume membership and differ only in size and closeness. A reference group is the one case where membership is beside the point, so any stem about measuring yourself against someone is pointing there."
  }
 ]

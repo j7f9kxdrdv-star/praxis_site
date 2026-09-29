@@ -131,17 +131,24 @@ ok("concept_relationships empty (seeded by hand only)", (await count("concept_re
 console.log("\nDETERMINISTIC QUESTION MAPPING");
 const qc = await all("question_concepts", "question_id,concept_id,role,mapping_status,source,confidence");
 const qById0 = new Map((await all("questions", "id,topic")).map((q) => [q.id, q]));
-ok("2,673 mappings (2,659 + 2 inserts + 12 secondary)", qc.length === 2673, String(qc.length));
+// A FLOOR, NOT AN EQUALITY. This was pinned at 2,673 and that was wrong for the
+// same reason the learner-table counts were: question_concepts grows whenever a
+// question is authored or mapped, so an exact count turns a correct change into
+// a failure and trains you to ignore the verifier. The exact count belongs to
+// the migration that creates the rows, where it is checked inside the
+// transaction. Here the invariant is that mappings never silently disappear.
+ok("question mappings never shrink below 2,673", qc.length >= 2673, String(qc.length));
 // PROVENANCE NOW HAS THREE POPULATIONS. The original mappings were derived by
 // exact subtopic match or approved lookup. The 96 immune mappings were chosen by
 // analysis during the question-side reconciliation, so they are AI_PROPOSED, and
 // labelling them DETERMINISTIC would claim a derivation that did not happen.
 ok("provenance is deterministic or AI_PROPOSED, never human-validated",
   qc.every((m) => ["DETERMINISTIC_EXACT", "DETERMINISTIC", "AI_PROPOSED"].includes(m.source)));
-ok("2,054 exact + 417 lookup + 202 AI_PROPOSED",
-  qc.filter((m) => m.source === "DETERMINISTIC_EXACT").length === 2054 &&
-  qc.filter((m) => m.source === "DETERMINISTIC").length === 417 &&
-  qc.filter((m) => m.source === "AI_PROPOSED").length === 202,
+// Also floors. The deterministic populations only shrink if something repoints
+// them, which is worth catching; AI_PROPOSED is free to grow.
+ok("deterministic mappings never shrink below 2,054 and 417",
+  qc.filter((m) => m.source === "DETERMINISTIC_EXACT").length >= 2054 &&
+  qc.filter((m) => m.source === "DETERMINISTIC").length >= 417,
   JSON.stringify(qc.reduce((a, m) => ((a[m.source] = (a[m.source] || 0) + 1), a), {})));
 // Every AI_PROPOSED question mapping belongs to one of the two reconciled
 // chapters. If this ever catches a third, an unreviewed pass has written
@@ -158,8 +165,8 @@ ok("every AI_PROPOSED question mapping belongs to a reconciled chapter",
 // invariant that matters is one PRIMARY per question, which is what the
 // question_concepts_one_primary index enforces.
 const qcPrimary = qc.filter((m) => m.role === "PRIMARY");
-ok("12 secondary mappings, the retained sub-objectives of both chapters",
-  qc.filter((m) => m.role === "SECONDARY").length === 12,
+ok("secondary mappings never shrink below 12",
+  qc.filter((m) => m.role === "SECONDARY").length >= 12,
   String(qc.filter((m) => m.role === "SECONDARY").length));
 ok("no question carries two PRIMARY concepts",
   new Set(qcPrimary.map((m) => m.question_id)).size === qcPrimary.length);
@@ -540,6 +547,47 @@ const multiPrimarySect = (await all("concept_sections", "concept_id,is_primary")
   .reduce((a, r) => ((a[r.concept_id] = (a[r.concept_id] || 0) + 1), a), {});
 ok("no concept has two primary sections",
   Object.values(multiPrimarySect).every((n) => n === 1));
+
+console.log("\nTHE REASONING RELATION");
+// Structural invariants only. The row count is deliberately NOT asserted here:
+// this relation is meant to grow, and the exact count of any one pass belongs to
+// that pass's own migration.
+const reasoningObjects = concepts.filter((c) => c.object_type === "REASONING");
+let qro = null;
+try {
+  qro = await all("question_reasoning_objects", "question_id,concept_id,mapping_status,source");
+} catch {
+  qro = null;
+}
+if (qro === null) {
+  console.log("  --    question_reasoning_objects does not exist yet (migration 1 not applied)");
+} else {
+  ok("every reasoning mapping points at a REASONING object",
+    qro.every((m) => byId.get(m.concept_id)?.object_type === "REASONING"),
+    [...new Set(qro.filter((m) => byId.get(m.concept_id)?.object_type !== "REASONING")
+      .map((m) => byId.get(m.concept_id)?.object_type))].join(", "));
+  ok("no reasoning mapping points at a deprecated object",
+    qro.every((m) => byId.get(m.concept_id)?.status !== "DEPRECATED"));
+  ok("no duplicate question and object pair",
+    new Set(qro.map((m) => `${m.question_id}|${m.concept_id}`)).size === qro.length);
+  ok("every reasoning mapping is AI_PROPOSED or better, never overstated",
+    qro.every((m) => ["AI_PROPOSED", "DETERMINISTIC", "HUMAN_VALIDATED", "NEEDS_REVIEW"].includes(m.mapping_status)));
+  // A reasoning object carrying question evidence must say what it means. This
+  // is the check that would have caught Reaction Mechanism Analysis, which had
+  // no description at all, before anything was mapped to it.
+  const carrying = new Set(qro.map((m) => m.concept_id));
+  const undefinedCarriers = reasoningObjects.filter(
+    (c) => carrying.has(c.id) && !String(c.description || "").trim());
+  ok("every reasoning object with question evidence has a definition",
+    undefinedCarriers.length === 0, undefinedCarriers.map((c) => c.slug).join(", "));
+}
+// True whether or not the relation exists yet: a cross-cutting object never
+// carries content taxonomy, and question_concepts stays CONTENT-only.
+ok("no REASONING object carries a section, a discipline or a category",
+  !reasoningObjects.some((c) => sects[c.id] || disciplinesOf[c.id] || catsOf[c.id]),
+  reasoningObjects.filter((c) => sects[c.id] || disciplinesOf[c.id] || catsOf[c.id]).map((c) => c.slug).join(", "));
+ok("question_concepts still holds only CONTENT",
+  qc.every((m) => byId.get(m.concept_id)?.object_type === "CONTENT"));
 
 console.log("\nDELIBERATELY LEFT ALONE");
 const mapped = new Set(qc.map((m) => m.question_id));

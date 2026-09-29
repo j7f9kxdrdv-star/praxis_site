@@ -42,6 +42,7 @@ const ONTOLOGY_TABLES = [
   "concept_relationships",
   "topics",
   "question_concepts",
+  "question_reasoning_objects",
   "flashcard_concepts",
   "mcat_sections",
   "disciplines",
