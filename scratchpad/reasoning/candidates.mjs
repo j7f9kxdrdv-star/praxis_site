@@ -1,0 +1,24 @@
+import { all } from "../backfill/record.mjs";
+import fs from "node:fs";
+const IM=JSON.parse(fs.readFileSync("/tmp/immune_reasoning_candidates.json","utf8"));
+const CV=JSON.parse(fs.readFileSync("/tmp/cardio_reasoning.json","utf8"));
+const ids=[...IM.map(r=>r.question_id),...CV.map(r=>r.question_id)];
+const Q=await all("questions","id,topic,subtopic,question_text,options,correct_answer,explanation,cognitive_skill,passage_id");
+const QC=await all("question_concepts","question_id,concept_id,role");
+const C=await all("concepts","id,canonical_name");
+const byId=new Map(C.map(c=>[c.id,c]));
+const content=new Map(QC.filter(r=>r.role==="PRIMARY").map(r=>[r.question_id,byId.get(r.concept_id)?.canonical_name]));
+const prior=new Map([...IM.map(r=>[r.question_id,r.reasoning]),...CV.map(r=>[r.question_id,r.reasoning])]);
+const start=Number(process.argv[2]||0), end=Number(process.argv[3]||36);
+console.log(`36 candidates, showing ${start+1} to ${Math.min(end,36)}\n`);
+ids.slice(start,end).forEach((id,i)=>{
+  const q=Q.find(x=>x.id===id);
+  const o=typeof q.options==="string"?JSON.parse(q.options):q.options;
+  console.log(`${"─".repeat(72)}`);
+  console.log(`${start+i+1}. [${q.topic==="The Immune System"?"IM":"CV"}] ${q.subtopic}`);
+  console.log(`   CONTENT: ${content.get(id)} | skill ${q.cognitive_skill} | passage ${q.passage_id?"YES":"no"} | prior guess: ${prior.get(id)}`);
+  console.log(`   Q: ${String(q.question_text).replace(/\s+/g," ").trim()}`);
+  if(Array.isArray(o)) o.forEach((x,j)=>console.log(`      ${"ABCD"[j]}. ${String(typeof x==="string"?x:x.text||"").replace(/\s+/g," ").slice(0,145)}`));
+  console.log(`   ANS ${q.correct_answer}`);
+  console.log(`   WHY: ${String(q.explanation||"").replace(/\s+/g," ").slice(0,300)}`);
+});
