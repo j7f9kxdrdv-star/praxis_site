@@ -108,6 +108,42 @@ const taxonomyRows = [
 ok("no cross-cutting object carries content taxonomy",
   !taxonomyRows.some((r) => nonContentIds.has(r.concept_id)));
 
+// SLUG CONVENTION. A cross-cutting object is prefixed by its axis: RO_ for a
+// reasoning operation, QK_ for a quantitative tool. Nothing in the runtime
+// resolves a concept by slug, so this buys no behaviour; it keeps the authoring
+// vocabulary legible and it is how a human tells the three axes apart while
+// reading a seed file. Written as a rule over all such objects rather than a
+// count, so a new object added tomorrow has to conform too.
+const crossCutting = concepts.filter(
+  (c) => c.object_type !== "CONTENT" && c.status !== "DEPRECATED");
+const badPrefix = crossCutting.filter(
+  (c) => !c.slug.startsWith(c.object_type === "REASONING" ? "RO_" : "QK_"));
+ok("every reasoning and quantitative slug carries its axis prefix",
+  badPrefix.length === 0, badPrefix.map((c) => `${c.slug} (${c.object_type})`).join(", "));
+
+// A cross-cutting object carries NO section, discipline or AAMC category by
+// design, so its description is the only thing in the database that says what
+// it means. An undescribed one is a name and nothing else, and a name is what
+// the ontology exists to stop people reasoning from.
+const undescribed = crossCutting.filter((c) => !String(c.description || "").trim());
+ok("every reasoning and quantitative object has a definition",
+  undescribed.length === 0, undescribed.map((c) => c.slug).join(", "));
+
+// The four vector objects were seeded off-convention and fixed by
+// 20260930_vector_slug_convention.sql. Named explicitly because the two rules
+// above would also pass if these four had been deleted instead of renamed.
+const vectorSlugs = [
+  "QK_VECTORS_AND_SCALARS",
+  "QK_VECTOR_ADDITION_AND_COMPONENTS",
+  "QK_VECTOR_SUBTRACTION_AND_SCALAR_MULTIPLICATION",
+  "QK_DOT_AND_CROSS_PRODUCTS",
+];
+const vectors = concepts.filter((c) => vectorSlugs.includes(c.slug));
+ok("the four vector objects are present, live and quantitative",
+  vectors.length === 4 && vectors.every(
+    (c) => c.object_type === "QUANTITATIVE" && c.status !== "DEPRECATED"),
+  `${vectors.length} of 4`);
+
 console.log("\nRELATIONSHIPS");
 // THESE WERE TWO MAGIC NUMBERS. They asserted 609 and 583 without ever saying
 // what would be wrong if the figure differed, so every phase that legitimately
