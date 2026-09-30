@@ -1,0 +1,21 @@
+import { all } from "../backfill/record.mjs";
+const P=[]; const chk=(n,pass,d="")=>{console.log(`  ${pass?"ok  ":"FAIL"}  ${n}${d?"   "+d:""}`);if(!pass)P.push(n);};
+const C=await all("concepts","id,slug,canonical_name,description,object_type,status,deprecated_by");
+const QC=await all("question_concepts","question_id,concept_id,role");
+const FC=await all("flashcard_concepts","flashcard_id,concept_id");
+const QRO=await all("question_reasoning_objects","question_id,concept_id");
+const Q=await all("questions","id");
+const act=C.filter(c=>c.status!=="DEPRECATED");
+console.log("LIVE STATE, "+new Date().toISOString());
+chk("ontology objects = 1,130", C.length===1130, String(C.length));
+chk("question_concepts = 2,673", QC.length===2673, String(QC.length));
+chk("flashcard_concepts = 4,115", FC.length===4115, String(FC.length));
+chk("question_reasoning_objects = 24", QRO.length===24, String(QRO.length));
+const byType=t=>act.filter(c=>c.object_type===t).length;
+chk("REASONING objects = 13", byType("REASONING")===13, String(byType("REASONING")));
+chk("QUANTITATIVE objects = 20", byType("QUANTITATIVE")===20, String(byType("QUANTITATIVE")));
+const mappedQ=new Set(QC.map(r=>r.question_id));
+const unmapped=Q.filter(q=>!mappedQ.has(q.id));
+chk("unmapped questions = 20", unmapped.length===20, String(unmapped.length));
+console.log("\n  active:"+act.length+"  deprecated:"+(C.length-act.length)
+  +"  CONTENT:"+byType("CONTENT"));

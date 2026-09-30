@@ -1,0 +1,15 @@
+import { all } from "../backfill/record.mjs";
+const Q=await all("questions","id,section,discipline,topic");
+const C=await all("concepts","id,canonical_name,object_type,status,description,slug");
+const FC=await all("flashcard_concepts","concept_id,flashcard_id");
+const d={}; Q.forEach(q=>d[q.discipline]=(d[q.discipline]||0)+1);
+console.log("questions by discipline: "+JSON.stringify(d));
+const s={}; Q.forEach(q=>s[q.section]=(s[q.section]||0)+1);
+console.log("questions by section: "+JSON.stringify(s));
+const quant=C.filter(c=>c.object_type==="QUANTITATIVE");
+console.log("\nQUANTITATIVE cards total: "+quant.reduce((a,c)=>a+FC.filter(r=>r.concept_id===c.id).length,0));
+console.log("QUANTITATIVE missing QK_ prefix: "+quant.filter(c=>!c.slug.startsWith("QK_")).map(c=>c.slug).join(", "));
+console.log("QUANTITATIVE missing description: "+quant.filter(c=>!c.description).map(c=>c.slug).join(", "));
+const reas=C.filter(c=>c.object_type==="REASONING");
+console.log("REASONING missing RO_ prefix: "+(reas.filter(c=>!c.slug.startsWith("RO_")).map(c=>c.slug).join(", ")||"none"));
+console.log("\nempty descriptions among ACTIVE CONTENT: "+C.filter(c=>c.object_type==="CONTENT"&&c.status!=="DEPRECATED"&&!c.description).length+" of "+C.filter(c=>c.object_type==="CONTENT"&&c.status!=="DEPRECATED").length);
