@@ -8,6 +8,9 @@ import { all } from "../backfill/record.mjs";
 import fs from "node:fs";
 import crypto from "node:crypto";
 
+// Stamped BEFORE any read. Stamping it after means a review landing between
+// the state read and the stamp looks like an unexplained change later.
+const TAKEN_AT = new Date().toISOString();
 const OUT = "scratchpad/lipid/pre_split_snapshot.json";
 const PARENT = "LIPID_MOBILIZATION_TRANSPORT";
 
@@ -43,7 +46,7 @@ const questions = QC.filter((r) => r.concept_id === parent.id)
 // rewrite of 7,000 rows.
 const fsrsRows = S.map((r) => `${r.flashcard_id}|${r.cloze_index}|${r.user_id}|${r.stability}|${r.difficulty}|${r.reps}|${r.lapses}|${r.fsrs_state}|${r.interval_days}|${r.ease_factor}|${r.next_review_at}|${r.last_reviewed_at}|${r.suspended}`).sort();
 const snap = {
-  takenAt: new Date().toISOString(),
+  takenAt: TAKEN_AT,
   purpose: "Pre-state for the Lipid Mobilization & Transport split (migration 2). Immutable.",
   parent: {
     id: parent.id, slug: parent.slug, canonicalName: parent.canonical_name,

@@ -259,11 +259,32 @@ const qById = new Map(Q.map((q) => [q.id, q]));
 // matches the concept's CURRENT NAME OR ONE OF ITS ALIASES.
 const aliasRows = await all("concept_aliases", "concept_id,alias");
 const aliasesOf = aliasRows.reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.alias), a), {});
-ok("the exact-equality cohort matches a current or historical name",
-  qc.filter((m) => m.source === "DETERMINISTIC_EXACT").every((m) => {
-    const sub = qById.get(m.question_id)?.subtopic;
-    return sub === byId.get(m.concept_id)?.canonical_name || aliasesOf[m.concept_id]?.has(sub);
-  }));
+// A SPLIT BREAKS NAME EQUALITY TOO, and unlike a rename it cannot be repaired
+// by an alias: the parent keeps its own name, and UNIQUE (alias, alias_type)
+// means the old name could be filed against at most one of the two children
+// anyway. So the legitimate case is named. A question whose subtopic still
+// reads "Lipid Mobilization & Transport" is expected to point at one of that
+// split's children now, and the check below still fails if it points anywhere
+// else, or if some other subtopic quietly stops matching.
+const splitParentNames = new Set(SPLIT_PARENTS.map(
+  (sl) => concepts.find((c) => c.slug === sl)?.canonical_name).filter(Boolean));
+const splitChildIds = new Set(SPLIT_CHILDREN.map(
+  (sl) => concepts.find((c) => c.slug === sl)?.id).filter(Boolean));
+const exactCohort = qc.filter((m) => m.source === "DETERMINISTIC_EXACT");
+const nameMismatch = exactCohort.filter((m) => {
+  const sub = qById.get(m.question_id)?.subtopic;
+  if (sub === byId.get(m.concept_id)?.canonical_name || aliasesOf[m.concept_id]?.has(sub)) return false;
+  // Excused only if the subtopic names a split parent AND the mapping now
+  // resolves to one of that split's children.
+  return !(splitParentNames.has(sub) && splitChildIds.has(m.concept_id));
+});
+ok("the exact-equality cohort matches a current or historical name, or moved to a split child",
+  nameMismatch.length === 0,
+  nameMismatch.slice(0, 3).map((m) => qById.get(m.question_id)?.subtopic).join(", "));
+ok("every question excused by the split rule landed on a split child",
+  exactCohort.filter((m) => splitParentNames.has(qById.get(m.question_id)?.subtopic))
+    .every((m) => splitChildIds.has(m.concept_id)),
+  String(exactCohort.filter((m) => splitParentNames.has(qById.get(m.question_id)?.subtopic)).length) + " excused");
 
 const SEC = { chem_phys: "CHEM_PHYS", bio_biochem: "BIO_BIOCHEM", psych_soc: "PSYCH_SOC", cars: "CARS" };
 // MEMBERSHIP, not equality. This check originally compared a single
