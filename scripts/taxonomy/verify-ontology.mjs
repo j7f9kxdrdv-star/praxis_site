@@ -70,9 +70,34 @@ ok("every object is ACTIVE_SEED or DEPRECATED", concepts.every((c) => c.status =
 // invariants that actually protect learner history are the other two, which hold
 // at any count.
 ok("deprecations never reverse, floor 176", deprecated.length >= 176, String(deprecated.length));
-ok("every deprecated concept names a successor",
-  deprecated.every((c) => c.deprecated_by),
-  deprecated.filter((c) => !c.deprecated_by).map((c) => c.slug).join(", "));
+// A MERGE leaves a successor; a SPLIT cannot, because there is no single heir
+// and naming one would assert something false. So successorless deprecation is
+// legal only where a split was deliberately performed, and the legal cases are
+// named here rather than waved through by relaxing the rule. A new
+// successorless deprecation that nobody recorded still fails.
+const SPLIT_PARENTS = ["LIPID_MOBILIZATION_TRANSPORT"];
+const orphaned = deprecated.filter((c) => !c.deprecated_by && !SPLIT_PARENTS.includes(c.slug));
+ok("every deprecated concept names a successor, except recorded split parents",
+  orphaned.length === 0, orphaned.map((c) => c.slug).join(", "));
+ok("every recorded split parent is in fact deprecated and successorless",
+  SPLIT_PARENTS.every((sl) => {
+    const c = concepts.find((x) => x.slug === sl);
+    return c && c.status === "DEPRECATED" && !c.deprecated_by;
+  }),
+  SPLIT_PARENTS.filter((sl) => {
+    const c = concepts.find((x) => x.slug === sl);
+    return !(c && c.status === "DEPRECATED" && !c.deprecated_by);
+  }).join(", "));
+
+// The children a split produced must exist and be live. Without this, deleting
+// both children would leave the rule above passing on a parent deprecated into
+// nothing at all.
+const SPLIT_CHILDREN = ["ADIPOSE_FAT_MOBILIZATION", "LIPOPROTEIN_CLASSES_CHOLESTEROL_TRANSPORT"];
+const kids = concepts.filter((c) => SPLIT_CHILDREN.includes(c.slug));
+ok("the lipid split children exist, are live, and carry definitions",
+  kids.length === 2 && kids.every(
+    (c) => c.status === "ACTIVE_SEED" && c.object_type === "CONTENT" && String(c.description || "").trim()),
+  `${kids.length} of 2`);
 ok("no deprecated_by points at a concept that does not exist",
   deprecated.every((c) => !c.deprecated_by || byIdEarly.has(c.deprecated_by)),
   deprecated.filter((c) => c.deprecated_by && !byIdEarly.has(c.deprecated_by)).map((c) => c.slug).join(", "));

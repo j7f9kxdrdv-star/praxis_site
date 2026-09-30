@@ -1,0 +1,366 @@
+{
+ "takenAt": "2026-09-30T21:48:06.850Z",
+ "purpose": "Pre-state for the Lipid Mobilization & Transport split (migration 2). Immutable.",
+ "parent": {
+  "id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+  "slug": "LIPID_MOBILIZATION_TRANSPORT",
+  "canonicalName": "Lipid Mobilization & Transport",
+  "description": null,
+  "objectType": "CONTENT",
+  "status": "ACTIVE_SEED",
+  "version": 1,
+  "deprecatedBy": null,
+  "conceptLevel": "CONCEPT",
+  "parentConceptId": null,
+  "contentCategoryColumn": null,
+  "sections": [
+   {
+    "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+    "section_code": "BIO_BIOCHEM",
+    "is_primary": true
+   }
+  ],
+  "disciplines": [
+   {
+    "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+    "discipline_code": "BIOCHEMISTRY",
+    "role": "PRIMARY"
+   }
+  ],
+  "contentCategories": [
+   {
+    "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+    "content_category": "Metabolism of Fatty Acids and Proteins",
+    "is_primary": true
+   }
+  ],
+  "aliases": []
+ },
+ "flashcards": [
+  {
+   "flashcard_id": "2106f62c-1130-4b23-8e24-cd161fd8904d",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "286475e3-dbee-4ddd-b12c-26182703f644",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "2eb0f47d-be19-409d-ab0a-a0b2dc6cc5f4",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "2f463545-6633-443b-8a92-9825b8e5871c",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "498fdb2c-ecbf-4777-b7d4-df28d411c9c1",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "5c2380c2-0356-48ce-81ae-e90004635fb4",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "6da4235c-1039-41f2-b061-060dc7218fd1",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "7d0c69e5-1e1d-4061-826a-dd4ad94dc426",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "7ef7bb98-09f0-4a25-9eb9-97aaab4a38b7",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "85066347-0336-4bb5-a0cf-d327cc69e41c",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "92f625de-0ce2-4773-869b-efa1baf29a08",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "9eeb0b22-95e3-4b86-b4ef-5c4460951d4b",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "b393432e-665c-47fc-9b13-c66af880a80d",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "c169a43b-a39a-4730-b4f4-9a6e93201213",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "c273b5a0-39b2-49b5-802b-dea9567bd38a",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "c8cd1838-574f-45d8-9493-95c342b7c657",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "ce248d8d-4a46-488b-99fb-2bfa35c22199",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "d2a3020b-becf-4dc3-be67-66af3f77a507",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "d683d661-8ba8-4336-b473-320bb498e6eb",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "d72ce200-fd17-4361-a5d8-bc87b10c0329",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "flashcard_id": "f256e0af-cd39-4e34-ac9c-8310e1100ba7",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "created_at": "2026-09-26T16:31:22.894689+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  }
+ ],
+ "questions": [
+  {
+   "question_id": "62d14d91-b276-4753-a3e4-2a6fc1af478a",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": 1,
+   "mapping_status": "DETERMINISTIC",
+   "source": "DETERMINISTIC_EXACT",
+   "created_at": "2026-09-24T15:13:52.694537+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "question_id": "654c9081-a869-4aa3-8faa-723c83edc26a",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": 1,
+   "mapping_status": "DETERMINISTIC",
+   "source": "DETERMINISTIC_EXACT",
+   "created_at": "2026-09-24T15:13:52.694537+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "question_id": "80fbc6b8-a4b4-4e08-a72e-c6dd20b35ae6",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": 1,
+   "mapping_status": "DETERMINISTIC",
+   "source": "DETERMINISTIC_EXACT",
+   "created_at": "2026-09-24T15:13:52.694537+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "question_id": "c34afa80-036b-4483-8540-e2fd3fa19cd0",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": 1,
+   "mapping_status": "DETERMINISTIC",
+   "source": "DETERMINISTIC_EXACT",
+   "created_at": "2026-09-24T15:13:52.694537+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "question_id": "cec05f2f-6d03-449e-ae09-2592c6717821",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": 1,
+   "mapping_status": "DETERMINISTIC",
+   "source": "DETERMINISTIC_EXACT",
+   "created_at": "2026-09-24T15:13:52.694537+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "question_id": "d37819fd-caca-45b6-81c2-690565f505f6",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": 1,
+   "mapping_status": "DETERMINISTIC",
+   "source": "DETERMINISTIC_EXACT",
+   "created_at": "2026-09-24T15:13:52.694537+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  },
+  {
+   "question_id": "ecd55519-61d8-4094-9536-8ceda50290d1",
+   "concept_id": "dcc6b170-e109-4cca-b737-c60dc0f0128f",
+   "role": "PRIMARY",
+   "confidence": 1,
+   "mapping_status": "DETERMINISTIC",
+   "source": "DETERMINISTIC_EXACT",
+   "created_at": "2026-09-24T15:13:52.694537+00:00",
+   "reviewed_at": null,
+   "reviewed_by": null
+  }
+ ],
+ "totals": {
+  "concepts": 1130,
+  "activeConcepts": 954,
+  "flashcardConcepts": 4115,
+  "questionConcepts": 2673,
+  "conceptAliases": 5
+ },
+ "learnerBaseline": {
+  "flashcardUserStateRows": 8333,
+  "flashcardReviewRows": 50086,
+  "questionAttemptRows": 656,
+  "fsrsDigest": "4d6f1fc07b6f5e0048d83912ca0aaaefabaed084cfd4fc6602099e779a73a394",
+  "latestReviewAt": "2026-09-30T21:47:58.680025+00:00"
+ },
+ "sha256": "036ccdc30687f4e222bcdecb5d61bf622f8105cf52a563a56c077915418f29d5"
+}
