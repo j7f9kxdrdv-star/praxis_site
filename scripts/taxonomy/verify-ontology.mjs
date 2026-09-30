@@ -55,15 +55,27 @@ async function all(t, c) {
 
 console.log("\nSEEDED VOCABULARY");
 const concepts = await all("concepts", "id,slug,canonical_name,description,status,deprecated_by,split_candidate,concept_level,parent_concept_id,object_type");
-ok("1,129 objects (846 + 239 psych/soc + 42 backfill + 2 question-only)", concepts.length === 1129, String(concepts.length));
+// A FLOOR. Vocabulary growth is the point of the programme, so an equality here
+// would fail on success. The exact before-and-after belongs to each seeding
+// migration, where it proves that migration did what it said.
+ok("ontology objects never shrink below 1,129", concepts.length >= 1129, String(concepts.length));
 // 83 immune labels are DEPRECATED by the question-side reconciliation. Every
 // other object is still ACTIVE_SEED, and a deprecated one must name a successor
 // so an attempt recorded against it can still be explained.
 const deprecated = concepts.filter((c) => c.status === "DEPRECATED");
+const byIdEarly = new Map(concepts.map((c) => [c.id, c]));
 ok("every object is ACTIVE_SEED or DEPRECATED", concepts.every((c) => c.status === "ACTIVE_SEED" || c.status === "DEPRECATED"));
-ok("176 deprecated, each naming a successor",
-  deprecated.length === 176 && deprecated.every((c) => c.deprecated_by),
-  `${deprecated.length} deprecated, ${deprecated.filter((c) => !c.deprecated_by).length} without a successor`);
+// The COUNT is the weakest of these three and is only a floor: deprecation is
+// monotonic under the lifecycle model, nothing is ever un-deprecated. The
+// invariants that actually protect learner history are the other two, which hold
+// at any count.
+ok("deprecations never reverse, floor 176", deprecated.length >= 176, String(deprecated.length));
+ok("every deprecated concept names a successor",
+  deprecated.every((c) => c.deprecated_by),
+  deprecated.filter((c) => !c.deprecated_by).map((c) => c.slug).join(", "));
+ok("no deprecated_by points at a concept that does not exist",
+  deprecated.every((c) => !c.deprecated_by || byIdEarly.has(c.deprecated_by)),
+  deprecated.filter((c) => c.deprecated_by && !byIdEarly.has(c.deprecated_by)).map((c) => c.slug).join(", "));
 ok("200 split candidates flagged", concepts.filter((c) => c.split_candidate).length === 200);
 ok("the rename kept one concept and filed an alias",
   concepts.some((c) => c.canonical_name === "Respiratory Thermoregulation") &&
@@ -201,7 +213,11 @@ const sects = (await all("concept_sections", "concept_id,section_code"))
   .reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.section_code), a), {});
 ok("section compatible on every mapping",
   qc.every((m) => sects[m.concept_id]?.has(SEC[qById.get(m.question_id)?.section])));
-ok("1,097 content concepts placed in a section", new Set(Object.keys(sects)).size === 1097);
+// A floor plus the rule that matters: every CONTENT concept carrying a question
+// or a card must be reachable by section. Freezing the population would fail the
+// next time vocabulary is seeded.
+ok("content concepts in a section never shrink below 1,097",
+  new Set(Object.keys(sects)).size >= 1097, String(new Set(Object.keys(sects)).size));
 // EVERY SECTION A CONCEPT CLAIMS MUST BE EARNED. This replaces a hardcoded
 // count of cross-section concepts, which went stale the moment two concepts
 // were legitimately widened. The count was never the point: the failure mode is
@@ -264,9 +280,11 @@ console.log("\nFLASHCARD MAPPINGS");
 const fc = await all("flashcard_concepts", "flashcard_id,concept_id,mapping_status,source");
 const typeOf = Object.fromEntries(concepts.map((c) => [c.id, c.object_type]));
 const byType = fc.reduce((a, m) => ((a[typeOf[m.concept_id]] = (a[typeOf[m.concept_id]] || 0) + 1), a), {});
-ok("4,115 card mappings (1,183 + 778 psych/soc + 2,154 backfill)", fc.length === 4115, String(fc.length));
-ok("CONTENT 3987 / REASONING 36 / QUANTITATIVE 92",
-  byType.CONTENT === 3987 && byType.REASONING === 36 && byType.QUANTITATIVE === 92, JSON.stringify(byType));
+// A floor. Authoring new cards and mapping them is normal growth; the structural
+// checks below are what keep those mappings honest.
+ok("card mappings never shrink below 4,115", fc.length >= 4115, String(fc.length));
+ok("card mappings by type never shrink below 3987 / 36 / 92",
+  byType.CONTENT >= 3987 && byType.REASONING >= 36 && byType.QUANTITATIVE >= 92, JSON.stringify(byType));
 // Provenance must not overstate. The vocabulary was approved; 314 individual
 // rows were not reviewed, and the status must not claim they were.
 ok("no card mapping claims HUMAN_VALIDATED", fc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
@@ -278,7 +296,7 @@ ok("all card mappings are AI_PROPOSED", fc.every((m) => m.source === "AI_PROPOSE
 const contentIds = new Set(concepts.filter((c) => c.object_type === "CONTENT").map((c) => c.id));
 ok("reasoning and quantitative mappings exist but are outside content",
   fc.some((m) => !contentIds.has(m.concept_id)) &&
-  fc.filter((m) => contentIds.has(m.concept_id)).length === 3987);
+  fc.filter((m) => contentIds.has(m.concept_id)).length >= 3987);
 ok("every question mapping still points at CONTENT",
   qc.every((m) => contentIds.has(m.concept_id)));
 
@@ -592,7 +610,45 @@ ok("question_concepts still holds only CONTENT",
 console.log("\nDELIBERATELY LEFT ALONE");
 const mapped = new Set(qc.map((m) => m.question_id));
 const unmapped = Q.filter((q) => !mapped.has(q.id));
-ok("20 questions remain unmapped", unmapped.length === 20, String(unmapped.length));
+// A CEILING AND A NAMED SET, NEVER A FLOOR.
+//
+// Every other count here became a floor because growth is legitimate. This one
+// is the opposite: an unmapped question is a gap, and ">= 20" would let the
+// backlog grow silently while the verifier stayed green. Worse, a bare ceiling
+// would still allow one backlog question to be fixed while a newly authored one
+// quietly takes its place.
+//
+// So the accepted backlog is named. All 20 are the same subtopic, Chemistry of
+// the Groups, which is one coherent gap rather than scatter. Any unmapped
+// question outside this set is new and fails.
+const KNOWN_UNMAPPED = new Set([
+  "281971ff-47d5-48f2-ade7-bb49b09ecf78",
+  "73b5fcb7-a512-42ca-8ec3-b430c9264f47",
+  "ab4d6752-bed6-4716-a5e4-99eec8fcc551",
+  "5ef31e94-271a-4344-b482-e4d9bacc7bb5",
+  "055c6d03-4f75-493d-81ab-94ddabff502f",
+  "41f87b91-e2a7-4348-8495-48cd042eece3",
+  "487d627f-035c-4192-b71a-b7d7f4fd845d",
+  "0ecd7bac-0143-47c1-98a8-66483b9da663",
+  "d20971ce-413f-44b2-ba81-d55af592d136",
+  "6486571a-1237-471c-bb9b-8c373f61c395",
+  "75a2da19-403a-461a-ba4c-d9721d233eec",
+  "b7858478-c39f-4aeb-bb6b-32894e259ab7",
+  "be5f387b-e6b2-4ec3-8197-821198b54cda",
+  "c6f7963e-fa2b-4c69-b852-aef86e5f6c4e",
+  "2500b00c-f29c-43f6-9c8a-8009805b7c5d",
+  "883f79c9-3fad-4d44-a63e-d104d6a890aa",
+  "eee33c57-0002-4666-81a6-f7a1fb97a1b9",
+  "f4f7b834-bb1f-401a-b380-2f173274871c",
+  "2f153e0e-453a-4ff7-b1ec-b304739cde77",
+  "9e2a17c9-cac8-4c02-a0c8-379b30ac5965",
+]);
+const strayUnmapped = unmapped.filter((q) => !KNOWN_UNMAPPED.has(q.id));
+ok("unmapped questions never exceed the accepted backlog of 20",
+  unmapped.length <= 20, String(unmapped.length));
+ok("every unmapped question is in the named backlog, none newly authored",
+  strayUnmapped.length === 0,
+  strayUnmapped.map((q) => `${q.topic}: ${q.subtopic}`).join(" | "));
 ok("no unmapped question's label is a concept name",
   unmapped.every((q) => !concepts.some((c) => c.canonical_name === q.subtopic)));
 
