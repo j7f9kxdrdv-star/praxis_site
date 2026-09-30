@@ -726,8 +726,18 @@ try {
     await db.from("concept_aliases").delete().eq("concept_id", fixture);
     await db.from("concepts").delete().eq("id", fixture);
   }
-  const left = (await count("concepts")) === 1129 && (await count("concept_aliases")) === 5;
-  ok("fixture fully removed, no residue", left);
+  // THE SAME DEFECT AS THE COUNTS ABOVE, and it hid here because it is phrased
+  // as a cleanup check rather than a population check. Comparing the whole
+  // concepts table against a magic number fails the next time anything is
+  // seeded, which is exactly what happened when Data Interpretation landed. Ask
+  // about the fixture itself instead: it is a stronger check and it never goes
+  // stale.
+  const { data: leftC } = await db.from("concepts").select("id").eq("id", fixture);
+  const { data: leftA } = await db.from("concept_aliases").select("concept_id").eq("concept_id", fixture);
+  const { data: leftQ } = await db.from("question_concepts").select("concept_id").eq("concept_id", fixture);
+  ok("fixture fully removed, no residue",
+    (leftC?.length ?? 0) === 0 && (leftA?.length ?? 0) === 0 && (leftQ?.length ?? 0) === 0,
+    `concept ${leftC?.length ?? 0}, alias ${leftA?.length ?? 0}, mapping ${leftQ?.length ?? 0}`);
 }
 
 console.log("\n" + (fail ? `${fail} FAILURE(S), ${pass} passed` : `all ${pass} checks pass`));
