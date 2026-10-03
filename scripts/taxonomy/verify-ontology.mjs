@@ -105,6 +105,22 @@ ok("200 split candidates flagged", concepts.filter((c) => c.split_candidate).len
 ok("the rename kept one concept and filed an alias",
   concepts.some((c) => c.canonical_name === "Respiratory Thermoregulation") &&
   !concepts.some((c) => c.canonical_name === "Thermoregulation"));
+
+// Every rename in this programme, as a rule over a named set: the concept
+// answers to its new name, its old name is gone as a canonical name, the old
+// name survives as a LEGACY_NAME alias, and the SLUG is untouched. That last
+// clause is the project's convention, and the reason Respiratory
+// Thermoregulation still carries the slug THERMOREGULATION.
+const RENAMES = [
+  { slug: "THERMOREGULATION", from: "Thermoregulation", to: "Respiratory Thermoregulation" },
+  { slug: "OXIDATION_REDUCING_SUGARS", from: "Oxidation & Reducing Sugars", to: "Sugar Oxidation Products" },
+];
+const renameFaults = RENAMES.filter((r) => {
+  const c = concepts.find((x) => x.slug === r.slug);
+  return !c || c.canonical_name !== r.to || concepts.some((x) => x.canonical_name === r.from);
+});
+ok("every renamed concept answers to its new name under its original slug",
+  renameFaults.length === 0, renameFaults.map((r) => r.slug).join(", "));
 ok("slugs unique", new Set(concepts.map((c) => c.slug)).size === concepts.length);
 ok("canonical names unique", new Set(concepts.map((c) => c.canonical_name)).size === concepts.length);
 ok("hierarchy left flat", concepts.every((c) => c.concept_level === "CONCEPT" && !c.parent_concept_id));
@@ -219,14 +235,23 @@ ok("provenance is deterministic or AI_PROPOSED, never human-validated",
   qc.every((m) => ["DETERMINISTIC_EXACT", "DETERMINISTIC", "AI_PROPOSED"].includes(m.source)));
 // Also floors. The deterministic populations only shrink if something repoints
 // them, which is worth catching; AI_PROPOSED is free to grow.
-ok("deterministic mappings never shrink below 2,054 and 417",
-  qc.filter((m) => m.source === "DETERMINISTIC_EXACT").length >= 2054 &&
+// The EXACT floor moved 2,054 -> 2,051 when migration 3 repointed three
+// carbohydrate questions by hand. Lowering a floor is how a deliberate,
+// recorded repoint is absorbed; the floor still catches an undeclared one,
+// which is what it caught here before the migration ran.
+ok("deterministic mappings never shrink below 2,051 and 417",
+  qc.filter((m) => m.source === "DETERMINISTIC_EXACT").length >= 2051 &&
   qc.filter((m) => m.source === "DETERMINISTIC").length >= 417,
   JSON.stringify(qc.reduce((a, m) => ((a[m.source] = (a[m.source] || 0) + 1), a), {})));
 // Every AI_PROPOSED question mapping belongs to one of the two reconciled
 // chapters. If this ever catches a third, an unreviewed pass has written
 // somewhere it should not.
-const RECONCILED = new Set(["The Immune System", "The Cardiovascular System"]);
+// A third recorded pass joins the two chapter reconciliations: migration 3
+// repointed three questions out of Sugar Oxidation Products into Reducing &
+// Non-Reducing Sugars. The set is widened by naming that pass, not by relaxing
+// the rule, so a fourth chapter appearing still fails.
+const RECONCILED = new Set([
+  "The Immune System", "The Cardiovascular System", "Carbohydrate Structure and Function"]);
 ok("every AI_PROPOSED question mapping belongs to a reconciled chapter",
   qc.filter((m) => m.source === "AI_PROPOSED")
     .every((m) => RECONCILED.has(qById0.get(m.question_id)?.topic)),
@@ -259,6 +284,15 @@ const qById = new Map(Q.map((q) => [q.id, q]));
 // matches the concept's CURRENT NAME OR ONE OF ITS ALIASES.
 const aliasRows = await all("concept_aliases", "concept_id,alias");
 const aliasesOf = aliasRows.reduce((a, r) => ((a[r.concept_id] ??= new Set()).add(r.alias), a), {});
+// The other half of the rename rule, checked here because the alias rows are
+// only read at this point: the old name must still be findable.
+const aliasFaults = RENAMES.filter((r) => {
+  const c = concepts.find((x) => x.slug === r.slug);
+  return !c || !aliasRows.some(
+    (a) => a.concept_id === c.id && a.alias === r.from);
+});
+ok("every renamed concept keeps its old name as an alias", aliasFaults.length === 0,
+  aliasFaults.map((r) => r.from).join(", "));
 // A SPLIT BREAKS NAME EQUALITY TOO, and unlike a rename it cannot be repaired
 // by an alias: the parent keeps its own name, and UNIQUE (alias, alias_type)
 // means the old name could be filed against at most one of the two children

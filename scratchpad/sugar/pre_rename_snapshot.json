@@ -1,0 +1,236 @@
+{
+ "takenAt": "2026-10-03T18:25:17.664Z",
+ "purpose": "Pre-state for the reducing-sugar boundary repair (migration 3). Immutable.",
+ "conceptA": {
+  "id": "5b0439d8-9114-4191-ae44-1d09c924b053",
+  "slug": "OXIDATION_REDUCING_SUGARS",
+  "canonicalName": "Oxidation & Reducing Sugars",
+  "description": null,
+  "objectType": "CONTENT",
+  "status": "ACTIVE_SEED",
+  "version": 1,
+  "deprecatedBy": null,
+  "conceptLevel": "CONCEPT",
+  "parentConceptId": null,
+  "sections": [
+   {
+    "concept_id": "5b0439d8-9114-4191-ae44-1d09c924b053",
+    "section_code": "BIO_BIOCHEM",
+    "is_primary": true
+   }
+  ],
+  "disciplines": [
+   {
+    "concept_id": "5b0439d8-9114-4191-ae44-1d09c924b053",
+    "discipline_code": "BIOCHEMISTRY",
+    "role": "PRIMARY"
+   }
+  ],
+  "contentCategories": [
+   {
+    "concept_id": "5b0439d8-9114-4191-ae44-1d09c924b053",
+    "content_category": "Carbohydrates",
+    "is_primary": true
+   }
+  ],
+  "aliases": [],
+  "questionMappings": [
+   {
+    "question_id": "18ee658b-e1c8-463d-b495-20e0283148b3",
+    "concept_id": "5b0439d8-9114-4191-ae44-1d09c924b053",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT",
+    "created_at": "2026-09-24T15:13:52.694537+00:00",
+    "reviewed_at": null,
+    "reviewed_by": null
+   },
+   {
+    "question_id": "29efd5f2-32cc-4e7a-a799-947d92ebee71",
+    "concept_id": "5b0439d8-9114-4191-ae44-1d09c924b053",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT",
+    "created_at": "2026-09-24T15:13:52.694537+00:00",
+    "reviewed_at": null,
+    "reviewed_by": null
+   },
+   {
+    "question_id": "56644b98-ee7f-4189-b08c-7126fcc508f0",
+    "concept_id": "5b0439d8-9114-4191-ae44-1d09c924b053",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT",
+    "created_at": "2026-09-24T15:13:52.694537+00:00",
+    "reviewed_at": null,
+    "reviewed_by": null
+   },
+   {
+    "question_id": "d0f19c7b-2255-4544-8576-0558117cacba",
+    "concept_id": "5b0439d8-9114-4191-ae44-1d09c924b053",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT",
+    "created_at": "2026-09-24T15:13:52.694537+00:00",
+    "reviewed_at": null,
+    "reviewed_by": null
+   },
+   {
+    "question_id": "e45c97f6-a36b-45c4-83df-2693fb8e3a88",
+    "concept_id": "5b0439d8-9114-4191-ae44-1d09c924b053",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT",
+    "created_at": "2026-09-24T15:13:52.694537+00:00",
+    "reviewed_at": null,
+    "reviewed_by": null
+   }
+  ],
+  "flashcardMappings": [
+   {
+    "flashcard_id": "33961ffe-4c61-4488-85bf-02558394bd13",
+    "concept_id": "5b0439d8-9114-4191-ae44-1d09c924b053",
+    "role": "PRIMARY",
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "bbca2038-e4f3-4331-bca1-e18fbdfe1bb6",
+    "concept_id": "5b0439d8-9114-4191-ae44-1d09c924b053",
+    "role": "PRIMARY",
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   }
+  ]
+ },
+ "conceptB": {
+  "id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+  "slug": "REDUCING_NON_REDUCING_SUGARS",
+  "canonicalName": "Reducing & Non-Reducing Sugars",
+  "description": null,
+  "objectType": "CONTENT",
+  "status": "ACTIVE_SEED",
+  "version": 1,
+  "deprecatedBy": null,
+  "conceptLevel": "CONCEPT",
+  "parentConceptId": null,
+  "sections": [
+   {
+    "concept_id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+    "section_code": "BIO_BIOCHEM",
+    "is_primary": true
+   }
+  ],
+  "disciplines": [
+   {
+    "concept_id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+    "discipline_code": "BIOCHEMISTRY",
+    "role": "PRIMARY"
+   }
+  ],
+  "contentCategories": [
+   {
+    "concept_id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+    "content_category": "Carbohydrates",
+    "is_primary": true
+   }
+  ],
+  "aliases": [],
+  "questionMappings": [
+   {
+    "question_id": "0d3a0077-f065-4d6b-adbd-7bbb672efeda",
+    "concept_id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT",
+    "created_at": "2026-09-24T15:13:52.694537+00:00",
+    "reviewed_at": null,
+    "reviewed_by": null
+   },
+   {
+    "question_id": "14654729-37b4-4e26-9a5f-657d4052888f",
+    "concept_id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT",
+    "created_at": "2026-09-24T15:13:52.694537+00:00",
+    "reviewed_at": null,
+    "reviewed_by": null
+   },
+   {
+    "question_id": "85937471-0bd2-4c97-b231-aec0db81ba1d",
+    "concept_id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT",
+    "created_at": "2026-09-24T15:13:52.694537+00:00",
+    "reviewed_at": null,
+    "reviewed_by": null
+   },
+   {
+    "question_id": "fb369400-4c71-4729-9403-c87ce925991d",
+    "concept_id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT",
+    "created_at": "2026-09-24T15:13:52.694537+00:00",
+    "reviewed_at": null,
+    "reviewed_by": null
+   }
+  ],
+  "flashcardMappings": [
+   {
+    "flashcard_id": "0a4d605f-1c07-4b5b-bdb3-b1076fc0cbcc",
+    "concept_id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+    "role": "PRIMARY",
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "11910cf9-9143-4d31-afb8-e5b009acb2d9",
+    "concept_id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+    "role": "PRIMARY",
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "5795eac0-11a9-4938-a29a-16f9a5d232ed",
+    "concept_id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+    "role": "PRIMARY",
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "9935081c-40b3-4b77-a8e4-b1bb4b066406",
+    "concept_id": "475ee5d2-1e2f-4976-b1b3-7f8b614d10ce",
+    "role": "PRIMARY",
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   }
+  ]
+ },
+ "totals": {
+  "concepts": 1132,
+  "questionConcepts": 2673,
+  "flashcardConcepts": 4116,
+  "reasoningObjects": 24,
+  "aliases": 5,
+  "deprecated": 177
+ },
+ "learnerBaseline": {
+  "schedulerRows": 8408,
+  "reviewRows": 51004,
+  "attemptRows": 656,
+  "fsrsDigest": "4443980510cd4f5ea7663d683a41cda9ebac87d42d0d9f55739e4b56a502620b"
+ },
+ "sha256": "ef022e771f4234392fa0bba9e2a24a0efdc87dd304567ab53e5d11bf0091ddee"
+}
