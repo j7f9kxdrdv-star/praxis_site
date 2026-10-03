@@ -769,6 +769,7 @@ ok("no concept became a catch-all", top[0][1] <= 30, top[0][1] + " max");
 
 console.log("\nDATABASE GUARDS  (fixture: created, driven, removed)");
 let fixture = null;
+let liveFixture = null;
 try {
   const { data: f, error } = await db.from("concepts")
     .insert({ slug: "__FIXTURE_DELETE_ME__", canonical_name: "Fixture Delete Me", status: "DRAFT" })
@@ -799,14 +800,46 @@ try {
   const { error: e5 } = await db.from("question_concepts")
     .insert({ question_id: someQ, concept_id: fixture, role: "SECONDARY", mapping_status: "AI_PROPOSED", source: "AI_PROPOSED" });
   ok("a DEPRECATED concept refuses new mappings", !!e5);
+
+  // ─── The deprecated-target guard, both halves ───────────────────────────
+  // The INSERT half above was the whole check until 20261003. The lipid split
+  // fixture showed the trigger was attached BEFORE INSERT only, so an UPDATE
+  // could repoint an existing mapping onto a deprecated concept unchallenged.
+  // The invariant is that no evidence mapping can be CREATED on OR REPOINTED
+  // ONTO a deprecated concept, and both halves are driven here rather than
+  // asserted from a count, because a count cannot tell a guard that works from
+  // one that was dropped.
+  const { data: live, error: eLive } = await db.from("concepts")
+    .insert({ slug: "__FIXTURE_LIVE_TARGET__", canonical_name: "Fixture Live Target",
+              status: "ACTIVE_SEED", object_type: "CONTENT" })
+    .select("id").single();
+  if (eLive) throw new Error("live fixture concept: " + eLive.message);
+  liveFixture = live.id;
+
+  const { error: eIns } = await db.from("question_concepts").insert({
+    question_id: someQ, concept_id: liveFixture, role: "SECONDARY",
+    mapping_status: "AI_PROPOSED", source: "AI_PROPOSED" });
+  ok("a mapping onto a live concept is accepted", !eIns, eIns?.message ?? "");
+
+  const { error: eMeta } = await db.from("question_concepts")
+    .update({ confidence: 0.55 }).eq("question_id", someQ).eq("concept_id", liveFixture);
+  ok("an UPDATE that does not touch concept_id is not blocked", !eMeta, eMeta?.message ?? "");
+
+  const { error: eMove } = await db.from("question_concepts")
+    .update({ concept_id: fixture }).eq("question_id", someQ).eq("concept_id", liveFixture);
+  ok("a DEPRECATED concept refuses an existing mapping REPOINTED onto it", !!eMove);
+
+  const { data: stillThere } = await db.from("question_concepts")
+    .select("concept_id").eq("question_id", someQ).eq("concept_id", liveFixture);
+  ok("the refused repoint left the mapping where it was", (stillThere?.length ?? 0) === 1);
 } catch (err) {
   console.error("  FIXTURE ERROR:", err.message);
   fail++;
 } finally {
-  if (fixture) {
-    await db.from("question_concepts").delete().eq("concept_id", fixture);
-    await db.from("concept_aliases").delete().eq("concept_id", fixture);
-    await db.from("concepts").delete().eq("id", fixture);
+  for (const id of [fixture, liveFixture].filter(Boolean)) {
+    await db.from("question_concepts").delete().eq("concept_id", id);
+    await db.from("concept_aliases").delete().eq("concept_id", id);
+    await db.from("concepts").delete().eq("id", id);
   }
   // THE SAME DEFECT AS THE COUNTS ABOVE, and it hid here because it is phrased
   // as a cleanup check rather than a population check. Comparing the whole
@@ -814,9 +847,10 @@ try {
   // seeded, which is exactly what happened when Data Interpretation landed. Ask
   // about the fixture itself instead: it is a stronger check and it never goes
   // stale.
-  const { data: leftC } = await db.from("concepts").select("id").eq("id", fixture);
-  const { data: leftA } = await db.from("concept_aliases").select("concept_id").eq("concept_id", fixture);
-  const { data: leftQ } = await db.from("question_concepts").select("concept_id").eq("concept_id", fixture);
+  const ids = [fixture, liveFixture].filter(Boolean);
+  const { data: leftC } = await db.from("concepts").select("id").in("id", ids.length ? ids : ["00000000-0000-0000-0000-000000000000"]);
+  const { data: leftA } = await db.from("concept_aliases").select("concept_id").in("concept_id", ids.length ? ids : ["00000000-0000-0000-0000-000000000000"]);
+  const { data: leftQ } = await db.from("question_concepts").select("concept_id").in("concept_id", ids.length ? ids : ["00000000-0000-0000-0000-000000000000"]);
   ok("fixture fully removed, no residue",
     (leftC?.length ?? 0) === 0 && (leftA?.length ?? 0) === 0 && (leftQ?.length ?? 0) === 0,
     `concept ${leftC?.length ?? 0}, alias ${leftA?.length ?? 0}, mapping ${leftQ?.length ?? 0}`);
