@@ -1,0 +1,659 @@
+{
+ "takenAt": "2026-10-04T16:59:07.642Z",
+ "purpose": "Pre-state for the reaction-type disambiguation and Haber repoint (migration 4). Immutable.",
+ "conceptA": {
+  "id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+  "slug": "TYPES_REACTIONS",
+  "canonicalName": "Types of Reactions",
+  "description": null,
+  "objectType": "CONTENT",
+  "status": "ACTIVE_SEED",
+  "version": 1,
+  "deprecatedBy": null,
+  "sections": [
+   {
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "section_code": "CHEM_PHYS",
+    "is_primary": true
+   }
+  ],
+  "disciplines": [
+   {
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "discipline_code": "GENERAL_CHEMISTRY",
+    "role": "PRIMARY"
+   }
+  ],
+  "contentCategories": [
+   {
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "content_category": "Stoichiometry (GC)",
+    "is_primary": true
+   }
+  ],
+  "aliases": [],
+  "flashcardMappings": [
+   {
+    "flashcard_id": "4cb46f95-56c5-4f5e-8ce2-2188f7dbe055",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "53178538-c4f7-4d01-88d2-d8dfb300c260",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "5af7d6d7-ddfc-4385-a1f9-3526697b5260",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "64065b56-f480-434e-9214-8711c8189318",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "97292d0a-d67e-425b-92dc-aedc57a9dbf7",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "9de25ec1-b937-4cbc-9140-147c5e30ab73",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "c4182181-0eaa-49b6-98a8-1b2c555263ad",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "d0dd5b36-4694-4b9b-b8aa-15deb365e691",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "f7558d0d-d766-4397-9755-e1c8656cf6c2",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   }
+  ],
+  "questionMappings": [
+   {
+    "question_id": "1bbcf70a-0398-4311-b926-983d61a003d3",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "22a04e7b-450d-4d86-8047-b024f6e5f7e8",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "641ac692-1819-4b4c-833a-a86bd49bba38",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "7f327792-4884-48a9-828b-89ce8ecc6578",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "90fa45fd-71b4-48c3-b4a7-744c4de883c3",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "b2696998-2b14-46f5-91d3-52cad9b00ef1",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "d0736631-b2f1-4c15-aa31-51f2e34f4c29",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "d339e23a-25b7-43a9-b909-31c05f0d04c0",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "e726befc-0dea-4c24-9b69-9ee7eb584777",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "ec8077f3-2135-4753-8148-00b6ad148a61",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "f441bb96-f246-4989-88d9-6ee3cf53f0b5",
+    "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   }
+  ]
+ },
+ "conceptB": {
+  "id": "e4e89b6f-fd4d-478a-90a1-bbb1d868bc27",
+  "slug": "REACTION_TYPES_CLASSIFICATION",
+  "canonicalName": "Reaction Types & Classification",
+  "description": null,
+  "objectType": "CONTENT",
+  "status": "ACTIVE_SEED",
+  "version": 1,
+  "deprecatedBy": null,
+  "sections": [
+   {
+    "concept_id": "e4e89b6f-fd4d-478a-90a1-bbb1d868bc27",
+    "section_code": "CHEM_PHYS",
+    "is_primary": true
+   }
+  ],
+  "disciplines": [
+   {
+    "concept_id": "e4e89b6f-fd4d-478a-90a1-bbb1d868bc27",
+    "discipline_code": "GENERAL_CHEMISTRY",
+    "role": "PRIMARY"
+   }
+  ],
+  "contentCategories": [
+   {
+    "concept_id": "e4e89b6f-fd4d-478a-90a1-bbb1d868bc27",
+    "content_category": "Stoichiometry (GC)",
+    "is_primary": true
+   }
+  ],
+  "aliases": [],
+  "flashcardMappings": [],
+  "questionMappings": [
+   {
+    "question_id": "7296c799-66fc-4244-bb76-086676e413fc",
+    "concept_id": "e4e89b6f-fd4d-478a-90a1-bbb1d868bc27",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "738d3912-3c12-4e29-8b12-d8898d407f66",
+    "concept_id": "e4e89b6f-fd4d-478a-90a1-bbb1d868bc27",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "a05a2393-9033-437f-adc3-6bb2c0a957a0",
+    "concept_id": "e4e89b6f-fd4d-478a-90a1-bbb1d868bc27",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "dfd24d6c-747e-4f64-ba75-ba55675c4ca5",
+    "concept_id": "e4e89b6f-fd4d-478a-90a1-bbb1d868bc27",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "fbe2255a-6b34-4eda-990d-30a1fa18b1c5",
+    "concept_id": "e4e89b6f-fd4d-478a-90a1-bbb1d868bc27",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   }
+  ]
+ },
+ "limitingReagent": {
+  "id": "304e09df-34ae-424b-97c0-f657726485f9",
+  "slug": "LIMITING_REAGENT_THEORETICAL_PERCENT_YIELD",
+  "canonicalName": "Limiting Reagent, Theoretical & Percent Yield",
+  "description": null,
+  "objectType": "CONTENT",
+  "status": "ACTIVE_SEED",
+  "version": 1,
+  "deprecatedBy": null,
+  "sections": [
+   {
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "section_code": "CHEM_PHYS",
+    "is_primary": true
+   }
+  ],
+  "disciplines": [
+   {
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "discipline_code": "GENERAL_CHEMISTRY",
+    "role": "PRIMARY"
+   }
+  ],
+  "contentCategories": [
+   {
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "content_category": "Stoichiometry (GC)",
+    "is_primary": true
+   }
+  ],
+  "aliases": [],
+  "flashcardMappings": [
+   {
+    "flashcard_id": "2857540f-6aac-4fa4-92b7-dc05e00f3a09",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "2d9ec139-0564-4f3b-a45f-d4aeb3ea4f02",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "d46897c2-13d5-4555-b305-fe41aeb52707",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   }
+  ],
+  "questionMappings": [
+   {
+    "question_id": "03cab44b-988f-495d-8269-ceb1455ad749",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "434eaec5-9b30-4331-b876-b0489eec51bc",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "43df5906-0f94-41b4-9646-c61692192557",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "6c14916e-4d44-4cf1-8242-7b5415440d92",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "6df2eeae-1dc2-42df-adbd-73a55e62e5f2",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "6f67fe15-ac51-4c3d-a49b-04776de1fc4e",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "781821a0-28b4-47af-8dff-56c82be89be6",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "883e7856-9de4-4ac3-abc9-3b48c4a55882",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "95484256-42d6-45a1-983c-986aac2b487c",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "b2ff8ad0-046a-4147-a189-e7bc1a7ed267",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "c315642b-fc01-4d63-9803-a99847ae3aca",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "c3789e30-1244-4ec0-8a10-ecd128bfecc8",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "c46540a6-e00e-481b-88ee-eaa98800fabe",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "ccfce1d0-9f50-44f6-857c-c324c96e6f3d",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "d45d65b9-b542-440e-8f15-e065583c3505",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "e68f8e2e-ad0b-4431-9fa9-7e549d633519",
+    "concept_id": "304e09df-34ae-424b-97c0-f657726485f9",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   }
+  ]
+ },
+ "movedCard": {
+  "id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+  "mapping": {
+   "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+   "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED"
+  },
+  "schedulerRows": [
+   {
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.56431818,
+    "difficulty": 9.18377582,
+    "reps": 5,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 1,
+    "ease_factor": 2.15,
+    "next_review_at": "2026-09-10T18:54:19.589+00:00",
+    "last_reviewed_at": "2026-09-09T18:54:19.607939+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 1,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.52559812,
+    "difficulty": 9.1977452,
+    "reps": 2,
+    "lapses": 1,
+    "fsrs_state": 3,
+    "interval_days": 0.007,
+    "ease_factor": 2.15,
+    "next_review_at": "2026-09-16T19:32:54.122+00:00",
+    "last_reviewed_at": "2026-09-16T19:22:54.151501+00:00",
+    "suspended": false,
+    "last_rating": "again",
+    "scheduled_days": 0,
+    "learning_steps": 0,
+    "starred": false
+   }
+  ],
+  "reviews": [
+   {
+    "id": "70db7303-5836-4165-84d7-ee83f3a93ba0",
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-10T12:59:51.031365+00:00",
+    "rating": "again",
+    "prev_interval_days": 0,
+    "new_interval_days": 0.007,
+    "stability": null,
+    "difficulty": null
+   },
+   {
+    "id": "b82c26b1-957d-4ae1-9f8b-1bfd0ffed1c1",
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-10T13:00:22.307473+00:00",
+    "rating": "hard",
+    "prev_interval_days": 0.007,
+    "new_interval_days": 1,
+    "stability": null,
+    "difficulty": null
+   },
+   {
+    "id": "1a1b68d6-96c5-444a-a8da-e21c275c841a",
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-12T16:47:58.199554+00:00",
+    "rating": "again",
+    "prev_interval_days": 0,
+    "new_interval_days": 0.007,
+    "stability": null,
+    "difficulty": null
+   },
+   {
+    "id": "d81c6f23-02b1-417e-9a3e-6871ecb0effa",
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-12T16:48:29.317202+00:00",
+    "rating": "hard",
+    "prev_interval_days": 0.007,
+    "new_interval_days": 1,
+    "stability": null,
+    "difficulty": null
+   },
+   {
+    "id": "710f5308-0f59-4aba-8cd7-a05b2ed2da3a",
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-09T18:40:59.320585+00:00",
+    "rating": "again",
+    "prev_interval_days": 1,
+    "new_interval_days": 0.007,
+    "stability": 0.51406986,
+    "difficulty": 9.1977452
+   },
+   {
+    "id": "f30b33ec-341a-4826-8b1d-eae366838d3d",
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-09T18:41:54.536747+00:00",
+    "rating": "medium",
+    "prev_interval_days": 0.007,
+    "new_interval_days": 0.007,
+    "stability": 0.51406986,
+    "difficulty": 9.1977452
+   },
+   {
+    "id": "431de7fa-ab1d-4eee-9d99-afa34226828b",
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-09T18:47:40.276847+00:00",
+    "rating": "medium",
+    "prev_interval_days": 0.007,
+    "new_interval_days": 0.007,
+    "stability": 0.51406986,
+    "difficulty": 9.1977452
+   },
+   {
+    "id": "0f04caf5-8248-4995-8db6-90634827911b",
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-09T18:54:19.607939+00:00",
+    "rating": "medium",
+    "prev_interval_days": 0.007,
+    "new_interval_days": 1,
+    "stability": 0.56431818,
+    "difficulty": 9.18377582
+   },
+   {
+    "id": "de50fb72-59ad-43cd-8742-ef8e88693cb6",
+    "flashcard_id": "d01a72af-36d7-41d7-bbd5-f683f6047d94",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-16T19:22:54.151501+00:00",
+    "rating": "again",
+    "prev_interval_days": 1,
+    "new_interval_days": 0.007,
+    "stability": 0.52559812,
+    "difficulty": 9.1977452
+   }
+  ]
+ },
+ "haberQuestion": {
+  "id": "641ac692-1819-4b4c-833a-a86bd49bba38",
+  "mapping": {
+   "question_id": "641ac692-1819-4b4c-833a-a86bd49bba38",
+   "concept_id": "8fddc347-a5c0-44c3-bcfd-77277b52de4e",
+   "role": "PRIMARY",
+   "confidence": 1,
+   "mapping_status": "DETERMINISTIC",
+   "source": "DETERMINISTIC_EXACT"
+  }
+ },
+ "totals": {
+  "concepts": 1132,
+  "flashcardConcepts": 4116,
+  "questionConcepts": 2673,
+  "reasoningObjects": 24,
+  "aliases": 6,
+  "deprecated": 177,
+  "needsReview": 29
+ },
+ "learnerBaseline": {
+  "schedulerRows": 8408,
+  "reviewRows": 51004,
+  "attemptRows": 656,
+  "fsrsDigest": "4443980510cd4f5ea7663d683a41cda9ebac87d42d0d9f55739e4b56a502620b"
+ },
+ "sha256": "4dd70d15581470ba38560326cb45e9b85242b9d89dbb6fc93d3cb08c1939804c"
+}

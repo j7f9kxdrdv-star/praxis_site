@@ -114,7 +114,23 @@ ok("the rename kept one concept and filed an alias",
 const RENAMES = [
   { slug: "THERMOREGULATION", from: "Thermoregulation", to: "Respiratory Thermoregulation" },
   { slug: "OXIDATION_REDUCING_SUGARS", from: "Oxidation & Reducing Sugars", to: "Sugar Oxidation Products" },
+  { slug: "REACTION_TYPES_CLASSIFICATION", from: "Reaction Types & Classification",
+    to: "Redox Classification of Reaction Families" },
 ];
+
+// A pair that keeps collapsing is held apart by making each definition name the
+// other. Checked as a rule, because a future author who empties one of these
+// has removed the only thing in the database that marks the boundary.
+const DISJOINT_PAIRS = [
+  { a: "TYPES_REACTIONS", b: "REACTION_TYPES_CLASSIFICATION" },
+  { a: "OXIDATION_REDUCING_SUGARS", b: "REDUCING_NON_REDUCING_SUGARS" },
+];
+const pairFaults = DISJOINT_PAIRS.filter(({ a, b }) => {
+  const ca = concepts.find((c) => c.slug === a), cb = concepts.find((c) => c.slug === b);
+  return !ca || !cb || !String(ca.description || "").trim() || !String(cb.description || "").trim();
+});
+ok("each easily-confused pair keeps a definition on both sides",
+  pairFaults.length === 0, pairFaults.map((p) => p.a).join(", "));
 const renameFaults = RENAMES.filter((r) => {
   const c = concepts.find((x) => x.slug === r.slug);
   return !c || c.canonical_name !== r.to || concepts.some((x) => x.canonical_name === r.from);
@@ -235,12 +251,13 @@ ok("provenance is deterministic or AI_PROPOSED, never human-validated",
   qc.every((m) => ["DETERMINISTIC_EXACT", "DETERMINISTIC", "AI_PROPOSED"].includes(m.source)));
 // Also floors. The deterministic populations only shrink if something repoints
 // them, which is worth catching; AI_PROPOSED is free to grow.
-// The EXACT floor moved 2,054 -> 2,051 when migration 3 repointed three
-// carbohydrate questions by hand. Lowering a floor is how a deliberate,
-// recorded repoint is absorbed; the floor still catches an undeclared one,
-// which is what it caught here before the migration ran.
-ok("deterministic mappings never shrink below 2,051 and 417",
-  qc.filter((m) => m.source === "DETERMINISTIC_EXACT").length >= 2051 &&
+// The EXACT floor steps down with each recorded repoint: 2,054 -> 2,051 for the
+// three carbohydrate questions in migration 3, then -> 2,050 for the Haber
+// question in migration 4. Lowering a floor is how a deliberate, declared
+// repoint is absorbed; the floor still catches an undeclared one, which is what
+// it caught both times before the migration ran.
+ok("deterministic mappings never shrink below 2,050 and 417",
+  qc.filter((m) => m.source === "DETERMINISTIC_EXACT").length >= 2050 &&
   qc.filter((m) => m.source === "DETERMINISTIC").length >= 417,
   JSON.stringify(qc.reduce((a, m) => ((a[m.source] = (a[m.source] || 0) + 1), a), {})));
 // Every AI_PROPOSED question mapping belongs to one of the two reconciled
@@ -251,7 +268,8 @@ ok("deterministic mappings never shrink below 2,051 and 417",
 // Non-Reducing Sugars. The set is widened by naming that pass, not by relaxing
 // the rule, so a fourth chapter appearing still fails.
 const RECONCILED = new Set([
-  "The Immune System", "The Cardiovascular System", "Carbohydrate Structure and Function"]);
+  "The Immune System", "The Cardiovascular System", "Carbohydrate Structure and Function",
+  "Compounds & Stoichiometry"]);
 ok("every AI_PROPOSED question mapping belongs to a reconciled chapter",
   qc.filter((m) => m.source === "AI_PROPOSED")
     .every((m) => RECONCILED.has(qById0.get(m.question_id)?.topic)),
