@@ -667,14 +667,25 @@ const primaryPerCard = fc.filter((m) => m.role === "PRIMARY")
 const doubled = Object.entries(primaryPerCard).filter(([, n]) => n > 1);
 ok("no card carries two PRIMARY concepts", doubled.length === 0, String(doubled.length));
 
-// THE TWO DELIBERATE GAPS. Both are authoring repairs, not ontology gaps: one
-// card defines a class then names examples from four different concepts, the
-// other compares all three cytoskeletal filament classes at once. If this count
-// ever moves, either a card was force-mapped or a new card went unmapped.
+// THE AUTHORING GATE, card side. This was "exactly 2 remain unmapped" while two
+// CARD_TOO_BROAD cards each defined a class and then listed examples belonging
+// to other concepts. Migration 8 repaired both, so the accepted number is now
+// ZERO and this is a gate rather than a ledger: a newly authored card that
+// resolves to no learning object fails here instead of quietly joining a
+// backlog. It mirrors the question-side rule exactly.
 const mappedCards = new Set(fc.map((m) => m.flashcard_id));
 const unmappedCards = [...cardDeck.keys()].filter((id) => !mappedCards.has(id));
-ok("exactly 2 flashcards remain unmapped (CARD_TOO_BROAD)",
-  unmappedCards.length === 2, String(unmappedCards.length));
+ok("no flashcard is left without a learning object",
+  unmappedCards.length === 0, String(unmappedCards.length));
+
+// The two concepts migration 8 created, named so that losing either is a
+// failure rather than a silently smaller vocabulary.
+const REPAIR_CONCEPTS = ["CYTOSKELETON_FILAMENT_CLASSES", "STRUCTURAL_PROTEINS"];
+const repairLive = concepts.filter(
+  (c) => REPAIR_CONCEPTS.includes(c.slug) && c.status === "ACTIVE_SEED" &&
+         c.object_type === "CONTENT" && String(c.description || "").trim());
+ok("the two authoring-repair concepts exist, are live CONTENT and carry definitions",
+  repairLive.length === 2, `${repairLive.length} of 2`);
 
 // THE INVARIANT THIS PASS EXISTS FOR.
 //
