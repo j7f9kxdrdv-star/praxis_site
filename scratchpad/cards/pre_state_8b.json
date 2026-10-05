@@ -1,0 +1,229 @@
+{
+ "takenAt": "2026-10-05T17:28:09.492Z",
+ "purpose": "Pre-state for the structural-proteins wording correction (migration 8b).",
+ "card": {
+  "id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+  "deck_id": "c57a6c43-4b35-41f8-81b7-ca4860cf7df1",
+  "position": 0,
+  "cloze_text": "{{c1::Structural proteins}} such as collagen, elastin and {{c2::keratin}} owe their strength to highly repetitive secondary structure.",
+  "cloze_count": 2,
+  "schedulerRows": [
+   {
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 1.7250529,
+    "difficulty": 8.37214219,
+    "reps": 6,
+    "lapses": 1,
+    "fsrs_state": 3,
+    "interval_days": 0.007,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-09T04:10:09.302+00:00",
+    "last_reviewed_at": "2026-09-09T04:02:28.440685+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 0,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 4.49140475,
+    "difficulty": 8.97660712,
+    "reps": 8,
+    "lapses": 2,
+    "fsrs_state": 2,
+    "interval_days": 3,
+    "ease_factor": 2.3,
+    "next_review_at": "2026-09-28T02:42:39.723+00:00",
+    "last_reviewed_at": "2026-09-25T02:42:39.787909+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 3,
+    "learning_steps": 0,
+    "starred": true
+   }
+  ],
+  "reviews": [
+   {
+    "id": "0a3e8b68-9c65-4e47-a1b3-6d01faacf4ba",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T00:48:40.355171+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0f640b0e-8e9c-41c2-9862-2cfafbfb87fc",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-09T04:02:28.440685+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "3374a5fc-36f4-45e4-b69f-5bcaa32cbaf4",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-16T14:48:55.529296+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "3a688025-64a2-4abe-9cda-0531faa16382",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-23T02:10:43.735528+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "7789f0c1-5286-439e-878c-152b91d5a4ce",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-09T04:00:41.181177+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "8f58cf0e-7de5-471d-b446-7b70907a2a48",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-26T12:57:48.783592+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "a62025ab-9495-4ee7-886c-5cde79ff008a",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-25T02:42:39.787909+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "b51330de-7acd-45d2-b9b8-011a68edf212",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-09T04:00:09.350752+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "be8511c3-dbbb-4340-95fa-371530b31cc8",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T01:29:08.629953+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "c84de931-d07b-454d-8221-440ecba8cd44",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-16T14:56:22.596254+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "cf317a97-2bda-4ffb-a6e2-e99df99950b9",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-22T21:34:41.891245+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "d810b2ec-9605-42cf-b29f-6907e5fa4d0d",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-22T21:35:13.391739+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "dc7fe824-e4c3-45aa-8154-65f53eceef2e",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-16T14:49:38.601676+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "e47749f4-48fc-4a31-91b7-8321c32cecb8",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-16T14:51:24.580983+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "f9e4c3cb-87d0-4ed5-ac96-548c54bf34f6",
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-05T02:18:49.127221+00:00",
+    "rating": "medium"
+   }
+  ],
+  "mappings": [
+   {
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "concept_id": "ae30694e-9bcc-443a-b086-d873b5927097",
+    "role": "PRIMARY",
+    "confidence": 0.9,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   }
+  ]
+ },
+ "concept": {
+  "id": "ae30694e-9bcc-443a-b086-d873b5927097",
+  "slug": "STRUCTURAL_PROTEINS",
+  "canonicalName": "Structural Proteins",
+  "description": "The protein class whose strength comes from highly repetitive secondary structure, and the shared structural role that follows from it. The individual proteins keep their own concepts: collagen and elastin under connective tissue, keratin under intermediate filaments. This one holds the class identity, not their particulars.",
+  "objectType": "CONTENT",
+  "status": "ACTIVE_SEED",
+  "version": 1,
+  "sections": 1,
+  "disciplines": 1,
+  "categories": 1,
+  "aliases": 0,
+  "mappings": [
+   {
+    "flashcard_id": "4d56a412-90d2-47cb-b0d8-db3a3a06f232",
+    "concept_id": "ae30694e-9bcc-443a-b086-d873b5927097",
+    "role": "PRIMARY",
+    "confidence": 0.9,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "ca5f08a7-3bc2-493b-8e82-dd2835e122f0",
+    "concept_id": "ae30694e-9bcc-443a-b086-d873b5927097",
+    "role": "SECONDARY",
+    "confidence": 0.9,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "328bd950-1833-4c3c-902c-a6a514ec322c",
+    "concept_id": "ae30694e-9bcc-443a-b086-d873b5927097",
+    "role": "SECONDARY",
+    "confidence": 0.9,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   }
+  ]
+ },
+ "totals": {
+  "flashcards": 4118,
+  "uniqueMapped": 4118,
+  "mappingRows": 4121,
+  "concepts": 1139,
+  "needsReview": 29
+ }
+}
