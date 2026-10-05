@@ -1,0 +1,130 @@
+{
+ "takenAt": "2026-10-05T02:22:59.993Z",
+ "purpose": "Pre-state for migration 5 (definitions only). Immutable.",
+ "researchSettings": {
+  "id": "f046dbbc-6b78-44c5-86ef-b76f18552bb8",
+  "slug": "RO_RESEARCH_SETTINGS",
+  "canonicalName": "Research Settings",
+  "description": "Basic science versus applied and clinical settings, and the control each affords.",
+  "objectType": "REASONING",
+  "status": "ACTIVE_SEED",
+  "version": 1,
+  "deprecatedBy": null,
+  "conceptLevel": "CONCEPT",
+  "parentConceptId": null,
+  "contentCategoryColumn": null,
+  "splitCandidate": false,
+  "sections": [],
+  "disciplines": [],
+  "contentCategories": [],
+  "aliases": [],
+  "flashcardMappings": [
+   {
+    "flashcard_id": "ef3e2e63-820d-47e4-bb1f-c0002f1a3ab8",
+    "concept_id": "f046dbbc-6b78-44c5-86ef-b76f18552bb8",
+    "role": "PRIMARY",
+    "confidence": 0.9,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   }
+  ],
+  "questionMappings": [],
+  "reasoningMappings": []
+ },
+ "personalityDisorderClusters": {
+  "id": "94146b4e-b450-49b3-9160-24689ce1ea24",
+  "slug": "PERSONALITY_DISORDER_CLUSTERS",
+  "canonicalName": "Personality Disorder Clusters",
+  "description": null,
+  "objectType": "CONTENT",
+  "status": "ACTIVE_SEED",
+  "version": 1,
+  "deprecatedBy": null,
+  "conceptLevel": "CONCEPT",
+  "parentConceptId": null,
+  "contentCategoryColumn": null,
+  "splitCandidate": false,
+  "sections": [
+   {
+    "concept_id": "94146b4e-b450-49b3-9160-24689ce1ea24",
+    "section_code": "PSYCH_SOC",
+    "is_primary": true
+   }
+  ],
+  "disciplines": [
+   {
+    "concept_id": "94146b4e-b450-49b3-9160-24689ce1ea24",
+    "discipline_code": "PSYCHOLOGY",
+    "role": "PRIMARY"
+   }
+  ],
+  "contentCategories": [
+   {
+    "concept_id": "94146b4e-b450-49b3-9160-24689ce1ea24",
+    "content_category": "Individual influences on behavior",
+    "is_primary": true
+   }
+  ],
+  "aliases": [],
+  "flashcardMappings": [
+   {
+    "flashcard_id": "1b8cd2b5-91d7-4707-b50b-a9fb4de46e9f",
+    "concept_id": "94146b4e-b450-49b3-9160-24689ce1ea24",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "6358186d-d2d3-4353-b3a0-831526ca5a54",
+    "concept_id": "94146b4e-b450-49b3-9160-24689ce1ea24",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "d09185cf-9e42-4531-addd-4dd2aae9ee3e",
+    "concept_id": "94146b4e-b450-49b3-9160-24689ce1ea24",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "d5af3d99-2e4d-48d6-8908-87b8c51338b9",
+    "concept_id": "94146b4e-b450-49b3-9160-24689ce1ea24",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "d962910d-97b0-4a2e-b474-8035615461ed",
+    "concept_id": "94146b4e-b450-49b3-9160-24689ce1ea24",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   }
+  ],
+  "questionMappings": [],
+  "reasoningMappings": []
+ },
+ "totals": {
+  "concepts": 1132,
+  "flashcardConcepts": 4116,
+  "questionConcepts": 2673,
+  "reasoningObjects": 24,
+  "aliases": 7,
+  "deprecated": 177,
+  "needsReview": 29
+ },
+ "learnerBaseline": {
+  "schedulerRows": 8408,
+  "reviewRows": 51004,
+  "attemptRows": 656,
+  "fsrsDigest": "4443980510cd4f5ea7663d683a41cda9ebac87d42d0d9f55739e4b56a502620b"
+ },
+ "sha256": "3ee38cb9a1068b295fa956e99b6a875acbf6fa979e9957c4bde79d1e93bc3649"
+}

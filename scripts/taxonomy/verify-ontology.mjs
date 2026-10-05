@@ -131,6 +131,19 @@ const pairFaults = DISJOINT_PAIRS.filter(({ a, b }) => {
 });
 ok("each easily-confused pair keeps a definition on both sides",
   pairFaults.length === 0, pairFaults.map((p) => p.a).join(", "));
+
+// A narrow, single-sided version of the same idea. Personality Disorder
+// Clusters was read as an evidence-free umbrella duplicating Cluster A, B and
+// C, and that reading survived because its description was NULL. It owns five
+// cards that none of those three hold. The definition is the only thing in the
+// database that prevents the misreading, so losing it is worth failing over.
+// Deliberately NOT generalised into "all CONTENT concepts need a description":
+// 755 of them do not have one, and that backlog is a separate piece of work.
+const pdc = concepts.find((c) => c.slug === "PERSONALITY_DISORDER_CLUSTERS");
+ok("Personality Disorder Clusters keeps the definition that marks it off from the cluster concepts",
+  !!pdc && pdc.status !== "DEPRECATED" && pdc.object_type === "CONTENT" &&
+  String(pdc.description || "").includes("Cluster A, Cluster B and Cluster C"),
+  pdc ? `${pdc.object_type}/${pdc.status}, description ${pdc.description ? "present" : "NULL"}` : "missing");
 const renameFaults = RENAMES.filter((r) => {
   const c = concepts.find((x) => x.slug === r.slug);
   return !c || c.canonical_name !== r.to || concepts.some((x) => x.canonical_name === r.from);
