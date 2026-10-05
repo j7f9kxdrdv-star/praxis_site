@@ -1,3 +1,7 @@
+-- REQUIRES: 20261005_02_types_of_elements_identity.sql
+-- because it asserts 24 cards on Metals, Nonmetals & Metalloids, which is 19 family cards plus the 5 that migration 6 moves in.
+-- Checked by lib/taxonomy/migrationOrder.test.ts: a required file must
+-- sort earlier, so a fresh database replays these in a working order.
 -- ─── Migration 7: the chemical-family vocabulary ──────────────────────────
 --
 -- The largest migration in the cleanup, and the one that pays off migration 6.

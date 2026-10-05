@@ -1,3 +1,7 @@
+-- REQUIRES: 20261005_03_chemical_family_vocabulary.sql
+-- because it closes a category gap that only exists once migration 7 has reused Periodic Trends.
+-- Checked by lib/taxonomy/migrationOrder.test.ts: a required file must
+-- sort earlier, so a fresh database replays these in a working order.
 -- ─── Migration 7b: one category row, to close what migration 7 opened ─────
 --
 -- Migration 7 reused Periodic Trends for the successive-ionization-energy
