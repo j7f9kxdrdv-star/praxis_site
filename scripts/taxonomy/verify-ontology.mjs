@@ -92,6 +92,16 @@ ok("every recorded split parent is in fact deprecated and successorless",
 // The children a split produced must exist and be live. Without this, deleting
 // both children would leave the rule above passing on a parent deprecated into
 // nothing at all.
+// The five chemical-family concepts migration 7 created. Named so that losing
+// one is a failure rather than a silently smaller vocabulary.
+const FAMILY_CONCEPTS = ["ALKALI_AND_ALKALINE_EARTH_METALS", "HALOGENS", "NOBLE_GASES",
+  "TRANSITION_METALS_INNER_TRANSITION_SERIES", "CHALCOGENS"];
+const famLive = concepts.filter(
+  (c) => FAMILY_CONCEPTS.includes(c.slug) && c.status === "ACTIVE_SEED" &&
+         c.object_type === "CONTENT" && String(c.description || "").trim());
+ok("the five chemical-family concepts exist, are live CONTENT and carry definitions",
+  famLive.length === 5, `${famLive.length} of 5`);
+
 const SPLIT_CHILDREN = ["ADIPOSE_FAT_MOBILIZATION", "LIPOPROTEIN_CLASSES_CHOLESTEROL_TRANSPORT"];
 const kids = concepts.filter((c) => SPLIT_CHILDREN.includes(c.slug));
 ok("the lipid split children exist, are live, and carry definitions",
@@ -795,32 +805,16 @@ const unmapped = Q.filter((q) => !mapped.has(q.id));
 // So the accepted backlog is named. All 20 are the same subtopic, Chemistry of
 // the Groups, which is one coherent gap rather than scatter. Any unmapped
 // question outside this set is new and fails.
-const KNOWN_UNMAPPED = new Set([
-  "281971ff-47d5-48f2-ade7-bb49b09ecf78",
-  "73b5fcb7-a512-42ca-8ec3-b430c9264f47",
-  "ab4d6752-bed6-4716-a5e4-99eec8fcc551",
-  "5ef31e94-271a-4344-b482-e4d9bacc7bb5",
-  "055c6d03-4f75-493d-81ab-94ddabff502f",
-  "41f87b91-e2a7-4348-8495-48cd042eece3",
-  "487d627f-035c-4192-b71a-b7d7f4fd845d",
-  "0ecd7bac-0143-47c1-98a8-66483b9da663",
-  "d20971ce-413f-44b2-ba81-d55af592d136",
-  "6486571a-1237-471c-bb9b-8c373f61c395",
-  "75a2da19-403a-461a-ba4c-d9721d233eec",
-  "b7858478-c39f-4aeb-bb6b-32894e259ab7",
-  "be5f387b-e6b2-4ec3-8197-821198b54cda",
-  "c6f7963e-fa2b-4c69-b852-aef86e5f6c4e",
-  "2500b00c-f29c-43f6-9c8a-8009805b7c5d",
-  "883f79c9-3fad-4d44-a63e-d104d6a890aa",
-  "eee33c57-0002-4666-81a6-f7a1fb97a1b9",
-  "f4f7b834-bb1f-401a-b380-2f173274871c",
-  "2f153e0e-453a-4ff7-b1ec-b304739cde77",
-  "9e2a17c9-cac8-4c02-a0c8-379b30ac5965",
-]);
+// EMPTIED BY MIGRATION 7. All 20 were resolved: 18 to the five new chemical
+// family concepts, one to Periodic Trends and one to Halogens by reuse. The set
+// is deliberately left in place rather than deleted, because an empty allowlist
+// plus a ceiling of zero is the authoring gate: a newly published question with
+// no CONTENT mapping now fails here instead of quietly starting a new backlog.
+const KNOWN_UNMAPPED = new Set([]);
 const strayUnmapped = unmapped.filter((q) => !KNOWN_UNMAPPED.has(q.id));
-ok("unmapped questions never exceed the accepted backlog of 20",
-  unmapped.length <= 20, String(unmapped.length));
-ok("every unmapped question is in the named backlog, none newly authored",
+ok("no question is left without a CONTENT mapping",
+  unmapped.length === 0, String(unmapped.length));
+ok("no unmapped question has appeared since the backlog was cleared",
   strayUnmapped.length === 0,
   strayUnmapped.map((q) => `${q.topic}: ${q.subtopic}`).join(" | "));
 ok("no unmapped question's label is a concept name",

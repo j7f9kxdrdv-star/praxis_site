@@ -1,0 +1,4828 @@
+{
+ "takenAt": "2026-10-05T03:38:47.590Z",
+ "purpose": "Pre-state and manifest for the chemical-family vocabulary (migration 7). Immutable.",
+ "manifest": {
+  "CARDS": {
+   "ALKALI_AND_ALKALINE_EARTH_METALS": [
+    "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "d934d272-5fa3-4e8e-b009-183fdadcadbe"
+   ],
+   "HALOGENS": [
+    "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "8efeb7bb-0bda-44b8-b4c4-624652e72534"
+   ],
+   "NOBLE_GASES": [
+    "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "82701d00-f247-42c5-b344-44b5cce60f2a"
+   ],
+   "TRANSITION_METALS_INNER_TRANSITION_SERIES": [
+    "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "78cd585c-8233-4776-90e3-747585ad4251",
+    "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5"
+   ],
+   "CHALCOGENS": [
+    "0a7247dc-3575-4681-b553-d3cc156ac9c2"
+   ]
+  },
+  "QUESTIONS": {
+   "ALKALI_AND_ALKALINE_EARTH_METALS": [
+    "0ecd7bac-0143-47c1-98a8-66483b9da663",
+    "281971ff-47d5-48f2-ade7-bb49b09ecf78",
+    "41f87b91-e2a7-4348-8495-48cd042eece3",
+    "5ef31e94-271a-4344-b482-e4d9bacc7bb5",
+    "6486571a-1237-471c-bb9b-8c373f61c395",
+    "73b5fcb7-a512-42ca-8ec3-b430c9264f47",
+    "75a2da19-403a-461a-ba4c-d9721d233eec",
+    "eee33c57-0002-4666-81a6-f7a1fb97a1b9"
+   ],
+   "HALOGENS": [
+    "2f153e0e-453a-4ff7-b1ec-b304739cde77",
+    "487d627f-035c-4192-b71a-b7d7f4fd845d",
+    "883f79c9-3fad-4d44-a63e-d104d6a890aa",
+    "be5f387b-e6b2-4ec3-8197-821198b54cda",
+    "f4f7b834-bb1f-401a-b380-2f173274871c"
+   ],
+   "NOBLE_GASES": [
+    "055c6d03-4f75-493d-81ab-94ddabff502f",
+    "9e2a17c9-cac8-4c02-a0c8-379b30ac5965",
+    "c6f7963e-fa2b-4c69-b852-aef86e5f6c4e"
+   ],
+   "TRANSITION_METALS_INNER_TRANSITION_SERIES": [
+    "ab4d6752-bed6-4716-a5e4-99eec8fcc551",
+    "d20971ce-413f-44b2-ba81-d55af592d136"
+   ],
+   "CHALCOGENS": [
+    "2500b00c-f29c-43f6-9c8a-8009805b7c5d"
+   ]
+  },
+  "REUSE": {
+   "PERIODIC_TRENDS": [
+    "b7858478-c39f-4aeb-bb6b-32894e259ab7"
+   ]
+  },
+  "SECONDARY": [
+   {
+    "question": "73b5fcb7-a512-42ca-8ec3-b430c9264f47",
+    "slug": "HALOGENS"
+   }
+  ]
+ },
+ "metalsNonmetalsMetalloids": {
+  "id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+  "slug": "TYPES_ELEMENTS",
+  "canonicalName": "Metals, Nonmetals & Metalloids",
+  "version": 2,
+  "flashcardMappings": [
+   {
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   }
+  ],
+  "questionMappings": [
+   {
+    "question_id": "24c0e846-c9e3-4a32-8569-9dc979ac998a",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "3f8bfcdd-915a-4189-b4cb-c2d043757ede",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "57afc8da-b409-4bed-91f3-0ef1756c38d8",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "70281532-f3a1-417a-b314-0803bc553d5c",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "78edbca2-2100-41c4-8998-29ebcf0b12ce",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "9c1612b1-90cb-4234-8a46-baa7993922c7",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "c853e933-a44f-4f4d-a367-717d8439940c",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "d2b359f0-684d-4a48-a937-848be029bb04",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "d40dc1c9-79ed-4c07-8cbd-9a4f25dbdced",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "d90ee597-7f1a-4ae2-ae00-ea1916826867",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "e32d0132-c79e-4926-a198-71c0cd0eee1a",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "eba5bb11-2744-46bf-ab3f-6b3b6bb0e29d",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   }
+  ],
+  "sections": [
+   {
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "section_code": "CHEM_PHYS",
+    "is_primary": true
+   }
+  ],
+  "disciplines": [
+   {
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "discipline_code": "GENERAL_CHEMISTRY",
+    "role": "PRIMARY"
+   }
+  ],
+  "contentCategories": [
+   {
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "content_category": "The Periodic Table: Classification of Elements Into Groups by Electronic Structure",
+    "is_primary": true
+   }
+  ]
+ },
+ "reuseTargets": [
+  {
+   "slug": "PERIODIC_TRENDS",
+   "id": "669eaa8b-b420-44b0-8e07-d2d20a2047a2",
+   "canonicalName": "Periodic Trends",
+   "status": "ACTIVE_SEED",
+   "questionCount": 23
+  }
+ ],
+ "movedCardLearnerState": {
+  "schedulerRows": [
+   {
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "stability": 18.10059835,
+    "difficulty": 3.4509278,
+    "reps": 3,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 20,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-19T15:30:15.884+00:00",
+    "last_reviewed_at": "2026-09-29T15:30:16.024705+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 20,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 15.42418866,
+    "difficulty": 7.80311267,
+    "reps": 7,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 14,
+    "ease_factor": 2.3,
+    "next_review_at": "2026-10-02T14:44:28.373+00:00",
+    "last_reviewed_at": "2026-09-18T14:44:28.407376+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 14,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "stability": 8.2956,
+    "difficulty": 1,
+    "reps": 1,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 7,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-06T15:35:42.031+00:00",
+    "last_reviewed_at": "2026-09-29T15:35:42.053618+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 7,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 2,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "stability": 8.2956,
+    "difficulty": 1,
+    "reps": 1,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 9,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-08T15:58:00.652+00:00",
+    "last_reviewed_at": "2026-09-29T15:58:00.677301+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 9,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 1,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "stability": 8.2956,
+    "difficulty": 1,
+    "reps": 1,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 6,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-05T16:07:05.174+00:00",
+    "last_reviewed_at": "2026-09-29T16:07:05.194415+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 6,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "stability": 8.2956,
+    "difficulty": 1,
+    "reps": 1,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 8,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-02T16:48:36.03+00:00",
+    "last_reviewed_at": "2026-09-24T16:48:36.070655+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 8,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 1,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "stability": 8.2956,
+    "difficulty": 1,
+    "reps": 1,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 10,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-04T16:50:59.399+00:00",
+    "last_reviewed_at": "2026-09-24T16:50:59.443528+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 10,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "35286b14-b18e-450b-b907-aba61c4d75eb",
+    "stability": 3,
+    "difficulty": 7.6,
+    "reps": 2,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 3,
+    "ease_factor": 2.56,
+    "next_review_at": "2026-08-24T01:42:19.294+00:00",
+    "last_reviewed_at": "2026-08-15T07:06:24.209+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 3,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 46.4314796,
+    "difficulty": 8.45256257,
+    "reps": 7,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 46,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-18T00:14:47.058+00:00",
+    "last_reviewed_at": "2026-09-02T00:14:47.102368+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 46,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "35286b14-b18e-450b-b907-aba61c4d75eb",
+    "stability": 3,
+    "difficulty": 7.6,
+    "reps": 3,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 3,
+    "ease_factor": 2.44,
+    "next_review_at": "2026-08-23T10:38:09.774+00:00",
+    "last_reviewed_at": "2026-08-13T18:16:19.915+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 3,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 2.78802096,
+    "difficulty": 9.96411805,
+    "reps": 2,
+    "lapses": 2,
+    "fsrs_state": 2,
+    "interval_days": 3,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-06T19:39:53.203+00:00",
+    "last_reviewed_at": "2026-09-03T19:39:53.233458+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 3,
+    "learning_steps": 0,
+    "starred": true
+   },
+   {
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 6.80935967,
+    "difficulty": 9.89397228,
+    "reps": 2,
+    "lapses": 2,
+    "fsrs_state": 2,
+    "interval_days": 5,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-09T01:36:32.912+00:00",
+    "last_reviewed_at": "2026-09-04T01:36:32.940945+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 5,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 1,
+    "difficulty": 9.715,
+    "reps": 1,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 1,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-07-02T15:43:05.181+00:00",
+    "last_reviewed_at": "2026-07-01T15:43:05.182+00:00",
+    "suspended": true,
+    "last_rating": "hard",
+    "scheduled_days": 1,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "35286b14-b18e-450b-b907-aba61c4d75eb",
+    "stability": 1,
+    "difficulty": 7.6,
+    "reps": 5,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 1,
+    "ease_factor": 2.39,
+    "next_review_at": "2026-08-19T09:51:11.546+00:00",
+    "last_reviewed_at": "2026-08-15T03:08:01.426+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 1,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 2.8013644,
+    "difficulty": 9.95900643,
+    "reps": 2,
+    "lapses": 3,
+    "fsrs_state": 2,
+    "interval_days": 3,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-06T18:20:17.657+00:00",
+    "last_reviewed_at": "2026-09-03T18:20:17.671925+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 3,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 2.69239241,
+    "difficulty": 9.91265534,
+    "reps": 7,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 3,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-04T11:43:02.181+00:00",
+    "last_reviewed_at": "2026-10-01T11:43:02.228065+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 3,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.3766624,
+    "difficulty": 9.95886873,
+    "reps": 7,
+    "lapses": 2,
+    "fsrs_state": 2,
+    "interval_days": 1,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-03T12:35:33.114+00:00",
+    "last_reviewed_at": "2026-10-02T12:35:33.146065+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 1,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.37984163,
+    "difficulty": 9.9549206,
+    "reps": 10,
+    "lapses": 7,
+    "fsrs_state": 2,
+    "interval_days": 1,
+    "ease_factor": 1.55,
+    "next_review_at": "2026-09-18T18:16:33.084+00:00",
+    "last_reviewed_at": "2026-09-17T18:16:33.101067+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 1,
+    "learning_steps": 0,
+    "starred": true
+   },
+   {
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.58478783,
+    "difficulty": 8.36549147,
+    "reps": 5,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 1,
+    "ease_factor": 2.35,
+    "next_review_at": "2026-09-15T15:02:23.536+00:00",
+    "last_reviewed_at": "2026-09-14T15:02:23.555671+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 1,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 3.43053894,
+    "difficulty": 9.94486877,
+    "reps": 5,
+    "lapses": 7,
+    "fsrs_state": 2,
+    "interval_days": 3,
+    "ease_factor": 1.55,
+    "next_review_at": "2026-09-20T21:53:36.564+00:00",
+    "last_reviewed_at": "2026-09-17T21:53:36.581337+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 3,
+    "learning_steps": 0,
+    "starred": true
+   },
+   {
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 16.10193323,
+    "difficulty": 5.10231617,
+    "reps": 2,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 19,
+    "ease_factor": 2.35,
+    "next_review_at": "2026-10-03T13:05:30.999+00:00",
+    "last_reviewed_at": "2026-09-14T13:05:31.014623+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 19,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.24298236,
+    "difficulty": 9.96051604,
+    "reps": 12,
+    "lapses": 2,
+    "fsrs_state": 2,
+    "interval_days": 1,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-26T16:16:59.881+00:00",
+    "last_reviewed_at": "2026-09-25T16:16:59.941424+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 1,
+    "learning_steps": 0,
+    "starred": true
+   },
+   {
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 36.45,
+    "difficulty": 7.7784,
+    "reps": 7,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 36.45,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-14T03:23:32.91+00:00",
+    "last_reviewed_at": "2026-08-08T16:35:32.91+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 36.45,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 25.41154485,
+    "difficulty": 9.88379261,
+    "reps": 6,
+    "lapses": 2,
+    "fsrs_state": 2,
+    "interval_days": 25,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-24T18:42:24.852+00:00",
+    "last_reviewed_at": "2026-08-30T18:42:24.869201+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 25,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 15.77092297,
+    "difficulty": 9.81799577,
+    "reps": 5,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 16,
+    "ease_factor": 2.35,
+    "next_review_at": "2026-10-04T14:57:15.732+00:00",
+    "last_reviewed_at": "2026-09-18T14:57:15.769961+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 16,
+    "learning_steps": 0,
+    "starred": true
+   },
+   {
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 14.35071944,
+    "difficulty": 9.86902361,
+    "reps": 4,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 15,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-19T02:21:18.663+00:00",
+    "last_reviewed_at": "2026-09-04T02:21:18.678057+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 15,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 3.47390259,
+    "difficulty": 9.9274545,
+    "reps": 6,
+    "lapses": 2,
+    "fsrs_state": 2,
+    "interval_days": 3,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-26T11:25:39.258+00:00",
+    "last_reviewed_at": "2026-09-23T11:25:39.305993+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 3,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 3.13594992,
+    "difficulty": 9.9490785,
+    "reps": 5,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 3,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-02T22:28:43.348+00:00",
+    "last_reviewed_at": "2026-09-29T22:28:43.370709+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 3,
+    "learning_steps": 0,
+    "starred": true
+   },
+   {
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 20.12790791,
+    "difficulty": 8.34327197,
+    "reps": 4,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 17,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-20T17:48:41.585+00:00",
+    "last_reviewed_at": "2026-09-03T17:48:41.613939+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 17,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 117.31476044,
+    "difficulty": 1.39514829,
+    "reps": 4,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 58,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-31T23:07:48.025+00:00",
+    "last_reviewed_at": "2026-09-03T23:07:48.040611+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 58,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.49693889,
+    "difficulty": 9.95916965,
+    "reps": 8,
+    "lapses": 3,
+    "fsrs_state": 2,
+    "interval_days": 1,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-30T21:47:34.387+00:00",
+    "last_reviewed_at": "2026-09-29T21:47:34.411731+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 1,
+    "learning_steps": 0,
+    "starred": true
+   },
+   {
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 50.625,
+    "difficulty": 9.4155,
+    "reps": 6,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 50.625,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-10T08:59:31.59+00:00",
+    "last_reviewed_at": "2026-08-20T17:59:31.59+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 50.625,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.8656822,
+    "difficulty": 9.73435286,
+    "reps": 4,
+    "lapses": 2,
+    "fsrs_state": 3,
+    "interval_days": 0.01,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-03T18:23:43.446+00:00",
+    "last_reviewed_at": "2026-09-03T18:08:43.474914+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 0,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 4.95133908,
+    "difficulty": 9.94924789,
+    "reps": 3,
+    "lapses": 3,
+    "fsrs_state": 2,
+    "interval_days": 5,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-08T19:58:55.232+00:00",
+    "last_reviewed_at": "2026-09-03T19:58:55.253663+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 5,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 21.45775337,
+    "difficulty": 8.88522947,
+    "reps": 7,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 21,
+    "ease_factor": 2.35,
+    "next_review_at": "2026-10-08T22:31:02.28+00:00",
+    "last_reviewed_at": "2026-09-17T22:31:02.312532+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 21,
+    "learning_steps": 0,
+    "starred": true
+   },
+   {
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 1.15417199,
+    "difficulty": 9.91081223,
+    "reps": 4,
+    "lapses": 3,
+    "fsrs_state": 3,
+    "interval_days": 0.007,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-03T20:16:04.12+00:00",
+    "last_reviewed_at": "2026-09-03T20:06:04.13421+00:00",
+    "suspended": false,
+    "last_rating": "again",
+    "scheduled_days": 0,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 24.3,
+    "difficulty": 8.9909,
+    "reps": 6,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 24.3,
+    "ease_factor": 2.35,
+    "next_review_at": "2026-09-12T11:00:53.24+00:00",
+    "last_reviewed_at": "2026-08-19T03:48:53.24+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 24.3,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 16.7540699,
+    "difficulty": 8.50461047,
+    "reps": 4,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 15,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-18T17:13:14.442+00:00",
+    "last_reviewed_at": "2026-09-03T17:13:14.467085+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 15,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 231.6555691,
+    "difficulty": 1,
+    "reps": 4,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 62,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-11-05T18:38:23.419+00:00",
+    "last_reviewed_at": "2026-09-04T18:38:23.436981+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 62,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 23.35598349,
+    "difficulty": 6.77733947,
+    "reps": 3,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 26,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-29T19:50:15.258+00:00",
+    "last_reviewed_at": "2026-09-03T19:50:15.312757+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 26,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 16.89891502,
+    "difficulty": 8.86395077,
+    "reps": 4,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 18,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-22T00:19:39.965+00:00",
+    "last_reviewed_at": "2026-09-04T00:19:39.995415+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 18,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 28.82802194,
+    "difficulty": 6.36864857,
+    "reps": 4,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 32,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-05T17:41:04.82+00:00",
+    "last_reviewed_at": "2026-09-03T17:41:04.841929+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 32,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 30.375,
+    "difficulty": 8.8455,
+    "reps": 6,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 30.375,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-09T01:31:04.247+00:00",
+    "last_reviewed_at": "2026-08-09T16:31:04.247+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 30.375,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.5029706,
+    "difficulty": 9.95325138,
+    "reps": 8,
+    "lapses": 4,
+    "fsrs_state": 2,
+    "interval_days": 1,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-03T13:17:41.676+00:00",
+    "last_reviewed_at": "2026-10-02T13:17:41.724274+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 1,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 57.15484979,
+    "difficulty": 6.43168547,
+    "reps": 7,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 54,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-23T18:30:18.786+00:00",
+    "last_reviewed_at": "2026-08-30T18:30:18.811244+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 54,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 3.74187178,
+    "difficulty": 9.93338027,
+    "reps": 4,
+    "lapses": 2,
+    "fsrs_state": 2,
+    "interval_days": 4,
+    "ease_factor": 2.15,
+    "next_review_at": "2026-09-14T19:24:27.636+00:00",
+    "last_reviewed_at": "2026-09-10T19:24:27.686145+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 4,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 48.1131518,
+    "difficulty": 1,
+    "reps": 5,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 45,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-09T22:35:58.217+00:00",
+    "last_reviewed_at": "2026-08-25T22:35:58.236981+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 45,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 9.97890004,
+    "difficulty": 8.90614572,
+    "reps": 3,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 12,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-07T18:55:35.683+00:00",
+    "last_reviewed_at": "2026-08-26T18:55:35.724338+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 12,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 22.03572374,
+    "difficulty": 7.56714887,
+    "reps": 4,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 20,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-24T00:21:24.768+00:00",
+    "last_reviewed_at": "2026-09-04T00:21:24.79045+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 20,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 199.04321472,
+    "difficulty": 1,
+    "reps": 4,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 62,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-11-05T01:36:19.924+00:00",
+    "last_reviewed_at": "2026-09-04T01:36:19.940206+00:00",
+    "suspended": false,
+    "last_rating": "easy",
+    "scheduled_days": 62,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.54138203,
+    "difficulty": 9.94184475,
+    "reps": 9,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 1,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-24T15:12:17.142+00:00",
+    "last_reviewed_at": "2026-09-23T15:12:17.172304+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 1,
+    "learning_steps": 0,
+    "starred": true
+   },
+   {
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 58.595,
+    "difficulty": 1.3625,
+    "reps": 6,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 58.595,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-10T07:41:04.021+00:00",
+    "last_reviewed_at": "2026-08-12T17:24:16.021+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 58.595,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 2.93774199,
+    "difficulty": 9.94975424,
+    "reps": 5,
+    "lapses": 3,
+    "fsrs_state": 2,
+    "interval_days": 3,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-24T15:20:31.801+00:00",
+    "last_reviewed_at": "2026-09-21T15:20:31.828978+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 3,
+    "learning_steps": 0,
+    "starred": true
+   },
+   {
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 32.18540581,
+    "difficulty": 5.6376306,
+    "reps": 4,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 29,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-02T18:46:52.88+00:00",
+    "last_reviewed_at": "2026-09-03T18:46:52.913994+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 29,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 28.126,
+    "difficulty": 6.1485,
+    "reps": 6,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 28.126,
+    "ease_factor": 2.35,
+    "next_review_at": "2026-09-14T17:04:59.265+00:00",
+    "last_reviewed_at": "2026-08-17T14:04:07.425+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 28.126,
+    "learning_steps": 0,
+    "starred": false
+   }
+  ],
+  "reviews": [
+   {
+    "id": "0049f06c-234e-4435-898c-54c023e9c2aa",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T18:46:52.913994+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "010e5ab8-bd97-4fab-8734-ed2e3a9c977b",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T18:46:30.231629+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "02d57701-737e-41af-9489-9bfb3a62915e",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-11T13:48:17.157129+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "02e50836-25d9-4b3a-b285-9399a26bbf3f",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:26:38.08118+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "04050b2a-0bbd-4d95-b381-ad01cb2257c6",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-17T15:18:57.13913+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "0435f636-8204-4506-bf67-a0a3d6a820dd",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-11T14:29:05.263969+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "04ba239a-2e7b-4ef9-85c9-489842bc24aa",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:56:21.810036+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0554c76d-d74a-4646-8721-370103171a3d",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:15:06.548132+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "059f0941-0cff-42f4-9acb-d8a0b28670b8",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T04:48:16.142669+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "06a5346b-9366-46d7-adab-f5685d496805",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T19:38:56.781646+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "06f69221-7465-4702-b656-67caa668df9b",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T17:15:14.542184+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0720d362-f951-492c-9b2a-cab5c4e96d58",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T14:05:14.562855+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "07734701-6ed4-42ff-917c-51269ebd6010",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T18:08:43.474914+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "079e79e3-634a-4b88-860a-d7af7e072a8e",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T17:19:24.420539+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "088b27cc-1438-4cc8-84c8-ec26066c0338",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:55:29.024841+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "08ef6b84-4c06-4536-b975-2d5f13b5360f",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T14:01:58.485387+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "0a773615-efd2-4943-b83f-c8c47537e811",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:06:10.297738+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0b699ccc-1115-4914-adcf-34e875aadaa1",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T01:34:42.879715+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0c8bc2f2-7fbd-42f0-8d48-091d9f2faf94",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:44:30.965598+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "0cf7799a-fe7c-42c0-84ec-2a79d7eb8b3e",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:23:30.302406+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "0d016613-4087-425b-817a-546723275b18",
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:20:15.702773+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "0d8ea7ab-a15a-4833-8a46-e4eeffa577a6",
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T23:41:39.747084+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "0d95fce5-635a-4408-8561-e08771ba9f02",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T18:06:11.152295+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "0da0bd44-cd0f-426d-86ea-0947cc2c41cf",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:54:00.623555+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0dd3b705-6a56-44bd-befb-e7b17593145e",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-17T15:04:20.816821+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0df3929d-b01e-4e64-8fa9-1439413a0062",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-29T21:22:03.836382+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "0e34d093-ca59-4d26-8b80-c5d5b1438679",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T18:48:47.968884+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0e486a4b-330a-48ae-ae0c-2d26efc19c76",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T18:06:53.519759+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0e548782-7722-417e-863c-c54ed43593e3",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-30T17:07:38.73684+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "0e8fd46b-f423-479f-8bd6-d79c47ccfc0a",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T19:39:53.233458+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0f30b0e9-6b24-4185-90bc-877ad38b8e9c",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T22:58:58.886403+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0f722393-7394-4350-8e55-c08b07332568",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T17:57:33.718874+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "0f76383b-7468-487b-bd37-f02eed0ba721",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-30T15:08:05.869336+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "1061dbbc-9beb-46b2-9d6d-5a7675717859",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:49:04.262362+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "1094ad85-5642-49d2-9f08-6ac85f2f68e3",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-19T16:59:21.679042+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "11fa8733-16f4-4098-bf5f-a90427cf3d9e",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T14:14:42.341411+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "125bef9c-0cc6-4877-9610-64a2db5a4c7c",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-18T14:57:15.769961+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "13ba685c-1d34-451d-8b60-07a47c773db6",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T17:14:13.011867+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "1412d9a9-b37c-41bd-801d-940d56c284f0",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T13:25:09.919181+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "14940e8e-f181-4885-a53c-05d705e56ed9",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-18T14:44:28.407376+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "16be7d89-7bb1-4c50-9414-4932cb0a31a5",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-10-02T12:35:33.146065+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "1729edcc-0b1f-4f7a-86f3-9361a4b479cb",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-23T18:43:54.049737+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "1760360f-338f-48a1-933f-d619db312425",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T02:34:32.872013+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "17ef60df-16fe-42c5-ad4d-bdfe0db037d2",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T17:59:57.483349+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "19325c06-54d6-42d7-8d17-dbe508857331",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T13:18:12.980901+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "19acfb45-f649-41f1-8d10-60d534e978f8",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-12T17:24:16.304943+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "1ad0f785-bc99-4ff6-a8ac-a3c47b73d8d8",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-21T16:11:41.785789+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "1b7a46b2-7121-4e81-b3a7-63d3f88ff67a",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T12:53:58.926547+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "1cf80b69-6d9f-4f0d-afde-d616deabeb92",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:13:33.667779+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "1ed4df1d-3f8a-47fa-8d2e-9843352ce5e2",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-30T18:42:24.869201+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "1ef07ad4-b752-4dc7-9684-bc825f8eec66",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T13:38:29.06494+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "1f33b4d5-1103-43c3-b8d0-3267fbac0c9a",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-28T01:39:42.337445+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "1f5fd9e5-b32d-4cbd-a4e4-d844d3e55383",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "reviewed_at": "2026-09-29T15:30:16.024705+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "2089c9f7-4ed6-45e4-95b1-8350c7d8ffff",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-08T16:35:33.233725+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "21ccd645-911d-4ef4-9498-1aa14a1da3a3",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-30T17:48:42.473437+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "23649e22-d71c-4c56-8284-45a471626afa",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-23T15:07:30.778105+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "245c4315-d57e-4134-b6a3-58c457bc552d",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-26T18:55:35.724338+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "246c94ec-7753-4727-9516-1d33b58b0ccf",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T15:59:30.237436+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "24a8e511-6ee2-4346-baae-1624680a1b93",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T18:01:56.329667+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "24b7e2dd-85d8-4cae-a133-28fa5379f4d6",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:20:10.62596+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "251d1349-170a-4517-9f34-f6ff8daac4e9",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T02:21:18.678057+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "2598f504-bf78-4221-b9d9-427c4955dde4",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T18:46:31.674717+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "25e8fb85-c2e0-4608-a378-890bd0106b2e",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T18:43:04.506229+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "25f9eadd-555a-4618-ac74-11ad12278d37",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T14:08:13.12815+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "260aba0f-bcc0-493b-8a87-da718e9e0c33",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:54:10.274245+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "268991fb-660b-4e1b-8ef0-aea9dc477a80",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T22:57:32.800736+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "279567d5-36e3-44f6-94f9-78a8b3407252",
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T22:02:55.776472+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "287cad43-8f61-4a5f-81a3-5e5fa5a8a10f",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:48:05.685407+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "2898ff84-8f2f-441a-9d1d-251ddf7721e5",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:43:05.380895+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "29709d8a-b858-435e-a4ad-bfa342760476",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-23T15:06:14.222834+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "2978ab79-cd22-4fd8-9ea1-a837d18545fd",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T17:41:04.841929+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "298fc1e9-1a40-40fe-beae-d40508b6e67b",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-05T15:44:38.39296+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "29969a79-e91d-4d6a-bc6a-7d007ed4a15d",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T11:41:48.932815+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "29994553-56cc-498d-801d-6667bbf43cdf",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T15:59:10.31509+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "2b56f9a4-3993-4613-940f-6cac5e1e371e",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T20:43:31.74586+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "2ddc093b-de88-4f3d-b503-4414a744e378",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T14:08:02.665708+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "2e88cde5-ed57-42a6-872e-3b55efc17728",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-26T11:54:46.100762+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "2ff7d559-9727-4220-95e4-cf945d03ae1f",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T20:06:04.13421+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "3108f6b9-c19d-47ae-830f-546129b8bae7",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:36:38.944905+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "31b59f61-d19a-481a-9c44-76c589f46c4b",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-11T15:43:02.667763+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "31f1c0bc-91a2-4669-86ea-8df2a55df6d2",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:37:33.216914+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "3222485f-748e-425a-9be0-5d250ffc23da",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:04:44.594052+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "323b2a80-2f50-497c-9bc7-aab4242e2b76",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T12:39:42.652353+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "3240a84f-6fe8-4315-a5aa-2f2118a670e1",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T19:16:22.802006+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "327e3b21-e0cd-4659-943d-1fbf0a9980a9",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T16:32:07.239457+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "32fea1de-7b1e-4215-834b-9b4c061c6904",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:21:14.963363+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "334500d8-3a37-409e-b3c5-1729b22452a1",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "reviewed_at": "2026-09-24T17:27:46.948787+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "348fa2bc-6c9e-4e45-bb90-13b6bfe7f969",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:52:15.36202+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "34cae77e-21ef-4b9b-bcfc-41f25822ac1c",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-17T22:31:02.312532+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "369ea6e5-82c9-4549-98c4-e658d6664dc3",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-17T19:24:01.951076+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "3706235a-dfe4-4b07-896d-41b1ab4dd320",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T16:31:08.663188+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "372559ad-16fd-43ea-a7d2-79a1b2a684e7",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T23:53:41.643189+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "3848e46c-098f-4226-affe-def15b9197b4",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T21:39:16.966228+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "387fe2ef-95aa-41a4-bb44-5e9eb6c49686",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:21:45.946863+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "38aee90d-6b84-4237-81de-8fcf5115ee2f",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T11:28:15.954425+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "391d0350-b9fa-4750-a7c8-3dc8ba909ae2",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T17:40:35.935782+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "3a0a71e7-8e7d-40a1-84a8-955c15dd6218",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:21:02.41915+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "3cd7a0f2-e0ee-48fa-9388-0d09c380b034",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-10-02T12:13:13.390691+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "3d106c89-671b-4d25-9778-f1cec096c377",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-25T18:45:00.089725+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "3ed47953-889c-4250-a083-3da92980a79b",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T17:48:41.613939+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "3f2d7ec0-6b9e-4c3d-ba2d-a26b9a5afaa5",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T17:50:42.015797+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "40d0469c-770a-4967-ac32-1b99cbf622b2",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:48:58.983418+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "40f384c1-de0f-4a03-b794-bfd56990392f",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T18:08:10.724166+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "40f3f2dc-2a11-4d3d-93de-dff646f01794",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:44:56.392958+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "43341aaf-8896-46f4-a648-a0982dbeb603",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-17T15:13:19.087688+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "434147fe-06c2-4f4e-bba3-47ba4a71e84e",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T21:19:43.046724+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "43809596-0331-45db-92f3-147b0030353a",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T20:42:55.343861+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "44234fdc-4dc6-4761-bde9-acbb4dcedd59",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T17:44:10.88306+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "442c58a6-74be-437f-97be-50627556a07f",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T22:20:14.590821+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "45282852-89a2-4908-ab85-a6fcb7cdcb17",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T21:22:31.051122+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "4599a146-7e98-4f18-9f88-c31401f29b76",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:52:20.710162+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "45ffd6cc-7cf7-474d-8af3-93aa310660cc",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:04:58.754621+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "46cd0605-ab07-4637-8ebe-038c53594b16",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-23T14:25:07.791561+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "470ccf2d-8fb6-4c29-838a-a57c7d83100e",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-17T15:12:56.533188+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "4754e5a5-68d1-49ab-911b-562d78ef7867",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-25T16:04:04.076286+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "4897b6c6-8fc8-45fe-82c5-f0e3f147240d",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T00:19:39.995415+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "48a379c2-49c5-4463-9f8c-83a4832ccaac",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T02:33:47.991167+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "4941e152-c821-47aa-aee9-c4538f835c99",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-17T15:32:39.898413+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "49f87f7a-38f5-4c20-b515-7d2394b99c45",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T13:32:35.950683+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "4a86fc0d-80bb-4840-8dd9-cdc319acb121",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-17T18:22:14.128858+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "4aafbccb-1d86-40dd-9452-5baf7ac23fdb",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T12:06:41.789674+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "4afe541d-d59a-4e3d-b4fd-28a4a4c6970b",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T00:21:24.79045+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "4c09c187-42c0-497f-af6d-a83099da255a",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:26:47.477308+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "4c0c8ab7-e618-481f-82a1-1a66f327e62b",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T22:54:53.39155+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "4d443fe8-67ab-4467-8639-ee7167223e8c",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:12:25.65976+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "4d7bd25d-5e01-4dc9-92cf-7f2562da9ad7",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T17:59:14.133159+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "4e319360-2e93-4f74-9fe0-d58a2a510473",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T19:53:37.640842+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "4ea043d6-99ae-4bd7-9916-95bcd45c7958",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-14T15:02:23.555671+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "4ec00e4d-feb2-4150-816c-7a95daa31e51",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-06T18:00:29.715824+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "4f12809e-317c-44f5-a98f-2c41c88082c5",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T17:37:31.633917+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "5144e3dd-a3a6-402e-bd28-0c0b689cb22a",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-23T02:09:08.433971+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "5173a871-c319-4e0b-876b-efd685d4c245",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-26T18:42:20.8776+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "51902f0e-ea20-484c-ac2f-1ba08fbddbe4",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-09T16:31:05.736399+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "51fbd393-e337-4b72-aa30-5dfd507e0eab",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T01:33:23.225369+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "52ec92e6-b11b-4aab-88b9-8e31cc9e772e",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-17T01:26:13.226715+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "533358d5-0b2d-4cff-ba24-b85406b8efe2",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-19T16:57:40.678629+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "536b4a5b-4ad5-46ca-8cef-2634f9db974e",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-13T22:03:14.386334+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "53b236fa-1708-40b5-9129-16d40317cd8c",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-14T14:58:21.956962+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "53d3b28b-43a7-49c4-bb55-00fcd1ad4ad4",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:09:25.678955+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "53e50ec4-065d-4067-9f5a-be17d6ed04f7",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:32:27.833498+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "5451ef57-2efc-4d7b-a23f-c7c36ef25dd9",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-29T22:28:43.370709+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "559c8b3f-69e5-44b8-9613-832545799372",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-30T15:10:41.542339+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "55b3d249-e1fe-4a41-bab8-4c9c8f3c8bec",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-12T18:33:32.547022+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "562db0d9-5ad6-42a0-97a8-e44c33d8eddf",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:40:23.284702+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "564473bc-eea5-42b9-9e6d-1495ec07251d",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:02:35.53225+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "56cf5af8-4f84-4f07-90b7-6c7cf3e7bac6",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T19:37:59.865671+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "574a5c7e-7574-4c84-97db-c242b9709afd",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 2,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "reviewed_at": "2026-09-29T15:58:00.677301+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "578f9a3f-df33-4027-8e30-3e1c1c90f979",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-18T15:36:39.676964+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "57a7f7c6-830f-41c9-8e40-872628f6c734",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-25T14:43:54.879409+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "5845783c-66b2-4234-b549-55afee873ba1",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-25T16:16:59.941424+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "5a009c89-2c62-483d-9232-143ec7404683",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-10T19:24:27.686145+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "5ae064fa-5017-4870-92c4-cad617e0c7f8",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-17T14:53:06.219124+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "5b207e01-b25b-42ce-ad72-d2905f40f3c4",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T18:48:52.464029+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "5bd3410a-5a01-45cd-80d7-ec5c42618b69",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T12:55:00.986055+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "5bf7bc58-20fc-4d04-8352-853ada5c4261",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:53:04.607093+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "5c9bf133-fc16-468b-ab0b-898b735b8701",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-25T16:06:24.423958+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "5daa2be2-1af5-4d24-850f-9afc889a7139",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:08:04.068646+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "5df2c1e6-83fa-441b-a20f-f59f321c1663",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-08T15:12:31.545203+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "5e854150-c9c8-4321-85f1-fa1a7a963986",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:15:37.296691+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "5fc2d7d6-c2a9-40b2-ac4f-b06142ae4cef",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-26T18:42:51.394078+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "606454e0-52de-46ca-b875-bbffb6c5c161",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:51:43.542218+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "60a0de11-0eb0-469a-b1ce-dd87fe6660a1",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T20:27:54.91644+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "61a46ba8-3559-49eb-b847-4fe87957a341",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T21:29:20.510556+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "62ec5d7a-db00-42ed-8ce1-d75a4eff38ff",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-24T01:07:23.113853+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "630c6a09-f38e-4103-be89-da6250dd1b25",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-29T21:20:55.080509+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "64975fed-51ec-45ab-b05a-e2156402db65",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-23T15:09:41.683938+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "649cc5d3-882a-44af-8800-1491f64fce87",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:46:26.718023+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "64c63694-dc76-45c3-b357-13843dabb835",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T16:22:47.340084+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "64d54139-2fde-4231-97fd-19961e4c909f",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:35:00.707779+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "6507409a-38de-4229-872b-21c286797d8a",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T18:22:11.412102+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "65368eef-0f22-464d-b71d-7748133cfddf",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-19T17:36:49.38992+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "676dce2b-b431-41b0-9d39-b6ede940727b",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-10-02T12:52:09.026276+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "678c8f32-cbd4-48f7-b4c8-359a2727802a",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T01:44:02.622792+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "67ddcb62-a6d9-4534-9972-68e5d9c1923a",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T18:12:07.515534+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "6861bf63-9fd4-473b-b3eb-480c06ce553f",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T04:47:01.005216+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "68e49cfd-3ec2-4ba9-b048-ddfaf6528ccb",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-22T21:42:16.092142+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "69085cba-f08b-4ace-abfa-58b8b598030f",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T18:57:23.819688+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "6a6659e9-3191-47c8-b533-3e1e94f38e44",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-13T17:14:52.858838+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "6b09647f-1f61-434e-a514-d97ac97f5320",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:59:51.203828+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "6bdfe5f4-2f07-4c8c-a57a-eff2b0558761",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:14:52.848232+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "6be2d75b-ec87-4504-8430-3c9d94addc75",
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T01:28:29.661112+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "6c323bcb-a085-4376-92cc-f89d3ee37217",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-08T14:22:18.144422+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "6cb1c19f-ec32-4b7d-a710-93919090cd65",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T21:41:54.509154+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "6cbdb153-a5a1-4e75-87eb-76f1ec1f1a28",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-17T13:48:02.40239+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "6cde94f3-531b-40a3-bf54-4d303357ae33",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:18:50.708715+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "6dd36d84-061d-42eb-b4a5-2147cd7b0aea",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-23T15:12:17.172304+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "6e2c5411-88c3-4186-9f14-02a3d7267da5",
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:14:22.096875+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "6e652fae-f008-4cd9-b02c-225797ef1544",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:24:12.822431+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "6ef82c56-2663-4f51-a00d-bed0769cc674",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T16:15:06.744975+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "6f295bbb-0fa8-4352-8321-19cdc4fd969f",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T04:52:37.635055+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "6f9c6c6f-942b-44e7-9b45-8f6853465468",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T14:19:26.43183+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "71451008-d439-4aa5-ad89-6b423f98ed2e",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T21:34:56.727379+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "71dd7afb-bba5-4778-8c0a-a7a0310ac8da",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:24:59.216931+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "74d9300f-cf89-42f9-8080-4aed06af7430",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-19T17:37:35.194341+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "756e3acd-9c7a-4d6a-943e-347c597f9b59",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-17T21:10:15.017637+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "75ed7c19-5074-4fe0-a4c3-80e7d5f477a3",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:53:07.960332+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "76964e61-bcb1-4e66-b48d-45916f10dbc0",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T21:23:07.864573+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "76b97c9d-a96f-4610-9e7b-d9c28f042bfd",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:51:32.098619+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "776b3374-0f6b-49fd-8b6c-2babc5507f4d",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "reviewed_at": "2026-09-24T16:48:36.070655+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "7c099fa1-3198-4054-be51-6ab6ea15642a",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T18:38:34.445874+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "7c1e23ab-ac66-4c93-a1c2-c10a4eb48857",
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:15:42.681605+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "7c4651bd-7d4b-425c-baee-8e8d88d98c81",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-17T18:22:24.241174+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "7c968f00-063b-4de5-9755-65b3b5d5e0f4",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T18:42:40.076425+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "7d964c39-b6dd-4a5f-b38b-62d3cd45bb37",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T17:51:02.683082+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "7dc15d60-c8f2-4cd8-95b2-47e005f72a85",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T00:05:57.786958+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "7e33c108-22c7-4bc5-be68-20113f79373b",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T17:07:37.713373+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "7f581592-5bc8-46fd-874a-22923957a7e5",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:35:25.575188+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "7fdc770a-c025-4a09-93b0-f562ebf8ed6d",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:22:04.068624+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "80bf14ab-1d02-4099-a222-ccd98eebfb31",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T23:34:04.860935+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "8126a64a-3667-4a62-8d66-05ebd5f38835",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-17T21:53:36.581337+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "815964d2-2bfe-4a8c-bcb8-d241faca3636",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:12:38.252643+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "81923666-8f48-4b21-9716-6dce0aa3e2bb",
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T14:10:17.608509+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "826d07f9-4eed-45d8-8867-418a86cd1507",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:01:01.443824+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "82af99e6-d52d-4e7f-aab1-84233ff7796f",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T17:47:22.042667+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "830a2352-2b05-4ffa-8fd4-038be1512b02",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-14T14:55:05.264267+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "833aefea-3e46-4482-beaa-5bdfd250e751",
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-23T11:25:39.305993+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "836bef9a-07d1-477d-990d-07371ec000a6",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T01:36:32.940945+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "83f2c535-316a-4dc1-aafc-38054f0f899a",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T18:06:54.781377+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "847ff3a8-3027-4d91-8158-cb88a5993f9a",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T18:55:10.451269+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "85224c36-22c6-474c-9da2-22ed339ba371",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-10-01T11:43:02.228065+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "8623bc06-bbd6-4a80-99cf-53ee4729ba0d",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T18:04:40.58516+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "86305c71-18d1-4b56-8c86-ac218b794e94",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T02:20:25.920809+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "866b9e42-cd62-4d49-913b-83f309444146",
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:21:01.094219+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "86b22d03-676a-4309-881c-69a7e530e311",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-21T16:06:45.827604+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "86bf0be9-0084-43f6-8b45-a37bb2510a88",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T18:37:51.907908+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "871ce56d-4b7e-4747-b9e0-166164654c44",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T17:56:44.140859+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "87235032-bd2b-474a-b186-d955325f9d93",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-21T15:20:31.828978+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "872766c9-b494-41b6-94bf-f3d15175727e",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:26:29.269752+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "87464ef9-9ffa-42b6-b06f-623e077d7a9b",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-30T17:33:53.425996+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "88c82ba0-615e-4413-ba20-f126b09aa7d8",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-19T18:47:29.449521+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "896f32ff-4c40-4adf-87d0-50a33c1d0a95",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T17:44:18.418042+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "8a00a34b-f3d4-4b38-8142-7f7142539342",
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-04T14:36:05.648862+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "8a2e3b30-67c2-4737-8a66-2c42df37d089",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:00:09.343761+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "8a719f36-092b-47e1-b691-2f1a014bfe4d",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:25:47.517998+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "8b551932-899e-4f58-aaaf-c85d4ccedede",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T19:54:20.222526+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "8b5f4319-c86a-4281-9eb0-53d05f0ba4da",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T17:48:36.445799+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "8bc7fa41-d649-43c0-b965-e08dc9b17eca",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T20:14:46.735618+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "8c2666ed-a87a-4bc8-af5c-f559a57e0da1",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T15:28:35.849863+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "8d61e194-dc92-4058-b813-2adc3ddbf083",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-02T00:14:47.102368+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "8dd53422-f9f7-4379-9fc1-8fcc84fd9889",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T16:44:53.768302+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "8ddec41a-968b-451d-ae08-1f96dbc86be7",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T19:48:51.549253+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "8e08ab80-f422-4a51-8198-da327bdadcb0",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T16:28:48.25591+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "8e21c3f6-71eb-48c4-85a0-51856f428122",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:37:54.424472+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "8f971991-1838-4c97-91c3-fca2688c2b0e",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-25T18:44:21.207084+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "8ff634bf-78cb-4379-9f79-a942266b20c6",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T22:17:51.731038+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "9029b047-e18f-4683-96b4-4092fe96de9c",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T18:18:08.749121+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "9035e048-3d24-4118-9ace-b89556c49802",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:14:15.415966+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "9067bae8-3280-410c-a8df-ad331488fbc7",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:51:30.074174+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "91ba634d-5dd2-4c88-93c4-6d9a17a7f14c",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T20:26:54.284977+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "91c696ec-4128-48f3-bdc3-958b33107c91",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T16:29:30.705328+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "92ec0d25-48c7-44ce-8583-a5bf95a82c2b",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-19T18:06:04.350187+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "9330daaa-d09a-4969-86a9-57c8cd9f8f74",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T14:15:17.494447+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "93d35bff-2b07-4c6c-bd3e-ec3fcd083aa0",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T18:03:26.680404+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "9400481c-e7c0-4154-86e9-98ac6b39146d",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:36:15.841716+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "9578cbde-58bf-4605-8325-434d35a8be37",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T20:32:56.762389+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "9594c2ea-64e2-4a0a-9ab5-564c51deec44",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-17T18:16:33.101067+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "95d698c7-ae59-46ef-8492-799e974fc92c",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T18:06:04.7842+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "96007d5f-c063-4f10-80b4-f5014922cabe",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:39:21.418784+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "971545de-1f66-4296-948e-3b8fd853d8f3",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-12T12:49:00.838702+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "9724f6f7-0a97-4631-8e3d-f5073d5a43ee",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T17:40:23.422244+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "9817b95a-ce4c-43e7-bf07-4f2f98da9c1f",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T17:47:21.782164+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "9844ef31-3b6d-4e7e-955a-8c8979aedd18",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T22:18:13.550018+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "990809f8-8cdb-468c-b955-fb2dea0851f7",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T19:14:11.295791+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "9922ed59-df51-444e-aee8-69e95ee52dc4",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:36:44.485589+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "994ad156-e50c-4bc0-ac76-6b94054e4c3d",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-17T14:04:07.939192+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "99d7c9d8-b439-4217-8fe7-78d918988c86",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-19T03:48:53.381138+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "9a90446a-3a7e-4224-9345-b56373486ec5",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T16:13:22.86653+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "9c47a9a4-2453-4cef-aa46-390402d5625a",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:26:05.694437+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "9dbdcc4b-2ade-4b1c-a18e-8d89f245a05c",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:53:18.933138+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "9de48f6f-cb8c-4f08-ba3a-3140149e24b2",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-25T22:35:58.236981+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "9de80f36-49b1-41a4-bc34-5d33539e04b6",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-29T21:36:20.181907+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "a2527363-4782-4682-9203-941c57f66250",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:27:59.46644+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "a2fa10e3-e9ea-422d-9fee-cbd11214abe3",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:44:16.033603+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "a3dd4451-0176-446f-a3c8-c02ae5d99187",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:31:09.302946+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "a4a8eaf2-0386-4171-8ade-baa4bb9491d9",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:25:31.381171+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "a4c17285-5b2e-423a-ab1d-d29ec06ca5cc",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T04:51:38.5505+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "a4ce33dc-b970-4d15-acc4-a548a0e260ad",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-03T15:03:24.836474+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "a59c57b4-9423-49b0-ac3e-8af330d2a7f1",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T01:02:42.610062+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "a5b428a1-18b1-4cb6-a709-5a630c93b9f8",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:32:49.693509+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "a5fb7c99-813d-48c4-aba6-87f6bfa6a8d8",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:11:22.034649+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "a6091afe-13a6-4465-935c-69f381ead93d",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-29T18:34:08.848365+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "a66cdb20-54a0-4a28-a6b7-034b682f8674",
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T18:49:23.164472+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "a6afea60-47fa-4290-83db-72a9bd57280a",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:22:15.885998+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "a742eaf3-ddde-49b8-8c26-2522b630fb9e",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T19:26:08.02133+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "a7b1ddcc-3d31-4008-85e6-f048c5f33249",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-10-01T11:37:57.622342+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "a7b1e5ba-2f59-4d40-85c9-16c49b2ff872",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-24T19:46:53.099406+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "a84d5c57-6696-4c3a-bdc1-056396277a68",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T17:13:14.467085+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "a93c63d5-5e2d-4dbd-92f8-4af15aa933a2",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:45:08.143396+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "a986c240-4308-47bc-9423-0751a919a1e7",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T17:48:00.004427+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "a9fa1e62-292c-4d1c-ab12-096497d2d59d",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T14:15:45.290708+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "aa278684-fe1a-4794-b79a-7b6b550b5094",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:24:38.880964+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "ab480484-d0a3-4f8f-a0a7-e870756611bc",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 3,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "reviewed_at": "2026-09-24T17:24:29.776465+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "aba37e0e-ea3b-4867-afe3-abd676d687b9",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-25T16:07:10.97802+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "abefe451-8864-4786-9d33-b8b4f2c0e18f",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T13:25:57.121842+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "ad46ad57-c8e4-4c85-a3f0-ea1f8d74ec3f",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T16:04:40.032175+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "aeb83f9d-7f99-40ec-8921-0d10a165c9f5",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T18:02:42.489172+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "af46af04-b656-4a9f-9187-b7bc4388fc0c",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T20:31:25.695812+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "af8f3efb-da67-4c42-8bce-2e85df6eb372",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T16:49:57.558662+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "aff2c6c4-fe36-4c7c-b924-591b6cac0304",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-12T23:35:56.971925+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "aff8e59d-e4c9-43a4-a7c8-47d5008b8cab",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:10:09.328089+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "b0fa0c46-a7b8-494b-806d-8163f5add726",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-17T03:03:27.302598+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "b108a8e2-8dff-41ec-bbce-d51e5a5f35f2",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-25T16:05:42.024811+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "b136140d-c11b-4668-bb33-52b6761e9695",
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T18:02:23.506377+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "b14aac64-814c-4e85-a312-88a0d18992ed",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T18:01:44.448856+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "b1d61f50-2922-44bb-8a71-b2c63a951b66",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T19:50:15.312757+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "b1d6acba-ebd1-4ac6-9013-bdd8d13fff55",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:20:50.628868+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "b1fd027c-a2c7-4e9f-aa05-83975aad7df4",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T02:22:48.256112+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "b25751ac-d0c8-42d1-912f-4017e065f647",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T21:34:13.290877+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "b3d90287-78a3-42dd-b2f2-bdfc4bf05f5e",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T18:30:46.853389+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "b3e344e1-3744-45fd-baf1-8dccd310b9d5",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T17:08:25.628404+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "b3f7c580-06ff-459d-bd22-2a15c6b72727",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-12T19:04:55.830789+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "b40cffa7-5fe0-4782-b053-f4d97c7a6d1d",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-25T18:31:51.160548+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "b5296566-6e09-4620-b59f-53e280236894",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:27:33.768083+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "b580fd37-423c-4be9-9f65-0f6f24fcbb4c",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:52:28.733432+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "b5b9bfd0-54ee-4cd5-8e6a-1f1ad5183427",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:10:17.944535+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "b667d1a7-3173-4e98-a3f9-4ece22bdf1fc",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:33:26.370308+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "b669b933-ddd5-4a7f-9508-374c86b07d0a",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T18:25:36.203716+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "b69fd650-05a6-4094-af0d-88db8fbaa293",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T18:20:17.671925+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "b6d306a0-f530-4c35-976d-610bea762e62",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:40:09.679615+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "b71b084f-f379-486c-a0d6-4f11269861af",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T14:48:11.674691+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "b8b0e660-e64d-4603-a96a-306af33db9ce",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:02:57.365346+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "b8db3e65-6043-4d60-a330-32e5b6cc5efc",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T19:58:55.253663+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "b9585687-7920-4d17-906b-0e8108d463de",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T13:42:16.817042+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "b978db20-a285-4954-9272-b74ab93dd78f",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T17:49:29.247077+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "b9a72c83-a94c-4657-92ed-1fee1a2c12f5",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T18:08:02.228684+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "ba1b2e1c-5f74-43bd-9093-35c79800a5aa",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T02:19:36.125502+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "ba27990c-7ae8-4cc3-84e5-7f579e1bfb05",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:31:40.569343+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "ba3664c9-b662-4c97-a00c-a4527fa73c0f",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-13T16:38:01.785748+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "ba768a76-1e19-4bc3-8048-e93e9ddb82d3",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 1,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "reviewed_at": "2026-09-29T16:07:05.194415+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "ba7c693c-f4e1-4b6c-b3b1-dbeceaa60a3a",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 3,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "reviewed_at": "2026-09-29T15:35:42.053618+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "bac54a5f-84c3-42c7-a00b-b75d573a9176",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:02:40.343756+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "bb7d4697-5ce3-4ff4-a6c2-d8ceedbdaebd",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-10-02T13:17:41.724274+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "bbabf8ed-4b77-4e39-b59b-b632df5fecab",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T12:37:31.811128+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "bbd0395f-15c2-48d8-88a1-1d59b6101b37",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:01:28.82754+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "bdd4b667-b481-43af-b439-adbb661c5f27",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-29T21:47:34.411731+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "bfe7158d-9ac1-40cc-9c79-9a5d43077051",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:46:07.269328+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "c06ae650-97e6-410b-945b-62a905c7da23",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-14T14:56:46.23083+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "c141ff0c-dcaa-45af-8d56-83dad9bfdb20",
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T18:01:40.949237+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "c17502bd-fccd-4d8c-98c0-9ef431183aad",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T18:38:23.436981+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "c1d6e648-6207-4e69-8639-270b8a96a5f8",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:43:18.639768+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "c1fb48dd-3dab-4c61-a75e-31c33a0cef7e",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T21:22:10.698716+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "c2122ab5-5f3f-47b3-a672-6a366e4b6580",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-23T22:13:40.112639+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "c3bd2dcb-8cb6-4787-b137-af190d1fc845",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-30T17:05:23.220145+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "c3e7f84b-188e-49a0-bbcf-8deaf62a8194",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-06T18:03:07.764355+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "c3e9e634-e217-4371-a805-614cc0e7befd",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:23:17.034463+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "c4875c01-5d38-4cb6-90e4-85659ffe8ead",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T11:32:10.683938+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "c4a8789a-491d-4fcc-a71c-4aaeed55e3c2",
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T15:55:50.132963+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "c72aa867-eacb-442d-a3d6-618ac6aad84c",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:28:21.491415+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "c74be2c9-6079-4b78-a798-4090ad6eaad2",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T18:40:16.030498+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "c7a2fade-ac9e-4b82-9900-3560b1d45240",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-23T15:10:14.151895+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "c87b6516-b854-4989-9b50-97a7f6072e11",
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T21:29:27.743112+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "c9912bfc-d7d7-487b-b7c2-7ba7af3568c0",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:44:25.219325+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "ca42a2e4-2eb8-411d-8ff6-c55a4042c082",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:00:21.697005+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "cb481fe8-8b19-42cb-a607-f6c7b91769ef",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-25T16:07:51.714903+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "cb720bf5-7bb9-43a8-a9a6-9ab0bbf8a332",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T04:44:28.581984+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "cca1d6bc-fd34-4f0b-a60c-09719b57ee3c",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:18:27.846994+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "cced11c7-e730-4039-8f9b-5ff0e97a436e",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T01:03:20.403238+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "cec8f9d4-3115-432a-9b68-3e81941b642d",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-25T16:11:12.785167+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "cf69113c-bf8c-42e3-83e5-77c9083efa18",
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:17:06.260831+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "cfe52a27-ccb1-4f18-bcdb-a6314bc961a8",
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T23:07:48.040611+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "d08e5fc7-b978-4b9a-b7e9-86827ab7ec1a",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-13T22:07:58.869728+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "d104b255-1e19-46a9-a2b3-092a4f4a4d78",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T17:59:20.470043+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "d10fc254-6143-4cb9-b370-8a0e02cd6f81",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:41:46.038268+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "d4f9951c-cadc-4960-b004-7d9a18689702",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:49:57.097522+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "d56459e6-06ef-422e-bbaa-83a3a1ff478a",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:13:00.074914+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "d92159c9-1347-416b-8c93-bb71ef66269b",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T12:55:36.109306+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "d92e501c-492c-4c37-98ca-9c8cfe334f71",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-10-02T12:16:43.303169+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "da5c584d-1e0b-4155-9683-d3715d4edbf1",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:35:41.248212+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "daf2d212-bd6d-4bb3-8520-cdb43812e9df",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T18:56:13.336333+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "dbe81a83-43ba-49d5-ab73-73d3c2bf8a66",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T13:40:41.729307+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "dc3ddf91-d49b-48b9-8c65-4c4bf74a2db2",
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-11T13:49:54.114277+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "dd4af8de-65db-498f-8cc2-650fec5e517c",
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T03:57:40.178192+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "dec63cfc-667b-4748-8c35-f4e013bc5ea8",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T12:36:30.33939+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "e0daca62-1e6a-4a16-81bc-f28a35c58c33",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-30T18:30:18.811244+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "e3307b62-c979-4aa0-ac4e-f2c1414dea13",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-08T14:32:00.827634+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "e33c50ba-c5d5-4963-94b6-f2b52ffd6a0b",
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "cloze_index": 1,
+    "user_id": "e448edd7-ed5a-4417-ac1d-91ea78851927",
+    "reviewed_at": "2026-09-24T16:50:59.443528+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "e33d3f64-1d89-4cfe-935a-e5be7db551b9",
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:14:57.361725+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "e4342214-86bf-4122-9230-a168c5ec9590",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-17T16:52:20.849268+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "e7c1ca50-0be2-4177-83a8-35da6214f6ab",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T17:59:25.578215+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "e80463fe-9ef1-46b8-a266-4cbac4567c73",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:27:40.977076+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "e9217adf-baee-47a4-9364-f450ef413363",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-30T17:08:22.117002+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "e9d55390-6c9e-4339-a363-92d267b110ec",
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:31:18.636738+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "e9f6ab8b-c18e-4790-afe2-e9199fa20bd3",
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T21:44:29.712303+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "eac90d8f-9178-4522-a560-5a45469d8607",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T14:15:15.358028+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "eafa4e82-9187-440a-b245-28d50f13d67b",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T12:41:19.967347+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "ec6aa780-4a92-458f-91ce-4b0d529686f0",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T18:22:53.695426+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "ecf94ce6-8180-4e2f-bbe6-fcb799ad74a6",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-23T14:18:02.56956+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "edfe13e9-9a3b-4d50-aaab-303e48717848",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-17T16:40:03.502416+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "efc3d433-70c9-49b3-ba69-aa65867899ee",
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T12:42:06.764137+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "efdc11b7-f497-496c-8b96-a1420fe4d7f9",
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-12T23:36:30.098366+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "effe5551-a8d0-431e-9aa8-dfabf4a7ecec",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-17T16:39:15.584246+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f010e38a-cd51-4fe6-a762-f73580d0aaf8",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-17T18:11:40.428356+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "f01bff35-1f40-48cb-a269-4b70a2eccc09",
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-14T13:05:31.014623+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "f0535b5f-8608-4a70-b703-e39f8118cc19",
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T17:43:29.816595+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f0da3d7e-77f2-48a6-acd6-d8bd6e00fe88",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-23T02:08:45.745522+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f2417fdf-0d7a-4a4d-a0ec-24ad731a0544",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-10-02T12:51:26.685204+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f39c3ff2-39c8-4f62-9ba2-36734efcebab",
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T01:36:19.940206+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "f3c06625-0a6d-4dea-83c8-ff2c9255b648",
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-17T13:32:13.805171+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f666ab47-3524-4c32-a248-4bd75abe7193",
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-25T15:00:41.856622+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f6cfde17-4191-4b97-9d25-4536858a7eda",
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:16:45.527849+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "f6ddd653-59fb-4241-bdb0-8651e787f7c6",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:27:38.879122+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f7270274-bda2-4bf8-9b8f-f9bea09dc037",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:04:16.381006+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f75758dc-c498-4fb8-9615-4429deac5c30",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-30T17:47:28.509317+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f76cb4d2-58e6-4417-83d0-5910ffff8edb",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T16:27:58.484799+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "f88c1758-ea9f-4aa5-8b3d-36a3e62c91b3",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-12T15:16:14.833882+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f93a8e5b-ec5f-4fac-90bd-e67fe9283046",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-11T12:56:21.79502+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f9a89c0a-95ce-4fb0-bd3d-2de7b8b6d80f",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:54:01.719966+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "f9be61f7-fd20-41f7-a53c-ddf2e7e2cbab",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:00:40.994548+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f9fffca0-9b15-489b-8ad0-a1c23aaf34f5",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T19:38:24.487074+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "faa0f513-be91-4c30-83a6-d16639620d0d",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-19T16:58:40.767567+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "fbcacbf0-c57f-4178-9e4c-7a1a62c5cf82",
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-10-02T12:14:24.561798+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "fcdf146b-c0bb-4709-aa5f-f52605899a6b",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:36:26.513829+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "fd20d035-e753-4f42-b332-7cc15931f790",
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:05:26.757274+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "fd89f01a-b0af-43ce-9bdf-f36ee90e857f",
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-20T17:59:31.808367+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "fe560845-fe7b-4513-87d1-96191151306c",
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T21:10:39.912959+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "ff0bc597-ef76-4577-a68f-5de964a40d9c",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-19T16:58:06.739511+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "ff2fd2dc-58ca-4ecf-a1c8-4b294e92e8cb",
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:54:26.988181+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "ffbe6cbf-5e5b-4009-a1a4-00d1317eeed6",
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-10-02T13:10:08.213497+00:00",
+    "rating": "medium"
+   }
+  ]
+ },
+ "unmappedBacklog": [
+  "055c6d03-4f75-493d-81ab-94ddabff502f",
+  "0ecd7bac-0143-47c1-98a8-66483b9da663",
+  "2500b00c-f29c-43f6-9c8a-8009805b7c5d",
+  "281971ff-47d5-48f2-ade7-bb49b09ecf78",
+  "2f153e0e-453a-4ff7-b1ec-b304739cde77",
+  "41f87b91-e2a7-4348-8495-48cd042eece3",
+  "487d627f-035c-4192-b71a-b7d7f4fd845d",
+  "5ef31e94-271a-4344-b482-e4d9bacc7bb5",
+  "6486571a-1237-471c-bb9b-8c373f61c395",
+  "73b5fcb7-a512-42ca-8ec3-b430c9264f47",
+  "75a2da19-403a-461a-ba4c-d9721d233eec",
+  "883f79c9-3fad-4d44-a63e-d104d6a890aa",
+  "9e2a17c9-cac8-4c02-a0c8-379b30ac5965",
+  "ab4d6752-bed6-4716-a5e4-99eec8fcc551",
+  "b7858478-c39f-4aeb-bb6b-32894e259ab7",
+  "be5f387b-e6b2-4ec3-8197-821198b54cda",
+  "c6f7963e-fa2b-4c69-b852-aef86e5f6c4e",
+  "d20971ce-413f-44b2-ba81-d55af592d136",
+  "eee33c57-0002-4666-81a6-f7a1fb97a1b9",
+  "f4f7b834-bb1f-401a-b380-2f173274871c"
+ ],
+ "totals": {
+  "concepts": 1132,
+  "flashcardConcepts": 4116,
+  "questionConcepts": 2673,
+  "reasoningObjects": 24,
+  "aliases": 8,
+  "deprecated": 177,
+  "needsReview": 29
+ },
+ "learnerBaseline": {
+  "schedulerRows": 8408,
+  "reviewRows": 51004,
+  "attemptRows": 656,
+  "fsrsDigest": "4443980510cd4f5ea7663d683a41cda9ebac87d42d0d9f55739e4b56a502620b"
+ },
+ "sha256": "538ed970bcef12de34037e198927e8f8e25c860fac4c6f640fe1d1bbff92ad32"
+}
