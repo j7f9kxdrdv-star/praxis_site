@@ -1,0 +1,35 @@
+import { all } from "../backfill/record.mjs";
+import fs from "node:fs";
+const s = JSON.parse(fs.readFileSync("scratchpad/cards/pre_state.json", "utf8"));
+const S = await all("flashcard_user_state", "flashcard_id,cloze_index,user_id,stability,difficulty,reps,lapses,fsrs_state,interval_days,ease_factor,next_review_at,last_reviewed_at,suspended");
+const R = await all("flashcard_reviews", "flashcard_id,cloze_index,user_id,reviewed_at");
+const before = new Map(fs.readFileSync("scratchpad/cards/pre_fsrs_rows.txt", "utf8").split("\n").filter(Boolean)
+  .map((l) => { const p = l.split("|"); return [`${p[0]}|${p[1]}|${p[2]}`, l]; }));
+const key = (r) => `${r.flashcard_id}|${r.cloze_index}|${r.user_id}`;
+const line = (r) => `${key(r)}|${r.stability}|${r.difficulty}|${r.reps}|${r.lapses}|${r.fsrs_state}|${r.interval_days}|${r.ease_factor}|${r.next_review_at}|${r.last_reviewed_at}|${r.suspended}`;
+const bLR = new Map([...before].map(([k, l]) => [k, l.split("|")[11]]));
+const rk = new Set(R.map(key));
+const adv = (r) => { const bl = bLR.get(key(r)) ?? null;
+  return r.last_reviewed_at !== null && (bl === null || bl === "null" || new Date(r.last_reviewed_at) > new Date(bl)); };
+const moved = S.filter((r) => before.has(key(r)) && before.get(key(r)) !== line(r));
+const appeared = S.filter((r) => !before.has(key(r)));
+const unexplained = [...moved, ...appeared].filter((r) => !(rk.has(key(r)) && adv(r)));
+console.log(`snapshot ${s.takenAt}`);
+console.log(`reviews ${s.learnerBaseline.reviewRows} -> ${R.length}  (+${R.length - s.learnerBaseline.reviewRows})`);
+console.log(`${moved.length} changed, ${appeared.length} new, ${unexplained.length} unexplained\n`);
+const reviewedSince = new Set(R.filter((r) => r.reviewed_at >= s.takenAt).map(key));
+console.log(`rows with a review since the snapshot: ${reviewedSince.size}`);
+unexplained.slice(0, 8).forEach((r) => {
+  const k = key(r), b = before.get(k);
+  console.log(`\nUNEXPLAINED ${k}`);
+  console.log(`   existed before: ${!!b}`);
+  console.log(`   has any review row at all: ${rk.has(k)}`);
+  console.log(`   last_reviewed_at before: ${bLR.get(k) ?? "(new row)"}`);
+  console.log(`   last_reviewed_at now:    ${r.last_reviewed_at}`);
+  console.log(`   reviewed since snapshot: ${reviewedSince.has(k)}`);
+  console.log(`   reps=${r.reps} lapses=${r.lapses} stability=${r.stability} suspended=${r.suspended}`);
+  if (b) console.log(`   before: ${b}`);
+  console.log(`   after : ${line(r)}`);
+});
+const isTarget = (r) => [s.cytoskeletonCard.id, s.structuralProteinsCard.id].includes(r.flashcard_id);
+console.log(`\nany unexplained row on the two rewritten cards? ${unexplained.some(isTarget)}`);
