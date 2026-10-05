@@ -833,8 +833,14 @@ ok("no unmapped question's label is a concept name",
 
 
 console.log("\nCONTENT AND LEARNER DATA UNCHANGED");
-ok("questions 2,681", (await count("questions")) === 2681);
-ok("flashcards 4,117", (await count("flashcards")) === 4117);
+// FLOORS, not equalities. Authoring new content is the point of the product,
+// so these only ever grow; an equality here is correct exactly once and then
+// fails on the next card anyone writes. Migration 8 proved it by adding the
+// intermediate-filament card and taking the bank to 4,118. What matters is
+// that content is never silently LOST, which a floor catches and an equality
+// obscures by failing on legitimate growth too.
+ok("questions never shrink below 2,681", (await count("questions")) >= 2681);
+ok("flashcards never shrink below 4,118", (await count("flashcards")) >= 4118);
 ok("decks 73", (await count("flashcard_decks")) === 73);
 ok("distractor metadata 8,043", (await count("question_distractor_metadata")) === 8043);
 // LEARNER TABLES GROW. A FLOOR, NOT AN EQUALITY.
