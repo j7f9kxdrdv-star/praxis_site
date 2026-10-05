@@ -293,7 +293,7 @@ ok("deterministic mappings never shrink below 2,050 and 417",
 // the rule, so a fourth chapter appearing still fails.
 const RECONCILED = new Set([
   "The Immune System", "The Cardiovascular System", "Carbohydrate Structure and Function",
-  "Compounds & Stoichiometry"]);
+  "Compounds & Stoichiometry", "The Periodic Table"]);
 ok("every AI_PROPOSED question mapping belongs to a reconciled chapter",
   qc.filter((m) => m.source === "AI_PROPOSED")
     .every((m) => RECONCILED.has(qById0.get(m.question_id)?.topic)),
