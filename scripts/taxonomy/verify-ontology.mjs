@@ -116,6 +116,7 @@ const RENAMES = [
   { slug: "OXIDATION_REDUCING_SUGARS", from: "Oxidation & Reducing Sugars", to: "Sugar Oxidation Products" },
   { slug: "REACTION_TYPES_CLASSIFICATION", from: "Reaction Types & Classification",
     to: "Redox Classification of Reaction Families" },
+  { slug: "TYPES_ELEMENTS", from: "Types of Elements", to: "Metals, Nonmetals & Metalloids" },
 ];
 
 // A pair that keeps collapsing is held apart by making each definition name the
@@ -437,6 +438,32 @@ ok("card mappings by type never shrink below 3987 / 36 / 92",
 ok("no card mapping claims HUMAN_VALIDATED", fc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
 ok("no card mapping claims deterministic provenance",
   fc.every((m) => m.source !== "DETERMINISTIC" && m.source !== "DETERMINISTIC_EXACT"));
+
+// ─── MIGRATION 7 IS OUTSTANDING WHILE THIS FAILS ───────────────────────────
+// Migration 6 renamed TYPES_ELEMENTS to Metals, Nonmetals & Metalloids, which
+// is what its 12 questions test. Its 19 chemical-family flashcards did not move
+// and now hang off a concept that does not describe them. That is a deliberate
+// intermediate state, and the instruction was not to treat it as final, so it
+// is wired to a check rather than to anyone's memory.
+//
+// Identified by DECK POSITION, not by keyword. The Periodic Trends & Chemical
+// Families deck runs structure and trends up to card 26 and chemical families
+// from 27 on, so the boundary is exact. A keyword scan was tried first and
+// missed two of the nineteen, which would have let this pass with family cards
+// still sitting here.
+const mnm = concepts.find((c) => c.slug === "TYPES_ELEMENTS");
+let pendingFamily = 0;
+if (mnm) {
+  const decks = await all("flashcard_decks", "id,title");
+  const familyDeck = decks.find((d) => d.title === "Periodic Trends & Chemical Families");
+  const cards = await all("flashcards", "id,deck_id,position");
+  const here = new Set(fc.filter((m) => m.concept_id === mnm.id).map((m) => m.flashcard_id));
+  pendingFamily = cards.filter(
+    (f) => here.has(f.id) && familyDeck && f.deck_id === familyDeck.id && f.position >= 27).length;
+}
+ok("no chemical-family card is left on Metals, Nonmetals & Metalloids (migration 7 outstanding until this passes)",
+  pendingFamily === 0, `${pendingFamily} family card(s) still pending`);
+
 ok("all card mappings are AI_PROPOSED", fc.every((m) => m.source === "AI_PROPOSED"));
 // The boundary that matters: reasoning and quantitative objects MAY be mapped
 // from a flashcard, and must still be invisible to content analytics.

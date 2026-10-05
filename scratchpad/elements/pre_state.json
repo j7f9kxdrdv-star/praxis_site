@@ -1,0 +1,1798 @@
+{
+ "takenAt": "2026-10-05T02:36:33.980Z",
+ "purpose": "Pre-state for the Types of Elements identity repair (migration 6), and the hand-off manifest for migration 7.",
+ "concept": {
+  "id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+  "slug": "TYPES_ELEMENTS",
+  "canonicalName": "Types of Elements",
+  "description": null,
+  "objectType": "CONTENT",
+  "status": "ACTIVE_SEED",
+  "version": 1,
+  "deprecatedBy": null,
+  "conceptLevel": "CONCEPT",
+  "parentConceptId": null,
+  "sections": [
+   {
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "section_code": "CHEM_PHYS",
+    "is_primary": true
+   }
+  ],
+  "disciplines": [
+   {
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "discipline_code": "GENERAL_CHEMISTRY",
+    "role": "PRIMARY"
+   }
+  ],
+  "contentCategories": [
+   {
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "content_category": "The Periodic Table: Classification of Elements Into Groups by Electronic Structure",
+    "is_primary": true
+   }
+  ],
+  "aliases": [],
+  "flashcardMappings": [
+   {
+    "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   }
+  ],
+  "questionMappings": [
+   {
+    "question_id": "24c0e846-c9e3-4a32-8569-9dc979ac998a",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "3f8bfcdd-915a-4189-b4cb-c2d043757ede",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "57afc8da-b409-4bed-91f3-0ef1756c38d8",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "70281532-f3a1-417a-b314-0803bc553d5c",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "78edbca2-2100-41c4-8998-29ebcf0b12ce",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "9c1612b1-90cb-4234-8a46-baa7993922c7",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "c853e933-a44f-4f4d-a367-717d8439940c",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "d2b359f0-684d-4a48-a937-848be029bb04",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "d40dc1c9-79ed-4c07-8cbd-9a4f25dbdced",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "d90ee597-7f1a-4ae2-ae00-ea1916826867",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "e32d0132-c79e-4926-a198-71c0cd0eee1a",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "eba5bb11-2744-46bf-ab3f-6b3b6bb0e29d",
+    "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   }
+  ]
+ },
+ "periodicTableStructure": {
+  "id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+  "slug": "PERIODIC_TABLE_STRUCTURE_CLASSIFICATION",
+  "canonicalName": "Periodic Table Structure & Classification",
+  "description": null,
+  "objectType": "CONTENT",
+  "status": "ACTIVE_SEED",
+  "version": 1,
+  "deprecatedBy": null,
+  "conceptLevel": "CONCEPT",
+  "parentConceptId": null,
+  "sections": [
+   {
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "section_code": "CHEM_PHYS",
+    "is_primary": true
+   }
+  ],
+  "disciplines": [
+   {
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "discipline_code": "GENERAL_CHEMISTRY",
+    "role": "PRIMARY"
+   }
+  ],
+  "contentCategories": [
+   {
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "content_category": "The Periodic Table: Classification of Elements Into Groups by Electronic Structure",
+    "is_primary": true
+   }
+  ],
+  "aliases": [],
+  "flashcardMappings": [
+   {
+    "flashcard_id": "00bd9c05-b7e9-4d9a-9921-10f387db7ee6",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "07eadafd-f15e-4880-b269-d7a155ceb2c7",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "1bdfa5c4-f12b-47db-b8a2-9060bde3f062",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "223a70eb-00cc-48ad-8824-124d1aec061a",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "5aa7fe51-e0db-4564-a70b-23ebc3bdd65c",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "a3154784-239a-4328-bb97-23a75ce483e0",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "cb446eff-b19a-48c0-96d5-dc95e4a88cfe",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   },
+   {
+    "flashcard_id": "fbb48398-c8ec-4103-b02d-0225e91fb7c2",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": null,
+    "mapping_status": "AI_PROPOSED",
+    "source": "AI_PROPOSED"
+   }
+  ],
+  "questionMappings": [
+   {
+    "question_id": "11ca04a8-689b-4872-b575-8a06913f846b",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "25e3e243-50c9-4d7b-9a99-7fa19ff06d17",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "3a0f7eef-704a-4722-91bd-88c874f3a554",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "44fe73c7-055d-4713-8ea1-00c81338cbd4",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "52942f5c-e1cf-4a2e-9874-038e68b26109",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "585b4ca5-823a-48b4-9fbc-afbb01a5ae1f",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "58f405b6-54f4-48de-a9cb-d36dd3b370bd",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "5d570690-0793-4f92-b350-10cc9130f7ee",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "6d14a4f7-c792-4536-bad3-0a45a63a11f9",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "70173c87-6ae6-4920-8c2a-681ea1d1eefa",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "7aa1543c-b92a-40f0-ac26-9c639ba5bfed",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "a87ee790-a802-481f-a0ff-f089604bf7b4",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "a93c27e1-a7ec-4367-b169-e7d0347d5e3e",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "bc8ea33c-030d-47c7-a07f-f53821cf37cf",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "c439ade1-c1cc-4f17-b4aa-955a20787481",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "c844949a-1eb3-4967-8773-087ba088655c",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "c90db62f-73b7-495d-941c-7f8a128b1f03",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "cd8b8a67-1f58-4478-94e1-15c8449e75d4",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "f2ee2ebc-f55f-4841-a1b7-7e273dc545b3",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   },
+   {
+    "question_id": "f881d1fa-8c66-4e0d-b621-d485539a6d53",
+    "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+    "role": "PRIMARY",
+    "confidence": 1,
+    "mapping_status": "DETERMINISTIC",
+    "source": "DETERMINISTIC_EXACT"
+   }
+  ]
+ },
+ "incomingFiveCards": [
+  {
+   "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+   "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 8,
+   "text": "{{c1::Metals}} occupy the left and middle of the periodic table and share a distinctive cluster of properties: they are {{c2::lustrous}} (shiny), {{c2::malleable}} (hammerable), {{c2::ductile}} (drawable into wires), and good {{c2::conductors of heat and electricity}}."
+  },
+  {
+   "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+   "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 9,
+   "text": "A metal is characterized by {{c1::low}} effective nuclear charge, {{c1::low}} electronegativity, {{c1::low}} ionization energy, {{c1::low}} electron affinity, a {{c2::large}} atomic radius, and a {{c2::small}} ionic radius. All of these follow from valence electrons that the nucleus holds weakly."
+  },
+  {
+   "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+   "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 10,
+   "text": "{{c1::Nonmetals}} sit in the upper right of the periodic table and are essentially the opposite of {{c1::metals}}: {{c2::brittle}} as solids with no metallic luster, with {{c3::high}} electronegativity, ionization energy, and electron affinity, and a {{c4::small}} atomic radius but a {{c4::large}} ionic radius."
+  },
+  {
+   "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+   "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 11,
+   "text": "The {{c1::metalloids}} occupy a {{c2::stair-step}} pattern separating metals from nonmetals (B, Si, Ge, As, Sb, Te); their electronegativities and ionization energies fall between the two extremes, and their physical properties mix metallic and nonmetallic character."
+  },
+  {
+   "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+   "concept_id": "7e8df6c8-d4b5-4585-89c1-00aa7c4ba329",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 12,
+   "text": "Metals conduct heat and electricity well because their valence electrons are {{c1::loosely held and delocalized}}, free to move through the metallic lattice. The same {{c1::delocalized}} electron \"sea\" is responsible for the metallic {{c2::luster}}, since {{c1::loose}} electrons readily absorb and re-emit visible light."
+  }
+ ],
+ "pendingFamilyCardsForMigration7": [
+  {
+   "flashcard_id": "6a7030ef-e87b-4789-b0c5-86c428e9521a",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 27,
+   "text": "The {{c1::alkali metals}} ({{c1::Group 1A}}) possess most classic metallic properties but with notably {{c2::lower densities}} than other metals; they have the {{c3::largest atomic radii}} in their period and correspondingly the {{c4::lowest ionization energy, electron affinity, and electronegativity}} of any element in their period."
+  },
+  {
+   "flashcard_id": "c94607ef-b01a-4c59-9d36-b0ca69a1cdc6",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 28,
+   "text": "Each alkali metal has a single, loosely bound valence electron; losing it produces a {{c1::+1 cation}} with the electron configuration of the {{c2::previous noble gas}}. That energetic payoff is what makes alkali metals so reactive."
+  },
+  {
+   "flashcard_id": "14dedf27-ff4b-47b8-b03e-3216081bd745",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 29,
+   "text": "Groups {{c1::1A and 2A}} together are called the {{c2::active metals}} because their ionization energies are so low that they are never found in {{c3::elemental (neutral) form}} in nature, only as ions in compounds, minerals, or ores."
+  },
+  {
+   "flashcard_id": "7d4080fd-c3f9-4479-aba5-8fdd104fc9dc",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 30,
+   "text": "{{c1::Hydrogen}} sits above lithium in Group 1A because it has a single valence electron, but it does NOT share most alkali-metal properties: it is a {{c2::nonmetal}}, has a much higher ionization energy, and commonly forms covalent bonds rather than ionic ones."
+  },
+  {
+   "flashcard_id": "47980145-006d-4ead-88f1-bfac0c6f8885",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 31,
+   "text": "The {{c1::alkaline earth metals}} (Group 2A) share most metallic properties with the alkalis but have a {{c2::higher effective nuclear charge}} and {{c3::smaller atomic radius}} in any given period, plus correspondingly higher ionization energies and densities."
+  },
+  {
+   "flashcard_id": "d934d272-5fa3-4e8e-b009-183fdadcadbe",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 32,
+   "text": "Each alkaline earth element has two valence electrons in an s subshell; losing both produces a {{c1::+2 cation}} with the configuration of the previous noble gas."
+  },
+  {
+   "flashcard_id": "0a7247dc-3575-4681-b553-d3cc156ac9c2",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 33,
+   "text": "The {{c1::chalcogens}} of Group 6A (oxygen, sulfur, selenium, tellurium, polonium) carry {{c2::six valence electrons}} and typically adopt a {{c3::−2}} oxidation state by gaining two electrons. Sulfur and the heavier members can also reach higher oxidation states (+4 in SO₂, +6 in SO₃ / SO₄²⁻) when bonded to more electronegative atoms."
+  },
+  {
+   "flashcard_id": "be1a9ae7-9b98-46a7-ae11-0878027f83b0",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 34,
+   "text": "The {{c1::halogens}} (Group 7A) carry {{c2::seven valence electrons}} and need to gain just one more to complete an octet. That is why they have the {{c3::highest electron affinities}} of any group and are the most reactive nonmetals."
+  },
+  {
+   "flashcard_id": "f4c15b97-c19e-41f3-999c-d10acef2ce14",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 35,
+   "text": "Of all elements, {{c1::fluorine}} has the highest electronegativity (Pauling value {{c2::4.0}}), making it the strongest atomic attractor of bonding electrons known."
+  },
+  {
+   "flashcard_id": "0d84d208-3afe-4030-aa2d-c014c9545d08",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 36,
+   "text": "At room temperature, the halogens span all three condensed phases: {{c1::F₂ and Cl₂ are gases}}, {{c2::Br₂ is a liquid}}, and {{c3::I₂ is a solid}}. The trend reflects rising molecular weight (and London dispersion forces) down the group."
+  },
+  {
+   "flashcard_id": "8efeb7bb-0bda-44b8-b4c4-624652e72534",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 37,
+   "text": "Halogens are so reactive that they essentially never occur in elemental form in nature. Instead they exist as {{c1::halide ions (X⁻)}} in salts or as {{c2::diatomic molecules (X₂)}} in laboratory and industrial settings."
+  },
+  {
+   "flashcard_id": "e5af10b6-c440-4583-a906-df7a0dca39a9",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 38,
+   "text": "The {{c1::noble gases}} (Group 8A) have completely filled valence shells, so they exhibit {{c2::very high ionization energies}}, {{c2::negligible electron affinities}}, and {{c2::no measurable electronegativity}} for the lighter members. They are chemically inert under ordinary conditions."
+  },
+  {
+   "flashcard_id": "41e199ef-5bd1-4082-8deb-a90b68650d4b",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 39,
+   "text": "{{c1::Helium}} is grouped with the noble gases for its chemistry, but its valence shell is complete at {{c2::two}} electrons rather than eight."
+  },
+  {
+   "flashcard_id": "82701d00-f247-42c5-b344-44b5cce60f2a",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 40,
+   "text": "Despite the \"inert gas\" label, the heavier noble gases (particularly {{c1::xenon and krypton}}) can form compounds with strongly electronegative atoms. Classic examples include {{c2::XeF₂, XeF₄, and KrF₂}}."
+  },
+  {
+   "flashcard_id": "7271ffde-6204-416e-856b-bdc422f3ba40",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 41,
+   "text": "The {{c1::transition metals}} occupy the {{c2::d-block}} of the periodic table; their valence electrons sit in the highest s and d subshells, and they share the classic metallic profile of low electronegativity, low ionization energy, and low electron affinity."
+  },
+  {
+   "flashcard_id": "78cd585c-8233-4776-90e3-747585ad4251",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 42,
+   "text": "Many transition metals adopt {{c1::multiple oxidation states}} because they can lose differing numbers of electrons from their valence {{c2::s and d}} orbitals. For example, iron appears as Fe²⁺ or Fe³⁺, and manganese ranges from Mn²⁺ to Mn⁷⁺. This versatility is why they form a wide variety of ionic and complex compounds."
+  },
+  {
+   "flashcard_id": "dbedae99-4310-4e0e-bf65-4120c4e40d14",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 43,
+   "text": "Compared with the active metals, transition metals are notably {{c1::harder}} and {{c2::denser}}, with higher {{c3::melting and boiling points}}, yet remain malleable and excellent conductors thanks to delocalized d-electrons."
+  },
+  {
+   "flashcard_id": "681df28e-fdf8-4beb-ae4b-2ba3d304d4ca",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 44,
+   "text": "Transition metals form characteristically {{c1::colored complexes}} because their partially filled d orbitals split into closely spaced energy levels (in the presence of ligands) and absorb specific wavelengths of visible light. The color we perceive is the {{c2::complementary color}}, the wavelengths transmitted or reflected rather than absorbed."
+  },
+  {
+   "flashcard_id": "51c5de5b-d7e0-4d3b-b69e-c6d8f8ea5fb5",
+   "concept_id": "70219a4e-8ea1-4629-9501-f0a6fcb5b7b1",
+   "role": "PRIMARY",
+   "confidence": null,
+   "mapping_status": "AI_PROPOSED",
+   "source": "AI_PROPOSED",
+   "deck": "Periodic Trends & Chemical Families",
+   "position": 45,
+   "text": "The {{c1::lanthanide and actinide series}} make up the two rows usually shown beneath the main periodic table; they constitute the {{c2::f-block}}, with valence electrons occupying the highest {{c3::s and f subshells}}. The {{c1::actinides}} include all of the synthetic transuranium elements (Z > 92)."
+  }
+ ],
+ "movedCardLearnerState": {
+  "schedulerRows": [
+   {
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.5537787,
+    "difficulty": 9.91862433,
+    "reps": 3,
+    "lapses": 2,
+    "fsrs_state": 3,
+    "interval_days": 0.01,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-04T01:00:17.913+00:00",
+    "last_reviewed_at": "2026-09-04T00:45:17.943957+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 0,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 2,
+    "difficulty": 6.36864857,
+    "reps": 4,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 0,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-04T02:27:54.50354+00:00",
+    "last_reviewed_at": "2026-08-25T21:56:47.716306+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 0,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 132.99134228,
+    "difficulty": 1,
+    "reps": 5,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 60,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-11-04T00:27:11.901+00:00",
+    "last_reviewed_at": "2026-09-05T00:27:11.93314+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 60,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 67.53039383,
+    "difficulty": 6.06105647,
+    "reps": 7,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 57,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-31T18:57:05.906+00:00",
+    "last_reviewed_at": "2026-09-04T18:57:05.927534+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 57,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 2,
+    "difficulty": 9.16005437,
+    "reps": 3,
+    "lapses": 1,
+    "fsrs_state": 2,
+    "interval_days": 0,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-04T02:27:54.50354+00:00",
+    "last_reviewed_at": "2026-09-04T02:01:20.312021+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 0,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 2,
+    "difficulty": 7.1314,
+    "reps": 4,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 0,
+    "ease_factor": 2.35,
+    "next_review_at": "2026-09-04T02:27:54.50354+00:00",
+    "last_reviewed_at": "2026-08-20T03:40:36.923+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 0,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 39.063,
+    "difficulty": 1,
+    "reps": 5,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 39.063,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-16T18:12:50.984+00:00",
+    "last_reviewed_at": "2026-08-08T16:42:50.984+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 39.063,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 0.79923184,
+    "difficulty": 9.95779398,
+    "reps": 11,
+    "lapses": 2,
+    "fsrs_state": 2,
+    "interval_days": 1,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-10-01T21:53:50.774+00:00",
+    "last_reviewed_at": "2026-09-30T21:53:50.80608+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 1,
+    "learning_steps": 0,
+    "starred": true
+   },
+   {
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 25.314,
+    "difficulty": 4.0106,
+    "reps": 6,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 25.314,
+    "ease_factor": 2.35,
+    "next_review_at": "2026-09-03T23:52:47.746+00:00",
+    "last_reviewed_at": "2026-08-09T16:20:38.146+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 25.314,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 7.94123452,
+    "difficulty": 9.68602787,
+    "reps": 3,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 8,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-11T17:51:59.531+00:00",
+    "last_reviewed_at": "2026-09-03T17:51:59.549747+00:00",
+    "suspended": false,
+    "last_rating": "medium",
+    "scheduled_days": 8,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 13.26095159,
+    "difficulty": 9.24344617,
+    "reps": 5,
+    "lapses": 0,
+    "fsrs_state": 2,
+    "interval_days": 14,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-17T18:52:15.116+00:00",
+    "last_reviewed_at": "2026-09-03T18:52:15.136987+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 14,
+    "learning_steps": 0,
+    "starred": false
+   },
+   {
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "stability": 1.25276969,
+    "difficulty": 9.92630503,
+    "reps": 6,
+    "lapses": 2,
+    "fsrs_state": 3,
+    "interval_days": 0.01,
+    "ease_factor": 2.5,
+    "next_review_at": "2026-09-04T00:23:07.475+00:00",
+    "last_reviewed_at": "2026-09-04T00:08:07.503278+00:00",
+    "suspended": false,
+    "last_rating": "hard",
+    "scheduled_days": 0,
+    "learning_steps": 0,
+    "starred": false
+   }
+  ],
+  "reviews": [
+   {
+    "id": "f952b26d-f8c8-40f2-9ab5-6802313baf0a",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T13:34:24.712458+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0342b0e0-d6bf-4477-b410-4a9f501e7720",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-13T13:40:02.017804+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "fde0b3a1-71a6-4e75-9082-5ae42667516c",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-05-30T17:50:24.101641+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "de7790d7-993e-45a3-863d-0480cff8d816",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-08T15:00:18.021647+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "d41b039d-325a-4874-85f9-e542f27324eb",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-08T16:12:36.452037+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "f1a75e54-8956-43d2-828a-2ef3fe29277d",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-11T13:57:57.008356+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "490dd697-d025-48d9-975a-70e11ce1be56",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-17T15:32:57.250706+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "69222da6-ff06-44ad-befd-43d28bcdbb8c",
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-17T15:34:28.377037+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "c39ecdd1-5ea0-4e5f-abda-ac655b38a637",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T12:07:05.912006+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "8139aede-5348-4204-9f78-b75fdf0ec65a",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-18T14:06:14.59519+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "d350b50b-8c1a-47f1-820f-db4bef46e8b5",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T16:44:09.903314+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "56d56ca9-de5a-49da-a0cb-3cb54acd98b5",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T17:04:17.665291+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "0c80175e-0290-42e4-8793-0396afb59c6e",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T17:10:19.067318+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "d12e19e0-53e5-4d39-968c-31562f596737",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T17:20:28.932121+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "86ad3922-c684-4074-b10d-46faf190ce71",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T17:46:02.496829+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "16a767fa-56b8-4ac1-a89d-38d81c4e1381",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T17:58:06.091974+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "3ed213ac-03c2-4492-87bb-349979867fc5",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T18:00:16.692459+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "920fb0fb-5ff6-4dda-9e65-de387215bc1d",
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T18:20:23.912458+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "81c800a1-c802-4237-be69-3015d17ad6ee",
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-19T21:11:14.965724+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "c9686133-348e-453b-af61-813ad9ad21a3",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T11:34:45.179757+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "69daf6c8-e052-4807-89ab-2b1bdc2cdc7a",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T12:55:56.231409+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "53fd39ec-54b9-49c6-9902-61427d2052d4",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T16:45:23.852209+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "5083a5ec-c38f-4f73-9683-56bceb15f208",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T18:40:36.678116+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "e29e9a34-4648-4e54-a6f5-82157c70c866",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-20T18:57:40.331925+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "5aab6479-bacc-4485-9ad9-aa17d35ecafb",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-25T14:59:01.654353+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "54ec8430-2cc0-4e16-bf07-0b5fe5dc0baf",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-26T12:53:00.940644+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "389c4b85-f369-4036-8fe0-4b2054910286",
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-26T13:05:12.691586+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "44dc9968-2133-40a5-90d6-398359b6781d",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-06-26T13:23:19.694099+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "f22f48d8-fdb9-4727-aa37-ebc49ee0731f",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:11:26.74733+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "543a0c41-a27f-4fcc-a11c-876961d720bd",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:27:05.450652+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "12b16284-ebee-4813-91dc-15baf6dcd8c3",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:28:40.698144+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "2584477c-69a3-4511-a4ee-93d5a3f407fa",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:32:07.06858+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "bab75738-98fe-4dbf-8165-435e90bc1d61",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:33:18.835786+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "1eec83eb-bc06-4ced-947a-5874488ab16f",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:48:50.598131+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "342af609-a744-4803-a6f8-5717939f1844",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:49:08.279923+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "b8742ab7-1fb6-45fd-846e-9524ad644efb",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:49:50.927067+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "8bb7e7ae-a8c7-4a8e-8979-2da3359324aa",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T15:50:39.722472+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "e6852561-5125-41d9-86c1-2d6d29283241",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T16:49:18.224071+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "6ed7b0dd-601a-40cc-9016-3a0ae9543f32",
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T17:57:04.85122+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "41728137-21e9-49a4-a604-6ada05f2c9c5",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:03:39.813533+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "136ceb98-8123-4011-a5fc-123acb088993",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:04:20.241605+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "c6e619a0-0e00-482d-901c-e378465909ca",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:11:04.767163+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "e129f14d-1e8f-41e0-ae6a-d07e211f3f1b",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:12:49.54771+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "d315c235-2660-4500-9bd1-08a9be68427c",
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T18:23:27.850866+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "6a7646a4-936f-4578-a8d3-da305eddf6f6",
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T22:04:05.606638+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "9c8b1564-4bc9-4dea-a6af-3f3f4b0b06a3",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-01T22:13:37.257275+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "c3e1099a-8935-4317-a7b0-77bb5655fd65",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T16:53:38.736283+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "3e5f0293-b2e2-403a-86a5-4250ae05514b",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-02T17:58:23.906441+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "ca3ff20a-af9f-4294-ab7e-e10b5f8057e7",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T17:35:55.299004+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "4b00e84d-d876-4089-94a3-b015fd651fe4",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T17:58:21.960433+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "57b5ebf9-b68a-481c-b6b5-b75ed3409ad1",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-07T23:57:10.052028+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "48270d69-70fd-4103-a298-7e0abbf0d486",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T00:08:56.611679+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "269e3d53-b7bd-4003-9e9c-89b7e0177a07",
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T03:58:38.629899+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "9966f548-3093-4243-9e21-030f7aa77025",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T19:00:30.066907+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "23d42f6a-bf87-4620-ac8b-79dd806971f1",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T19:03:42.025859+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "8ced4a49-4da2-41ba-adc1-517ea67869fd",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-08T19:05:13.350865+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "4257aea1-fff0-4a18-aea5-b22395469e51",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T18:26:39.582009+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "1a8dcbee-a31a-49ab-bcef-4112e2eec451",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T18:28:16.795986+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "151d700d-896c-4505-8f72-8406b8288d70",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T18:57:42.805225+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "717fcd8e-7d04-48e7-8631-24afde94485c",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-09T18:58:30.346988+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "1a21ea38-5870-40ab-8483-bc300a0aaf6a",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T17:51:10.032588+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "19122423-23a5-416d-93ce-731f5f8527a9",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:14:28.05605+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "009707cd-df82-4a0d-b05c-0453bd44ae3d",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T18:42:21.97036+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "02e8000a-ed68-4192-a5d1-6cf1ad04bc62",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:10:15.899324+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "0d6058da-a2a7-4290-857f-fa4c6bc98b5b",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:15:00.789955+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "d24b7232-8218-486d-8041-4fa52acfe5bf",
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-07-10T19:22:01.046583+00:00",
+    "rating": "easy"
+   },
+   {
+    "id": "45ee0311-3f81-4864-b06f-78edbe9f9b49",
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-08T16:42:51.328373+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "51297943-80b3-435b-bc72-106725ef10a8",
+    "flashcard_id": "242ad5f8-8c88-4b39-9880-a91c2113aad2",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-09T16:20:39.591759+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "07b22e59-5e22-467d-8712-55100f6699df",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-20T03:40:37.066584+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "d0d5d606-095c-4eb5-9610-2929e9c8fbb3",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 3,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-08-25T21:56:47.716306+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "31568da3-bb74-4f27-be65-c5f58aabc6ef",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T17:51:59.549747+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "bfcd97d9-e5d1-453e-921c-3a222234013f",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-03T18:52:15.136987+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "2f3e4857-f17a-4d0e-8486-123adbffa06e",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T00:07:01.676525+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "4e363562-bf68-4a46-90d5-abb307784f0a",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T00:08:07.503278+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "e4515f30-2bbc-40e7-ab30-172818b5999f",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T00:44:10.226252+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "dc2826e1-d3bb-4a2b-9c01-8d740ea63f81",
+    "flashcard_id": "901b1035-869d-4f94-bdbf-2c14b197eeff",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T00:45:17.943957+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "2e04cf7f-a0c5-4d78-8650-ff53f157fb3b",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T00:58:36.677857+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "10584f17-c0e3-49b9-aa3f-2de91561b947",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T00:59:24.690141+00:00",
+    "rating": "hard"
+   },
+   {
+    "id": "a391e6c8-19c2-4b97-8122-667e2de0c168",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 1,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T02:01:20.312021+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "338073cc-201c-4bb4-a281-e7b998092e30",
+    "flashcard_id": "a3be5b48-30de-49fe-bb22-5c8203296a3a",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-04T18:57:05.927534+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "8f2a8bba-1b6f-4162-922e-9ee6b1546ba1",
+    "flashcard_id": "535e2355-5d26-4e83-a122-be2c2a44be1f",
+    "cloze_index": 2,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-05T00:27:11.93314+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "2a4db16d-bc50-452c-bdfe-a43d9d47fbd3",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-30T21:43:05.208462+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "75e7bbcb-6edf-435a-97bc-8955d2f351c1",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-30T21:43:43.267344+00:00",
+    "rating": "again"
+   },
+   {
+    "id": "773bc996-47e9-4d0e-8649-54c884da35ae",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-30T21:44:37.828516+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "feeace13-8bf8-4c37-a284-4a40a796ad6a",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-30T21:47:19.773308+00:00",
+    "rating": "medium"
+   },
+   {
+    "id": "42345d5d-ffea-4fc3-b96a-c88e67384390",
+    "flashcard_id": "d1345b3a-df4b-41c1-9c67-46a3b82a39ab",
+    "cloze_index": 4,
+    "user_id": "ee01e0e1-ac92-4ea7-92c9-2738b82b6dca",
+    "reviewed_at": "2026-09-30T21:53:50.80608+00:00",
+    "rating": "medium"
+   }
+  ]
+ },
+ "totals": {
+  "concepts": 1132,
+  "flashcardConcepts": 4116,
+  "questionConcepts": 2673,
+  "reasoningObjects": 24,
+  "aliases": 7,
+  "deprecated": 177,
+  "needsReview": 29
+ },
+ "learnerBaseline": {
+  "schedulerRows": 8408,
+  "reviewRows": 51004,
+  "attemptRows": 656,
+  "fsrsDigest": "4443980510cd4f5ea7663d683a41cda9ebac87d42d0d9f55739e4b56a502620b"
+ },
+ "sha256": "acd123e23400bd28763269d8338db229a9e2bb85a56845c78fb64f3cfb9d1cfb"
+}
