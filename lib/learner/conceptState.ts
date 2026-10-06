@@ -70,9 +70,27 @@ export const STRUGGLING_ENTER = 0.65;
 export const STRUGGLING_EXIT = 0.70;
 
 export type Role = "PRIMARY" | "SECONDARY";
-export type EvidenceStrength = "UNREVIEWED" | "STANDARD" | "SELF_CONTAINED" | "RECOGNITION_ONLY";
-/** Only these two are evidence. The others are excluded, not down-weighted. */
-const ELIGIBLE_STRENGTHS: ReadonlySet<EvidenceStrength> = new Set(["UNREVIEWED", "STANDARD"]);
+/**
+ * The evidence-strength vocabulary, as a runtime list so the database CHECK and
+ * this module can be asserted to agree. One canonical definition, derived into
+ * the type rather than duplicated beside it.
+ */
+export const EVIDENCE_STRENGTHS = [
+  "UNREVIEWED", "STANDARD", "SELF_CONTAINED", "RECOGNITION_ONLY",
+] as const;
+export type EvidenceStrength = (typeof EVIDENCE_STRENGTHS)[number];
+
+/**
+ * Only these two are evidence. The others are excluded, not down-weighted:
+ * a question that supplies its own governing principle is not weak evidence
+ * about the concept, it is not evidence about the concept.
+ *
+ * UNREVIEWED counts because most historical mappings have never had this second
+ * layer of review, and treating "not looked at" as "not evidence" would delete
+ * the application axis entirely.
+ */
+export const ELIGIBLE_STRENGTHS: ReadonlySet<EvidenceStrength> =
+  new Set<EvidenceStrength>(["UNREVIEWED", "STANDARD"]);
 
 export type MemorySignal = "DURABLE" | "BUILDING" | "THIN" | "INSUFFICIENT";
 export type FreshnessSignal = "FRESH" | "COOLING" | "STALE" | "INSUFFICIENT";
