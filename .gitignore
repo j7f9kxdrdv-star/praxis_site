@@ -66,3 +66,7 @@ marketing/instagram/
 # reproducible and a reel is a few hundred KB per question.
 marketing/qotd/*.png
 marketing/qotd/*.mp4
+
+# Per-user review-history dumps: large, learner data, and nothing reads them back
+# (the digest that IS checked lives in pre_state.json).
+scratchpad/**/pre_review_rows.txt

@@ -20,6 +20,25 @@ const env = fs.readFileSync(".env.local", "utf8");
 const g = (k) => (env.match(new RegExp("^" + k + "=(.*)$", "m")) || [])[1]?.trim();
 const db = createClient(g("NEXT_PUBLIC_SUPABASE_URL"), g("SUPABASE_SERVICE_ROLE_KEY"));
 
+/**
+ * The governance review's named set, read from the committed manifest rather
+ * than retyped here. 29 reviewed rows plus 2 approved additions. Named, not
+ * counted, because both directions are failures: a row losing HUMAN_VALIDATED
+ * means a human decision was overwritten, and a row gaining it means something
+ * claimed review that never had it.
+ */
+const MANIFEST = JSON.parse(fs.readFileSync("scratchpad/review/manifest.json", "utf8"));
+const key = (a, b) => `${a}|${b}`;
+const REVIEWED = (() => {
+  const cards = [], questions = [];
+  for (const d of MANIFEST.decisions) {
+    (d.table === "flashcard_concepts" ? cards : questions).push(key(d.item_id, d.approved_concept_id));
+    for (const a of d.additions || []) cards.push(key(a.item_id, a.concept_id));
+  }
+  return { cards, questions, cardSet: new Set(cards), questionSet: new Set(questions) };
+})();
+const sameSet = (got, want) => got.length === want.length && new Set(got).size === want.length && got.every((k) => want.includes(k));
+
 let pass = 0, fail = 0;
 const ok = (name, good, detail = "") => {
   good ? pass++ : fail++;
@@ -258,7 +277,7 @@ ok("content concepts lacking an AAMC category does not exceed 34",
 ok("concept_relationships empty (seeded by hand only)", (await count("concept_relationships")) === 0);
 
 console.log("\nDETERMINISTIC QUESTION MAPPING");
-const qc = await all("question_concepts", "question_id,concept_id,role,mapping_status,source,confidence");
+const qc = await all("question_concepts", "question_id,concept_id,role,mapping_status,source,confidence,reviewed_at");
 const qById0 = new Map((await all("questions", "id,topic")).map((q) => [q.id, q]));
 // A FLOOR, NOT AN EQUALITY. This was pinned at 2,673 and that was wrong for the
 // same reason the learner-table counts were: question_concepts grows whenever a
@@ -310,7 +329,17 @@ ok("secondary mappings never shrink below 12",
   String(qc.filter((m) => m.role === "SECONDARY").length));
 ok("no question carries two PRIMARY concepts",
   new Set(qcPrimary.map((m) => m.question_id)).size === qcPrimary.length);
-ok("none marked human-validated", qc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
+// Human validation on the question side exists only because of the lipid-split
+// review, which named every row it touched. Anything else claiming it is a bug.
+ok("human-validated question rows are exactly the reviewed set",
+  sameSet(qc.filter((m) => m.mapping_status === "HUMAN_VALIDATED").map((m) => key(m.question_id, m.concept_id)),
+    REVIEWED.questions),
+  `${qc.filter((m) => m.mapping_status === "HUMAN_VALIDATED").length} of ${REVIEWED.questions.length}`);
+ok("every reviewed question row keeps its origin source and a review stamp",
+  qc.filter((m) => REVIEWED.questionSet.has(key(m.question_id, m.concept_id)))
+    .every((m) => m.source === "DETERMINISTIC_EXACT" && m.reviewed_at !== null));
+ok("no reviewed question row fell back to NEEDS_REVIEW",
+  !qc.some((m) => REVIEWED.questionSet.has(key(m.question_id, m.concept_id)) && m.mapping_status === "NEEDS_REVIEW"));
 
 const Q = await all("questions", "id,subtopic,section,content_category,topic");
 const byId = new Map(concepts.map((c) => [c.id, c]));
@@ -435,7 +464,7 @@ ok("Immunoglobulins carries both its categories",
   igCats?.has("Structure and Function of Proteins and Their Constituent Amino Acids") && igCats?.has("Organ Systems"));
 
 console.log("\nFLASHCARD MAPPINGS");
-const fc = await all("flashcard_concepts", "flashcard_id,concept_id,mapping_status,source");
+const fc = await all("flashcard_concepts", "flashcard_id,concept_id,role,mapping_status,source,reviewed_at");
 const typeOf = Object.fromEntries(concepts.map((c) => [c.id, c.object_type]));
 const byType = fc.reduce((a, m) => ((a[typeOf[m.concept_id]] = (a[typeOf[m.concept_id]] || 0) + 1), a), {});
 // A floor. Authoring new cards and mapping them is normal growth; the structural
@@ -443,9 +472,24 @@ const byType = fc.reduce((a, m) => ((a[typeOf[m.concept_id]] = (a[typeOf[m.conce
 ok("card mappings never shrink below 4,115", fc.length >= 4115, String(fc.length));
 ok("card mappings by type never shrink below 3987 / 36 / 92",
   byType.CONTENT >= 3987 && byType.REASONING >= 36 && byType.QUANTITATIVE >= 92, JSON.stringify(byType));
-// Provenance must not overstate. The vocabulary was approved; 314 individual
-// rows were not reviewed, and the status must not claim they were.
-ok("no card mapping claims HUMAN_VALIDATED", fc.every((m) => m.mapping_status !== "HUMAN_VALIDATED"));
+// Provenance must not overstate. The vocabulary was approved; the individual
+// rows were not reviewed, and the status must not claim they were. The only
+// exception is the lipid-split governance review, which reviewed its rows one
+// at a time and named them in the manifest.
+ok("human-validated card rows are exactly the reviewed set",
+  sameSet(fc.filter((m) => m.mapping_status === "HUMAN_VALIDATED").map((m) => key(m.flashcard_id, m.concept_id)),
+    REVIEWED.cards),
+  `${fc.filter((m) => m.mapping_status === "HUMAN_VALIDATED").length} of ${REVIEWED.cards.length}`);
+ok("every reviewed card row carries a review stamp",
+  fc.filter((m) => REVIEWED.cardSet.has(key(m.flashcard_id, m.concept_id))).every((m) => m.reviewed_at !== null));
+ok("no reviewed card row fell back to NEEDS_REVIEW",
+  !fc.some((m) => REVIEWED.cardSet.has(key(m.flashcard_id, m.concept_id)) && m.mapping_status === "NEEDS_REVIEW"));
+// Only the two approved additions may claim human provenance, and neither may
+// ever become PRIMARY: that is the whole point of a widening row.
+ok("source HUMAN_REVIEWED appears on exactly the two approved additions, both SECONDARY",
+  fc.filter((m) => m.source === "HUMAN_REVIEWED").length === 2 &&
+  fc.filter((m) => m.source === "HUMAN_REVIEWED").every((m) => m.role === "SECONDARY"),
+  String(fc.filter((m) => m.source === "HUMAN_REVIEWED").length));
 ok("no card mapping claims deterministic provenance",
   fc.every((m) => m.source !== "DETERMINISTIC" && m.source !== "DETERMINISTIC_EXACT"));
 
@@ -474,7 +518,13 @@ if (mnm) {
 ok("no chemical-family card is left on Metals, Nonmetals & Metalloids (migration 7 outstanding until this passes)",
   pendingFamily === 0, `${pendingFamily} family card(s) still pending`);
 
-ok("all card mappings are AI_PROPOSED", fc.every((m) => m.source === "AI_PROPOSED"));
+// Every card mapping came from the backfill except the two the lipid-split
+// review added by hand. Named, not loosened to "AI_PROPOSED or HUMAN_REVIEWED":
+// a third human-reviewed row appearing without review must still fail.
+ok("all card mappings are AI_PROPOSED, except the two reviewed additions",
+  fc.every((m) => m.source === "AI_PROPOSED" ||
+    (m.source === "HUMAN_REVIEWED" && REVIEWED.cardSet.has(key(m.flashcard_id, m.concept_id)))),
+  String(fc.filter((m) => m.source !== "AI_PROPOSED").length) + " non-backfill row(s)");
 // The boundary that matters: reasoning and quantitative objects MAY be mapped
 // from a flashcard, and must still be invisible to content analytics.
 const contentIds = new Set(concepts.filter((c) => c.object_type === "CONTENT").map((c) => c.id));
