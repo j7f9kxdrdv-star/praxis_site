@@ -329,3 +329,211 @@ describe("THE FULL 472 TO 528 SCALE STAYS REACHABLE", () => {
     expect(centreAt(90)).toBe(519);
   });
 });
+
+// ─── FIREWALL EXPANSION: learner concept states must not reach the score ────
+//
+// Phase 2 creates a NEW way to breach the flashcard rule, and it does not use
+// the word flashcard. `learner_concept_states` deliberately puts memory-derived
+// and application-derived values on the SAME ROW, so any code that reads the
+// row holds memory evidence whether it means to or not. "Just use the
+// application columns" is one careless join away from retention moving a
+// predicted MCAT score.
+//
+// So the boundary is absolute and simple: THE PREDICTOR MAY NOT CONSUME LEARNER
+// CONCEPT STATE AT ALL. If concept-level question evidence is ever wanted in the
+// score, it comes through an explicitly reviewed question-only pathway, not by
+// reading a mixed row.
+//
+// The tables do not exist yet. They are banned now, while banning them is free.
+
+describe("THE PREDICTOR MAY NOT CONSUME LEARNER CONCEPT STATE", () => {
+  const ROOT = path.join(__dirname, "..", "..");
+  const predictorSource = fs.readFileSync(path.join(__dirname, "scoreEstimate.ts"), "utf8");
+
+  /** Modules whose values are memory-derived, or mixed with memory. */
+  const PROHIBITED_MODULES = [
+    "lib/learner/conceptState", "learner/conceptState", "./conceptState",
+    "lib/flashcards/", "lib/analytics/flashcardAggregate",
+  ];
+  /** Tables the predictor may never read. The first two do not exist yet. */
+  const PROHIBITED_TABLES = [
+    "learner_concept_states", "learner_concept_state_history",
+    "flashcard_user_state", "flashcard_reviews", "flashcard_concepts", "flashcards",
+  ];
+  /** Field shapes that carry memory evidence under any naming convention. */
+  const PROHIBITED_FIELDS =
+    /\b(memory_\w+|memoryDurability|memoryFreshness|memorySignal|memoryConfidence|flashcard_\w+|fsrs_\w+|retrievability|stability|weak_card_count|weakCardCount)\b/i;
+
+  /** Every non-test source file under app/, lib/ and components/. */
+  function sourceFiles(dir: string, acc: string[] = []): string[] {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name === "node_modules" || entry.name === ".next") continue;
+        sourceFiles(full, acc);
+      } else if (/\.tsx?$/.test(entry.name) && !/\.test\.tsx?$/.test(entry.name)) {
+        acc.push(full);
+      }
+    }
+    return acc;
+  }
+  const ALL_SOURCES = ["app", "lib", "components"]
+    .map((d) => path.join(ROOT, d))
+    .filter((d) => fs.existsSync(d))
+    .flatMap((d) => sourceFiles(d));
+
+  const stripComments = (s: string) =>
+    s.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+
+  // ── Tier 1: the predictor module itself ────────────────────────────────
+  it("imports no learner-concept-state module", () => {
+    const imports = [...predictorSource.matchAll(/from\s+["']([^"']+)["']/g)].map((m) => m[1]);
+    expect(imports.filter((i) => PROHIBITED_MODULES.some((p) => i.includes(p)))).toEqual([]);
+  });
+
+  it("never names a prohibited table, including the two that do not exist yet", () => {
+    const code = stripComments(predictorSource);
+    expect(PROHIBITED_TABLES.filter((t) => code.includes(t))).toEqual([]);
+  });
+
+  it("never names a memory-derived field", () => {
+    expect(PROHIBITED_FIELDS.test(stripComments(predictorSource))).toBe(false);
+  });
+
+  it("never calls buildConceptStates", () => {
+    expect(stripComments(predictorSource)).not.toMatch(/buildConceptStates/);
+  });
+
+  // ── Tier 2: the inputs it is allowed to take ───────────────────────────
+  //
+  // An ALLOWLIST, not a denylist. A denylist only stops the leaks someone
+  // thought of; this fails the build when a NEW parameter appears, whatever it
+  // is called, which forces a human to look at it.
+  it("takes exactly these five question-derived parameters and no others", () => {
+    // Balanced paren matching, because a default value can itself contain
+    // parentheses: `topicsWithData = new Set()` truncated a naive indexOf.
+    const src = estimateScore.toString();
+    const open = src.indexOf("(");
+    let depth = 0, close = open;
+    for (let i = open; i < src.length; i++) {
+      if (src[i] === "(") depth++;
+      else if (src[i] === ")" && --depth === 0) { close = i; break; }
+    }
+    const params = src.slice(open + 1, close)
+      .split(/,(?![^(]*\))/).map((p) => p.trim().split(/[:=]/)[0].trim()).filter(Boolean);
+    expect(params).toEqual([
+      "firstAttemptAccuracy", "firstAttempts", "sectionsWithData", "topicsWithData", "fullLengths",
+    ]);
+  });
+
+  // ── Tier 3: the modules that assemble its inputs ───────────────────────
+  //
+  // The gap this closes: the existing firewall reads scoreEstimate.ts only, so
+  // nothing stopped a CALLER computing `accuracy` from memory evidence and
+  // passing it in. The callers are few and are pinned here by name.
+  const PREDICTOR_CALL_SITES = [
+    "lib/dashboard/summary.ts",
+    "app/dashboard/analytics/page.tsx",
+  ];
+
+  const callers = ALL_SOURCES.filter((f) =>
+    /\bestimateScore\s*\(|\bevidenceStrength\s*\(/.test(stripComments(fs.readFileSync(f, "utf8"))),
+  ).map((f) => path.relative(ROOT, f).split(path.sep).join("/"))
+   .filter((f) => !f.startsWith("lib/scoring/"));
+
+  it("the set of modules calling the predictor is exactly the reviewed allowlist", () => {
+    // A new call site is not forbidden; it is UNREVIEWED. Adding one to this
+    // list is the moment someone has to look at what it passes in.
+    expect(callers.slice().sort()).toEqual(PREDICTOR_CALL_SITES.slice().sort());
+  });
+
+  it("no module that calls the predictor imports learner concept state", () => {
+    const offenders: string[] = [];
+    for (const rel of callers) {
+      const code = fs.readFileSync(path.join(ROOT, rel), "utf8");
+      const imports = [...code.matchAll(/from\s+["']([^"']+)["']/g)].map((m) => m[1]);
+      for (const i of imports) if (/conceptState/i.test(i)) offenders.push(`${rel}: ${i}`);
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  it("no module that calls the predictor names a concept-state table", () => {
+    const offenders: string[] = [];
+    for (const rel of callers) {
+      const code = stripComments(fs.readFileSync(path.join(ROOT, rel), "utf8"));
+      for (const t of ["learner_concept_states", "learner_concept_state_history"]) {
+        if (code.includes(t)) offenders.push(`${rel}: ${t}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  // ── The guards must actually bite ──────────────────────────────────────
+  //
+  // A check that has never failed on anything is not known to work. Each
+  // matcher is shown rejecting a realistic violation.
+  it.each([
+    ['import { buildConceptStates } from "@/lib/learner/conceptState";', "module import"],
+    // The `.from(` call is assembled rather than spelled, because
+    // resetScope.test.ts scans every source file for Supabase table access to
+    // prove each table is classified for account reset. A violation EXAMPLE in
+    // a test is not the app touching a table, and must not look like one.
+    [`const s = await db.${"from"}("learner_concept_states").select("*");`, "current table"],
+    [`const h = await db.${"from"}("learner_concept_state_history").select("*");`, "history table"],
+    ["const x = row.memory_durability;", "memory_durability"],
+    ["const x = row.memory_freshness;", "memory_freshness"],
+    ["const x = row.memory_confidence;", "memory_confidence"],
+    ["const x = row.weak_card_count;", "weak_card_count"],
+    ["const x = state.stability * 2;", "a raw FSRS field"],
+    [`const r = await db.${"from"}("flashcard_user_state").select("stability");`, "a scheduler query"],
+  ])("rejects %s (%s)", (snippet) => {
+    const imports = [...snippet.matchAll(/from\s+["']([^"']+)["']/g)].map((m) => m[1]);
+    const caught =
+      imports.some((i) => PROHIBITED_MODULES.some((p) => i.includes(p))) ||
+      PROHIBITED_TABLES.some((t) => snippet.includes(t)) ||
+      PROHIBITED_FIELDS.test(snippet) ||
+      /buildConceptStates/.test(snippet);
+    expect(caught).toBe(true);
+  });
+
+  it("an unapproved new predictor call site is caught", () => {
+    const pretend = [...callers, "app/somewhere/new/page.tsx"].sort();
+    expect(pretend).not.toEqual(PREDICTOR_CALL_SITES.slice().sort());
+  });
+
+  it("an unapproved new predictor parameter is caught", () => {
+    const pretend = ["firstAttemptAccuracy", "firstAttempts", "sectionsWithData",
+      "topicsWithData", "fullLengths", "memoryDurability"];
+    expect(pretend).not.toEqual([
+      "firstAttemptAccuracy", "firstAttempts", "sectionsWithData", "topicsWithData", "fullLengths",
+    ]);
+  });
+
+  // ── And legitimate question evidence still passes ──────────────────────
+  it("question-derived inputs are untouched by any of this", () => {
+    const legitimate = [
+      "const accuracy = correct / eligible.length;",
+      'const sections = new Set(questions.map((q) => q.section));',
+      `const attempts = await db.${"from"}("question_attempts").select("is_correct, is_first_attempt");`,
+      "const e = estimateScore(accuracy, eligible.length, sections, subtopics, fullLengths);",
+    ];
+    for (const snippet of legitimate) {
+      const imports = [...snippet.matchAll(/from\s+["']([^"']+)["']/g)].map((m) => m[1]);
+      const caught =
+        imports.some((i) => PROHIBITED_MODULES.some((p) => i.includes(p))) ||
+        PROHIBITED_TABLES.some((t) => snippet.includes(t)) ||
+        PROHIBITED_FIELDS.test(snippet);
+      expect(caught).toBe(false);
+    }
+  });
+
+  // ── The rule this encodes, in words, so it survives a refactor ──────────
+  it("records that application signals are NOT predictor features", () => {
+    // Phase 2 answers "what should this learner work on". The predictor answers
+    // "what score does question performance support". Routing applicationSignal
+    // or applicationConfidence into the score needs its own design review, and
+    // this test exists so that deleting the rule is a deliberate act.
+    const code = stripComments(predictorSource);
+    expect(code).not.toMatch(/applicationSignal|applicationConfidence|conceptState/i);
+  });
+});
