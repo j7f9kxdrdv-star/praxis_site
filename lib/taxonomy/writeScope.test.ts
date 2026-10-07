@@ -36,6 +36,8 @@ const LEARNER_TABLES = [
   // writer, not an UPDATE buried in a taxonomy migration where nobody would
   // look for it.
   "learner_concept_states",
+  "learner_concept_state_observations",
+  "learner_concept_state_history",
 ];
 
 /** Tables an ontology migration is allowed to write. */

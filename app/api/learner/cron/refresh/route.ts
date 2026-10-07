@@ -16,7 +16,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { runRefresh, runSucceeded } from "@/lib/learner/refreshRun";
+import { runRefresh, runSucceeded, type RunMode } from "@/lib/learner/refreshRun";
 
 // The weekly report cron's limit, for the same reason: this is a batch job and
 // the platform's default request budget is not meant for one.
@@ -41,8 +41,41 @@ export async function GET(req: NextRequest) {
   });
 
   try {
+    // ── WHICH KIND OF RUN THIS IS, AND WHY NOT A QUERY PARAMETER ─────────
+    //
+    // Only the designated scheduled run writes history, and history is
+    // immutable. The authority to create an immutable record must not be
+    // something a caller can ask for in a URL, so nothing in the query string
+    // can UPGRADE a run to SCHEDULED. Query flags only ever make a run do
+    // less.
+    //
+    // The threat here is not an attacker: reaching this route at all needs
+    // CRON_SECRET. It is ACCIDENT: an operator (me, five times in one
+    // afternoon while building this) running a manual refresh and silently
+    // manufacturing a day's observation. So the default for any hand
+    // invocation is MANUAL, and becoming SCHEDULED takes a positive signal.
+    //
+    // Two signals are accepted, both headers:
+    //
+    //   the platform's own cron user-agent, which is what Vercel sends
+    //   an explicit x-praxist-run-mode header, so a change to that
+    //     user-agent cannot silently stop history being written
+    //
+    // A header rather than a query string because query strings end up in
+    // logs, referrers and shell history, and because the step that defined
+    // this named exactly that risk.
+    const userAgent = req.headers.get("user-agent") ?? "";
+    const explicitMode = req.headers.get("x-praxist-run-mode");
+    const isScheduled =
+      /vercel-cron/i.test(userAgent) || explicitMode === "scheduled";
+
+    const mode: RunMode =
+      req.nextUrl.searchParams.get("dry") === "1" ? "DRY"
+        : isScheduled ? "SCHEDULED"
+        : "MANUAL";
+
     const report = await runRefresh(db, {
-      dryRun: req.nextUrl.searchParams.get("dry") === "1",
+      mode,
       force: req.nextUrl.searchParams.get("force") === "1",
     });
 
@@ -60,8 +93,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(report, { status: 500 });
     }
     console.log("[cron refresh]", JSON.stringify({
-      runId: report.runId, outcome: report.outcome, accounts: report.attempted,
-      states: report.statesComputed, zeroState: report.zeroState, ms: report.durationMs,
+      runId: report.runId, mode: report.mode, outcome: report.outcome,
+      cycle: report.observationCycle, accounts: report.attempted,
+      states: report.statesComputed, zeroState: report.zeroState,
+      observationsRecorded: report.observationsRecorded,
+      observationsAlreadyRecorded: report.observationsAlreadyRecorded,
+      historyRows: report.historyRowsWritten, ms: report.durationMs,
     }));
     return NextResponse.json(report, { status: runSucceeded(report) || report.outcome === "ALREADY_RUNNING" ? 200 : 500 });
   } catch (err) {

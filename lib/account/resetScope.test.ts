@@ -126,11 +126,47 @@ describe("A RESET THAT MISSES A TABLE IS WORSE THAN NO RESET", () => {
     expect(USER_DATA_TABLES).toContain("learner_concept_states");
   });
 
-  it("does not yet name the history table, which does not exist", () => {
-    // Naming a relation before creating it is its own failure: the DELETE
-    // errors and the preview count silently reads zero. The history table
-    // joins this list in the step that creates it, not before.
-    expect(USER_DATA_TABLES).not.toContain("learner_concept_state_history");
+  it("names the history tables, now that they exist", () => {
+    // This assertion is the inverse of the one it replaces. Through Step 8 and
+    // 9 it read `.not.toContain(...)`, because naming a relation before
+    // creating it is its own failure: the DELETE errors and the preview count
+    // silently reads zero. The migration that creates the two tables is this
+    // step's, so this is the step that places them, and the placeholder has
+    // served its purpose rather than being quietly deleted.
+    expect(USER_DATA_TABLES).toContain("learner_concept_state_observations");
+    expect(USER_DATA_TABLES).toContain("learner_concept_state_history");
+  });
+
+  it("clears the child history rows before the observation they hang from", () => {
+    // The child cascades from the parent, so either order deletes the rows.
+    // Order still matters for what the reset REPORTS: delete the parent first
+    // and the cascade removes the children underneath the next statement,
+    // which then counts zero and tells the learner their history was already
+    // empty. Children first means both counts are true.
+    const i = (t: string) => (USER_DATA_TABLES as readonly string[]).indexOf(t);
+    expect(i("learner_concept_state_history")).toBeLessThan(
+      i("learner_concept_state_observations"),
+    );
+  });
+
+  it("clears observed history after the current state and its evidence", () => {
+    const i = (t: string) => (USER_DATA_TABLES as readonly string[]).indexOf(t);
+    for (const evidence of ["question_attempts", "flashcard_reviews", "flashcard_user_state"]) {
+      expect(i(evidence)).toBeLessThan(i("learner_concept_state_history"));
+    }
+    expect(i("learner_concept_states")).toBeLessThan(i("learner_concept_state_history"));
+  });
+
+  it("immutable history is still erasable on request", () => {
+    // The history tables refuse UPDATE at the database level and deliberately
+    // permit DELETE. Those are answers to different questions: the first is
+    // about never rewriting an observation, the second is about a person
+    // asking for their records to be gone. A reset that skipped these tables
+    // on the grounds that they are "immutable" would be reading the first
+    // rule as an answer to the second.
+    const i = (t: string) => (USER_DATA_TABLES as readonly string[]).indexOf(t);
+    expect(i("learner_concept_state_observations")).toBeGreaterThan(-1);
+    expect(i("learner_concept_state_history")).toBeGreaterThan(-1);
   });
 
   // ── The structural half, so the NEXT table cannot be forgotten ────────
@@ -162,6 +198,8 @@ describe("A RESET THAT MISSES A TABLE IS WORSE THAN NO RESET", () => {
     // If the scan ever returns nothing it has stopped checking anything.
     expect(createdLearnerTables).toContain("learner_state_snapshots");
     expect(createdLearnerTables).toContain("learner_concept_states");
+    expect(createdLearnerTables).toContain("learner_concept_state_observations");
+    expect(createdLearnerTables).toContain("learner_concept_state_history");
   });
 
   it("every learner_ table a migration creates is classified", () => {
@@ -171,10 +209,16 @@ describe("A RESET THAT MISSES A TABLE IS WORSE THAN NO RESET", () => {
   it("the scan can actually catch an unclassified one", () => {
     // A counter-example, so the regex is known to match a real statement
     // rather than passing because it matches nothing.
-    const sql = "CREATE TABLE IF NOT EXISTS public.learner_concept_state_history (\n  user_id UUID";
+    // The name here must be one no migration will ever create. It used to be
+    // learner_concept_state_history, which was unclassified at the time and is
+    // now real and placed, so the counter-example would have passed for the
+    // wrong reason.
+    const imaginary = "learner_" + "unclassified_probe_table";
+    const sql = `CREATE TABLE IF NOT EXISTS public.${imaginary} (\n  user_id UUID`;
     const m = [...sql.matchAll(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?(learner_[a-z_]+)/gi)];
-    expect(m.map((x) => x[1])).toEqual(["learner_concept_state_history"]);
-    expect(classified.has("learner_concept_state_history")).toBe(false);
+    expect(m.map((x) => x[1])).toEqual([imaginary]);
+    expect(classified.has(imaginary)).toBe(false);
+    expect(createdLearnerTables).not.toContain(imaginary);
   });
 
   it("clears derived concept state after the evidence it was derived from", () => {

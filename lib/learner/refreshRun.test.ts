@@ -217,7 +217,7 @@ describe("overlapping runs", () => {
 
   it("a dry run is never blocked, and never writes", async () => {
     const world = fakeWorld({ users: [u("a"), u("b")], lastComputedAt: NOW.toISOString() });
-    const r = await runRefresh(world as never, { now: NOW, dryRun: true });
+    const r = await runRefresh(world as never, { now: NOW, mode: "DRY" });
     expect(r.outcome).toBe("COMPLETED");
     expect(r.attempted).toBe(2);
     expect(world.rpcCalls).toEqual([]);
@@ -247,10 +247,22 @@ describe("the scheduler's own boundaries", () => {
     expect(run).not.toMatch(/\b(accounts|users)\.length\s*[=!<>]=*\s*[1-9]/);
   });
 
-  it("mutates state only through the atomic writer", () => {
+  it("mutates state only through the two atomic writers", () => {
     expect(run).not.toMatch(/\.insert\(|\.update\(|\.upsert\(|\.delete\(/);
-    const rpcs = [...run.matchAll(/\.rpc\(\s*"([a-z_]+)"/g)].map((m) => m[1]);
-    expect(rpcs).toEqual(["replace_learner_concept_states"]);
+    const rpcs = [...run.matchAll(/\.rpc\(\s*"([a-z_]+)"/g)].map((m) => m[1]).sort();
+    // Two, and only two: the scheduled writer, which replaces current state
+    // AND records the observation in one transaction, and the current-only
+    // writer the scheduled one itself calls. No third path, no direct write.
+    expect(rpcs).toEqual(["record_scheduled_observation", "replace_learner_concept_states"]);
+  });
+
+  it("writes history on the scheduled path and ONLY there", () => {
+    // The scheduled branch is the only place the observation writer appears.
+    const scheduled = run.slice(run.indexOf('mode === "SCHEDULED"'), run.indexOf("} else {"));
+    const manual = run.slice(run.indexOf("} else {"), run.indexOf("row.stage = null;"));
+    expect(scheduled).toMatch(/record_scheduled_observation/);
+    expect(manual).not.toMatch(/record_scheduled_observation/);
+    expect(manual).toMatch(/replace_learner_concept_states/);
   });
 
   it("writes no source table", () => {

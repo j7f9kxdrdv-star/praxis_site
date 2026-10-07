@@ -52,6 +52,18 @@ export const USER_DATA_TABLES = [
   // reading the comment there says it refuses. So the table first, then the
   // name. learner_concept_state_history is deliberately absent until it exists.
   "learner_concept_states",
+  // The observed history of that state. The parent observation record and its
+  // concept rows: a reset clears both, because they are this learner's data
+  // whatever else they are.
+  //
+  // IMMUTABLE IS NOT UNDELETABLE. History is never rewritten in normal
+  // runtime, and that is a rule about semantic correction, not a reason to
+  // keep someone's records after they ask for them to go. The child table
+  // cascades from the parent, so deleting observations takes the concept rows
+  // with it; both are named here so the reset's own count and its preview
+  // report them honestly.
+  "learner_concept_state_history",
+  "learner_concept_state_observations",
 ] as const;
 
 /**

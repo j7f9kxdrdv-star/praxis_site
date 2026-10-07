@@ -369,12 +369,22 @@ describe("THE PREDICTOR MAY NOT CONSUME LEARNER CONCEPT STATE", () => {
   /**
    * Tables the predictor may never read.
    *
-   * learner_concept_states exists as of 20261006_08; learner_concept_state_history
-   * does not exist yet and is banned anyway, so the rule is already in place when
-   * it arrives.
+   * All three learner-concept-state tables now exist: the current state as of
+   * 20261006_08, and the observation parent plus its per-concept child as of
+   * 20261007_05. history was banned here while it was still hypothetical and
+   * needed no change when it arrived, which is the whole value of banning a
+   * name early. observations did not exist under any name when this list was
+   * written, so it is added in the step that creates it.
+   *
+   * The observation parent carries no memory values at all, only the identity
+   * of a cycle. It is banned regardless, because it is the join key to a child
+   * table full of them, and "read the parent, join the child" is precisely the
+   * one careless join this firewall exists to make impossible.
    */
   const PROHIBITED_TABLES = [
-    "learner_concept_states", "learner_concept_state_history",
+    "learner_concept_states",
+    "learner_concept_state_observations",
+    "learner_concept_state_history",
     "flashcard_user_state", "flashcard_reviews", "flashcard_concepts", "flashcards",
   ];
   /** Field shapes that carry memory evidence under any naming convention. */
@@ -425,8 +435,20 @@ describe("THE PREDICTOR MAY NOT CONSUME LEARNER CONCEPT STATE", () => {
       .toMatch(/CREATE TABLE IF NOT EXISTS public\.learner_concept_states/);
 
     expect(PROHIBITED_TABLES).toContain("learner_concept_states");
+    expect(PROHIBITED_TABLES).toContain("learner_concept_state_observations");
     expect(PROHIBITED_TABLES).toContain("learner_concept_state_history");
     expect(stripComments(predictorSource)).not.toContain("learner_concept_state");
+
+    // The history tables are real too, so the same reasoning applies to them:
+    // a ban whose subject exists is a rule, where one whose subject does not
+    // is only a precaution.
+    const history = path.join(ROOT, "supabase", "migrations",
+      "20261007_05_concept_state_history.sql");
+    expect(fs.existsSync(history)).toBe(true);
+    const historySql = fs.readFileSync(history, "utf8");
+    for (const t of ["learner_concept_state_observations", "learner_concept_state_history"]) {
+      expect(historySql).toContain(`CREATE TABLE IF NOT EXISTS public.${t}`);
+    }
 
     // And nothing on the Phase 2 production path is reachable from the
     // predictor either, by import, by RPC name or by field name.
