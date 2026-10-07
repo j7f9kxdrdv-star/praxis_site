@@ -35,17 +35,45 @@ describe("A RESET THAT MISSES A TABLE IS WORSE THAN NO RESET", () => {
     ...Object.keys(NON_USER_TABLES),
   ]);
 
+  // EXECUTABLE TEXT ONLY. A table named in a comment is not a table the app
+  // touches, and treating it as one asks for a classification of something
+  // that may not even be reachable: this first fired on a comment explaining
+  // that reading auth.users through PostgREST CANNOT work, because it is not
+  // exposed there at all. Classifying it would have been inventing a fact.
+  const strip = (src: string) =>
+    src.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+
   const used = new Set<string>();
   for (const file of sourceFiles(path.join(ROOT, "app"))
     .concat(sourceFiles(path.join(ROOT, "lib")))
     .concat(sourceFiles(path.join(ROOT, "scripts")))) {
-    const src = fs.readFileSync(file, "utf8");
+    const src = strip(fs.readFileSync(file, "utf8"));
     for (const m of src.matchAll(/\.from\("([a-z_]+)"\)/g)) used.add(m[1]);
   }
 
   it("every table the app touches is classified", () => {
     const unclassified = [...used].filter((t) => !classified.has(t)).sort();
     expect(unclassified).toEqual([]);
+  });
+
+  it("the scan still sees a real table access, and ignores one in prose", () => {
+    // Stripping comments must not have stripped the check's teeth.
+    // ASSEMBLED FROM FRAGMENTS, never written out. A literal example here is
+    // a real table access as far as the scanner above is concerned, and this
+    // file is one of the files it scans — so spelling it out would make the
+    // counter-example fail the very check it exists to prove.
+    const call = (t: string) => `.${"from"}(${JSON.stringify(t)})`;
+    const real = strip(`const x = db${call("flashcard_reviews")}.select("*");`);
+    expect([...real.matchAll(/\.from\("([a-z_]+)"\)/g)].map((m) => m[1])).toEqual(["flashcard_reviews"]);
+    const prose = strip(`${"//"} never call ${call("zz_commented_out")} here`);
+    expect([...prose.matchAll(/\.from\("([a-z_]+)"\)/g)]).toEqual([]);
+  });
+
+  it("still finds the tables it is supposed to find", () => {
+    // If stripping ever removed too much this would empty out silently.
+    for (const t of ["flashcard_reviews", "question_attempts", "profiles", "learner_concept_states"]) {
+      expect(used, t).toContain(t);
+    }
   });
 
   it("no table is in two buckets at once", () => {

@@ -27,6 +27,17 @@ const sql = fs.readFileSync(path.join(DIR, defining[defining.length - 1]), "utf8
 /** The migration that first installed it, kept for the claims that are its own. */
 const original = fs.readFileSync(path.join(DIR, defining[0]), "utf8");
 
+/**
+ * Every migration that has ever defined the function, concatenated.
+ *
+ * Two different kinds of claim live in this file and conflating them is how
+ * three tests broke when a third migration arrived. "The function behaves this
+ * way NOW" is a claim about the live definition. "This property was driven
+ * against the real database at some point" is a claim about the history, and
+ * the migration that proved it is not necessarily the first or the last.
+ */
+const everyDefining = defining.map((f) => fs.readFileSync(path.join(DIR, f), "utf8")).join("\n");
+
 const NOW = new Date("2026-10-06T12:00:00.000Z");
 function state(conceptId: string): ConceptState {
   const evidence: ConceptEvidence = {
@@ -88,6 +99,10 @@ describe("A BATCH CANNOT DISAGREE WITH ITSELF", () => {
 // ─── The function the migration installs ───────────────────────────────────
 
 describe("the atomic writer", () => {
+  const stripSql = (t: string) => t.split("\n")
+    .map((l) => (l.indexOf("--") === -1 ? l : l.slice(0, l.indexOf("--")))).join("\n");
+  const liveBody = stripSql(sql.slice(sql.indexOf("AS $fn$"), sql.indexOf("END; $fn$;")));
+
   it("every migration that defines it declares a prerequisite", () => {
     expect(defining.length).toBeGreaterThan(0);
     for (const f of defining) {
@@ -137,9 +152,27 @@ describe("the atomic writer", () => {
   });
 
   it("serialises per learner and never globally", () => {
-    expect(sql).toMatch(/pg_advisory_xact_lock\(hashtext\('learner_concept_states'\), hashtext\(p_user_id::text\)\)/);
+    // A SINGLE SEEDED 64-BIT KEY. The pair form hashes a UUID into 32 bits,
+    // where two learners collide once in a few tens of thousands of pairs —
+    // harmless, since a collision only costs one of them a wait, but needless.
+    expect(liveBody).toMatch(/pg_advisory_xact_lock\(\s*hashtextextended\('learner_concept_states:' \|\| p_user_id::text, 20261007\)\)/);
     // Transaction-scoped, so it cannot be left held.
-    expect(sql).not.toMatch(/pg_advisory_lock\(/);
+    expect(liveBody).not.toMatch(/pg_advisory_lock\(/);
+  });
+
+  it("DOES NOT REGRESS TO THE 32-BIT PAIR", () => {
+    // The live definition must not go back to the two-argument form, and the
+    // original is kept as the counter-example proving this check sees it.
+    expect(liveBody).not.toMatch(/hashtext\('learner_concept_states'\)/);
+    expect(stripSql(original.slice(original.indexOf("AS $fn$"), original.indexOf("END; $fn$;"))))
+      .toMatch(/hashtext\('learner_concept_states'\), hashtext\(p_user_id::text\)/);
+  });
+
+  it("the lock seed is fixed, because a changed seed is a different lock", () => {
+    // Two deploys disagreeing about the seed would stop serialising the same
+    // learner against each other, silently.
+    const seeds = [...liveBody.matchAll(/hashtextextended\([^)]*,\s*(\d+)\)/g)].map((m) => m[1]);
+    expect(seeds).toEqual(["20261007"]);
   });
 
   it("validates the whole batch before it writes anything", () => {
@@ -200,10 +233,6 @@ describe("the atomic writer", () => {
   });
 
   // ── The defect the first installation shipped ─────────────────────────
-  const stripSql = (t: string) => t.split("\n")
-    .map((l) => (l.indexOf("--") === -1 ? l : l.slice(0, l.indexOf("--")))).join("\n");
-  const liveBody = stripSql(sql.slice(sql.indexOf("AS $fn$"), sql.indexOf("END; $fn$;")));
-
   it("TOUCHES NO SCHEMA ITS ONLY CALLER CANNOT READ", () => {
     // The first version validated its learner against auth.users. It is
     // SECURITY INVOKER, so that SELECT runs as the caller, and the only role
@@ -227,10 +256,10 @@ describe("the atomic writer", () => {
   it("proves the foreign key refuses an unknown learner, by SQLSTATE", () => {
     // Not by message: a refusal from some other rule would otherwise look like
     // this one passing.
-    expect(sql).toMatch(/EXCEPTION WHEN foreign_key_violation THEN NULL;/);
-    expect(sql).toMatch(/the unknown-learner refusal came from the wrong layer/);
+    expect(everyDefining).toMatch(/EXCEPTION WHEN foreign_key_violation THEN NULL;/);
+    expect(everyDefining).toMatch(/the unknown-learner refusal came from the wrong layer/);
     // And an empty batch for an unknown learner is a no-op, not an error.
-    expect(sql).toMatch(/an empty batch for an unknown learner raised/);
+    expect(everyDefining).toMatch(/an empty batch for an unknown learner raised/);
   });
 
   it("is now probed as the role that actually calls it", () => {
@@ -244,16 +273,20 @@ describe("the atomic writer", () => {
   });
 
   it("reports the account mismatch rather than acting on it", () => {
-    expect(sql).toMatch(/auth user\(s\) have no profile row/);
-    expect(sql).toMatch(/profile\(s\) have no auth user/);
+    expect(everyDefining).toMatch(/auth user\(s\) have no profile row/);
+    expect(everyDefining).toMatch(/profile\(s\) have no auth user/);
     // A NOTICE, not an exception: the writer no longer depends on either count.
-    expect(sql).toMatch(/RAISE NOTICE 'ACCOUNTS:/);
-    expect(sql).not.toMatch(/RAISE EXCEPTION 'WRITER FIX: % auth user/);
+    expect(everyDefining).toMatch(/RAISE NOTICE 'ACCOUNTS:/);
+    expect(everyDefining).not.toMatch(/RAISE EXCEPTION 'WRITER FIX: % auth user/);
   });
 
   it("leaves no residue", () => {
-    expect(sql).toMatch(/DELETE FROM public\.learner_concept_states WHERE model_version IN \('PROBE', 'FORGED'\)/);
-    expect(sql).toMatch(/the probes left the table at % rows, it held % before/);
+    // Every revision cleans up after itself, whatever its probes wrote.
+    for (const f of defining) {
+      const text = fs.readFileSync(path.join(DIR, f), "utf8");
+      expect(text, f).toMatch(/DELETE FROM public\.learner_concept_states WHERE model_version/);
+      expect(text, f).toMatch(/the probes left the table at % rows, it held % before/);
+    }
   });
 
   it("appends to the leak list, never concatenates onto it", () => {
