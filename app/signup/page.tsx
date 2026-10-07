@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { detectTimezone } from "@/lib/flashcards/studyDay";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
@@ -27,6 +28,15 @@ export default function SignupPage() {
         data: {
           first_name: firstName,
           last_name: lastName,
+          // The one moment the browser can tell us where the learner is, on
+          // the one path that can carry it. handle_new_user() validates it
+          // against the server's own IANA database and falls back to NULL if
+          // it cannot resolve it, so a strange browser cannot block a signup.
+          //
+          // OAuth signups cannot carry this — the account is created by the
+          // provider callback — which is why the dashboard also initialises a
+          // missing timezone on first load.
+          timezone: detectTimezone(),
         },
       },
     });

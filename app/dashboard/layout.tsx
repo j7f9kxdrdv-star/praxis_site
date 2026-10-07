@@ -1,4 +1,5 @@
 import DashboardShell from "@/components/dashboard/DashboardShell";
+import TimezoneInitializer from "@/components/dashboard/TimezoneInitializer";
 
 export const metadata = {
   // The root layout appends the site name via its title template, so this is
@@ -15,5 +16,16 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <DashboardShell>{children}</DashboardShell>;
+  return (
+    <DashboardShell>
+      {/*
+        Mounted once for every authenticated page under /dashboard, which is
+        the earliest reliable point at which a browser is present AND we know
+        who the learner is. It renders nothing and writes only when the stored
+        timezone is NULL.
+      */}
+      <TimezoneInitializer />
+      {children}
+    </DashboardShell>
+  );
 }
