@@ -464,7 +464,46 @@ ok("Immunoglobulins carries both its categories",
   igCats?.has("Structure and Function of Proteins and Their Constituent Amino Acids") && igCats?.has("Organ Systems"));
 
 console.log("\nFLASHCARD MAPPINGS");
-const fc = await all("flashcard_concepts", "flashcard_id,concept_id,role,mapping_status,source,reviewed_at");
+const fc = await all("flashcard_concepts", "flashcard_id,concept_id,role,mapping_status,source,reviewed_at,cloze_indices");
+
+// ─── CLOZE SCOPE: an explicit scope must point at blanks that exist ────────
+//
+// DIVISION OF RESPONSIBILITY. The database trigger validates a scope against
+// flashcards.cloze_count, which is cheap and correct as long as the declared
+// count matches the text. This check is the other half: it parses the ACTUAL
+// {{cN::}} markers out of the card and compares against those. If an edit ever
+// moves the text and the count apart, the trigger would not notice and this
+// does. That is not hypothetical on this table: 12 scheduler rows already point
+// at clozes their card no longer has.
+{
+  const cards = new Map(
+    (await all("flashcards", "id,cloze_count,cloze_text")).map((f) => [f.id, f]));
+  const indicesIn = (text) =>
+    [...new Set([...(text || "").matchAll(/\{\{c(\d+)::/g)].map((m) => Number(m[1])))].sort((a, b) => a - b);
+  const scoped = fc.filter((m) => m.cloze_indices !== null && m.cloze_indices !== undefined);
+
+  ok("every explicit cloze scope is a non-empty array",
+    scoped.every((m) => Array.isArray(m.cloze_indices) && m.cloze_indices.length > 0));
+  ok("every scoped index is a positive integer",
+    scoped.every((m) => m.cloze_indices.every((i) => Number.isInteger(i) && i >= 1)));
+  ok("no scope repeats an index",
+    scoped.every((m) => new Set(m.cloze_indices).size === m.cloze_indices.length));
+  ok("every scope is stored in ascending order, so one scope has one spelling",
+    scoped.every((m) => m.cloze_indices.every((v, i, a) => i === 0 || a[i - 1] < v)));
+  ok("every scoped index exists in the card TEXT, not merely within cloze_count",
+    scoped.every((m) => {
+      const card = cards.get(m.flashcard_id);
+      if (!card) return false;
+      const real = new Set(indicesIn(card.cloze_text));
+      return m.cloze_indices.every((i) => real.has(i));
+    }),
+    `${scoped.length} scoped mapping(s)`);
+  ok("a scope is only used where the card maps to more than one concept",
+    scoped.every((m) => fc.filter((x) => x.flashcard_id === m.flashcard_id).length > 1));
+  ok("cloze_count still agrees with the card text everywhere",
+    [...cards.values()].every((f) => indicesIn(f.cloze_text).length === f.cloze_count),
+    `${cards.size} cards`);
+}
 const typeOf = Object.fromEntries(concepts.map((c) => [c.id, c.object_type]));
 const byType = fc.reduce((a, m) => ((a[typeOf[m.concept_id]] = (a[typeOf[m.concept_id]] || 0) + 1), a), {});
 // A floor. Authoring new cards and mapping them is normal growth; the structural
