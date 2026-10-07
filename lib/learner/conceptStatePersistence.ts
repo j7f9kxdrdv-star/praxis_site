@@ -239,6 +239,71 @@ export function toRows(states: ConceptState[], ctx: PersistenceContext): Concept
   return states.map((s) => toRow(s, ctx));
 }
 
+/* ─── The batch payload ────────────────────────────────────────────────────
+ *
+ * What the atomic writer receives: the per-concept fields and nothing else.
+ *
+ * WHY THE FOUR BATCH FACTS ARE NOT IN HERE. user_id, study_day, computed_at
+ * and model_version are the same for every row of one computation, and a
+ * payload row that could carry its own copy is a payload row that could
+ * DISAGREE: half a learner's states written under one model version and half
+ * under another, or two study days in one batch, with nothing to notice. They
+ * are top-level arguments of the function instead, so a mixed batch is not
+ * something to be careful about, it is something that cannot be expressed.
+ */
+
+/** The 23 per-concept keys the writer accepts, and no others. */
+export const CONCEPT_STATE_PAYLOAD_COLUMNS = CONCEPT_STATE_COLUMNS.filter(
+  (c) => c !== "user_id" && c !== "study_day" && c !== "computed_at" && c !== "model_version",
+) as readonly string[];
+
+export type ConceptStatePayloadRow = Omit<
+  ConceptStateRow, "user_id" | "study_day" | "computed_at" | "model_version"
+>;
+
+/** One state as the writer takes it. */
+export function toPayloadRow(state: ConceptState): ConceptStatePayloadRow {
+  // Built by deleting from the full row rather than by listing the fields
+  // again, so a column added to ConceptStateRow cannot be forgotten here.
+  const { user_id: _u, study_day: _d, computed_at: _c, model_version: _m, ...rest } =
+    toRow(state, { userId: "", studyDay: "", computedAt: new Date(0).toISOString() });
+  return rest;
+}
+
+/**
+ * A whole computation as the writer takes it.
+ *
+ * Refuses a duplicated concept, because the writer upserts on
+ * (user_id, concept_id) and two rows for one concept would mean the last one
+ * silently won. The model cannot produce that — it emits one state per concept
+ * — so reaching this means something upstream is wrong and the batch should
+ * not be written.
+ */
+export function toPayload(states: ConceptState[]): ConceptStatePayloadRow[] {
+  const seen = new Set<string>();
+  for (const s of states) {
+    if (seen.has(s.conceptId)) {
+      throw new Error(`conceptStatePersistence: concept ${s.conceptId} appears twice in one batch`);
+    }
+    seen.add(s.conceptId);
+  }
+  return states.map(toPayloadRow);
+}
+
+/**
+ * The single model version a batch may be written under.
+ *
+ * The writer takes one version for the whole call, so a batch whose states
+ * disagree about it has no correct value to send and must not be written.
+ */
+export function singleModelVersion(states: ConceptState[]): string | null {
+  const versions = new Set(states.map((s) => s.modelVersion));
+  if (versions.size > 1) {
+    throw new Error(`conceptStatePersistence: one batch, ${versions.size} model versions: ${[...versions].sort().join(", ")}`);
+  }
+  return versions.size === 1 ? [...versions][0] : null;
+}
+
 /*
  * ─── THE WRITER CONTRACT ──────────────────────────────────────────────────
  *

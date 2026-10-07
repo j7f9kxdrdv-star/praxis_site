@@ -353,9 +353,17 @@ describe("THE PREDICTOR MAY NOT CONSUME LEARNER CONCEPT STATE", () => {
   const ROOT = path.join(__dirname, "..", "..");
   const predictorSource = fs.readFileSync(path.join(__dirname, "scoreEstimate.ts"), "utf8");
 
-  /** Modules whose values are memory-derived, or mixed with memory. */
+  /**
+   * Modules whose values are memory-derived, or mixed with memory.
+   *
+   * The Phase 2 production path is named here module by module rather than
+   * trusted to the `conceptState` prefix: the loader and the orchestrator
+   * carry whole-bank memory evidence and the writer's own payload, and an
+   * import of any of them puts retention one property access from the score.
+   */
   const PROHIBITED_MODULES = [
     "lib/learner/conceptState", "learner/conceptState", "./conceptState",
+    "conceptStatePersistence", "conceptEvidence", "computeConceptStates",
     "lib/flashcards/", "lib/analytics/flashcardAggregate",
   ];
   /**
@@ -420,10 +428,16 @@ describe("THE PREDICTOR MAY NOT CONSUME LEARNER CONCEPT STATE", () => {
     expect(PROHIBITED_TABLES).toContain("learner_concept_state_history");
     expect(stripComments(predictorSource)).not.toContain("learner_concept_state");
 
-    // And the persistence module that maps it is not reachable from the
-    // predictor either, by import or by field name.
+    // And nothing on the Phase 2 production path is reachable from the
+    // predictor either, by import, by RPC name or by field name.
     const imports = [...predictorSource.matchAll(/from\s+["']([^"']+)["']/g)].map((m) => m[1]);
-    expect(imports.filter((i) => i.includes("conceptStatePersistence"))).toEqual([]);
+    for (const m of ["conceptStatePersistence", "conceptEvidence", "computeConceptStates"]) {
+      expect(imports.filter((i) => i.includes(m)), m).toEqual([]);
+    }
+    // The writer is a database function, so banning the table is not enough:
+    // its name is the other way to reach the same rows.
+    expect(stripComments(predictorSource)).not.toContain("replace_learner_concept_states");
+    expect(stripComments(predictorSource)).not.toMatch(/computeAndPersistLearnerConceptStates|loadConceptEvidence/);
     for (const column of ["memory_durability", "memory_signal", "weak_card_count",
                           "memory_confidence_raw", "memory_items"]) {
       expect(stripComments(predictorSource), column).not.toContain(column);

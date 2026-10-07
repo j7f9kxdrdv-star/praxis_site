@@ -630,10 +630,26 @@ describe("the persistence contract the next step has to satisfy", () => {
   });
 
   it("derives nothing, so there is only ever one model", () => {
-    // No arithmetic on a model output. If a value needs computing it belongs in
-    // conceptState.ts, where the pure contract can be tested against it.
+    // THE RULE IS "NO ARITHMETIC ON A MODEL VALUE", and this used to enforce it
+    // by banning the word `filter(` as a proxy. That was crude enough to fail
+    // on a filter over a list of COLUMN NAMES, which computes nothing about a
+    // learner, so the test now says what it means instead of being widened.
+    //
+    // If a value needs computing it belongs in conceptState.ts, where the pure
+    // contract can be tested against it.
     const body = source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*(\/\/|\*).*$/gm, "");
-    expect(body).not.toMatch(/Math\.|[+*/]=|\breduce\(|\bfilter\(/);
+    expect(body).not.toMatch(/Math\./);
+    expect(body).not.toMatch(/\breduce\(/);
+    expect(body).not.toMatch(/[+\-*/]=/);
+    // Nothing arithmetic is ever applied to a field of a state or a row.
+    expect(body).not.toMatch(/\b(state|row)\.\w+\s*[+\-*/]/);
+  });
+
+  it("the arithmetic ban can actually catch arithmetic", () => {
+    // A counter-example, so the patterns above are known to match something.
+    const bad = "const x = state.memoryItems + 1; const y = Math.min(row.weak_card_count, 2);";
+    expect(bad).toMatch(/\b(state|row)\.\w+\s*[+\-*/]/);
+    expect(bad).toMatch(/Math\./);
   });
 
   it("lists every column, in the order the table declares them", () => {
