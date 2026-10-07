@@ -33,6 +33,9 @@ const ROOT = path.resolve(HERE, "../..");
 register(pathToFileURL(path.join(HERE, "ts-loader.mjs")).href, pathToFileURL(HERE + "/"));
 
 const { backfill, studyDaysFrom } = await import(`${ROOT}/lib/learner/backfill.ts`);
+// The canonical account universe, through the same loader every batch job uses.
+const { loadAccountUniverse, readyAccounts, integrityFailures } =
+  await import(`${ROOT}/lib/learner/accountUniverse.ts`);
 
 const args = process.argv.slice(2);
 const arg = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
@@ -66,9 +69,42 @@ const questions = await pageAll("questions", "id, section, topic", ["id"]);
 const byId = new Map(questions.map((q) => [q.id, q]));
 console.log(`question bank: ${questions.length}\n`);
 
-const { data: profiles } = await db
-  .from("profiles")
-  .select("id, first_name, email, day_start_hour");
+// ─── THE ACCOUNT UNIVERSE, NOT THE PROFILES TABLE ─────────────────────────
+//
+// This used to read `profiles` with no pagination, which was wrong twice over.
+// It capped silently at the page PostgREST serves, so a thousandth account
+// would simply never be backfilled and nothing would say so; and it treated
+// profiles as the list of accounts, which was how two auth users stayed
+// invisible for six months.
+//
+// It now asks the same question every batch job asks, through the same module:
+// auth.users, paged, reconciled against profiles. One semantic definition of
+// "all Praxist accounts" lives in lib/learner/accountUniverse.ts and this is a
+// caller of it, not a second implementation.
+const universe = await loadAccountUniverse(db);
+const failures = integrityFailures(universe);
+if (failures.length > 0) {
+  // A backfill that quietly skipped the broken account would reproduce exactly
+  // the fault this module exists to prevent.
+  console.error(`ACCOUNT UNIVERSE INTEGRITY FAILURE — refusing to backfill:`);
+  for (const f of failures) console.error(`  ${f}`);
+  process.exit(1);
+}
+const accounts = readyAccounts(universe);
+console.log(`account universe: ${universe.accounts.length} auth user(s) over ${universe.pagesFetched} page(s), all ready\n`);
+
+// The profile fields this script needs, for the accounts it just discovered.
+const profileRows = [];
+for (let from = 0; ; from += 1000) {
+  const { data, error } = await db.from("profiles")
+    .select("id, first_name, email, day_start_hour").order("id").range(from, from + 999);
+  if (error) throw new Error(error.message);
+  if (!data.length) break;
+  profileRows.push(...data);
+  if (data.length < 1000) break;
+}
+const profileById = new Map(profileRows.map((r) => [r.id, r]));
+const profiles = accounts.map((a) => profileById.get(a.id)).filter(Boolean);
 
 let totalSnapshots = 0, totalEvents = 0, skipped = 0;
 

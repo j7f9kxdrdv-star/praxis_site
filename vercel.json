@@ -3,6 +3,10 @@
     {
       "path": "/api/reports/cron/weekly",
       "schedule": "0 4 * * 1"
+    },
+    {
+      "path": "/api/learner/cron/refresh",
+      "schedule": "0 9 * * *"
     }
   ]
 }

@@ -91,6 +91,26 @@ export interface LoadedEvidence {
 }
 
 /**
+ * The bank-wide half of the evidence, which is the same for every learner.
+ *
+ * WHY THIS EXISTS. A single learner's evidence is about 12,000 bank rows plus
+ * their own few thousand. Re-reading the bank per learner is invisible at nine
+ * accounts and is the whole cost at a thousand: 12 million row-reads a run,
+ * every one of them identical. A batch refresh loads it once and hands it to
+ * each learner's load.
+ *
+ * IT IS A SNAPSHOT, deliberately. Every learner in one refresh run sees the
+ * same bank, so the run is one coherent observation rather than nine readings
+ * of a question bank that someone might be editing underneath it.
+ */
+export interface ConceptBank {
+  concepts: ConceptRow[];
+  flashcards: FlashcardRow[];
+  cardMappings: CardMapping[];
+  questionMappings: QuestionMapping[];
+}
+
+/**
  * Everything buildConceptStates() needs about one learner.
  *
  * The bank-wide tables (concepts, flashcards and the two mapping tables) are
@@ -100,8 +120,19 @@ export interface LoadedEvidence {
  * learner's own cards would quietly make every concept look fully covered.
  */
 export async function loadConceptEvidence(
-  db: SupabaseClient, userId: string,
+  db: SupabaseClient, userId: string, bank?: ConceptBank,
 ): Promise<LoadedEvidence> {
+  if (bank) {
+    const { schedulerRows, attempts } = await loadLearnerEvidence(db, userId);
+    return {
+      evidence: { ...bank, schedulerRows, attempts },
+      counts: {
+        concepts: bank.concepts.length, flashcards: bank.flashcards.length,
+        cardMappings: bank.cardMappings.length, questionMappings: bank.questionMappings.length,
+        schedulerRows: schedulerRows.length, attempts: attempts.length,
+      },
+    };
+  }
   const [concepts, flashcards, cardRows, schedulerRaw, questionRows, attemptRows] = await Promise.all([
     all<{ id: string; object_type: string; status: string }>(
       db, "concepts", "id, object_type, status", ["id"]),
@@ -171,5 +202,61 @@ export async function loadConceptEvidence(
       concepts: conceptRows.length, flashcards: cards.length, cardMappings: cardMappings.length,
       schedulerRows: schedulerRows.length, questionMappings: questionMappings.length, attempts: attempts.length,
     },
+  };
+}
+
+
+/** Just the bank: the same rows for every learner in a run. */
+export async function loadConceptBank(db: SupabaseClient): Promise<ConceptBank> {
+  const [concepts, flashcards, cardRows, questionRows] = await Promise.all([
+    all<{ id: string; object_type: string; status: string }>(
+      db, "concepts", "id, object_type, status", ["id"]),
+    all<{ id: string; cloze_count: number | null }>(
+      db, "flashcards", "id, cloze_count", ["id"]),
+    all<{ flashcard_id: string; concept_id: string; role: string; cloze_indices: number[] | null }>(
+      db, "flashcard_concepts", "flashcard_id, concept_id, role, cloze_indices", ["flashcard_id", "concept_id"]),
+    all<{ question_id: string; concept_id: string; role: string; evidence_strength: string }>(
+      db, "question_concepts", "question_id, concept_id, role, evidence_strength", ["question_id", "concept_id"]),
+  ]);
+  return {
+    concepts: concepts.map((c) => ({ id: c.id, objectType: c.object_type, status: c.status })),
+    flashcards: flashcards.map((f) => ({ id: f.id, clozeCount: f.cloze_count ?? 0 })),
+    cardMappings: cardRows.map((m) => ({
+      conceptId: m.concept_id, flashcardId: m.flashcard_id,
+      role: role(m.role, `flashcard_concepts ${m.flashcard_id}/${m.concept_id}`),
+      clozeIndices: m.cloze_indices,
+    })),
+    questionMappings: questionRows.map((m) => ({
+      conceptId: m.concept_id, questionId: m.question_id,
+      role: role(m.role, `question_concepts ${m.question_id}/${m.concept_id}`),
+      evidenceStrength: strength(m.evidence_strength, `question_concepts ${m.question_id}/${m.concept_id}`),
+    })),
+  };
+}
+
+/** Just this learner's own rows. Unfiltered beyond the user, as always. */
+export async function loadLearnerEvidence(
+  db: SupabaseClient, userId: string,
+): Promise<{ schedulerRows: SchedulerRow[]; attempts: AttemptRow[] }> {
+  const [schedulerRaw, attemptRows] = await Promise.all([
+    all<{ flashcard_id: string; cloze_index: number; stability: number | null; reps: number | null;
+          suspended: boolean | null; last_reviewed_at: string | null }>(
+      db, "flashcard_user_state",
+      "flashcard_id, cloze_index, stability, reps, suspended, last_reviewed_at",
+      ["flashcard_id", "cloze_index"], userId),
+    all<{ id: string; question_id: string; is_correct: boolean; is_first_attempt: boolean | null; created_at: string }>(
+      db, "question_attempts", "id, question_id, is_correct, is_first_attempt, created_at",
+      ["created_at", "id"], userId),
+  ]);
+  return {
+    schedulerRows: schedulerRaw.map((r) => ({
+      flashcardId: r.flashcard_id, clozeIndex: r.cloze_index,
+      stability: r.stability ?? 0, reps: r.reps ?? 0,
+      suspended: r.suspended ?? false, lastReviewedAt: r.last_reviewed_at,
+    })),
+    attempts: attemptRows.map((a) => ({
+      id: a.id, questionId: a.question_id, isCorrect: a.is_correct,
+      isFirstAttempt: a.is_first_attempt, createdAt: a.created_at,
+    })),
   };
 }
