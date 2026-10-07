@@ -92,20 +92,70 @@ export type EvidenceStrength = (typeof EVIDENCE_STRENGTHS)[number];
 export const ELIGIBLE_STRENGTHS: ReadonlySet<EvidenceStrength> =
   new Set<EvidenceStrength>(["UNREVIEWED", "STANDARD"]);
 
-export type MemorySignal = "DURABLE" | "BUILDING" | "THIN" | "INSUFFICIENT";
-export type FreshnessSignal = "FRESH" | "COOLING" | "STALE" | "INSUFFICIENT";
-export type ApplicationSignal = "STRUGGLING" | "MISSES_OBSERVED" | "NOT_ESTABLISHED" | "INSUFFICIENT";
-export type ConfidenceBand = "LOW" | "MODERATE" | "HIGH";
-export type CoverageState = "BOTH_MODALITIES" | "MEMORY_ONLY" | "QUESTION_ONLY" | "NO_EVIDENCE";
-export type CoverageReason =
-  | "BANK_HAS_NO_QUESTIONS" | "BANK_HAS_NO_CARDS"
-  | "LEARNER_HAS_NOT_ATTEMPTED" | "LEARNER_HAS_NOT_REVIEWED" | null;
-export type ConfidenceLimitedBy = "LEARNER_COVERAGE" | "BANK_COVERAGE" | "ROLE" | "NONE";
-export type StateLabel =
-  | "DURABLE_RECALL_APPLICATION_MISSES" | "STALE_RECALL_APPLICATION_MISSES"
-  | "THIN_RECALL_APPLICATION_MISSES" | "APPLICATION_MISSES_MEMORY_UNKNOWN"
-  | "MEMORY_DURABLE" | "MEMORY_DURABLE_STALE" | "MEMORY_BUILDING" | "MEMORY_THIN"
-  | "INSUFFICIENT_EVIDENCE";
+/*
+ * THE CATEGORICAL VOCABULARIES, AS RUNTIME LISTS.
+ *
+ * Each was a bare union until the persistence layer needed to assert that the
+ * database CHECK and this module hold the same words. A type that exists only
+ * at compile time cannot be compared with a string in a .sql file, so the
+ * comparison was impossible and the two could drift silently: the database
+ * would accept a value the model has no branch for, or refuse one it emits.
+ *
+ * So the list is the single definition and the type is derived from it, the
+ * shape EVIDENCE_STRENGTHS already uses above. ORDER IS PART OF THE
+ * DEFINITION: the migration's CHECK lists these values in this order and a
+ * test compares the sequences, not the sets, so a reordering has to be
+ * deliberate in both places.
+ *
+ * This is a vocabulary export and nothing else. No value was added, removed or
+ * renamed, no branch changed, and CONCEPT_STATE_MODEL_VERSION is therefore
+ * unchanged: the model computes exactly what it computed before.
+ */
+export const MEMORY_SIGNALS = ["DURABLE", "BUILDING", "THIN", "INSUFFICIENT"] as const;
+export type MemorySignal = (typeof MEMORY_SIGNALS)[number];
+
+export const FRESHNESS_SIGNALS = ["FRESH", "COOLING", "STALE", "INSUFFICIENT"] as const;
+export type FreshnessSignal = (typeof FRESHNESS_SIGNALS)[number];
+
+export const APPLICATION_SIGNALS = [
+  "STRUGGLING", "MISSES_OBSERVED", "NOT_ESTABLISHED", "INSUFFICIENT",
+] as const;
+export type ApplicationSignal = (typeof APPLICATION_SIGNALS)[number];
+
+export const CONFIDENCE_BANDS = ["LOW", "MODERATE", "HIGH"] as const;
+export type ConfidenceBand = (typeof CONFIDENCE_BANDS)[number];
+
+export const COVERAGE_STATES = [
+  "BOTH_MODALITIES", "MEMORY_ONLY", "QUESTION_ONLY", "NO_EVIDENCE",
+] as const;
+export type CoverageState = (typeof COVERAGE_STATES)[number];
+
+/**
+ * The four reasons, WITHOUT the null.
+ *
+ * null is not a reason, it is the absence of one: a concept with evidence on
+ * both sides has nothing to explain. So the list holds the four words a column
+ * may contain and the type adds null separately, which is also how the
+ * database says it — a nullable column with a four-value CHECK.
+ */
+export const COVERAGE_REASONS = [
+  "BANK_HAS_NO_QUESTIONS", "BANK_HAS_NO_CARDS",
+  "LEARNER_HAS_NOT_ATTEMPTED", "LEARNER_HAS_NOT_REVIEWED",
+] as const;
+export type CoverageReason = (typeof COVERAGE_REASONS)[number] | null;
+
+export const CONFIDENCE_LIMITS = [
+  "LEARNER_COVERAGE", "BANK_COVERAGE", "ROLE", "NONE",
+] as const;
+export type ConfidenceLimitedBy = (typeof CONFIDENCE_LIMITS)[number];
+
+export const STATE_LABELS = [
+  "DURABLE_RECALL_APPLICATION_MISSES", "STALE_RECALL_APPLICATION_MISSES",
+  "THIN_RECALL_APPLICATION_MISSES", "APPLICATION_MISSES_MEMORY_UNKNOWN",
+  "MEMORY_DURABLE", "MEMORY_DURABLE_STALE", "MEMORY_BUILDING", "MEMORY_THIN",
+  "INSUFFICIENT_EVIDENCE",
+] as const;
+export type StateLabel = (typeof STATE_LABELS)[number];
 
 export interface ConceptRow { id: string; objectType: string; status: string; }
 export interface FlashcardRow { id: string; clozeCount: number; }

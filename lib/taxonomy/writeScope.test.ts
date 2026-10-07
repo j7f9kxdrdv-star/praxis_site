@@ -30,6 +30,12 @@ const LEARNER_TABLES = [
   "learner_state_snapshots",
   "performance_reports",
   "daily_activity",
+  // Phase 2 derived learner state. An ontology migration has no business
+  // writing it: a concept rename or a mapping repoint may legitimately make a
+  // stored state stale, and the answer to that is a recomputation by the
+  // writer, not an UPDATE buried in a taxonomy migration where nobody would
+  // look for it.
+  "learner_concept_states",
 ];
 
 /** Tables an ontology migration is allowed to write. */

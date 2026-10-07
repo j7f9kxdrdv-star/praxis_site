@@ -40,6 +40,18 @@ export const USER_DATA_TABLES = [
   "learner_events",
   "performance_reports",
   "user_insight_briefs",
+  // The Phase 2 concept layer: what the deterministic model currently says
+  // about this learner, one row per concept. Derived from the scheduler state
+  // and the attempts above, so it is cleared with them and rebuilt by studying.
+  //
+  // A LEARNER-DATA TABLE JOINS THIS LIST IN THE STEP THAT CREATES IT, never
+  // before. A name here that has no relation behind it makes the reset fail on
+  // the DELETE, and the preview count is worse than that: a HEAD count against
+  // a missing table comes back as 204 with no error and no count, which this
+  // file's own countAll reads as zero — "nothing to delete here", the exact
+  // reading the comment there says it refuses. So the table first, then the
+  // name. learner_concept_state_history is deliberately absent until it exists.
+  "learner_concept_states",
 ] as const;
 
 /**

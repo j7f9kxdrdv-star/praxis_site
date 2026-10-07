@@ -81,9 +81,79 @@ describe("A RESET THAT MISSES A TABLE IS WORSE THAN NO RESET", () => {
       "user_insight_briefs",
       "review_schedule",
       "lesson_progress",
+      "learner_concept_states",
     ]) {
       expect(USER_DATA_TABLES, t).toContain(t);
     }
+  });
+
+  // ── Phase 2: the derived concept layer ────────────────────────────────
+  //
+  // THE RULE THIS PINS: a learner-data table created by Phase 2 is in the
+  // reset list from the moment it exists. The failure it prevents is the one
+  // the file header describes — a student presses "start over", is told it
+  // worked, and the model still holds a page of concept states asserting what
+  // they knew before. Nothing in the UI could notice.
+  it("clears the Phase 2 learner concept layer", () => {
+    expect(USER_DATA_TABLES).toContain("learner_concept_states");
+  });
+
+  it("does not yet name the history table, which does not exist", () => {
+    // Naming a relation before creating it is its own failure: the DELETE
+    // errors and the preview count silently reads zero. The history table
+    // joins this list in the step that creates it, not before.
+    expect(USER_DATA_TABLES).not.toContain("learner_concept_state_history");
+  });
+
+  // ── The structural half, so the NEXT table cannot be forgotten ────────
+  //
+  // The named tests above protect the tables that exist today. This one
+  // protects the ones that do not: every learner_* table a migration creates
+  // has to be classified, so the step that creates a table is the step that
+  // decides whether a reset clears it. When the Phase 2 history table is
+  // created, this fails until it is placed, with no edit to this file.
+  //
+  // Scoped to the learner_ prefix on purpose rather than to every CREATE
+  // TABLE. The wider rule would also demand a verdict on question-bank
+  // metadata tables that hold no user data and that nothing has ever needed to
+  // classify, which is a different and much weaker argument.
+  const createdLearnerTables = (() => {
+    const dir = path.join(ROOT, "supabase", "migrations");
+    if (!fs.existsSync(dir)) return [];
+    const found = new Set<string>();
+    for (const f of fs.readdirSync(dir).filter((x) => x.endsWith(".sql"))) {
+      const sql = fs.readFileSync(path.join(dir, f), "utf8");
+      for (const m of sql.matchAll(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?(learner_[a-z_]+)/gi)) {
+        found.add(m[1].toLowerCase());
+      }
+    }
+    return [...found].sort();
+  })();
+
+  it("finds the learner tables the migrations create", () => {
+    // If the scan ever returns nothing it has stopped checking anything.
+    expect(createdLearnerTables).toContain("learner_state_snapshots");
+    expect(createdLearnerTables).toContain("learner_concept_states");
+  });
+
+  it("every learner_ table a migration creates is classified", () => {
+    expect(createdLearnerTables.filter((t) => !classified.has(t))).toEqual([]);
+  });
+
+  it("the scan can actually catch an unclassified one", () => {
+    // A counter-example, so the regex is known to match a real statement
+    // rather than passing because it matches nothing.
+    const sql = "CREATE TABLE IF NOT EXISTS public.learner_concept_state_history (\n  user_id UUID";
+    const m = [...sql.matchAll(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:public\.)?(learner_[a-z_]+)/gi)];
+    expect(m.map((x) => x[1])).toEqual(["learner_concept_state_history"]);
+    expect(classified.has("learner_concept_state_history")).toBe(false);
+  });
+
+  it("clears derived concept state after the evidence it was derived from", () => {
+    const i = (t: string) => (USER_DATA_TABLES as readonly string[]).indexOf(t);
+    expect(i("question_attempts")).toBeLessThan(i("learner_concept_states"));
+    expect(i("flashcard_reviews")).toBeLessThan(i("learner_concept_states"));
+    expect(i("flashcard_user_state")).toBeLessThan(i("learner_concept_states"));
   });
 
   it("never deletes the account, its exam scores, or its support history", () => {

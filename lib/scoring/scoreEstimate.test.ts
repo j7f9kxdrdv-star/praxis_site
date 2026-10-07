@@ -344,7 +344,10 @@ describe("THE FULL 472 TO 528 SCALE STAYS REACHABLE", () => {
 // score, it comes through an explicitly reviewed question-only pathway, not by
 // reading a mixed row.
 //
-// The tables do not exist yet. They are banned now, while banning them is free.
+// BOTH TABLES WERE BANNED BEFORE EITHER EXISTED, while banning them was free.
+// public.learner_concept_states is now real. The ban is unchanged, and the test
+// below proves that it was never a statement about a missing relation: the
+// predictor is forbidden to name the table whether or not the table is there.
 
 describe("THE PREDICTOR MAY NOT CONSUME LEARNER CONCEPT STATE", () => {
   const ROOT = path.join(__dirname, "..", "..");
@@ -355,7 +358,13 @@ describe("THE PREDICTOR MAY NOT CONSUME LEARNER CONCEPT STATE", () => {
     "lib/learner/conceptState", "learner/conceptState", "./conceptState",
     "lib/flashcards/", "lib/analytics/flashcardAggregate",
   ];
-  /** Tables the predictor may never read. The first two do not exist yet. */
+  /**
+   * Tables the predictor may never read.
+   *
+   * learner_concept_states exists as of 20261006_08; learner_concept_state_history
+   * does not exist yet and is banned anyway, so the rule is already in place when
+   * it arrives.
+   */
   const PROHIBITED_TABLES = [
     "learner_concept_states", "learner_concept_state_history",
     "flashcard_user_state", "flashcard_reviews", "flashcard_concepts", "flashcards",
@@ -391,9 +400,34 @@ describe("THE PREDICTOR MAY NOT CONSUME LEARNER CONCEPT STATE", () => {
     expect(imports.filter((i) => PROHIBITED_MODULES.some((p) => i.includes(p)))).toEqual([]);
   });
 
-  it("never names a prohibited table, including the two that do not exist yet", () => {
+  it("never names a prohibited table, whether or not that table exists", () => {
     const code = stripComments(predictorSource);
     expect(PROHIBITED_TABLES.filter((t) => code.includes(t))).toEqual([]);
+  });
+
+  it("the ban holds now that learner_concept_states is a real table", () => {
+    // The migration that created it is in the tree, so this is no longer a
+    // hypothetical. A table the predictor could actually query is exactly when
+    // a stale "banned, does not exist yet" comment would stop being a rule and
+    // start being a historical note.
+    const migration = path.join(ROOT, "supabase", "migrations",
+      "20261006_08_learner_concept_states.sql");
+    expect(fs.existsSync(migration)).toBe(true);
+    expect(fs.readFileSync(migration, "utf8"))
+      .toMatch(/CREATE TABLE IF NOT EXISTS public\.learner_concept_states/);
+
+    expect(PROHIBITED_TABLES).toContain("learner_concept_states");
+    expect(PROHIBITED_TABLES).toContain("learner_concept_state_history");
+    expect(stripComments(predictorSource)).not.toContain("learner_concept_state");
+
+    // And the persistence module that maps it is not reachable from the
+    // predictor either, by import or by field name.
+    const imports = [...predictorSource.matchAll(/from\s+["']([^"']+)["']/g)].map((m) => m[1]);
+    expect(imports.filter((i) => i.includes("conceptStatePersistence"))).toEqual([]);
+    for (const column of ["memory_durability", "memory_signal", "weak_card_count",
+                          "memory_confidence_raw", "memory_items"]) {
+      expect(stripComments(predictorSource), column).not.toContain(column);
+    }
   });
 
   it("never names a memory-derived field", () => {

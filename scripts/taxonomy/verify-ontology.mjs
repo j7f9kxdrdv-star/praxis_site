@@ -1048,5 +1048,53 @@ try {
     `concept ${leftC?.length ?? 0}, alias ${leftA?.length ?? 0}, mapping ${leftQ?.length ?? 0}`);
 }
 
+// ─── Learner concept state, where the ontology meets the learner ───────────
+//
+// Only the ONTOLOGY invariant is checked here: no learner may hold state
+// against an object that is not a learner-facing CONTENT concept. The trigger
+// refuses that on write, and this is the runtime half, because a trigger that
+// was dropped looks exactly like a trigger that works until something tries.
+//
+// The table is empty until the integration step, so these pass vacuously today
+// and start meaning something the moment it is populated. That is the right
+// order: the check is in place before the rows are.
+try {
+  // EXISTENCE NEEDS A REAL GET, NOT A HEAD COUNT. supabase-js answers a HEAD
+  // count against a missing relation with status 204, count null and error
+  // null, so `.select("*", { head: true })` reports absent and empty
+  // identically. Only the 404 carrying PGRST205 distinguishes them. The same
+  // blind spot is why a reset preview would read a missing table as "nothing
+  // to delete here".
+  const url = g("NEXT_PUBLIC_SUPABASE_URL"), key = g("SUPABASE_SERVICE_ROLE_KEY");
+  const res = await fetch(`${url}/rest/v1/learner_concept_states?select=user_id&limit=1`,
+    { headers: { apikey: key, Authorization: `Bearer ${key}` } });
+  ok("learner_concept_states exists", res.status === 200, `HTTP ${res.status}`);
+
+  if (res.status === 200) {
+    const LCS = await all("learner_concept_states", "user_id,concept_id,model_version");
+    const byId = new Map((await all("concepts", "id,object_type,status")).map((c) => [c.id, c]));
+    const ineligible = LCS.filter((r) => {
+      const c = byId.get(r.concept_id);
+      return !c || c.object_type !== "CONTENT" || c.status !== "ACTIVE_SEED";
+    });
+    ok("every learner concept state points at a learner-facing CONTENT object",
+      ineligible.length === 0,
+      ineligible.length ? ineligible.slice(0, 3).map((r) => r.concept_id).join(", ") : `${LCS.length} row(s)`);
+
+    // A row with no model version cannot be interpreted later, and a table
+    // carrying several at once means a recomputation stopped half way. Both are
+    // reported rather than assumed away; a single version is the healthy state.
+    const versions = [...new Set(LCS.map((r) => r.model_version))];
+    ok("every state names the model that produced it",
+      LCS.every((r) => (r.model_version ?? "").trim() !== ""),
+      versions.length ? versions.join(", ") : "empty table");
+    ok("the table holds at most one model version",
+      versions.length <= 1, versions.join(", ") || "none");
+  }
+} catch (err) {
+  console.error("  LEARNER CONCEPT STATE ERROR:", err.message);
+  fail++;
+}
+
 console.log("\n" + (fail ? `${fail} FAILURE(S), ${pass} passed` : `all ${pass} checks pass`));
 process.exit(fail ? 1 : 0);
