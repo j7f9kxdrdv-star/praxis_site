@@ -34,10 +34,11 @@ import { DEFAULT_DAY_START_HOUR, studyDayKey } from "@/lib/flashcards/studyDay";
  */
 export async function creditStudyDay(
   userId: string,
+  timeZone: string,
   dayStartHour: number = DEFAULT_DAY_START_HOUR,
   items = 1
 ): Promise<void> {
-  const day = studyDayKey(new Date(), dayStartHour);
+  const day = studyDayKey(new Date(), timeZone, dayStartHour);
 
   const { data: existing } = await supabase
     .from("daily_activity")

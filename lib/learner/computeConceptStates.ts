@@ -29,7 +29,7 @@ import {
   toPayload, singleModelVersion, fromRow, CONCEPT_STATE_COLUMNS,
   type ConceptStateRow,
 } from "@/lib/learner/conceptStatePersistence";
-import { studyDayKey, DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
+import { studyDayKey, DEFAULT_DAY_START_HOUR, timezoneOf } from "@/lib/flashcards/studyDay";
 
 /** What the writer reports back about what it actually did. */
 export interface WriteReport {
@@ -49,6 +49,7 @@ export interface ComputeReport {
   computedAt: string;
   modelVersion: string;
   dayStartHour: number;
+  timeZone: string;
   counts: EvidenceCounts;
   /** States the model emitted. Sparse: concepts with no evidence are absent. */
   states: ConceptState[];
@@ -82,11 +83,18 @@ export async function loadPreviousStates(
 }
 
 /** The learner's own day boundary, or the project default if unset. */
-async function resolveDayStartHour(db: SupabaseClient, userId: string): Promise<number> {
+async function resolveDayContext(
+  db: SupabaseClient, userId: string,
+): Promise<{ dayStartHour: number; timeZone: string }> {
   const { data, error } = await db
-    .from("profiles").select("day_start_hour").eq("id", userId).maybeSingle();
+    .from("profiles").select("day_start_hour, timezone").eq("id", userId).maybeSingle();
   if (error) throw new Error(`computeConceptStates: reading profile: ${error.message}`);
-  return data?.day_start_hour ?? DEFAULT_DAY_START_HOUR;
+  return {
+    dayStartHour: data?.day_start_hour ?? DEFAULT_DAY_START_HOUR,
+    // THE LEARNER'S ZONE, NOT THE SERVER'S. timezoneOf decides in one place
+    // what a missing one means, so no call site invents its own answer.
+    timeZone: timezoneOf(data?.timezone),
+  };
 }
 
 /**
@@ -103,8 +111,8 @@ export async function computeAndPersistLearnerConceptStates(
   options: { dryRun?: boolean } = {},
 ): Promise<ComputeReport> {
   const computedAt = now.toISOString();
-  const dayStartHour = await resolveDayStartHour(db, userId);
-  const studyDay = studyDayKey(now, dayStartHour);
+  const { dayStartHour, timeZone } = await resolveDayContext(db, userId);
+  const studyDay = studyDayKey(now, timeZone, dayStartHour);
 
   const { evidence, counts } = await loadConceptEvidence(db, userId);
   const previous = await loadPreviousStates(db, userId);
@@ -116,7 +124,7 @@ export async function computeAndPersistLearnerConceptStates(
   const version = singleModelVersion(states) ?? CONCEPT_STATE_MODEL_VERSION;
 
   const report: ComputeReport = {
-    userId, studyDay, computedAt, modelVersion: version, dayStartHour,
+    userId, studyDay, computedAt, modelVersion: version, dayStartHour, timeZone,
     counts, states, previousCount: previous.length, write: null,
   };
   if (options.dryRun) return report;

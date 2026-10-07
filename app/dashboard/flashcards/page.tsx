@@ -12,7 +12,7 @@ import {
   type LimitRecommendation,
 } from "@/lib/dashboard/recommendedLimits";
 import { summariseCards } from "@/lib/dashboard/phase";
-import { DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
+import { DEFAULT_DAY_START_HOUR, runtimeTimezone } from "@/lib/flashcards/studyDay";
 import {
   PageHeader,
   ActiveNowPill,
@@ -221,6 +221,7 @@ export default function FlashcardsHub() {
         extraStudyAttemptsToday: extraToday,
       } = await countTodaysReviews(
         user.id,
+        runtimeTimezone(),
         profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR,
       );
 

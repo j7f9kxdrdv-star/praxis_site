@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
 import { creditStudyDay } from "@/lib/flashcards/activity";
-import { DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
+import { DEFAULT_DAY_START_HOUR, runtimeTimezone } from "@/lib/flashcards/studyDay";
 import MathText from "@/components/MathText";
 import QuestionFigure from "@/components/QuestionFigure";
 
@@ -286,7 +286,7 @@ export default function PracticeSession() {
     // "days you studied," so it should count even if the set isn't finished.
     // Was crediting the UTC date, so an evening session in US Eastern landed
     // on tomorrow and could break a streak the student had genuinely earned.
-    await creditStudyDay(user.id, profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR);
+    await creditStudyDay(user.id, runtimeTimezone(), profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR);
 
     if (!isCorrect) {
       // Missed → (re)schedule it for Smart Review (due tomorrow).

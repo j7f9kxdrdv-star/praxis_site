@@ -111,13 +111,13 @@ describe("the account universe is paged, not assumed", () => {
 describe("a missing profile is an integrity failure, not a kind of account", () => {
   it.each([
     [null, "PROFILE_MISSING"],
-    [{ accountKind: null, dayStartHour: 4 }, "PROFILE_INCOMPLETE"],
-    [{ accountKind: "STUDENT" as const, dayStartHour: null }, "PROFILE_INCOMPLETE"],
-    [{ accountKind: "WHATEVER" as never, dayStartHour: 4 }, "PROFILE_INCOMPLETE"],
-    [{ accountKind: "STUDENT" as const, dayStartHour: 4 }, "READY"],
-    [{ accountKind: "DEMO" as const, dayStartHour: 4 }, "READY"],
-    [{ accountKind: "INTERNAL" as const, dayStartHour: 4 }, "READY"],
-    [{ accountKind: "STUDENT" as const, dayStartHour: 0 }, "READY"],
+    [{ accountKind: null, dayStartHour: 4, timeZone: null }, "PROFILE_INCOMPLETE"],
+    [{ accountKind: "STUDENT" as const, dayStartHour: null, timeZone: null }, "PROFILE_INCOMPLETE"],
+    [{ accountKind: "WHATEVER" as never, dayStartHour: 4, timeZone: null }, "PROFILE_INCOMPLETE"],
+    [{ accountKind: "STUDENT" as const, dayStartHour: 4, timeZone: null }, "READY"],
+    [{ accountKind: "DEMO" as const, dayStartHour: 4, timeZone: null }, "READY"],
+    [{ accountKind: "INTERNAL" as const, dayStartHour: 4, timeZone: null }, "READY"],
+    [{ accountKind: "STUDENT" as const, dayStartHour: 0, timeZone: null }, "READY"],
   ])("%o -> %s", (profile, expected) => {
     expect(dispositionOf(profile as never).disposition).toBe(expected);
   });
@@ -125,23 +125,23 @@ describe("a missing profile is an integrity failure, not a kind of account", () 
   it("day_start_hour 0 is a real value, not a missing one", () => {
     // `?? null` on a falsy number is the classic way this breaks: midnight
     // becomes "no day start" and the account is wrongly held back.
-    expect(dispositionOf({ accountKind: "STUDENT", dayStartHour: 0 }).disposition).toBe("READY");
+    expect(dispositionOf({ accountKind: "STUDENT", dayStartHour: 0, timeZone: null }).disposition).toBe("READY");
   });
 
   it("every non-READY account carries a sentence an operator can act on", () => {
-    for (const p of [null, { accountKind: null, dayStartHour: null }]) {
+    for (const p of [null, { accountKind: null, dayStartHour: null, timeZone: null }]) {
       const d = dispositionOf(p as never);
       expect(d.disposition).not.toBe("READY");
       expect(d.problem!.length).toBeGreaterThan(20);
     }
-    expect(dispositionOf({ accountKind: "STUDENT", dayStartHour: 4 }).problem).toBeNull();
+    expect(dispositionOf({ accountKind: "STUDENT", dayStartHour: 4, timeZone: null }).problem).toBeNull();
   });
 });
 
 describe("ALL THREE KINDS ARE RUNTIME MEMBERS", () => {
   it("account_kind never decides membership", () => {
     for (const kind of ["STUDENT", "DEMO", "INTERNAL"] as const) {
-      expect(dispositionOf({ accountKind: kind, dayStartHour: 4 }).disposition).toBe("READY");
+      expect(dispositionOf({ accountKind: kind, dayStartHour: 4, timeZone: null }).disposition).toBe("READY");
     }
   });
 
@@ -163,7 +163,7 @@ describe("a new account joins by existing, not by being added", () => {
         select() { return this; },
         order() { return this; },
         range(from: number, to: number) {
-          const rows = ids.map((id) => ({ id, account_kind: "STUDENT", day_start_hour: 4 }));
+          const rows = ids.map((id) => ({ id, account_kind: "STUDENT", day_start_hour: 4, timezone: null }));
           return Promise.resolve({ data: rows.slice(from, to + 1), error: null });
         },
       };

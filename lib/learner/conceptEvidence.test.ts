@@ -347,9 +347,13 @@ describe("the loader writes nothing", () => {
     expect(orchestrator).toMatch(/now\.toISOString\(\)/);
   });
 
-  it("resolves the study day from the profile, never from UTC", () => {
-    expect(orchestrator).toMatch(/studyDayKey\(now, dayStartHour\)/);
-    expect(orchestrator).toMatch(/day_start_hour/);
+  it("resolves the study day from the profile, in the LEARNER's timezone", () => {
+    // It used to pass only the hour, which meant 4am wherever the code ran —
+    // UTC on Vercel, so a learner in New York had their 1am work filed under
+    // the next day. The timezone is now explicit and comes from the profile.
+    expect(orchestrator).toMatch(/studyDayKey\(now, timeZone, dayStartHour\)/);
+    expect(orchestrator).toMatch(/day_start_hour, timezone/);
+    expect(orchestrator).toMatch(/timezoneOf\(/);
     expect(orchestrator).not.toMatch(/toISOString\(\)\.slice\(0,\s*10\)/);
   });
 });

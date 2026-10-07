@@ -19,7 +19,7 @@ import { supabase } from "@/lib/supabase";
 import { renderClozeSegments } from "@/lib/flashcards/cloze";
 import { nextSchedule, previewLabel, EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
-import { DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
+import { DEFAULT_DAY_START_HOUR, runtimeTimezone } from "@/lib/flashcards/studyDay";
 import { submitReview, type ReviewSource, type SubmittedReview } from "@/lib/flashcards/submitReview";
 import { setCardFlag } from "@/lib/flashcards/cardFlags";
 import StudySurface from "@/components/flashcards/StudySurface";
@@ -289,6 +289,10 @@ function SessionInner() {
         const reviewLimit = profile?.daily_review_limit ?? 150;
         const { newToday, reviewsToday } = await countTodaysReviews(
           user.id,
+          // Client-side, so the browser's zone IS the learner's zone. Asked
+          // for by name rather than assumed, which is the whole point of the
+          // timezone argument being required.
+          runtimeTimezone(),
           profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR,
         );
         // Both categories are throttled per day per the user's settings,

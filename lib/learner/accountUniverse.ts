@@ -29,6 +29,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { isAccountKind, type AccountKind } from "@/lib/learner/accountKind";
+import { isValidTimezone } from "@/lib/flashcards/studyDay";
 
 /** The page size asked of the admin API. Not the universe size. */
 export const ACCOUNT_PAGE_SIZE = 200;
@@ -45,6 +46,8 @@ export interface AuthAccount {
 export interface AccountProfile {
   accountKind: AccountKind | null;
   dayStartHour: number | null;
+  /** IANA name, or null where the learner has never reported one. */
+  timeZone: string | null;
 }
 
 /**
@@ -134,6 +137,19 @@ export function dispositionOf(profile: AccountProfile | null): { disposition: Ac
   if (!isAccountKind(profile.accountKind)) {
     return { disposition: "PROFILE_INCOMPLETE", problem: `account_kind ${JSON.stringify(profile.accountKind)} is not a known kind` };
   }
+  // A MISSING timezone is not a failure: nothing in the product has ever
+  // written one, so five of nine live profiles are null and every future
+  // signup would be too. Those accounts use the stated default.
+  //
+  // An INVALID one is a failure. It is a value somebody wrote that nothing can
+  // interpret, and silently swapping it for a default would hide the mistake
+  // while filing that learner's work under the wrong day.
+  if (profile.timeZone != null && !isValidTimezone(profile.timeZone)) {
+    return {
+      disposition: "PROFILE_INCOMPLETE",
+      problem: `timezone ${JSON.stringify(profile.timeZone)} is not a valid IANA zone`,
+    };
+  }
   return { disposition: "READY", problem: null };
 }
 
@@ -151,11 +167,11 @@ export async function loadAccountUniverse(
   const takenAt = new Date().toISOString();
   const { accounts: authAccounts, pages } = await listAuthAccounts(db);
 
-  const profiles: { id: string; account_kind: string | null; day_start_hour: number | null }[] = [];
+  const profiles: { id: string; account_kind: string | null; day_start_hour: number | null; timezone: string | null }[] = [];
   for (let from = 0; ; from += 1000) {
     const { data, error } = await db
       .from("profiles")
-      .select("id, account_kind, day_start_hour")
+      .select("id, account_kind, day_start_hour, timezone")
       .order("id", { ascending: true })
       .range(from, from + 999);
     if (error) throw new Error(`accountUniverse: loading profiles: ${error.message}`);
@@ -168,7 +184,7 @@ export async function loadAccountUniverse(
   const accounts: Account[] = authAccounts.map((a) => {
     const row = byId.get(a.id);
     const profile: AccountProfile | null = row
-      ? { accountKind: (row.account_kind as AccountKind | null) ?? null, dayStartHour: row.day_start_hour }
+      ? { accountKind: (row.account_kind as AccountKind | null) ?? null, dayStartHour: row.day_start_hour, timeZone: row.timezone }
       : null;
     const { disposition, problem } = dispositionOf(profile);
     return { ...a, profile, disposition, problem };

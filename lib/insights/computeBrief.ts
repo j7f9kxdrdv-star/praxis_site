@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Brief, Claim, Confidence } from "./types";
 import { forecastPaces, type ForecastCard } from "./forecast";
-import { studyDayKey, DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
+import { studyDayKey, DEFAULT_DAY_START_HOUR, DEFAULT_TIMEZONE } from "@/lib/flashcards/studyDay";
 
 /**
  * Tier 1 brief: everything the product can honestly say from flashcard
@@ -144,6 +144,7 @@ const median = (xs: number[]): number => {
 export async function computeBrief(
   db: SupabaseClient,
   userId: string,
+  timeZone = DEFAULT_TIMEZONE,
   dayStartHour = DEFAULT_DAY_START_HOUR,
 ): Promise<Brief> {
   const [state, cardDeck] = await Promise.all([loadState(db, userId), loadDeckTitles(db)]);
@@ -156,7 +157,7 @@ export async function computeBrief(
   if (live.length < 50) {
     return {
       generatedAt: now.toISOString(),
-      studyDay: studyDayKey(now, dayStartHour),
+      studyDay: studyDayKey(now, timeZone, dayStartHour),
       insufficientEvidence: true,
       focusDecks: [],
       claims: [
@@ -398,7 +399,7 @@ export async function computeBrief(
 
   return {
     generatedAt: now.toISOString(),
-    studyDay: studyDayKey(now, dayStartHour),
+    studyDay: studyDayKey(now, timeZone, dayStartHour),
     insufficientEvidence: false,
     claims: claims.sort((a, b) => a.priority - b.priority),
     focusDecks,

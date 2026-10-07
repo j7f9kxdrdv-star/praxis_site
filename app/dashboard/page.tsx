@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
-import { DEFAULT_DAY_START_HOUR, studyDayKeyOffset } from "@/lib/flashcards/studyDay";
+import { DEFAULT_DAY_START_HOUR, studyDayKeyOffset, runtimeTimezone } from "@/lib/flashcards/studyDay";
 import MolecularBg from "@/components/dashboard/MolecularBg";
 
 /* ---------------------------------------------------------------------- */
@@ -342,7 +342,7 @@ export default function DashboardHome() {
       if (activity && activity.length > 0) {
         const dayStart = profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR;
         for (let i = 0; i < activity.length; i++) {
-          if (activity[i].activity_date === studyDayKeyOffset(i, new Date(), dayStart)) streak++;
+          if (activity[i].activity_date === studyDayKeyOffset(i, new Date(), runtimeTimezone(), dayStart)) streak++;
           else break;
         }
       }
@@ -401,13 +401,16 @@ export default function DashboardHome() {
       // the failure of the panel this replaced, which showed an "expected
       // precision gain" derived from no outcome data at all.
       const dayStartHour = profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR;
-      const dayStart = startOfStudyDay(new Date(), dayStartHour);
+      // Client-side: the browser's own zone IS the learner's zone, so this is
+      // the one place where asking the runtime is the correct answer rather
+      // than the bug. It is asked for by name instead of assumed.
+      const dayStart = startOfStudyDay(new Date(), runtimeTimezone(), dayStartHour);
       const dayStartIso = dayStart.toISOString();
       const todayKey = new Date().toISOString().slice(0, 10);
 
       // Cards done today, counted the same way the study pages count them, so
       // the checklist and the session agree about what a card is.
-      const todays = await countTodaysReviews(user.id, dayStartHour);
+      const todays = await countTodaysReviews(user.id, runtimeTimezone(), dayStartHour);
 
       // Missed questions waiting in Smart Review, which already exists.
       const { count: missedDue } = await supabase

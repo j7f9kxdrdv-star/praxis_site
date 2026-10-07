@@ -27,7 +27,7 @@ import { loadConceptBank, loadConceptEvidence } from "@/lib/learner/conceptEvide
 import { buildConceptStates, CONCEPT_STATE_MODEL_VERSION } from "@/lib/learner/conceptState";
 import { loadPreviousStates, type WriteReport } from "@/lib/learner/computeConceptStates";
 import { toPayload, singleModelVersion } from "@/lib/learner/conceptStatePersistence";
-import { studyDayKey, DEFAULT_DAY_START_HOUR } from "@/lib/flashcards/studyDay";
+import { studyDayKey, DEFAULT_DAY_START_HOUR, timezoneOf } from "@/lib/flashcards/studyDay";
 
 /**
  * How recently another run must have finished for this one to stand down.
@@ -163,7 +163,7 @@ export async function runRefresh(
 
   for (const account of accounts) {
     const dayStartHour = account.profile?.dayStartHour ?? DEFAULT_DAY_START_HOUR;
-    const studyDay = studyDayKey(runNow, dayStartHour);
+    const studyDay = studyDayKey(runNow, timezoneOf(account.profile?.timeZone), dayStartHour);
     const row: AccountResult = {
       userId: account.id, accountKind: account.profile?.accountKind ?? null,
       studyDay, states: 0, stored: null, deleted: null, error: null, stage: null,

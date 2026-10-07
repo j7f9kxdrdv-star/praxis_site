@@ -45,9 +45,10 @@ export interface TodaysCounts {
  */
 export async function countTodaysReviews(
   userId: string,
+  timeZone: string,
   dayStartHour: number = DEFAULT_DAY_START_HOUR
 ): Promise<TodaysCounts> {
-  const dayStart = startOfStudyDay(new Date(), dayStartHour);
+  const dayStart = startOfStudyDay(new Date(), timeZone, dayStartHour);
 
   // Page through ALL of this study day's review rows. Supabase caps a single
   // query at 1000 rows, and a heavy day easily exceeds that (every "Again"
