@@ -90,14 +90,26 @@ CREATE TABLE IF NOT EXISTS public.learner_concept_state_observations (
   -- observation.
   refresh_run_id TEXT,
 
+  -- THE IDENTITY. A retry of the same cycle finds this row and records no
+  -- second observation. Named explicitly, because a post-condition below reads
+  -- this exact name out of the catalog and checks which columns it covers.
   CONSTRAINT learner_concept_state_observations_cycle_identity
-    -- The target of the child's composite foreign key. id is already the primary
-  -- key, so this adds no real constraint on the data; it exists because a
-  -- foreign key must reference a declared unique set of columns, and pairing
-  -- the owner into the reference is what makes the child's copy unforgeable.
-  UNIQUE (id, user_id),
+    UNIQUE (user_id, observation_cycle_date, model_version),
 
-  UNIQUE (user_id, observation_cycle_date, model_version)
+  -- The target of the child's composite foreign key, and nothing more. id is
+  -- already the primary key, so this constrains no data; a foreign key must
+  -- reference a declared unique set of columns, and pairing the owner into the
+  -- reference is what makes the child's copy of it unforgeable.
+  --
+  -- It carries its own name on purpose. Both of these are UNIQUE constraints
+  -- on the same table, and an unnamed one here would sit directly under the
+  -- CONSTRAINT keyword above and silently take the identity's name, which is
+  -- exactly what happened on the first attempt to apply this file: the name
+  -- bound to (id, user_id), the real identity went unenforced, and a retry
+  -- would have written a second observation for a cycle already recorded. The
+  -- post-condition caught it and the migration aborted. Keep both names.
+  CONSTRAINT learner_concept_state_observations_owner_ref
+    UNIQUE (id, user_id)
 );
 
 COMMENT ON TABLE public.learner_concept_state_observations IS
@@ -484,6 +496,25 @@ BEGIN
    WHERE con.conname = 'learner_concept_state_observations_cycle_identity';
   IF digest <> 'user_id,observation_cycle_date,model_version' THEN
     RAISE EXCEPTION 'HISTORY: the observation identity is (%), expected (user_id,observation_cycle_date,model_version)', digest;
+  END IF;
+
+  -- And the foreign key target is a SEPARATE constraint. Two unique keys on one
+  -- table are easy to merge by accident while editing, and if these two ever
+  -- became one, the check above would pass or fail depending only on which
+  -- columns survived. This pins them apart.
+  SELECT string_agg(a.attname, ',' ORDER BY k.ord) INTO digest
+    FROM pg_constraint con
+    JOIN LATERAL unnest(con.conkey) WITH ORDINALITY AS k(attnum, ord) ON TRUE
+    JOIN pg_attribute a ON a.attrelid = con.conrelid AND a.attnum = k.attnum
+   WHERE con.conname = 'learner_concept_state_observations_owner_ref';
+  IF digest IS DISTINCT FROM 'id,user_id' THEN
+    RAISE EXCEPTION 'HISTORY: the owner reference is (%), expected (id,user_id)', digest;
+  END IF;
+
+  SELECT count(*) INTO n FROM pg_constraint
+   WHERE conrelid = 'public.learner_concept_state_observations'::regclass AND contype = 'u';
+  IF n <> 2 THEN
+    RAISE EXCEPTION 'HISTORY: expected exactly 2 unique constraints on observations, found %', n;
   END IF;
 
   -- Concept deletion must not be able to erase history.

@@ -16,6 +16,39 @@ const strip = (s: string) =>
 // ─── IDENTITY IS THE CYCLE, NOT THE STUDY DAY ───────────────────────────────
 
 describe("THE OBSERVATION IDENTITY", () => {
+  it("BOTH UNIQUE KEYS ARE NAMED, which the first apply attempt proved necessary", () => {
+    // The parent carries two unique constraints: the cycle identity, and the
+    // pair the child's foreign key points at. On the first attempt to apply
+    // this file the second one was written unnamed, directly beneath the
+    // CONSTRAINT keyword belonging to the first, so it silently took that
+    // name. The identity then covered (id, user_id), which is unique for
+    // every row and therefore enforces nothing: a retry of a cycle already
+    // recorded would have written a second observation. The migration's own
+    // catalog check caught it and the apply aborted, changing nothing.
+    //
+    // Naming both is what stops it recurring, so the names are asserted here
+    // and the columns under each are asserted in the migration against the
+    // live catalog.
+    expect(MIGRATION).toMatch(
+      /CONSTRAINT learner_concept_state_observations_cycle_identity\s*\n\s*UNIQUE \(user_id, observation_cycle_date, model_version\)/);
+    expect(MIGRATION).toMatch(
+      /CONSTRAINT learner_concept_state_observations_owner_ref\s*\n\s*UNIQUE \(id, user_id\)/);
+    expect(MIGRATION).toMatch(/expected exactly 2 unique constraints on observations/);
+
+    // No named constraint may have a comment between its name and what it
+    // binds to. That is the exact shape of the original mistake.
+    const lines = MIGRATION.split("\n");
+    const detached: string[] = [];
+    lines.forEach((line, i) => {
+      const m = /^\s*CONSTRAINT\s+(\S+)\s*$/.exec(line);
+      if (!m) return;
+      let j = i + 1;
+      while (j < lines.length && (!lines[j].trim() || lines[j].trim().startsWith("--"))) j++;
+      if (j > i + 1) detached.push(m[1]);
+    });
+    expect(detached).toEqual([]);
+  });
+
   it("is (user_id, observation_cycle_date, model_version)", () => {
     expect(MIGRATION).toMatch(/UNIQUE \(user_id, observation_cycle_date, model_version\)/);
     expect(MIGRATION).toMatch(/the observation identity is \(%\), expected \(user_id,observation_cycle_date,model_version\)/);
