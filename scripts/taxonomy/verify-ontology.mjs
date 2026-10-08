@@ -1096,5 +1096,102 @@ try {
   fail++;
 }
 
+// ─── Observed history ──────────────────────────────────────────────────────
+//
+// The permanent record of what each refresh found. These checks describe the
+// SHAPE of what is there, never how much: history grows by one observation per
+// learner per day forever, so an exact count would be stale tomorrow, and a
+// floor is the only honest assertion about something that only grows.
+//
+// What they do catch is deterioration. An observation whose children outnumber
+// the count it recorded, a child whose owner disagrees with its parent, or a
+// concept referenced by history that has since left the bank are each a sign
+// that something wrote around the writer.
+try {
+  const url = g("NEXT_PUBLIC_SUPABASE_URL"), key = g("SUPABASE_SERVICE_ROLE_KEY");
+  const hdr = { apikey: key, Authorization: `Bearer ${key}` };
+  const seen = {};
+  for (const t of ["learner_concept_state_observations", "learner_concept_state_history"]) {
+    // Again a real GET, for the reason spelled out above: a HEAD count cannot
+    // tell a missing table from an empty one.
+    const res = await fetch(`${url}/rest/v1/${t}?select=*&limit=1`, { headers: hdr });
+    seen[t] = res.status === 200;
+    ok(`${t} exists`, res.status === 200, `HTTP ${res.status}`);
+  }
+
+  if (seen.learner_concept_state_observations && seen.learner_concept_state_history) {
+    const OBS = await all("learner_concept_state_observations",
+      "id,user_id,observation_cycle_date,study_day,model_version,state_count,timezone_used,timezone_source");
+    const HIS = await all("learner_concept_state_history", "observation_id,user_id,concept_id");
+
+    // THE IDENTITY, read back from the data rather than the catalog: one
+    // observation per (account, cycle, model). A duplicate here means a retry
+    // wrote a second row for a day already recorded.
+    const key3 = (o) => `${o.user_id}|${o.observation_cycle_date}|${o.model_version}`;
+    const dupes = [...new Map(OBS.map((o) => [key3(o), o])).keys()].length !== OBS.length;
+    ok("one observation per account, cycle and model version",
+      !dupes, `${OBS.length} observation(s)`);
+
+    // A repeated study_day across two cycles is LEGAL and is the whole reason
+    // the identity is the cycle. Reported, never failed, so that the day it
+    // first happens is visible rather than alarming.
+    const byDay = new Map();
+    for (const o of OBS) {
+      const k = `${o.user_id}|${o.study_day}`;
+      byDay.set(k, (byDay.get(k) ?? 0) + 1);
+    }
+    const repeated = [...byDay.values()].filter((n) => n > 1).length;
+    ok("a repeated study day across cycles is representable",
+      true, repeated ? `${repeated} learner-day(s) observed in more than one cycle, which is legal` : "none yet");
+
+    // state_count is what the writer SAID it found. The children are what it
+    // actually wrote. They are written in one transaction, so they cannot
+    // disagree unless something else has been writing.
+    const kids = new Map();
+    for (const h of HIS) kids.set(h.observation_id, (kids.get(h.observation_id) ?? 0) + 1);
+    const miscounted = OBS.filter((o) => (kids.get(o.id) ?? 0) !== o.state_count);
+    ok("every observation holds exactly the number of states it recorded",
+      miscounted.length === 0,
+      miscounted.length ? miscounted.slice(0, 3).map((o) => `${o.id} says ${o.state_count}, holds ${kids.get(o.id) ?? 0}`).join("; ")
+                        : `${HIS.length} history row(s)`);
+
+    // The denormalized owner. A composite foreign key is supposed to make this
+    // unrepresentable; this is the read-back that proves the key is doing it.
+    const owner = new Map(OBS.map((o) => [o.id, o.user_id]));
+    const mismatched = HIS.filter((h) => owner.has(h.observation_id) && owner.get(h.observation_id) !== h.user_id);
+    const orphaned = HIS.filter((h) => !owner.has(h.observation_id));
+    ok("every history row carries its parent's owner", mismatched.length === 0,
+      mismatched.length ? `${mismatched.length} row(s) disagree with their parent` : "consistent");
+    ok("no history row outlived its observation", orphaned.length === 0,
+      orphaned.length ? `${orphaned.length} orphan(s)` : "none");
+
+    // Zero-state observations are valid and meaningful: we looked and there was
+    // nothing yet. Counted rather than judged.
+    const empties = OBS.filter((o) => o.state_count === 0).length;
+    ok("an observation with no states is a recorded observation",
+      OBS.every((o) => o.state_count >= 0),
+      `${empties} of ${OBS.length} observation(s) found nothing, which is a valid result`);
+
+    // The timezone a row was computed with is kept, and the two kinds of UTC
+    // stay distinguishable: a learner who uses it, and one we did not know.
+    const sources = [...new Set(OBS.map((o) => o.timezone_source))];
+    ok("every observation records which timezone it used and where that came from",
+      OBS.every((o) => (o.timezone_used ?? "").trim() !== "" && ["PROFILE", "DEFAULT_UTC"].includes(o.timezone_source)),
+      sources.join(", ") || "no observations yet");
+
+    // History may only point at concepts that still exist. The foreign key is
+    // RESTRICT, so this should be impossible; it is checked because the cost of
+    // discovering otherwise later is the record itself.
+    const live = new Set((await all("concepts", "id")).map((c) => c.id));
+    const dangling = HIS.filter((h) => !live.has(h.concept_id));
+    ok("every history row points at a concept that still exists",
+      dangling.length === 0,
+      dangling.length ? `${dangling.length} dangling` : `${new Set(HIS.map((h) => h.concept_id)).size} distinct concept(s)`);
+  }
+} catch (err) {
+  console.error("  LEARNER CONCEPT STATE HISTORY ERROR:", err.message);
+  fail++;
+}
+
 console.log("\n" + (fail ? `${fail} FAILURE(S), ${pass} passed` : `all ${pass} checks pass`));
 process.exit(fail ? 1 : 0);
