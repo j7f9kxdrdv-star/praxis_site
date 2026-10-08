@@ -571,216 +571,252 @@ BEGIN
   IF NOT pg_has_role(current_user, 'service_role', 'MEMBER') THEN
     RAISE EXCEPTION 'HISTORY: % cannot assume service_role, so the writer cannot be proved against its real caller.', current_user;
   END IF;
-  EXECUTE 'SET LOCAL ROLE service_role';
 
-  -- A normal scheduled observation.
-  res := public.record_scheduled_observation(
-    u, DATE '2026-10-08', DATE '2026-10-08', now(), 'America/New_York', 'PROFILE', 4, 'PROBE', payload, 'probe-run-1');
-  IF res ->> 'history_status' <> 'RECORDED' THEN
-    leaked := array_append(leaked, 'the first observation reported ' || res::TEXT);
-  END IF;
-  SELECT count(*) INTO n FROM public.learner_concept_state_history
-   WHERE observation_id = (res ->> 'observation_id')::UUID;
-  IF n <> 2 THEN leaked := array_append(leaked, 'expected 2 history rows, found ' || n); END IF;
-  SELECT state_count INTO n FROM public.learner_concept_state_observations
-   WHERE id = (res ->> 'observation_id')::UUID;
-  IF n <> 2 THEN leaked := array_append(leaked, 'the observation recorded state_count ' || n); END IF;
-  obs := (res ->> 'observation_id')::UUID;
-
-  SELECT md5(string_agg(h::TEXT, '|' ORDER BY h.concept_id)) INTO digest
-    FROM public.learner_concept_state_history h WHERE h.observation_id = obs;
-
-  -- A RETRY OF THE SAME CYCLE. Current state may be rewritten; history is not.
-  res := public.record_scheduled_observation(
-    u, DATE '2026-10-08', DATE '2026-10-08', now(), 'America/New_York', 'PROFILE', 4, 'PROBE',
-    jsonb_build_array(one), 'probe-run-2');
-  IF res ->> 'history_status' <> 'ALREADY_RECORDED' THEN
-    leaked := array_append(leaked, 'a same-cycle retry reported ' || (res ->> 'history_status'));
-  END IF;
-  SELECT md5(string_agg(h::TEXT, '|' ORDER BY h.concept_id)) INTO digest2
-    FROM public.learner_concept_state_history h WHERE h.observation_id = obs;
-  IF digest2 IS DISTINCT FROM digest THEN
-    leaked := array_append(leaked, 'a retry changed the recorded history');
-  END IF;
-  SELECT count(*) INTO n FROM public.learner_concept_state_observations WHERE user_id = u;
-  IF n <> 1 THEN leaked := array_append(leaked, 'a retry created ' || n || ' observations'); END IF;
-
-  -- THE SAME STUDY DAY IN A DIFFERENT CYCLE IS A DIFFERENT OBSERVATION.
-  -- The whole reason identity is the cycle. This would be refused outright by
-  -- a unique key on study_day.
-  res := public.record_scheduled_observation(
-    u, DATE '2026-10-09', DATE '2026-10-08', now(), 'America/Los_Angeles', 'PROFILE', 4, 'PROBE',
-    jsonb_build_array(one), 'probe-run-3');
-  IF res ->> 'history_status' <> 'RECORDED' THEN
-    leaked := array_append(leaked, 'a second cycle with a repeated study_day was refused: ' || res::TEXT);
-  END IF;
-  SELECT count(*) INTO n FROM public.learner_concept_state_observations
-   WHERE user_id = u AND study_day = DATE '2026-10-08';
-  IF n <> 2 THEN
-    leaked := array_append(leaked, 'expected 2 observations sharing one study_day, found ' || n);
-  END IF;
-
-  -- A ZERO-STATE OBSERVATION IS STILL AN OBSERVATION.
-  res := public.record_scheduled_observation(
-    u, DATE '2026-10-10', DATE '2026-10-10', now(), 'UTC', 'DEFAULT_UTC', 4, 'PROBE', '[]'::JSONB, 'probe-run-4');
-  IF res ->> 'history_status' <> 'RECORDED' THEN
-    leaked := array_append(leaked, 'a zero-state observation was not recorded');
-  END IF;
-  SELECT state_count INTO n FROM public.learner_concept_state_observations
-   WHERE id = (res ->> 'observation_id')::UUID;
-  IF n <> 0 THEN leaked := array_append(leaked, 'the zero-state observation recorded state_count ' || n); END IF;
-  -- Kept for the ownership probe below: an observation with no children, so an
-  -- insert against it cannot collide with the primary key.
-  obs_zero := (res ->> 'observation_id')::UUID;
-
-  -- An invalid child state fails the WHOLE thing, current state included.
-  SELECT md5(string_agg(t::TEXT, '|' ORDER BY t.concept_id)) INTO digest
-    FROM public.learner_concept_states t WHERE t.user_id = u;
+  -- EVERY PROBE BELOW RUNS INSIDE A SUBTRANSACTION THAT IS ALWAYS DISCARDED.
+  --
+  -- The probes must call the real writer, and the real writer only accepts a
+  -- real account, because a foreign key ties it to auth.users. There is no
+  -- synthetic learner to use instead, and inventing one would mean writing a
+  -- fake row into the account table to test a feature.
+  --
+  -- That is survivable only because nothing the probes do is kept. The first
+  -- version of this file cleaned up afterwards by deleting the rows it had
+  -- written, and that is not the same thing. replace_learner_concept_states
+  -- replaces a learner's WHOLE current state, every model version of it, so
+  -- the first probe silently destroyed the five real rows belonging to the
+  -- account it borrowed, and deleting the PROBE rows afterwards could not
+  -- bring them back. The count check at the end caught it and the migration
+  -- aborted, which is the only reason those five rows still exist.
+  --
+  -- Cleaning up correctly was not the fix. A probe that has to be tidied after
+  -- is one forgotten DELETE away from the same outcome, and the thing it
+  -- damages is a real learner's state. So the probes now cannot persist
+  -- anything at all: PL/pgSQL rolls back every database change made inside a
+  -- block that exits through an exception, while the variables carrying the
+  -- findings survive it. The sentinel is raised at the end on purpose, pass or
+  -- fail, and the findings are judged after the rollback.
   BEGIN
+    EXECUTE 'SET LOCAL ROLE service_role';
+
+    -- A normal scheduled observation.
     res := public.record_scheduled_observation(
-      u, DATE '2026-10-11', DATE '2026-10-11', now(), 'UTC', 'DEFAULT_UTC', 4, 'PROBE',
-      jsonb_build_array(jsonb_set(one, '{state_label}', '"MEMORY_EXCELLENT"')), 'probe-run-5');
-    leaked := array_append(leaked, 'an invalid state was recorded as history');
-  EXCEPTION WHEN OTHERS THEN NULL;
-  END;
-  SELECT md5(string_agg(t::TEXT, '|' ORDER BY t.concept_id)) INTO digest2
-    FROM public.learner_concept_states t WHERE t.user_id = u;
-  IF digest2 IS DISTINCT FROM digest THEN
-    leaked := array_append(leaked, 'a failed scheduled write still changed current state');
-  END IF;
-  IF EXISTS (SELECT 1 FROM public.learner_concept_state_observations
-              WHERE user_id = u AND observation_cycle_date = DATE '2026-10-11') THEN
-    leaked := array_append(leaked, 'a failed scheduled write left an observation behind');
-  END IF;
+      u, DATE '2026-10-08', DATE '2026-10-08', now(), 'America/New_York', 'PROFILE', 4, 'PROBE', payload, 'probe-run-1');
+    IF res ->> 'history_status' <> 'RECORDED' THEN
+      leaked := array_append(leaked, 'the first observation reported ' || res::TEXT);
+    END IF;
+    SELECT count(*) INTO n FROM public.learner_concept_state_history
+     WHERE observation_id = (res ->> 'observation_id')::UUID;
+    IF n <> 2 THEN leaked := array_append(leaked, 'expected 2 history rows, found ' || n); END IF;
+    SELECT state_count INTO n FROM public.learner_concept_state_observations
+     WHERE id = (res ->> 'observation_id')::UUID;
+    IF n <> 2 THEN leaked := array_append(leaked, 'the observation recorded state_count ' || n); END IF;
+    obs := (res ->> 'observation_id')::UUID;
 
-  -- IMMUTABLE. Every update path refused, on both tables.
-  BEGIN
-    UPDATE public.learner_concept_state_observations SET study_day = DATE '2000-01-01' WHERE id = obs;
-    leaked := array_append(leaked, 'an observation was updated');
-  EXCEPTION WHEN OTHERS THEN NULL;
-  END;
-  BEGIN
-    UPDATE public.learner_concept_state_history SET state_label = 'MEMORY_DURABLE' WHERE observation_id = obs;
-    leaked := array_append(leaked, 'a history row was updated');
-  EXCEPTION WHEN OTHERS THEN NULL;
-  END;
+    SELECT md5(string_agg(h::TEXT, '|' ORDER BY h.concept_id)) INTO digest
+      FROM public.learner_concept_state_history h WHERE h.observation_id = obs;
 
-  -- CONCEPT DELETION IS PROVED FROM THE CATALOG, NOT BY ATTEMPTING ONE.
-  --
-  -- The obvious probe is to try deleting a referenced concept and check it is
-  -- refused. I wrote that, and then removed it for two reasons. Its failure
-  -- mode is the worst available: if the foreign key were ever NOT restrictive,
-  -- the probe would succeed and hard-delete a production concept, which is
-  -- exactly the catastrophe it exists to prevent. And it made this a migration
-  -- that writes public.concepts, which the repository's own write-scope lint
-  -- correctly flags, because a file that touches the ontology must not also
-  -- write learner tables.
-  --
-  -- confdeltype = 'r' above already proves the constraint is RESTRICT, read
-  -- from the catalog. That is the same fact, obtained without risking the
-  -- thing being protected.
+    -- A RETRY OF THE SAME CYCLE. Current state may be rewritten; history is not.
+    res := public.record_scheduled_observation(
+      u, DATE '2026-10-08', DATE '2026-10-08', now(), 'America/New_York', 'PROFILE', 4, 'PROBE',
+      jsonb_build_array(one), 'probe-run-2');
+    IF res ->> 'history_status' <> 'ALREADY_RECORDED' THEN
+      leaked := array_append(leaked, 'a same-cycle retry reported ' || (res ->> 'history_status'));
+    END IF;
+    SELECT md5(string_agg(h::TEXT, '|' ORDER BY h.concept_id)) INTO digest2
+      FROM public.learner_concept_state_history h WHERE h.observation_id = obs;
+    IF digest2 IS DISTINCT FROM digest THEN
+      leaked := array_append(leaked, 'a retry changed the recorded history');
+    END IF;
+    SELECT count(*) INTO n FROM public.learner_concept_state_observations WHERE user_id = u;
+    IF n <> 1 THEN leaked := array_append(leaked, 'a retry created ' || n || ' observations'); END IF;
 
-  -- THE OWNER ON A CHILD ROW CANNOT DISAGREE WITH ITS PARENT.
-  --
-  -- This is the probe that matters for the denormalized column. If a child row
-  -- could name a different owner than its observation, the reset would delete
-  -- the wrong rows and the row-level security policy would show one learner
-  -- another learner's history. The composite foreign key is what makes that
-  -- unrepresentable.
-  --
-  -- TWO WAYS THIS PROBE COULD PASS WITHOUT PROVING ANYTHING, both avoided:
-  --
-  -- It must target an observation that has no row for this concept. Written
-  -- against the first observation, which already holds c1 and c2, the insert
-  -- would violate the primary key on (observation_id, concept_id), and a
-  -- schema with NO composite foreign key at all would still look like it
-  -- refused. obs_zero is the zero-state observation, which has no children.
-  --
-  -- And every column except the owner must be known-valid. Hand-written values
-  -- risk tripping one of the mirrored CHECK constraints instead, which again
-  -- reads as a refusal. So the row is built from the same payload the writer
-  -- was proved with, through the same jsonb_to_recordset shape, and the ONLY
-  -- thing wrong with it is whose it claims to be.
-  BEGIN
-    INSERT INTO public.learner_concept_state_history (
-      observation_id, user_id, concept_id, coverage_state, coverage_reason, memory_durability, memory_freshness, memory_signal, freshness_signal, memory_confidence, memory_confidence_raw, memory_confidence_limited_by, memory_items, memory_items_available, weak_card_count, application_signal, application_confidence, application_attempts, application_correct, application_misses_in_window, application_lower_bound, application_upper_bound, state_label, last_memory_evidence_at, last_application_evidence_at)
-    SELECT obs_zero, gen_random_uuid(), r.concept_id, r.coverage_state, r.coverage_reason, r.memory_durability, r.memory_freshness, r.memory_signal, r.freshness_signal, r.memory_confidence, r.memory_confidence_raw, r.memory_confidence_limited_by, r.memory_items, r.memory_items_available, r.weak_card_count, r.application_signal, r.application_confidence, r.application_attempts, r.application_correct, r.application_misses_in_window, r.application_lower_bound, r.application_upper_bound, r.state_label, r.last_memory_evidence_at, r.last_application_evidence_at
-    FROM jsonb_to_recordset(jsonb_build_array(one)) AS r(
-      concept_id UUID, coverage_state TEXT, coverage_reason TEXT,
-      memory_durability DOUBLE PRECISION, memory_freshness DOUBLE PRECISION,
-      memory_signal TEXT, freshness_signal TEXT, memory_confidence TEXT,
-      memory_confidence_raw DOUBLE PRECISION, memory_confidence_limited_by TEXT,
-      memory_items INTEGER, memory_items_available INTEGER, weak_card_count INTEGER,
-      application_signal TEXT, application_confidence TEXT,
-      application_attempts INTEGER, application_correct INTEGER,
-      application_misses_in_window INTEGER,
-      application_lower_bound DOUBLE PRECISION, application_upper_bound DOUBLE PRECISION,
-      state_label TEXT, last_memory_evidence_at TIMESTAMPTZ,
-      last_application_evidence_at TIMESTAMPTZ);
-    leaked := array_append(leaked, 'a history row named an owner its observation does not have');
-  EXCEPTION WHEN OTHERS THEN NULL;
-  END;
+    -- THE SAME STUDY DAY IN A DIFFERENT CYCLE IS A DIFFERENT OBSERVATION.
+    -- The whole reason identity is the cycle. This would be refused outright by
+    -- a unique key on study_day.
+    res := public.record_scheduled_observation(
+      u, DATE '2026-10-09', DATE '2026-10-08', now(), 'America/Los_Angeles', 'PROFILE', 4, 'PROBE',
+      jsonb_build_array(one), 'probe-run-3');
+    IF res ->> 'history_status' <> 'RECORDED' THEN
+      leaked := array_append(leaked, 'a second cycle with a repeated study_day was refused: ' || res::TEXT);
+    END IF;
+    SELECT count(*) INTO n FROM public.learner_concept_state_observations
+     WHERE user_id = u AND study_day = DATE '2026-10-08';
+    IF n <> 2 THEN
+      leaked := array_append(leaked, 'expected 2 observations sharing one study_day, found ' || n);
+    END IF;
 
-  -- And the same row with the RIGHT owner is accepted, which is what makes the
-  -- refusal above attributable to the owner and nothing else.
-  BEGIN
-    INSERT INTO public.learner_concept_state_history (
-      observation_id, user_id, concept_id, coverage_state, coverage_reason, memory_durability, memory_freshness, memory_signal, freshness_signal, memory_confidence, memory_confidence_raw, memory_confidence_limited_by, memory_items, memory_items_available, weak_card_count, application_signal, application_confidence, application_attempts, application_correct, application_misses_in_window, application_lower_bound, application_upper_bound, state_label, last_memory_evidence_at, last_application_evidence_at)
-    SELECT obs_zero, u, r.concept_id, r.coverage_state, r.coverage_reason, r.memory_durability, r.memory_freshness, r.memory_signal, r.freshness_signal, r.memory_confidence, r.memory_confidence_raw, r.memory_confidence_limited_by, r.memory_items, r.memory_items_available, r.weak_card_count, r.application_signal, r.application_confidence, r.application_attempts, r.application_correct, r.application_misses_in_window, r.application_lower_bound, r.application_upper_bound, r.state_label, r.last_memory_evidence_at, r.last_application_evidence_at
-    FROM jsonb_to_recordset(jsonb_build_array(one)) AS r(
-      concept_id UUID, coverage_state TEXT, coverage_reason TEXT,
-      memory_durability DOUBLE PRECISION, memory_freshness DOUBLE PRECISION,
-      memory_signal TEXT, freshness_signal TEXT, memory_confidence TEXT,
-      memory_confidence_raw DOUBLE PRECISION, memory_confidence_limited_by TEXT,
-      memory_items INTEGER, memory_items_available INTEGER, weak_card_count INTEGER,
-      application_signal TEXT, application_confidence TEXT,
-      application_attempts INTEGER, application_correct INTEGER,
-      application_misses_in_window INTEGER,
-      application_lower_bound DOUBLE PRECISION, application_upper_bound DOUBLE PRECISION,
-      state_label TEXT, last_memory_evidence_at TIMESTAMPTZ,
-      last_application_evidence_at TIMESTAMPTZ);
+    -- A ZERO-STATE OBSERVATION IS STILL AN OBSERVATION.
+    res := public.record_scheduled_observation(
+      u, DATE '2026-10-10', DATE '2026-10-10', now(), 'UTC', 'DEFAULT_UTC', 4, 'PROBE', '[]'::JSONB, 'probe-run-4');
+    IF res ->> 'history_status' <> 'RECORDED' THEN
+      leaked := array_append(leaked, 'a zero-state observation was not recorded');
+    END IF;
+    SELECT state_count INTO n FROM public.learner_concept_state_observations
+     WHERE id = (res ->> 'observation_id')::UUID;
+    IF n <> 0 THEN leaked := array_append(leaked, 'the zero-state observation recorded state_count ' || n); END IF;
+    -- Kept for the ownership probe below: an observation with no children, so an
+    -- insert against it cannot collide with the primary key.
+    obs_zero := (res ->> 'observation_id')::UUID;
+
+    -- An invalid child state fails the WHOLE thing, current state included.
+    SELECT md5(string_agg(t::TEXT, '|' ORDER BY t.concept_id)) INTO digest
+      FROM public.learner_concept_states t WHERE t.user_id = u;
+    BEGIN
+      res := public.record_scheduled_observation(
+        u, DATE '2026-10-11', DATE '2026-10-11', now(), 'UTC', 'DEFAULT_UTC', 4, 'PROBE',
+        jsonb_build_array(jsonb_set(one, '{state_label}', '"MEMORY_EXCELLENT"')), 'probe-run-5');
+      leaked := array_append(leaked, 'an invalid state was recorded as history');
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END;
+    SELECT md5(string_agg(t::TEXT, '|' ORDER BY t.concept_id)) INTO digest2
+      FROM public.learner_concept_states t WHERE t.user_id = u;
+    IF digest2 IS DISTINCT FROM digest THEN
+      leaked := array_append(leaked, 'a failed scheduled write still changed current state');
+    END IF;
+    IF EXISTS (SELECT 1 FROM public.learner_concept_state_observations
+                WHERE user_id = u AND observation_cycle_date = DATE '2026-10-11') THEN
+      leaked := array_append(leaked, 'a failed scheduled write left an observation behind');
+    END IF;
+
+    -- IMMUTABLE. Every update path refused, on both tables.
+    BEGIN
+      UPDATE public.learner_concept_state_observations SET study_day = DATE '2000-01-01' WHERE id = obs;
+      leaked := array_append(leaked, 'an observation was updated');
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END;
+    BEGIN
+      UPDATE public.learner_concept_state_history SET state_label = 'MEMORY_DURABLE' WHERE observation_id = obs;
+      leaked := array_append(leaked, 'a history row was updated');
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END;
+
+    -- CONCEPT DELETION IS PROVED FROM THE CATALOG, NOT BY ATTEMPTING ONE.
+    --
+    -- The obvious probe is to try deleting a referenced concept and check it is
+    -- refused. I wrote that, and then removed it for two reasons. Its failure
+    -- mode is the worst available: if the foreign key were ever NOT restrictive,
+    -- the probe would succeed and hard-delete a production concept, which is
+    -- exactly the catastrophe it exists to prevent. And it made this a migration
+    -- that writes public.concepts, which the repository's own write-scope lint
+    -- correctly flags, because a file that touches the ontology must not also
+    -- write learner tables.
+    --
+    -- confdeltype = 'r' above already proves the constraint is RESTRICT, read
+    -- from the catalog. That is the same fact, obtained without risking the
+    -- thing being protected.
+
+    -- THE OWNER ON A CHILD ROW CANNOT DISAGREE WITH ITS PARENT.
+    --
+    -- This is the probe that matters for the denormalized column. If a child row
+    -- could name a different owner than its observation, the reset would delete
+    -- the wrong rows and the row-level security policy would show one learner
+    -- another learner's history. The composite foreign key is what makes that
+    -- unrepresentable.
+    --
+    -- TWO WAYS THIS PROBE COULD PASS WITHOUT PROVING ANYTHING, both avoided:
+    --
+    -- It must target an observation that has no row for this concept. Written
+    -- against the first observation, which already holds c1 and c2, the insert
+    -- would violate the primary key on (observation_id, concept_id), and a
+    -- schema with NO composite foreign key at all would still look like it
+    -- refused. obs_zero is the zero-state observation, which has no children.
+    --
+    -- And every column except the owner must be known-valid. Hand-written values
+    -- risk tripping one of the mirrored CHECK constraints instead, which again
+    -- reads as a refusal. So the row is built from the same payload the writer
+    -- was proved with, through the same jsonb_to_recordset shape, and the ONLY
+    -- thing wrong with it is whose it claims to be.
+    BEGIN
+      INSERT INTO public.learner_concept_state_history (
+        observation_id, user_id, concept_id, coverage_state, coverage_reason, memory_durability, memory_freshness, memory_signal, freshness_signal, memory_confidence, memory_confidence_raw, memory_confidence_limited_by, memory_items, memory_items_available, weak_card_count, application_signal, application_confidence, application_attempts, application_correct, application_misses_in_window, application_lower_bound, application_upper_bound, state_label, last_memory_evidence_at, last_application_evidence_at)
+      SELECT obs_zero, gen_random_uuid(), r.concept_id, r.coverage_state, r.coverage_reason, r.memory_durability, r.memory_freshness, r.memory_signal, r.freshness_signal, r.memory_confidence, r.memory_confidence_raw, r.memory_confidence_limited_by, r.memory_items, r.memory_items_available, r.weak_card_count, r.application_signal, r.application_confidence, r.application_attempts, r.application_correct, r.application_misses_in_window, r.application_lower_bound, r.application_upper_bound, r.state_label, r.last_memory_evidence_at, r.last_application_evidence_at
+      FROM jsonb_to_recordset(jsonb_build_array(one)) AS r(
+        concept_id UUID, coverage_state TEXT, coverage_reason TEXT,
+        memory_durability DOUBLE PRECISION, memory_freshness DOUBLE PRECISION,
+        memory_signal TEXT, freshness_signal TEXT, memory_confidence TEXT,
+        memory_confidence_raw DOUBLE PRECISION, memory_confidence_limited_by TEXT,
+        memory_items INTEGER, memory_items_available INTEGER, weak_card_count INTEGER,
+        application_signal TEXT, application_confidence TEXT,
+        application_attempts INTEGER, application_correct INTEGER,
+        application_misses_in_window INTEGER,
+        application_lower_bound DOUBLE PRECISION, application_upper_bound DOUBLE PRECISION,
+        state_label TEXT, last_memory_evidence_at TIMESTAMPTZ,
+        last_application_evidence_at TIMESTAMPTZ);
+      leaked := array_append(leaked, 'a history row named an owner its observation does not have');
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END;
+
+    -- And the same row with the RIGHT owner is accepted, which is what makes the
+    -- refusal above attributable to the owner and nothing else.
+    BEGIN
+      INSERT INTO public.learner_concept_state_history (
+        observation_id, user_id, concept_id, coverage_state, coverage_reason, memory_durability, memory_freshness, memory_signal, freshness_signal, memory_confidence, memory_confidence_raw, memory_confidence_limited_by, memory_items, memory_items_available, weak_card_count, application_signal, application_confidence, application_attempts, application_correct, application_misses_in_window, application_lower_bound, application_upper_bound, state_label, last_memory_evidence_at, last_application_evidence_at)
+      SELECT obs_zero, u, r.concept_id, r.coverage_state, r.coverage_reason, r.memory_durability, r.memory_freshness, r.memory_signal, r.freshness_signal, r.memory_confidence, r.memory_confidence_raw, r.memory_confidence_limited_by, r.memory_items, r.memory_items_available, r.weak_card_count, r.application_signal, r.application_confidence, r.application_attempts, r.application_correct, r.application_misses_in_window, r.application_lower_bound, r.application_upper_bound, r.state_label, r.last_memory_evidence_at, r.last_application_evidence_at
+      FROM jsonb_to_recordset(jsonb_build_array(one)) AS r(
+        concept_id UUID, coverage_state TEXT, coverage_reason TEXT,
+        memory_durability DOUBLE PRECISION, memory_freshness DOUBLE PRECISION,
+        memory_signal TEXT, freshness_signal TEXT, memory_confidence TEXT,
+        memory_confidence_raw DOUBLE PRECISION, memory_confidence_limited_by TEXT,
+        memory_items INTEGER, memory_items_available INTEGER, weak_card_count INTEGER,
+        application_signal TEXT, application_confidence TEXT,
+        application_attempts INTEGER, application_correct INTEGER,
+        application_misses_in_window INTEGER,
+        application_lower_bound DOUBLE PRECISION, application_upper_bound DOUBLE PRECISION,
+        state_label TEXT, last_memory_evidence_at TIMESTAMPTZ,
+        last_application_evidence_at TIMESTAMPTZ);
+    EXCEPTION WHEN OTHERS THEN
+      leaked := array_append(leaked, 'a correctly owned history row was refused: ' || SQLERRM);
+    END;
+
+    -- THE ACCOUNT RESET'S OWN STATEMENT SHAPE WORKS ON BOTH TABLES.
+    --
+    -- The reset counts and then deletes every table in its scope with one shape:
+    -- filter by user_id. A table it cannot filter that way fails the whole reset
+    -- halfway through, so the shape is exercised here rather than discovered by
+    -- the first learner who asks to be erased. Children first, then the parent,
+    -- which is the order the scope list declares, so both counts are truthful
+    -- instead of the second reading zero after a cascade.
+    -- Four history rows by now: two from the first observation, one from the
+    -- second cycle, and one just added to the zero-state observation by the
+    -- positive half of the ownership probe. Three observations.
+    SELECT count(*) INTO n FROM public.learner_concept_state_history WHERE user_id = u;
+    IF n <> 4 THEN
+      leaked := array_append(leaked, 'the reset would count ' || n || ' history rows, expected 4');
+    END IF;
+    DELETE FROM public.learner_concept_state_history WHERE user_id = u;
+    GET DIAGNOSTICS n = ROW_COUNT;
+    IF n <> 4 THEN
+      leaked := array_append(leaked, 'the reset deleted ' || n || ' history rows, expected 4');
+    END IF;
+    DELETE FROM public.learner_concept_state_observations WHERE user_id = u;
+    GET DIAGNOSTICS n = ROW_COUNT;
+    IF n <> 3 THEN
+      leaked := array_append(leaked, 'the reset deleted ' || n || ' observations, expected 3');
+    END IF;
+
+    EXECUTE 'RESET ROLE';
+    RAISE EXCEPTION 'PROBE_ROLLBACK';
   EXCEPTION WHEN OTHERS THEN
-    leaked := array_append(leaked, 'a correctly owned history row was refused: ' || SQLERRM);
+    -- Anything other than the sentinel is a probe that threw where it should
+    -- have returned, which is a finding rather than something to swallow.
+    IF SQLERRM <> 'PROBE_ROLLBACK' THEN
+      leaked := array_append(leaked, 'a probe raised: ' || SQLERRM);
+    END IF;
   END;
 
-  -- THE ACCOUNT RESET'S OWN STATEMENT SHAPE WORKS ON BOTH TABLES.
+  -- ── The rollback actually happened ──────────────────────────────────
   --
-  -- The reset counts and then deletes every table in its scope with one shape:
-  -- filter by user_id. A table it cannot filter that way fails the whole reset
-  -- halfway through, so the shape is exercised here rather than discovered by
-  -- the first learner who asks to be erased. Children first, then the parent,
-  -- which is the order the scope list declares, so both counts are truthful
-  -- instead of the second reading zero after a cascade.
-  -- Four history rows by now: two from the first observation, one from the
-  -- second cycle, and one just added to the zero-state observation by the
-  -- positive half of the ownership probe. Three observations.
-  SELECT count(*) INTO n FROM public.learner_concept_state_history WHERE user_id = u;
-  IF n <> 4 THEN
-    leaked := array_append(leaked, 'the reset would count ' || n || ' history rows, expected 4');
-  END IF;
-  DELETE FROM public.learner_concept_state_history WHERE user_id = u;
-  GET DIAGNOSTICS n = ROW_COUNT;
-  IF n <> 4 THEN
-    leaked := array_append(leaked, 'the reset deleted ' || n || ' history rows, expected 4');
-  END IF;
-  DELETE FROM public.learner_concept_state_observations WHERE user_id = u;
-  GET DIAGNOSTICS n = ROW_COUNT;
-  IF n <> 3 THEN
-    leaked := array_append(leaked, 'the reset deleted ' || n || ' observations, expected 3');
-  END IF;
-
-  EXECUTE 'RESET ROLE';
-
-  -- ── No residue ──────────────────────────────────────────────────────────
-  DELETE FROM public.learner_concept_state_observations WHERE model_version = 'PROBE';
-  DELETE FROM public.learner_concept_states WHERE model_version = 'PROBE';
+  -- Asserted rather than assumed. These are the same three checks the previous
+  -- version ran after deleting its own rows, and they are kept because they
+  -- are what caught the damage; the difference is that nothing now has to be
+  -- deleted for them to pass.
   SELECT count(*) INTO n FROM public.learner_concept_state_observations;
-  IF n <> 0 THEN RAISE EXCEPTION 'HISTORY: % observation(s) survived', n; END IF;
+  IF n <> 0 THEN RAISE EXCEPTION 'HISTORY: % observation(s) survived the probe rollback', n; END IF;
   SELECT count(*) INTO n FROM public.learner_concept_state_history;
-  IF n <> 0 THEN RAISE EXCEPTION 'HISTORY: % history row(s) survived; the parent cascade did not fire', n; END IF;
+  IF n <> 0 THEN RAISE EXCEPTION 'HISTORY: % history row(s) survived the probe rollback', n; END IF;
   SELECT count(*) INTO n FROM public.learner_concept_states;
   IF n <> before_current THEN
-    RAISE EXCEPTION 'HISTORY: current state went from % to %', before_current, n;
+    RAISE EXCEPTION 'HISTORY: current state went from % to %. The probes borrowed a real learner and the rollback did not restore them.', before_current, n;
   END IF;
 
   IF array_length(leaked, 1) > 0 THEN

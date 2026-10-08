@@ -460,6 +460,42 @@ describe("one model, one validation contract", () => {
     expect(MIGRATION).toMatch(/a failed scheduled write left an observation behind/);
   });
 
+  it("THE PROBES CANNOT PERSIST ANYTHING, rather than cleaning up after themselves", () => {
+    // The probes have to call the real writer, and the real writer only takes
+    // a real account because a foreign key ties it to auth.users. So they
+    // borrow a live learner.
+    //
+    // That is only safe because nothing they do is kept. The first version of
+    // this migration cleaned up by deleting the rows it had written, which is
+    // not the same thing: replace_learner_concept_states replaces a learner's
+    // entire current state across every model version, so the first probe
+    // destroyed five real rows belonging to the borrowed account, and no
+    // delete of the PROBE rows could restore them. The count check caught it
+    // and the migration aborted.
+    //
+    // So the probes now run in a subtransaction that is always discarded.
+    expect(MIGRATION).toMatch(/BEGIN\s*\n\s*EXECUTE 'SET LOCAL ROLE service_role';/);
+    expect(MIGRATION).toMatch(/RAISE EXCEPTION 'PROBE_ROLLBACK';/);
+    expect(MIGRATION).toMatch(/IF SQLERRM <> 'PROBE_ROLLBACK' THEN/);
+
+    // The sentinel is raised unconditionally. A rollback that only happens on
+    // failure would leave the probe rows behind on success, which is the case
+    // that actually occurs.
+    const reset = MIGRATION.indexOf("EXECUTE 'RESET ROLE';");
+    const sentinel = MIGRATION.indexOf("RAISE EXCEPTION 'PROBE_ROLLBACK';");
+    expect(sentinel).toBeGreaterThan(reset);
+    expect(MIGRATION.slice(reset, sentinel)).not.toMatch(/\bIF\b/);
+
+    // And no probe cleans up by hand any more. A delete of PROBE rows would
+    // mean something was expected to survive the block.
+    const body = strip(MIGRATION);
+    expect(body).not.toMatch(/DELETE FROM public\.learner_concept_states WHERE model_version = 'PROBE'/);
+
+    // The rollback is verified, not assumed.
+    expect(MIGRATION).toMatch(/survived the probe rollback/);
+    expect(MIGRATION).toMatch(/current state went from % to %\. The probes borrowed a real learner/);
+  });
+
   it("the tables commit empty: no retrospective backfill", () => {
     expect(MIGRATION).toMatch(/the observation table must commit empty/);
     expect(MIGRATION).toMatch(/the history table must commit empty/);
