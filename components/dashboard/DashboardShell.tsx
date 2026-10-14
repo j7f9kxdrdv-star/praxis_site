@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { detectTimezone } from "@/lib/flashcards/studyDay";
+import { ensureImageSession } from "@/lib/flashcards/ensureImageSession";
 import type { User } from "@supabase/supabase-js";
 import Sidebar from "./Sidebar";
 import BottomTabs from "./BottomTabs";
@@ -91,6 +92,15 @@ export default function DashboardShell({
       }
 
       setUser(user);
+
+      // Trade the bearer token for the cookie that answer illustrations need.
+      // A browser cannot put an Authorization header on an <img> request, so
+      // this is the only credential it can send for one. Not awaited and not
+      // checked: it is not a security control, the server decides access on
+      // every image, and a student must be able to study whether or not this
+      // succeeds.
+      void ensureImageSession();
+
       const loaded = await fetchProfile(user.id);
 
       // ── The onboarding gate ──────────────────────────────────────────
