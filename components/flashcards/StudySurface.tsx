@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { recoverImageSession } from "@/lib/flashcards/ensureImageSession";
 import type { ClozeSegment } from "@/lib/flashcards/cloze";
 import type { Rating } from "@/lib/flashcards/scheduler";
 import type { RelearnAnswer } from "@/lib/flashcards/relearn";
@@ -129,6 +130,34 @@ export default function StudySurface({
   // effect that has to remember to run.
   const [zoomedUrl, setZoomedUrl] = useState<string | null>(null);
   const zoomed = showAnswerImage && zoomedUrl === backImageUrl;
+
+  // ── ONE recovery attempt when an illustration fails to load ─────────────
+  //
+  // The image session cookie lasts fifteen minutes and is normally renewed
+  // underneath the learner. If one ever lapses anyway, the browser shows a
+  // broken image and nothing in the page notices. So a failure gets exactly one
+  // chance: re-mint, then reload this same protected path with a cache-busting
+  // parameter, because the browser will not re-request a URL it has just
+  // failed on.
+  //
+  // Keyed by url, so the allowance resets on the next card and can never
+  // become a loop: one attempt per image, and a second failure is left alone.
+  // Recovery proves identity, never entitlement — an unentitled account gets a
+  // perfectly valid cookie and is still refused, which is correct.
+  const [retriedUrl, setRetriedUrl] = useState<string | null>(null);
+  const [retryToken, setRetryToken] = useState(0);
+  const imageSrc = backImageUrl
+    ? (retriedUrl === backImageUrl && retryToken > 0
+        ? `${backImageUrl}?r=${retryToken}`
+        : backImageUrl)
+    : null;
+
+  async function recoverOnce() {
+    if (!backImageUrl || retriedUrl === backImageUrl) return;
+    setRetriedUrl(backImageUrl);
+    const ok = await recoverImageSession();
+    if (ok) setRetryToken(Date.now());
+  }
 
   // The overlay is portalled to document.body, which exists only in the
   // browser, so nothing may be portalled on the server's first render. This is
@@ -320,8 +349,9 @@ export default function StudySurface({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={backImageUrl!}
+                src={imageSrc!}
                 alt={backImageAlt ?? ""}
+                onError={() => { void recoverOnce(); }}
                 className="w-full max-h-[38dvh] lg:max-h-none object-contain rounded-xl"
               />
               <span className="hidden lg:flex items-center justify-center gap-1.5 pt-2 text-[10px] font-bold uppercase tracking-wider text-as-outline/70 group-hover:text-as-primary transition-colors">
@@ -414,7 +444,7 @@ export default function StudySurface({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={backImageUrl}
+                src={imageSrc ?? backImageUrl}
                 alt={backImageAlt ?? ""}
                 // Clicking the artwork itself must not dismiss the thing the
                 // learner opened to study.
