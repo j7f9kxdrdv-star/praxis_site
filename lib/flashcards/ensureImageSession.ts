@@ -37,6 +37,17 @@ const RENEW_WHEN_REMAINING_MS = 5 * 60 * 1000;
 let expiresAtMs = 0;
 /** The one mint in flight, so concurrent callers share a single request. */
 let inFlight: Promise<boolean> | null = null;
+/**
+ * Set by clearImageSession, cleared when renewal is started again.
+ *
+ * Sign-out revokes the session and then calls supabase.auth.signOut(), and
+ * between those two the bearer token is still briefly valid. Without this, a
+ * renewal tick landing in that gap would mint a cookie carrying the NEW
+ * revocation marker, which the image route would accept: a session that
+ * outlived the sign-out that ended it. The window is tiny and the fix is three
+ * lines, so there is no reason to leave it open.
+ */
+let suppressed = false;
 
 function freshEnough(now = Date.now()): boolean {
   return expiresAtMs - now > RENEW_WHEN_REMAINING_MS;
@@ -82,6 +93,9 @@ async function mint(): Promise<boolean> {
  * stream of pointless requests.
  */
 export function ensureImageSession(options: { force?: boolean } = {}): Promise<boolean> {
+  // Checked before `force`, because forcing is for recovery and there is
+  // nothing to recover once the account has signed out.
+  if (suppressed) return Promise.resolve(false);
   if (!options.force && freshEnough()) return Promise.resolve(true);
   // Everyone who asks while a mint is running waits for that one.
   inFlight ??= mint().finally(() => { inFlight = null; });
@@ -95,6 +109,9 @@ export function ensureImageSession(options: { force?: boolean } = {}): Promise<b
  * by the returned function, so a remount cannot leave a second set running.
  */
 export function startImageSessionRenewal(): () => void {
+  // A new shell mount is a new signed-in session, so whatever a previous
+  // sign-out suppressed no longer applies.
+  suppressed = false;
   void ensureImageSession();
 
   const timer = setInterval(() => {
@@ -151,19 +168,40 @@ export function recoverImageSession(): Promise<boolean> {
   return ensureImageSession({ force: true });
 }
 
-/** Drop the cookie on sign-out, and stop treating it as alive. */
-export async function clearImageSession(): Promise<void> {
+/**
+ * Sign out of the image session: clear the cookie here and revoke every image
+ * session this account holds anywhere.
+ *
+ * MUST BE AWAITED BEFORE supabase.auth.signOut(). The server needs a live
+ * bearer token to know whose sessions to revoke, and signOut() removes it. Both
+ * sign-out buttons call this first; see components/dashboard/Sidebar.tsx.
+ *
+ * Never throws and never rejects. Signing out is the learner's instruction and
+ * must not fail because a request did.
+ *
+ * Returns whether the server confirmed the revocation, for tests and for
+ * diagnostics. The caller signs out either way: the cookie is gone from this
+ * browser and its own life is minutes.
+ */
+export async function clearImageSession(): Promise<boolean> {
   expiresAtMs = 0;
+  // Set before the request, not after, so a renewal tick cannot slip in while
+  // it is in flight.
+  suppressed = true;
   try {
     const { data } = await supabase.auth.getSession();
     const token = data.session?.access_token;
-    await fetch("/api/flashcards/image-session", {
+    const response = await fetch("/api/flashcards/image-session", {
       method: "DELETE",
       credentials: "same-origin",
       headers: token ? { authorization: `Bearer ${token}` } : {},
     });
+    if (!response.ok) return false;
+    const body = (await response.json().catch(() => null)) as { revoked?: boolean } | null;
+    return body?.revoked === true;
   } catch {
     // Sign-out must not fail because of this.
+    return false;
   }
 }
 
@@ -171,9 +209,12 @@ export async function clearImageSession(): Promise<void> {
 export function __resetImageSessionStateForTests(): void {
   expiresAtMs = 0;
   inFlight = null;
+  suppressed = false;
 }
 
 /** Test seam: what the module believes about the current cookie. */
-export function __imageSessionStateForTests(): { expiresAtMs: number; minting: boolean } {
-  return { expiresAtMs, minting: inFlight !== null };
+export function __imageSessionStateForTests(): {
+  expiresAtMs: number; minting: boolean; suppressed: boolean;
+} {
+  return { expiresAtMs, minting: inFlight !== null, suppressed };
 }

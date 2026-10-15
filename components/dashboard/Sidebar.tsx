@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { clearImageSession } from "@/lib/flashcards/ensureImageSession";
 import { useDashboard } from "./DashboardShell";
 
 interface NavItem {
@@ -116,6 +117,11 @@ export default function Sidebar() {
   const { profile, user } = useDashboard();
 
   async function handleLogout() {
+    // BEFORE signOut, and that order is the whole point. Revoking the image
+    // sessions needs a live bearer token to prove who is signing out, and
+    // signOut() takes it away. Awaited, so the revocation is in flight before
+    // the session disappears; it never throws, so it cannot block signing out.
+    await clearImageSession();
     await supabase.auth.signOut();
     router.push("/login");
   }

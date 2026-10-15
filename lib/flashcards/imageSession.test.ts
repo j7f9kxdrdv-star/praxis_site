@@ -18,14 +18,14 @@ const USER = "00047c9f-d510-405b-8989-8a129a94c9fe";
 
 describe("a token this server minted", () => {
   it("verifies, and carries the user it was minted for", () => {
-    const { token } = mintImageSession(USER, SECRET, NOW);
+    const { token } = mintImageSession(USER, SECRET, null, NOW);
     const r = verifyImageSession(token, SECRET, NOW);
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.claim.userId).toBe(USER);
   });
 
   it("expires, and is refused the instant it does", () => {
-    const { token, expiresAt } = mintImageSession(USER, SECRET, NOW);
+    const { token, expiresAt } = mintImageSession(USER, SECRET, null, NOW);
     const justBefore = new Date(expiresAt * 1000 - 1000);
     const atExpiry = new Date(expiresAt * 1000);
     expect(verifyImageSession(token, SECRET, justBefore).ok).toBe(true);
@@ -35,12 +35,12 @@ describe("a token this server minted", () => {
 
 describe("a token this server did not mint", () => {
   it("is refused when signed with another secret", () => {
-    const { token } = mintImageSession(USER, OTHER, NOW);
+    const { token } = mintImageSession(USER, OTHER, null, NOW);
     expect(verifyImageSession(token, SECRET, NOW)).toEqual({ ok: false, reason: "bad_signature" });
   });
 
   it("is refused when the payload is edited to name someone else", () => {
-    const { token } = mintImageSession(USER, SECRET, NOW);
+    const { token } = mintImageSession(USER, SECRET, null, NOW);
     const [v, payload, sig] = token.split(".");
     const claim = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
     claim.u = "11111111-1111-4111-8111-111111111111";
@@ -51,7 +51,7 @@ describe("a token this server did not mint", () => {
   });
 
   it("is refused when the expiry is pushed into the future by hand", () => {
-    const { token } = mintImageSession(USER, SECRET, NOW);
+    const { token } = mintImageSession(USER, SECRET, null, NOW);
     const [v, payload, sig] = token.split(".");
     const claim = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
     claim.e = claim.e + 86_400 * 3650;
@@ -62,16 +62,16 @@ describe("a token this server did not mint", () => {
   it.each([
     ["nothing at all", ""],
     ["a bare word", "letmein"],
-    ["the wrong version", "v2.abc.def"],
-    ["too few parts", "v1.abc"],
-    ["too many parts", "v1.a.b.c"],
-    ["an unsigned payload", `v1.${Buffer.from('{"u":"x","e":99999999999}').toString("base64url")}.`],
+    ["the wrong version", "v1.abc.def"],
+    ["too few parts", "v2.abc"],
+    ["too many parts", "v2.a.b.c"],
+    ["an unsigned payload", `v2.${Buffer.from('{"u":"x","i":1,"e":99999999999,"r":null}').toString("base64url")}.`],
   ])("is refused: %s", (_why, token) => {
     expect(verifyImageSession(token, SECRET, NOW).ok).toBe(false);
   });
 
   it("is refused when the signature is a different length, without throwing", () => {
-    const { token } = mintImageSession(USER, SECRET, NOW);
+    const { token } = mintImageSession(USER, SECRET, null, NOW);
     const [v, payload] = token.split(".");
     expect(() => verifyImageSession(`${v}.${payload}.short`, SECRET, NOW)).not.toThrow();
     expect(verifyImageSession(`${v}.${payload}.short`, SECRET, NOW).ok).toBe(false);
@@ -80,13 +80,13 @@ describe("a token this server did not mint", () => {
 
 describe("without a secret nothing works, in the safe direction", () => {
   it("refuses to verify", () => {
-    const { token } = mintImageSession(USER, SECRET, NOW);
+    const { token } = mintImageSession(USER, SECRET, null, NOW);
     expect(verifyImageSession(token, "", NOW)).toEqual({ ok: false, reason: "no_secret" });
     expect(verifyImageSession(token, null, NOW)).toEqual({ ok: false, reason: "no_secret" });
   });
 
   it("refuses to mint", () => {
-    expect(() => mintImageSession(USER, "", NOW)).toThrow();
+    expect(() => mintImageSession(USER, "", null, NOW)).toThrow();
   });
 
   it("reports an absent cookie as absent rather than as a bad signature", () => {
@@ -133,42 +133,77 @@ describe("the cookie itself", () => {
 //
 // The first version minted this from a verified bearer token and then believed
 // it for twelve hours, so somebody who signed out kept their illustrations for
-// the rest of the day. The lifetime is now minutes, and the account carries a
-// timestamp that kills every cookie issued before it.
+// the rest of the day. The lifetime is now minutes, and the cookie records the
+// account's revocation state so that a sign-out kills it at once.
+
+const MARKER = "2026-10-15T12:00:00.5+00:00";
+const LATER_MARKER = "2026-10-15T12:00:00.501+00:00";
+
+/** A claim as the route sees it, minted under a given revocation marker. */
+const claimUnder = (marker: string | null) => {
+  const r = verifyImageSession(
+    mintImageSession(USER, SECRET, marker, NOW).token, SECRET, NOW);
+  if (!r.ok) throw new Error("mint failed");
+  return r.claim;
+};
 
 describe("sign-out invalidates outstanding cookies", () => {
-  const claimAt = (iso: string) => {
-    const r = verifyImageSession(mintImageSession(USER, SECRET, new Date(iso)).token, SECRET, new Date(iso));
-    if (!r.ok) throw new Error("mint failed");
-    return r.claim;
-  };
-
-  it("refuses a cookie issued before the account's cutoff", () => {
-    expect(isSessionSuperseded(claimAt("2026-10-13T11:00:00Z"), "2026-10-13T12:00:00Z")).toBe(true);
+  it("refuses a cookie minted before the account was ever revoked", () => {
+    expect(isSessionSuperseded(claimUnder(null), MARKER)).toBe(true);
   });
 
-  it("accepts one issued after it", () => {
-    expect(isSessionSuperseded(claimAt("2026-10-13T13:00:00Z"), "2026-10-13T12:00:00Z")).toBe(false);
+  it("accepts one minted under the marker now in force", () => {
+    expect(isSessionSuperseded(claimUnder(MARKER), MARKER)).toBe(false);
+  });
+
+  it("refuses one minted under a marker that has since moved", () => {
+    expect(isSessionSuperseded(claimUnder(MARKER), LATER_MARKER)).toBe(true);
   });
 
   it("accepts anything when the account has never signed out", () => {
-    expect(isSessionSuperseded(claimAt("2026-10-13T11:00:00Z"), null)).toBe(false);
+    expect(isSessionSuperseded(claimUnder(null), null)).toBe(false);
+    expect(isSessionSuperseded(claimUnder(null), undefined)).toBe(false);
   });
 
-  it("refuses rather than guesses when the cutoff is unreadable", () => {
-    expect(isSessionSuperseded(claimAt("2026-10-13T11:00:00Z"), "not a date")).toBe(true);
+  it("refuses a cookie carrying a marker when the column reads empty", () => {
+    // Backwards is impossible through the trigger, so this is a bug or a
+    // tampered row either way. Both are answered with a refusal.
+    expect(isSessionSuperseded(claimUnder(MARKER), null)).toBe(true);
   });
 
-  it("carries the issue time, or the cutoff could not be applied at all", () => {
-    const r = verifyImageSession(mintImageSession(USER, SECRET, NOW).token, SECRET, NOW);
-    expect(r.ok).toBe(true);
-    if (r.ok) expect(r.claim.issuedAt).toBe(Math.floor(NOW.getTime() / 1000));
+  it("carries the marker, or the kill switch could not be applied at all", () => {
+    expect(claimUnder(MARKER).revocationMarker).toBe(MARKER);
+    expect(claimUnder(null).revocationMarker).toBeNull();
   });
 
-  it("rejects a token with no issue time, so an old cookie cannot dodge the cutoff", () => {
-    // Exactly the v1 payload shape from before this change.
-    const legacy = Buffer.from(JSON.stringify({ u: USER, e: 9_999_999_999 })).toString("base64url");
+  it("refuses a v1 cookie outright, rather than reading it as un-revoked", () => {
+    // The v1 payload shape: an issue time and no marker. Reinterpreting it
+    // would make every outstanding v1 cookie look like an account that had
+    // never signed out, which is the one answer that must not be given.
+    const legacy = Buffer.from(JSON.stringify({ u: USER, i: 1, e: 9_999_999_999 }))
+      .toString("base64url");
     expect(verifyImageSession(`v1.${legacy}.anything`, SECRET, NOW).ok).toBe(false);
+  });
+
+  it("refuses a v2 payload with the marker field removed", () => {
+    // Signed by us, so this is the forgery that matters: strip `r` and the
+    // claim would compare equal to a never-revoked account.
+    const { token } = mintImageSession(USER, SECRET, MARKER, NOW);
+    const [v, payload] = token.split(".");
+    const claim = JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+    delete claim.r;
+    const stripped = Buffer.from(JSON.stringify(claim)).toString("base64url");
+    // Unsigned, so it fails at the signature; re-signing is not possible
+    // without the secret, which is the point.
+    expect(verifyImageSession(`${v}.${stripped}.x`, SECRET, NOW).ok).toBe(false);
+  });
+
+  it("refuses a marker of the wrong type", () => {
+    for (const r of [0, 12_345, true, {}, []]) {
+      const payload = Buffer.from(JSON.stringify({ u: USER, i: 1, e: 9_999_999_999, r }))
+        .toString("base64url");
+      expect(verifyImageSession(`v2.${payload}.x`, SECRET, NOW).ok).toBe(false);
+    }
   });
 
   it("lives for minutes, not hours", () => {
@@ -178,44 +213,70 @@ describe("sign-out invalidates outstanding cookies", () => {
 
 // ─── THE SAME-SECOND SIGN-OUT, WHICH PRODUCTION FOUND ───────────────────────
 //
-// The cutoff is stored with millisecond precision; a claim carries whole
-// seconds. Compared directly, a cookie minted in the same second as a sign-out
-// is refused, which a production test hit: re-minting straight after signing
-// out gave a valid cookie that was rejected, and waiting a second fixed it.
+// Phase 32 compared claim.issuedAt (whole seconds, from the mint server's
+// clock) against the cutoff (milliseconds, from the sign-out server's clock),
+// flooring the cutoff to make the legitimate case work. That accepted any
+// cookie minted earlier in the same second as the sign-out: a hole up to 999ms
+// wide, reproduced at scratchpad/samesec/reproduce.mjs.
+//
+// The claim no longer carries a time to compare, so there is no boundary to be
+// wrong about. These tests sweep the region where the hole used to be and
+// assert the only thing that can still vary: which marker the cookie carries.
 
-describe("the cutoff is compared at the claim's own resolution", () => {
-  const claimIssuedAt = (epochSeconds: number) => ({
-    userId: USER, issuedAt: epochSeconds, expiresAt: epochSeconds + 900,
-  });
+describe("the boundary the old comparison got wrong", () => {
+  const signOutMs = Date.parse("2026-10-15T12:00:00.500Z");
+  const cutoff = new Date(signOutMs).toISOString();
 
-  it("accepts a cookie minted in the same second as the sign-out", () => {
-    // Sign-out at 12:00:00.750; cookie minted at 12:00:00 (floored).
-    expect(isSessionSuperseded(
-      claimIssuedAt(Math.floor(new Date("2026-10-15T12:00:00.000Z").getTime() / 1000)),
-      "2026-10-15T12:00:00.750Z",
-    )).toBe(false);
-  });
+  it.each([-500, -499, -1])(
+    "refuses a cookie minted %ims before the sign-out, inside the old hole",
+    (offset) => {
+      // Minted before the sign-out, so it read the marker as it was BEFORE:
+      // null for an account that had never been revoked.
+      const minted = verifyImageSession(
+        mintImageSession(USER, SECRET, null, new Date(signOutMs + offset)).token,
+        SECRET, new Date(signOutMs + offset));
+      expect(minted.ok).toBe(true);
+      if (minted.ok) expect(isSessionSuperseded(minted.claim, cutoff)).toBe(true);
+    });
 
-  it("still refuses a cookie from an earlier second", () => {
-    expect(isSessionSuperseded(
-      claimIssuedAt(Math.floor(new Date("2026-10-15T11:59:59.000Z").getTime() / 1000)),
-      "2026-10-15T12:00:00.750Z",
-    )).toBe(true);
-  });
+  it.each([0, 1, 499, 500, 1000])(
+    "accepts a cookie minted %ims after the sign-out, with no second to wait out",
+    (offset) => {
+      // Minted after, so it read the new marker.
+      const minted = verifyImageSession(
+        mintImageSession(USER, SECRET, cutoff, new Date(signOutMs + offset)).token,
+        SECRET, new Date(signOutMs + offset));
+      expect(minted.ok).toBe(true);
+      if (minted.ok) expect(isSessionSuperseded(minted.claim, cutoff)).toBe(false);
+    });
 
-  it("accepts one from a later second", () => {
-    expect(isSessionSuperseded(
-      claimIssuedAt(Math.floor(new Date("2026-10-15T12:00:01.000Z").getTime() / 1000)),
-      "2026-10-15T12:00:00.750Z",
-    )).toBe(false);
-  });
-
-  it("refuses everything older, however many seconds back", () => {
-    for (const ago of [1, 60, 3600, 86_400]) {
-      expect(isSessionSuperseded(
-        claimIssuedAt(Math.floor(Date.now() / 1000) - ago),
-        new Date().toISOString(),
-      )).toBe(true);
+  it("does not depend on where in the second the sign-out landed", () => {
+    // The old hole's width was whatever fraction of a second the sign-out fell
+    // on. Sweep every millisecond of one second and there is no width left.
+    for (let ms = 0; ms < 1000; ms += 1) {
+      const at = new Date(Date.parse("2026-10-15T12:00:00.000Z") + ms).toISOString();
+      expect(isSessionSuperseded(claimUnder(null), at)).toBe(true);
+      expect(isSessionSuperseded(claimUnder(at), at)).toBe(false);
     }
+  });
+
+  it("compares no clocks, so a mint server running behind changes nothing", () => {
+    // The same cookie, minted by a server whose clock is a minute slow and by
+    // one a minute fast. Both read the same marker; both are accepted.
+    for (const skewMs of [-60_000, -1, 0, 1, 60_000]) {
+      const at = new Date(signOutMs + skewMs);
+      const minted = verifyImageSession(
+        mintImageSession(USER, SECRET, cutoff, at).token, SECRET, at);
+      expect(minted.ok).toBe(true);
+      if (minted.ok) expect(isSessionSuperseded(minted.claim, cutoff)).toBe(false);
+    }
+  });
+
+  it("treats the marker as opaque: a different spelling is a different marker", () => {
+    // Two renderings of the same instant. The route and the mint endpoint read
+    // the one column through the one client, so they always see one spelling;
+    // if that ever stopped being true, this is the direction it fails in.
+    expect(isSessionSuperseded(claimUnder("2026-10-15T12:00:00.5+00:00"),
+      "2026-10-15T12:00:00.500Z")).toBe(true);
   });
 });

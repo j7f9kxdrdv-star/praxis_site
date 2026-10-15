@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import fs from "node:fs";
+import path from "node:path";
 
 // ─── THE BUG THESE TESTS EXIST FOR ──────────────────────────────────────────
 //
@@ -327,5 +329,159 @@ describe("sign-out", () => {
     await clearImageSession();
     signedOut();
     await expect(ensureImageSession()).resolves.toBe(false);
+  });
+
+  // ─── THE GAP BETWEEN REVOKING AND SIGNING OUT ────────────────────────────
+  //
+  // clearImageSession() runs while the bearer token is still valid, because
+  // revoking needs it. So for a moment after the revocation the token would
+  // still mint — and the cookie it minted would carry the NEW marker, which
+  // the image route accepts. That is a session outliving the sign-out that
+  // ended it, and these tests are what hold the gap shut.
+
+  it("mints nothing after sign-out, even while the token is still valid", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    await ensureImageSession();
+    await clearImageSession();
+
+    // Still signed in as far as Supabase is concerned.
+    const callsBefore = fetchMock.mock.calls.length;
+    await expect(ensureImageSession()).resolves.toBe(false);
+    expect(fetchMock.mock.calls.length).toBe(callsBefore);
+  });
+
+  it("refuses a FORCED mint after sign-out, so recovery cannot reopen it", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    await ensureImageSession();
+    await clearImageSession();
+    const callsBefore = fetchMock.mock.calls.length;
+    await expect(recoverImageSession()).resolves.toBe(false);
+    expect(fetchMock.mock.calls.length).toBe(callsBefore);
+  });
+
+  it("does not let a scheduled tick mint in the gap", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    const stop = startImageSessionRenewal();
+    await vi.advanceTimersByTimeAsync(0);
+    await clearImageSession();
+    const callsBefore = fetchMock.mock.calls.length;
+    // Every tick for the next hour.
+    await vi.advanceTimersByTimeAsync(60 * 60 * 1000);
+    expect(fetchMock.mock.calls.length).toBe(callsBefore);
+    stop();
+  });
+
+  it("signing back in starts minting again", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    await ensureImageSession();
+    await clearImageSession();
+    expect(__imageSessionStateForTests().suppressed).toBe(true);
+
+    // A new dashboard mount is a new signed-in session.
+    const stop = startImageSessionRenewal();
+    expect(__imageSessionStateForTests().suppressed).toBe(false);
+    await vi.advanceTimersByTimeAsync(0);
+    expect(__imageSessionStateForTests().expiresAtMs).toBeGreaterThan(0);
+    stop();
+  });
+
+  it("reports whether the server confirmed the revocation", async () => {
+    const revoked: FetchLike = async () => new Response(
+      JSON.stringify({ cleared: true, revoked: true }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+    vi.stubGlobal("fetch", vi.fn(revoked));
+    await expect(clearImageSession()).resolves.toBe(true);
+
+    __resetImageSessionStateForTests();
+    const notRevoked: FetchLike = async () => new Response(
+      JSON.stringify({ cleared: true, revoked: false }),
+      { status: 200, headers: { "content-type": "application/json" } },
+    );
+    vi.stubGlobal("fetch", vi.fn(notRevoked));
+    await expect(clearImageSession()).resolves.toBe(false);
+  });
+
+  it("never throws, so it can never stop somebody signing out", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("offline"); }));
+    await expect(clearImageSession()).resolves.toBe(false);
+    expect(__imageSessionStateForTests().expiresAtMs).toBe(0);
+
+    // And a server that answers badly is still not an exception.
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("nope", { status: 500 })));
+    await expect(clearImageSession()).resolves.toBe(false);
+  });
+
+  it("suppresses even when the request fails, because the intent was to stop", async () => {
+    const fetchMock = vi.fn(async () => { throw new Error("offline"); });
+    vi.stubGlobal("fetch", fetchMock);
+    await clearImageSession();
+    const callsBefore = fetchMock.mock.calls.length;
+    await expect(ensureImageSession({ force: true })).resolves.toBe(false);
+    expect(fetchMock.mock.calls.length).toBe(callsBefore);
+  });
+});
+
+// ─── THE KILL SWITCH HAS TO BE WIRED TO THE BUTTON ──────────────────────────
+//
+// clearImageSession() was written, exported, tested, and never called. Both
+// sign-out buttons called supabase.auth.signOut() alone, so signing out in the
+// real product left the image cookie live for the rest of its fifteen minutes
+// and never moved the account's revocation marker. Checked against production:
+// nought of nine accounts carried a marker, because nothing had ever written
+// one. Unit tests cannot catch an uncalled function, so this reads the source.
+
+describe("every sign-out path revokes the image session", () => {
+  const SIGN_OUT_FILES = [
+    "components/dashboard/Sidebar.tsx",
+    "app/dashboard/settings/page.tsx",
+  ];
+
+  /** Every .ts/.tsx under a directory, so the scan cannot miss a new file. */
+  const walk = (dir: string): string[] =>
+    fs.readdirSync(path.join(process.cwd(), dir), { withFileTypes: true })
+      .flatMap((e) => {
+        const rel = `${dir}/${e.name}`;
+        if (e.isDirectory()) return walk(rel);
+        return /\.tsx?$/.test(e.name) && !/\.test\.tsx?$/.test(e.name) ? [rel] : [];
+      });
+
+  /** Source with comments removed, so a mention in prose is not a call site. */
+  const code = (file: string) =>
+    fs.readFileSync(path.join(process.cwd(), file), "utf8")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/^\s*\/\/.*$/gm, "");
+
+  it("discovers every place that signs out, so this list cannot go stale", () => {
+    // DISCOVERED, NOT LISTED. A hard-coded list is exactly how the gap this
+    // suite exists for survived: the function was there, the list of callers
+    // was in nobody's head, and no test could notice. If a third sign-out
+    // appears anywhere under app/ or components/, this fails until somebody
+    // adds it above and therefore looks at it.
+    const callers = ["app", "components"]
+      .flatMap(walk)
+      .filter((f) => /auth\.signOut\s*\(/.test(code(f)));
+    expect(callers.sort()).toEqual([...SIGN_OUT_FILES].sort());
+  });
+
+  it.each(SIGN_OUT_FILES)("%s clears the image session", (file) => {
+    const src = fs.readFileSync(path.join(process.cwd(), file), "utf8");
+    expect(src).toMatch(/clearImageSession\(\)/);
+  });
+
+  it.each(SIGN_OUT_FILES)("%s clears it BEFORE signOut, while the token is alive", (file) => {
+    const src = fs.readFileSync(path.join(process.cwd(), file), "utf8");
+    // Revoking needs a bearer token to say whose sessions to revoke, and
+    // signOut() takes it away. The wrong order revokes nothing.
+    expect(src.indexOf("clearImageSession()")).toBeLessThan(src.indexOf("auth.signOut()"));
+  });
+
+  it.each(SIGN_OUT_FILES)("%s awaits it, so the request is actually sent", (file) => {
+    const src = fs.readFileSync(path.join(process.cwd(), file), "utf8");
+    expect(src).toMatch(/await clearImageSession\(\)/);
   });
 });
