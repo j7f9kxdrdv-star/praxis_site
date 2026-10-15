@@ -175,3 +175,47 @@ describe("sign-out invalidates outstanding cookies", () => {
     expect(IMAGE_SESSION_TTL_SECONDS).toBeLessThanOrEqual(30 * 60);
   });
 });
+
+// ─── THE SAME-SECOND SIGN-OUT, WHICH PRODUCTION FOUND ───────────────────────
+//
+// The cutoff is stored with millisecond precision; a claim carries whole
+// seconds. Compared directly, a cookie minted in the same second as a sign-out
+// is refused, which a production test hit: re-minting straight after signing
+// out gave a valid cookie that was rejected, and waiting a second fixed it.
+
+describe("the cutoff is compared at the claim's own resolution", () => {
+  const claimIssuedAt = (epochSeconds: number) => ({
+    userId: USER, issuedAt: epochSeconds, expiresAt: epochSeconds + 900,
+  });
+
+  it("accepts a cookie minted in the same second as the sign-out", () => {
+    // Sign-out at 12:00:00.750; cookie minted at 12:00:00 (floored).
+    expect(isSessionSuperseded(
+      claimIssuedAt(Math.floor(new Date("2026-10-15T12:00:00.000Z").getTime() / 1000)),
+      "2026-10-15T12:00:00.750Z",
+    )).toBe(false);
+  });
+
+  it("still refuses a cookie from an earlier second", () => {
+    expect(isSessionSuperseded(
+      claimIssuedAt(Math.floor(new Date("2026-10-15T11:59:59.000Z").getTime() / 1000)),
+      "2026-10-15T12:00:00.750Z",
+    )).toBe(true);
+  });
+
+  it("accepts one from a later second", () => {
+    expect(isSessionSuperseded(
+      claimIssuedAt(Math.floor(new Date("2026-10-15T12:00:01.000Z").getTime() / 1000)),
+      "2026-10-15T12:00:00.750Z",
+    )).toBe(false);
+  });
+
+  it("refuses everything older, however many seconds back", () => {
+    for (const ago of [1, 60, 3600, 86_400]) {
+      expect(isSessionSuperseded(
+        claimIssuedAt(Math.floor(Date.now() / 1000) - ago),
+        new Date().toISOString(),
+      )).toBe(true);
+    }
+  });
+});

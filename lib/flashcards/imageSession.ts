@@ -77,7 +77,21 @@ export function isSessionSuperseded(
   if (!validFrom) return false;
   const boundary = new Date(validFrom);
   if (Number.isNaN(boundary.getTime())) return true; // unreadable: refuse
-  return claim.issuedAt * 1000 < boundary.getTime();
+
+  // BOTH SIDES ARE COMPARED IN WHOLE SECONDS, and that is not a detail.
+  //
+  // The cutoff is written with millisecond precision, while a claim records
+  // its issue time in whole seconds. Comparing them directly means a cookie
+  // minted in the SAME second as a sign-out looks up to 999ms older than the
+  // cutoff and is refused. A production test hit exactly that: signing out and
+  // immediately re-minting produced a valid cookie that was rejected, and
+  // waiting one second made it work. Flooring the cutoff to the same
+  // resolution as the claim removes the mismatch.
+  //
+  // What this costs: a cookie issued earlier in the same second as a sign-out
+  // is accepted. That is a sub-second window, against a bug that otherwise
+  // refuses legitimate sessions for up to a full renewal interval.
+  return claim.issuedAt < Math.floor(boundary.getTime() / 1000);
 }
 
 function b64url(input: Buffer): string {
