@@ -1,54 +1,171 @@
 /**
- * Makes sure this browser is carrying the cookie that illustration requests
- * need, by trading the Supabase bearer token the app already holds for one.
+ * Keeps the browser carrying a usable image-session cookie for as long as the
+ * learner is studying.
  *
- * Called once when the dashboard loads, beside the timezone capture that is
- * already there. It is deliberately fail-soft: if it does not work, the only
- * consequence is that answer illustrations do not appear, and that must never
- * stop a student studying. Nothing here is a security control — the server
- * decides access on every single image request. See
- * app/flashcards/backs/[cardId]/[file]/route.ts.
+ * THE BUG THIS EXISTS TO FIX. The cookie lives fifteen minutes. The first
+ * version minted it once, in the dashboard shell's mount effect, and never
+ * again. The shell mounts on a full page load and client-side navigation does
+ * not remount it, so anyone studying for more than fifteen minutes watched
+ * every illustration quietly stop loading, with no error and no recovery short
+ * of a page reload. Spaced repetition sessions are routinely longer than that.
+ *
+ * WHAT IT DOES NOW. Mints on demand, re-mints on a timer well before expiry,
+ * re-mints when a backgrounded tab comes back, and gives a failed image exactly
+ * one chance to recover. All of it is bounded: one request in flight at a time,
+ * one retry per failure, one timer, and every listener removed on teardown.
+ *
+ * WHAT IT IS NOT. It is not a security control and it grants nothing. Minting
+ * requires a current Supabase session and the server decides entitlement on
+ * every single image request, so a renewal cannot turn an unentitled account
+ * into an entitled one, and it cannot outlive a revocation or a sign-out. The
+ * cookie is HttpOnly, so nothing here reads it: expiry is tracked from what the
+ * mint endpoint reported, which is the only honest source available.
  */
 import { supabase } from "@/lib/supabase";
+import { IMAGE_SESSION_TTL_SECONDS } from "@/lib/flashcards/imageSession";
 
-/** Mint at most once per page load, however many components ask. */
+/** Re-mint once half the lifetime has gone, so a slow network has room. */
+const RENEW_EVERY_MS = (IMAGE_SESSION_TTL_SECONDS / 2) * 1000;
+
+/**
+ * Treat a cookie with less than this left as due for renewal. Comfortably
+ * larger than any plausible request, so a cookie never expires mid-flight.
+ */
+const RENEW_WHEN_REMAINING_MS = 5 * 60 * 1000;
+
+/** Unix ms at which the cookie we last minted stops being accepted. */
+let expiresAtMs = 0;
+/** The one mint in flight, so concurrent callers share a single request. */
 let inFlight: Promise<boolean> | null = null;
 
-export function ensureImageSession(): Promise<boolean> {
-  inFlight ??= mint().finally(() => {
-    // Let a later navigation try again if this attempt failed.
-    setTimeout(() => { inFlight = null; }, 0);
-  });
-  return inFlight;
+function freshEnough(now = Date.now()): boolean {
+  return expiresAtMs - now > RENEW_WHEN_REMAINING_MS;
 }
 
 async function mint(): Promise<boolean> {
   try {
+    // A renewal is only ever as good as the Supabase session behind it. No
+    // session, no mint: this must not keep a signed-out browser alive.
     const { data } = await supabase.auth.getSession();
     const token = data.session?.access_token;
-    if (!token) return false;
+    if (!token) {
+      expiresAtMs = 0;
+      return false;
+    }
 
     const response = await fetch("/api/flashcards/image-session", {
       method: "POST",
       headers: { authorization: `Bearer ${token}` },
-      // The cookie comes back on the response, so the browser must be allowed
-      // to store it; same origin, so this is simply explicit.
       credentials: "same-origin",
     });
-    return response.ok;
+    if (!response.ok) {
+      expiresAtMs = 0;
+      return false;
+    }
+
+    const body = (await response.json().catch(() => null)) as { expiresAt?: number } | null;
+    expiresAtMs = typeof body?.expiresAt === "number"
+      ? body.expiresAt * 1000
+      // The server did not say; assume the shortest sensible life rather than
+      // the longest, so a missing field cannot stretch the cookie's apparent age.
+      : Date.now() + RENEW_EVERY_MS;
+    return true;
   } catch {
+    expiresAtMs = 0;
     return false;
   }
 }
 
-/** Drop the cookie on sign-out, so a shared machine does not keep it. */
+/**
+ * Make sure a usable cookie exists. Does nothing when the current one has
+ * plenty of life left, so navigation and visibility changes do not produce a
+ * stream of pointless requests.
+ */
+export function ensureImageSession(options: { force?: boolean } = {}): Promise<boolean> {
+  if (!options.force && freshEnough()) return Promise.resolve(true);
+  // Everyone who asks while a mint is running waits for that one.
+  inFlight ??= mint().finally(() => { inFlight = null; });
+  return inFlight;
+}
+
+/**
+ * Start keeping the session alive, and return the teardown.
+ *
+ * Called once from the dashboard shell. The timer and the listener are removed
+ * by the returned function, so a remount cannot leave a second set running.
+ */
+export function startImageSessionRenewal(): () => void {
+  void ensureImageSession();
+
+  const timer = setInterval(() => {
+    // Nothing to keep alive for a backgrounded tab; the visibility handler
+    // catches it the moment it returns.
+    if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+    // FORCED, and that detail matters. With a freshness check here the tick
+    // and the margin fight each other: seven and a half minutes in, the cookie
+    // still has seven and a half minutes left, which reads as fresh, so the
+    // tick does nothing and the next one arrives exactly as the cookie dies.
+    // A test caught precisely that. The scheduled renewal is the thing keeping
+    // the session alive, so it always renews; the freshness guard belongs on
+    // the on-demand and visibility paths, where repeated calls are the risk.
+    void ensureImageSession({ force: true });
+  }, RENEW_EVERY_MS);
+
+  const onVisible = () => {
+    if (document.visibilityState !== "visible") return;
+    // A tab asleep for an hour comes back with a long-dead cookie. Renew only
+    // if it is actually due, so switching tabs is not a network event.
+    if (!freshEnough()) void ensureImageSession();
+  };
+
+  if (typeof document !== "undefined") {
+    document.addEventListener("visibilitychange", onVisible);
+  }
+
+  return () => {
+    clearInterval(timer);
+    if (typeof document !== "undefined") {
+      document.removeEventListener("visibilitychange", onVisible);
+    }
+  };
+}
+
+/**
+ * One recovery attempt for an image that failed to load.
+ *
+ * Forces a mint even if the cookie looks fresh, because the only evidence we
+ * have is that the server refused. Returns whether a retry is worth making;
+ * the caller is responsible for attempting it exactly once. If the account is
+ * not entitled this will mint a perfectly valid cookie and the retry will still
+ * be refused, which is correct: renewal proves identity, never entitlement.
+ */
+export function recoverImageSession(): Promise<boolean> {
+  return ensureImageSession({ force: true });
+}
+
+/** Drop the cookie on sign-out, and stop treating it as alive. */
 export async function clearImageSession(): Promise<void> {
+  expiresAtMs = 0;
   try {
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
     await fetch("/api/flashcards/image-session", {
       method: "DELETE",
       credentials: "same-origin",
+      headers: token ? { authorization: `Bearer ${token}` } : {},
     });
   } catch {
     // Sign-out must not fail because of this.
   }
+}
+
+/** Test seam. Not used by the application. */
+export function __resetImageSessionStateForTests(): void {
+  expiresAtMs = 0;
+  inFlight = null;
+}
+
+/** Test seam: what the module believes about the current cookie. */
+export function __imageSessionStateForTests(): { expiresAtMs: number; minting: boolean } {
+  return { expiresAtMs, minting: inFlight !== null };
 }

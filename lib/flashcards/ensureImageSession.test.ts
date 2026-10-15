@@ -1,0 +1,310 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+
+// ─── THE BUG THESE TESTS EXIST FOR ──────────────────────────────────────────
+//
+// The cookie lives fifteen minutes and the first version minted it once, on
+// mount, and never again. A study session outlasts that, so illustrations
+// stopped loading part-way through with no error and no recovery. Every test
+// below is about that lapse: renewing before it happens, noticing when a tab
+// comes back from the dead, and recovering exactly once if it happens anyway.
+//
+// Supabase is mocked so these are pure: no network, no session, no database.
+
+const getSession = vi.fn();
+vi.mock("@/lib/supabase", () => ({
+  supabase: { auth: { getSession: () => getSession() } },
+}));
+
+// This suite runs in the node environment, which has no document. The module
+// only ever uses three things from it, so rather than pull in a whole DOM just
+// for a visibility flag, stand up exactly those three. Listener bookkeeping is
+// real, so the teardown test is still testing something.
+if (typeof globalThis.document === "undefined") {
+  const listeners = new Map<string, Set<EventListener>>();
+  const fake = {
+    visibilityState: "visible" as DocumentVisibilityState,
+    addEventListener(type: string, fn: EventListener) {
+      if (!listeners.has(type)) listeners.set(type, new Set());
+      listeners.get(type)!.add(fn);
+    },
+    removeEventListener(type: string, fn: EventListener) {
+      listeners.get(type)?.delete(fn);
+    },
+    dispatchEvent(event: { type: string }) {
+      listeners.get(event.type)?.forEach((fn) => fn(event as unknown as Event));
+      return true;
+    },
+  };
+  Object.defineProperty(globalThis, "document", { value: fake, configurable: true, writable: true });
+}
+if (typeof globalThis.Event === "undefined") {
+  Object.defineProperty(globalThis, "Event", {
+    value: class { type: string; constructor(type: string) { this.type = type; } },
+    configurable: true, writable: true,
+  });
+}
+
+const {
+  ensureImageSession,
+  startImageSessionRenewal,
+  recoverImageSession,
+  clearImageSession,
+  __resetImageSessionStateForTests,
+  __imageSessionStateForTests,
+} = await import("@/lib/flashcards/ensureImageSession");
+
+const TTL = 15 * 60;
+const signedIn = () => getSession.mockResolvedValue({ data: { session: { access_token: "tok" } } });
+const signedOut = () => getSession.mockResolvedValue({ data: { session: null } });
+
+/**
+ * A stand-in for fetch. The implementation ignores its arguments, but the mock
+ * is given fetch's call signature so the recorded calls can be inspected.
+ */
+type FetchLike = (input?: unknown, init?: unknown) => Promise<Response>;
+
+function mintOk(ttl = TTL) {
+  const impl: FetchLike = async () => new Response(
+    JSON.stringify({ expiresAt: Math.floor(Date.now() / 1000) + ttl }),
+    { status: 200, headers: { "content-type": "application/json" } },
+  );
+  return vi.fn(impl);
+}
+
+beforeEach(() => {
+  vi.useFakeTimers();
+  __resetImageSessionStateForTests();
+  getSession.mockReset();
+  signedIn();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
+
+describe("minting", () => {
+  it("mints when there is no cookie yet", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(ensureImageSession()).resolves.toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls.at(0)?.[0]).toBe("/api/flashcards/image-session");
+  });
+
+  it("sends the Supabase token, so a renewal still requires a real session", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    await ensureImageSession();
+    const init = fetchMock.mock.calls.at(0)?.[1] as RequestInit | undefined;
+    expect((init?.headers as Record<string, string>).authorization).toBe("Bearer tok");
+    expect(init?.method).toBe("POST");
+  });
+
+  it("refuses to mint when there is no Supabase session", async () => {
+    signedOut();
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(ensureImageSession()).resolves.toBe(false);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("does not mint again while the cookie has plenty of life", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    await ensureImageSession();
+    await ensureImageSession();
+    await ensureImageSession();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("collapses concurrent callers into a single request", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    await Promise.all([ensureImageSession(), ensureImageSession(), ensureImageSession()]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("failure is treated as having no cookie", () => {
+  it("a non-ok mint leaves nothing to trust", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("no", { status: 401 })));
+    await expect(ensureImageSession()).resolves.toBe(false);
+    expect(__imageSessionStateForTests().expiresAtMs).toBe(0);
+  });
+
+  it("a network error does not throw", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("offline"); }));
+    await expect(ensureImageSession()).resolves.toBe(false);
+  });
+
+  it("a failed mint does not block the next attempt", async () => {
+    const failing = vi.fn(async () => new Response("no", { status: 500 }));
+    vi.stubGlobal("fetch", failing);
+    await ensureImageSession();
+    const working = mintOk();
+    vi.stubGlobal("fetch", working);
+    await expect(ensureImageSession()).resolves.toBe(true);
+    expect(working).toHaveBeenCalledTimes(1);
+  });
+
+  it("a mint with no expiry in the body is assumed short-lived, not long-lived", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("{}", {
+      status: 200, headers: { "content-type": "application/json" } })));
+    await ensureImageSession();
+    const { expiresAtMs } = __imageSessionStateForTests();
+    expect(expiresAtMs - Date.now()).toBeLessThanOrEqual((TTL / 2) * 1000);
+  });
+});
+
+describe("scheduled renewal", () => {
+  it("renews on its own before the cookie expires", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    const stop = startImageSessionRenewal();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+
+    // Past half the lifetime: the timer fires and the cookie is replaced
+    // while the old one is still valid.
+    await vi.advanceTimersByTimeAsync((TTL / 2) * 1000 + 10);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    stop();
+  });
+
+  it("keeps renewing across a session far longer than one cookie", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    const stop = startImageSessionRenewal();
+    await vi.advanceTimersByTimeAsync(0);
+    // An hour of study: four half-lives.
+    await vi.advanceTimersByTimeAsync(60 * 60 * 1000);
+    expect(fetchMock.mock.calls.length).toBeGreaterThanOrEqual(7);
+    stop();
+  });
+
+  it("stops completely when torn down", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    const stop = startImageSessionRenewal();
+    await vi.advanceTimersByTimeAsync(0);
+    stop();
+    const before = fetchMock.mock.calls.length;
+    await vi.advanceTimersByTimeAsync(60 * 60 * 1000);
+    expect(fetchMock.mock.calls.length).toBe(before);
+  });
+
+  it("removes its visibility listener on teardown, so a remount cannot double up", async () => {
+    vi.stubGlobal("fetch", mintOk());
+    const add = vi.spyOn(document, "addEventListener");
+    const remove = vi.spyOn(document, "removeEventListener");
+    const stop = startImageSessionRenewal();
+    await vi.advanceTimersByTimeAsync(0);
+    stop();
+    expect(add).toHaveBeenCalledWith("visibilitychange", expect.any(Function));
+    expect(remove).toHaveBeenCalledWith("visibilitychange", expect.any(Function));
+    add.mockRestore();
+    remove.mockRestore();
+  });
+});
+
+describe("returning to a backgrounded tab", () => {
+  const setVisibility = (value: "visible" | "hidden") =>
+    Object.defineProperty(document, "visibilityState", { value, configurable: true });
+
+  afterEach(() => setVisibility("visible"));
+
+  it("renews when the tab comes back after the cookie has gone stale", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    const stop = startImageSessionRenewal();
+    await vi.advanceTimersByTimeAsync(0);
+
+    setVisibility("hidden");
+    // Asleep well past expiry; the interval deliberately does nothing here.
+    await vi.advanceTimersByTimeAsync(TTL * 1000 * 3);
+    const whileHidden = fetchMock.mock.calls.length;
+
+    setVisibility("visible");
+    document.dispatchEvent(new Event("visibilitychange"));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetchMock.mock.calls.length).toBeGreaterThan(whileHidden);
+    stop();
+  });
+
+  it("does not renew when a tab returns with a cookie that is still fresh", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    const stop = startImageSessionRenewal();
+    await vi.advanceTimersByTimeAsync(0);
+    const after = fetchMock.mock.calls.length;
+
+    setVisibility("visible");
+    document.dispatchEvent(new Event("visibilitychange"));
+    document.dispatchEvent(new Event("visibilitychange"));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(fetchMock.mock.calls.length).toBe(after);
+    stop();
+  });
+
+  it("does not mint on a timer while hidden", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    const stop = startImageSessionRenewal();
+    await vi.advanceTimersByTimeAsync(0);
+    const after = fetchMock.mock.calls.length;
+    setVisibility("hidden");
+    await vi.advanceTimersByTimeAsync((TTL / 2) * 1000 * 4);
+    expect(fetchMock.mock.calls.length).toBe(after);
+    stop();
+  });
+});
+
+describe("recovery after a failure", () => {
+  it("forces a mint even when the cookie looks fresh", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    await ensureImageSession();
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    await recoverImageSession();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("reports failure when there is no session, so a retry is not attempted", async () => {
+    signedOut();
+    vi.stubGlobal("fetch", mintOk());
+    await expect(recoverImageSession()).resolves.toBe(false);
+  });
+
+  it("grants nothing: a successful mint is only identity", async () => {
+    // The mint succeeding says the person is signed in. Whether they may see
+    // the image is decided by the server on the retry, which this cannot touch.
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(recoverImageSession()).resolves.toBe(true);
+    const init = fetchMock.mock.calls.at(0)?.[1] as RequestInit | undefined;
+    expect(JSON.stringify(init ?? {})).not.toMatch(/tier|entitle|subscription/i);
+  });
+});
+
+describe("sign-out", () => {
+  it("clears the cookie and stops treating one as alive", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    await ensureImageSession();
+    expect(__imageSessionStateForTests().expiresAtMs).toBeGreaterThan(0);
+
+    await clearImageSession();
+    expect(__imageSessionStateForTests().expiresAtMs).toBe(0);
+    const del = fetchMock.mock.calls.at(-1)?.[1] as RequestInit | undefined;
+    expect(del?.method).toBe("DELETE");
+  });
+
+  it("a renewal after sign-out mints nothing once the session is gone", async () => {
+    vi.stubGlobal("fetch", mintOk());
+    await ensureImageSession();
+    await clearImageSession();
+    signedOut();
+    await expect(ensureImageSession()).resolves.toBe(false);
+  });
+});
