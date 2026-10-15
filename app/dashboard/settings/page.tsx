@@ -373,11 +373,15 @@ export default function SettingsPage() {
 
   async function signOut() {
     setSigningOut(true);
-    // See components/dashboard/Sidebar.tsx: this has to happen while the
-    // bearer token is still valid, so it goes before signOut().
-    await clearImageSession();
-    await supabase.auth.signOut();
-    router.push("/");
+    // See components/dashboard/Sidebar.tsx for why this order, why the 403
+    // from signOut() afterwards is expected, and why the navigation is in a
+    // finally.
+    try {
+      await clearImageSession();
+      await supabase.auth.signOut();
+    } finally {
+      router.push("/");
+    }
   }
 
   return (

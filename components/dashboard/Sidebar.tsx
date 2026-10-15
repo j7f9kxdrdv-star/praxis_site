@@ -119,11 +119,24 @@ export default function Sidebar() {
   async function handleLogout() {
     // BEFORE signOut, and that order is the whole point. Revoking the image
     // sessions needs a live bearer token to prove who is signing out, and
-    // signOut() takes it away. Awaited, so the revocation is in flight before
-    // the session disappears; it never throws, so it cannot block signing out.
-    await clearImageSession();
-    await supabase.auth.signOut();
-    router.push("/login");
+    // signOut() takes it away. Awaited, so the revocation happens while the
+    // token is still valid.
+    //
+    // The server-side sign-out has already deleted the Supabase sessions by
+    // the time this returns, so the signOut() below gets a 403 from the Auth
+    // server. That is expected and harmless: GoTrueClient swallows 401, 403
+    // and 404 from logout and clears the local session regardless.
+    //
+    // try/finally because the learner asked to leave. If either step throws on
+    // a flaky connection, staying on the dashboard with a cleared cookie and
+    // minting suppressed would mean illustrations silently stop working until
+    // a reload. Navigating is the honest outcome.
+    try {
+      await clearImageSession();
+      await supabase.auth.signOut();
+    } finally {
+      router.push("/login");
+    }
   }
 
   const initial =

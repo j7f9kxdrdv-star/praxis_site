@@ -188,21 +188,43 @@ export async function clearImageSession(): Promise<boolean> {
   // Set before the request, not after, so a renewal tick cannot slip in while
   // it is in flight.
   suppressed = true;
-  try {
-    const { data } = await supabase.auth.getSession();
-    const token = data.session?.access_token;
-    const response = await fetch("/api/flashcards/image-session", {
-      method: "DELETE",
-      credentials: "same-origin",
-      headers: token ? { authorization: `Bearer ${token}` } : {},
-    });
-    if (!response.ok) return false;
-    const body = (await response.json().catch(() => null)) as { revoked?: boolean } | null;
-    return body?.revoked === true;
-  } catch {
-    // Sign-out must not fail because of this.
-    return false;
+
+  /** One attempt. Returns the server's own account of what it managed. */
+  async function attempt(): Promise<{ revoked: boolean; reason: string } | null> {
+    try {
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      const response = await fetch("/api/flashcards/image-session", {
+        method: "DELETE",
+        credentials: "same-origin",
+        headers: token ? { authorization: `Bearer ${token}` } : {},
+      });
+      if (!response.ok) return null;
+      const body = (await response.json().catch(() => null)) as
+        { revoked?: boolean; reason?: string } | null;
+      return { revoked: body?.revoked === true, reason: body?.reason ?? "unknown" };
+    } catch {
+      return null;
+    }
   }
+
+  const first = await attempt();
+  if (first?.revoked) return true;
+
+  // ONE RETRY, AND ONLY FOR THE FAILURES THAT A RETRY CAN FIX.
+  //
+  // If the marker write failed or lost its race, every outstanding cookie on
+  // every other device stays valid until it expires, so it is worth a second
+  // request. `no_live_session` is not worth retrying: the sessions are already
+  // gone and a completed sign-out has already moved the marker. Nor is
+  // `no_profile`, which will not fix itself.
+  const worthRetrying = first === null
+    || first.reason === "unavailable"
+    || first.reason === "contended";
+  if (!worthRetrying) return false;
+
+  const second = await attempt();
+  return second?.revoked === true;
 }
 
 /** Test seam. Not used by the application. */

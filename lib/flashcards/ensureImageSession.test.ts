@@ -406,6 +406,94 @@ describe("sign-out", () => {
     await expect(clearImageSession()).resolves.toBe(false);
   });
 
+  // ─── THE RETRY, AND WHAT IT IS AND IS NOT FOR ───────────────────────────
+  //
+  // If the marker write fails, outstanding cookies on OTHER devices stay valid
+  // until they expire, so a second request is worth making. If the sessions
+  // are already gone, a retry cannot achieve anything and would just slow
+  // signing out down.
+
+  const deleteReplying = (bodies: Array<Record<string, unknown> | null>) => {
+    let n = 0;
+    return vi.fn(async (_input?: unknown, init?: unknown) => {
+      const method = (init as RequestInit | undefined)?.method;
+      if (method !== "DELETE") {
+        return new Response(JSON.stringify({ expiresAt: Math.floor(Date.now() / 1000) + TTL }),
+          { status: 200, headers: { "content-type": "application/json" } });
+      }
+      const body = bodies[Math.min(n, bodies.length - 1)];
+      n += 1;
+      if (body === null) return new Response("nope", { status: 500 });
+      return new Response(JSON.stringify(body),
+        { status: 200, headers: { "content-type": "application/json" } });
+    });
+  };
+  const deleteCalls = (m: ReturnType<typeof deleteReplying>) =>
+    m.mock.calls.filter((c) => (c[1] as RequestInit | undefined)?.method === "DELETE").length;
+
+  it("does not retry when the first attempt already revoked", async () => {
+    const fetchMock = deleteReplying([{ cleared: true, revoked: true, reason: "advanced" }]);
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(clearImageSession()).resolves.toBe(true);
+    expect(deleteCalls(fetchMock)).toBe(1);
+  });
+
+  it("retries once when the marker write was unavailable, and reports the second result", async () => {
+    const fetchMock = deleteReplying([
+      { cleared: true, revoked: false, reason: "unavailable" },
+      { cleared: true, revoked: true, reason: "advanced" },
+    ]);
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(clearImageSession()).resolves.toBe(true);
+    expect(deleteCalls(fetchMock)).toBe(2);
+  });
+
+  it("retries when it lost the race, since a retry can win it", async () => {
+    const fetchMock = deleteReplying([
+      { cleared: true, revoked: false, reason: "contended" },
+      { cleared: true, revoked: true, reason: "advanced" },
+    ]);
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(clearImageSession()).resolves.toBe(true);
+    expect(deleteCalls(fetchMock)).toBe(2);
+  });
+
+  it("retries when the request itself failed", async () => {
+    const fetchMock = deleteReplying([null, { cleared: true, revoked: true, reason: "advanced" }]);
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(clearImageSession()).resolves.toBe(true);
+    expect(deleteCalls(fetchMock)).toBe(2);
+  });
+
+  it("does NOT retry when the sessions are already gone", async () => {
+    const fetchMock = deleteReplying([{ cleared: true, revoked: false, reason: "no_live_session" }]);
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(clearImageSession()).resolves.toBe(false);
+    expect(deleteCalls(fetchMock)).toBe(1);
+  });
+
+  it("does NOT retry when there is no profile to carry a marker", async () => {
+    const fetchMock = deleteReplying([{ cleared: true, revoked: false, reason: "no_profile" }]);
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(clearImageSession()).resolves.toBe(false);
+    expect(deleteCalls(fetchMock)).toBe(1);
+  });
+
+  it("gives up after the one retry rather than looping", async () => {
+    const fetchMock = deleteReplying([{ cleared: true, revoked: false, reason: "unavailable" }]);
+    vi.stubGlobal("fetch", fetchMock);
+    await expect(clearImageSession()).resolves.toBe(false);
+    expect(deleteCalls(fetchMock)).toBe(2);
+  });
+
+  it("suppresses minting throughout, retry included", async () => {
+    const fetchMock = deleteReplying([{ cleared: true, revoked: false, reason: "unavailable" }]);
+    vi.stubGlobal("fetch", fetchMock);
+    await clearImageSession();
+    expect(__imageSessionStateForTests().suppressed).toBe(true);
+    await expect(ensureImageSession({ force: true })).resolves.toBe(false);
+  });
+
   it("never throws, so it can never stop somebody signing out", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => { throw new Error("offline"); }));
     await expect(clearImageSession()).resolves.toBe(false);
