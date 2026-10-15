@@ -16,13 +16,14 @@
  *
  * AND IT IS NOT PROOF THAT THE SUPABASE SESSION IS STILL ALIVE. That was the
  * flaw in the first version: it was minted from a verified bearer token and
- * then believed for twelve hours, so somebody who signed out — or was signed
- * out — kept their illustrations for the rest of the day. Two things fix it.
+ * then believed for twelve hours, so somebody who signed out, or was signed
+ * out, kept their illustrations for the rest of the day. Two things fix it.
  * The lifetime is now minutes, not hours, so the window is small. And the
- * claim carries the instant it was issued, which the route compares against
- * profiles.image_sessions_valid_from: signing out moves that column forward,
- * which invalidates every cookie issued before it, everywhere, at once. That
- * is a server-side kill switch rather than a promise the client keeps.
+ * claim carries a copy of the account's revocation marker, which the route
+ * compares against the marker in force now: signing out moves
+ * profiles.image_sessions_valid_from, and every cookie minted under the old
+ * value is refused, everywhere, at once. That is a server-side kill switch
+ * rather than a promise the client keeps.
  *
  * WHY A COOKIE IS SAFER HERE THAN THE BEARER TOKEN WE ALREADY HAVE. The
  * Supabase session sits in local storage, which any script on the page can
@@ -48,13 +49,35 @@ export const IMAGE_SESSION_TTL_SECONDS = 15 * 60;
 /** Scoped to the illustrations, so it rides along with nothing else. */
 export const IMAGE_SESSION_PATH = "/flashcards/backs";
 
-const VERSION = "v1";
+/**
+ * Bumped from v1 when the claim stopped carrying an issue time to compare
+ * against the cutoff and started carrying the cutoff itself. A v1 cookie is
+ * refused as malformed rather than reinterpreted, which costs a learner one
+ * image and one automatic re-mint, and is the only safe direction: a v1 claim
+ * has no revocation marker, so there is nothing to check it against.
+ */
+const VERSION = "v2";
 
 export type ImageSessionClaim = {
   userId: string;
-  /** Unix seconds. Compared against the account's kill-switch timestamp. */
+  /**
+   * Unix seconds, for logs and for support questions. DELIBERATELY NOT USED TO
+   * DECIDE ANYTHING. Comparing it against the revocation cutoff is the bug this
+   * version exists to remove; see isSessionSuperseded.
+   */
   issuedAt: number;
   expiresAt: number;
+  /**
+   * The account's revocation marker as it stood when this cookie was minted:
+   * the literal value of profiles.image_sessions_valid_from, or null if the
+   * account has never had a session revoked.
+   *
+   * AN OPAQUE STRING, NOT A TIME. Nothing may parse it, order it or do
+   * arithmetic on it. Its only job is to be compared for identity against the
+   * value in the column, and treating it as a clock reading is exactly what
+   * went wrong before.
+   */
+  revocationMarker: string | null;
 };
 
 export type VerifyResult =
@@ -62,36 +85,43 @@ export type VerifyResult =
   | { ok: false; reason: "absent" | "malformed" | "bad_signature" | "expired" | "no_secret" };
 
 /**
- * Was this cookie issued before the account's sessions were invalidated?
+ * Was this cookie minted under a revocation state that no longer holds?
  *
- * `validFrom` is profiles.image_sessions_valid_from. Signing out moves it to
- * now, so every cookie minted before that instant is dead on its next use, on
- * every device, without waiting for anything to expire. A clock skew of a
- * second either way does not matter here: the comparison is against a column
- * the server wrote.
+ * `currentMarker` is profiles.image_sessions_valid_from as the route just read
+ * it. The cookie carries the same column's value as the mint endpoint read it.
+ * If the two differ, the column moved in between, which only happens when a
+ * session is revoked, so the cookie is dead.
+ *
+ * THERE IS NO CLOCK IN HERE, AND THAT IS THE WHOLE POINT. The previous version
+ * asked whether the cookie's issue time came before the cutoff, which compared
+ * the mint server's clock in whole seconds against the sign-out server's clock
+ * in milliseconds. Two clocks, two resolutions. Flooring the cutoff to seconds
+ * made legitimate sessions work again and, unavoidably, accepted any cookie
+ * minted earlier in the same second as the sign-out: a hole up to 999ms wide,
+ * reproduced at scratchpad/samesec/reproduce.mjs.
+ *
+ * Identity between two reads of one column has no resolution to get wrong, so
+ * the hole is not narrowed here, it is absent. A cookie minted a microsecond
+ * before a sign-out carries the old marker and is refused; one minted a
+ * microsecond after carries the new one and is accepted.
+ *
+ * WHY IDENTITY RATHER THAN ORDER. Order would need the values to be
+ * interpretable and would invite arithmetic on them again. The column is
+ * forward-only (trigger profiles_image_sessions_forward_only), so it never
+ * returns to a value an outstanding cookie could be carrying, and "different"
+ * and "newer" are the same thing here.
+ *
+ * FAILURE DIRECTIONS. A cookie carrying a marker when the column is null, or
+ * null when the column is set, differs and is refused. If the serialisation of
+ * a timestamptz ever changed under us, every cookie would differ once and
+ * every learner would re-mint on their next image. Every wrong answer this can
+ * give is a refusal.
  */
 export function isSessionSuperseded(
   claim: ImageSessionClaim,
-  validFrom: string | null | undefined,
+  currentMarker: string | null | undefined,
 ): boolean {
-  if (!validFrom) return false;
-  const boundary = new Date(validFrom);
-  if (Number.isNaN(boundary.getTime())) return true; // unreadable: refuse
-
-  // BOTH SIDES ARE COMPARED IN WHOLE SECONDS, and that is not a detail.
-  //
-  // The cutoff is written with millisecond precision, while a claim records
-  // its issue time in whole seconds. Comparing them directly means a cookie
-  // minted in the SAME second as a sign-out looks up to 999ms older than the
-  // cutoff and is refused. A production test hit exactly that: signing out and
-  // immediately re-minting produced a valid cookie that was rejected, and
-  // waiting one second made it work. Flooring the cutoff to the same
-  // resolution as the claim removes the mismatch.
-  //
-  // What this costs: a cookie issued earlier in the same second as a sign-out
-  // is accepted. That is a sub-second window, against a bug that otherwise
-  // refuses legitimate sessions for up to a full renewal interval.
-  return claim.issuedAt < Math.floor(boundary.getTime() / 1000);
+  return (claim.revocationMarker ?? null) !== (currentMarker ?? null);
 }
 
 function b64url(input: Buffer): string {
@@ -110,16 +140,25 @@ function sign(payload: string, secret: string): string {
  * Mint a token for a user whose bearer token has ALREADY been verified.
  * This function does no verification of its own and must never be called with
  * a user id that arrived from the client.
+ *
+ * `revocationMarker` is the account's current image_sessions_valid_from, which
+ * the caller must have just read from the database. It is a required argument
+ * rather than an optional one on purpose: a cookie minted without it would be
+ * refused by every image request, so forgetting it has to be a type error
+ * rather than a quiet runtime failure.
  */
 export function mintImageSession(
   userId: string,
   secret: string,
+  revocationMarker: string | null,
   now: Date = new Date(),
 ): { token: string; expiresAt: number } {
   if (!secret) throw new Error("refusing to mint an image session without a secret");
   const issuedAt = Math.floor(now.getTime() / 1000);
   const expiresAt = issuedAt + IMAGE_SESSION_TTL_SECONDS;
-  const payload = b64url(Buffer.from(JSON.stringify({ u: userId, i: issuedAt, e: expiresAt })));
+  const payload = b64url(Buffer.from(JSON.stringify({
+    u: userId, i: issuedAt, e: expiresAt, r: revocationMarker ?? null,
+  })));
   return { token: `${VERSION}.${payload}.${sign(payload, secret)}`, expiresAt };
 }
 
@@ -143,7 +182,7 @@ export function verifyImageSession(
   if (expected.length !== actual.length) return { ok: false, reason: "bad_signature" };
   if (!timingSafeEqual(expected, actual)) return { ok: false, reason: "bad_signature" };
 
-  let claim: { u?: unknown; i?: unknown; e?: unknown };
+  let claim: { u?: unknown; i?: unknown; e?: unknown; r?: unknown };
   try {
     claim = JSON.parse(unb64url(payload).toString("utf8"));
   } catch {
@@ -154,9 +193,23 @@ export function verifyImageSession(
    || typeof claim.e !== "number" || typeof claim.i !== "number") {
     return { ok: false, reason: "malformed" };
   }
+  // The marker must be PRESENT, even when it is null. A payload without the
+  // field is one minted before the field existed, and it would compare equal
+  // to an account that has never been revoked no matter what the column says.
+  if (!("r" in claim) || !(claim.r === null || typeof claim.r === "string")) {
+    return { ok: false, reason: "malformed" };
+  }
   if (claim.e * 1000 <= now.getTime()) return { ok: false, reason: "expired" };
 
-  return { ok: true, claim: { userId: claim.u, issuedAt: claim.i, expiresAt: claim.e } };
+  return {
+    ok: true,
+    claim: {
+      userId: claim.u,
+      issuedAt: claim.i,
+      expiresAt: claim.e,
+      revocationMarker: claim.r,
+    },
+  };
 }
 
 /** Read one cookie out of a request's Cookie header without a parser dependency. */

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { clearImageSession } from "@/lib/flashcards/ensureImageSession";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { describeScope, type ResetScope } from "@/lib/account/resetScope";
 
@@ -372,6 +373,9 @@ export default function SettingsPage() {
 
   async function signOut() {
     setSigningOut(true);
+    // See components/dashboard/Sidebar.tsx: this has to happen while the
+    // bearer token is still valid, so it goes before signOut().
+    await clearImageSession();
     await supabase.auth.signOut();
     router.push("/");
   }
