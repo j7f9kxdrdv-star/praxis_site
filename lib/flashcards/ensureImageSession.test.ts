@@ -214,16 +214,19 @@ describe("returning to a backgrounded tab", () => {
 
   afterEach(() => setVisibility("visible"));
 
-  it("renews when the tab comes back after the cookie has gone stale", async () => {
+  it("renews on return when the browser throttled the timer away", async () => {
+    // This is what the visibility handler is for now that the interval runs
+    // while hidden: browsers throttle background timers, and a phone may stop
+    // them entirely. Simulated by moving the clock forward WITHOUT letting the
+    // interval fire, which is exactly what a throttled tab looks like.
     const fetchMock = mintOk();
     vi.stubGlobal("fetch", fetchMock);
     const stop = startImageSessionRenewal();
     await vi.advanceTimersByTimeAsync(0);
+    const whileHidden = fetchMock.mock.calls.length;
 
     setVisibility("hidden");
-    // Asleep well past expiry; the interval deliberately does nothing here.
-    await vi.advanceTimersByTimeAsync(TTL * 1000 * 3);
-    const whileHidden = fetchMock.mock.calls.length;
+    vi.setSystemTime(Date.now() + TTL * 1000 * 3);   // time passes, no ticks
 
     setVisibility("visible");
     document.dispatchEvent(new Event("visibilitychange"));
@@ -247,7 +250,12 @@ describe("returning to a backgrounded tab", () => {
     stop();
   });
 
-  it("does not mint on a timer while hidden", async () => {
+  it("KEEPS renewing while hidden, so the cookie cannot lapse in the background", async () => {
+    // A production test let a tab sit backgrounded for seventeen minutes with
+    // an earlier version that skipped hidden ticks. The cookie expired, and the
+    // first image request after the tab returned was refused because the
+    // catch-up mint had not finished. Renewing anyway costs one request every
+    // seven and a half minutes and removes the race.
     const fetchMock = mintOk();
     vi.stubGlobal("fetch", fetchMock);
     const stop = startImageSessionRenewal();
@@ -255,7 +263,20 @@ describe("returning to a backgrounded tab", () => {
     const after = fetchMock.mock.calls.length;
     setVisibility("hidden");
     await vi.advanceTimersByTimeAsync((TTL / 2) * 1000 * 4);
-    expect(fetchMock.mock.calls.length).toBe(after);
+    expect(fetchMock.mock.calls.length).toBeGreaterThan(after);
+    stop();
+  });
+
+  it("a tab hidden for far longer than one cookie still has a live one on return", async () => {
+    const fetchMock = mintOk();
+    vi.stubGlobal("fetch", fetchMock);
+    const stop = startImageSessionRenewal();
+    await vi.advanceTimersByTimeAsync(0);
+    setVisibility("hidden");
+    await vi.advanceTimersByTimeAsync(TTL * 1000 * 3);
+    // Whatever the visibility handler does next, the cookie the module holds
+    // must not already be expired.
+    expect(__imageSessionStateForTests().expiresAtMs).toBeGreaterThan(Date.now());
     stop();
   });
 });

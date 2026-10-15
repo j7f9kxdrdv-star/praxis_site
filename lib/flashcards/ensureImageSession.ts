@@ -98,9 +98,17 @@ export function startImageSessionRenewal(): () => void {
   void ensureImageSession();
 
   const timer = setInterval(() => {
-    // Nothing to keep alive for a backgrounded tab; the visibility handler
-    // catches it the moment it returns.
-    if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+    // IT RENEWS WHILE HIDDEN TOO, AND THAT IS THE CORRECTION.
+    //
+    // An earlier version skipped the tick for a backgrounded tab, on the
+    // reasoning that nobody is looking so nothing needs keeping alive, and
+    // left the visibility handler to catch up on return. A seventeen-minute
+    // production test showed the hole: the cookie lapsed while the tab was
+    // hidden, and the first image request after it came back was refused,
+    // because the catch-up mint had not finished. Renewing anyway costs one
+    // request every seven and a half minutes per open tab, which is nothing,
+    // and removes the race entirely. Browsers throttle background timers, so
+    // the visibility handler stays as the backstop for a tick that never fired.
     // FORCED, and that detail matters. With a freshness check here the tick
     // and the margin fight each other: seven and a half minutes in, the cookie
     // still has seven and a half minutes left, which reads as fresh, so the
