@@ -111,3 +111,39 @@ export function isBackImagePath(url: string): boolean {
   if (rest.length !== 2) return false;
   return parseBackImageRequest(rest[0], rest[1]) !== null;
 }
+
+/**
+ * Is this request for the illustration the card holds RIGHT NOW?
+ *
+ * PUBLICATION STATE IS AUTHORIZATION TOO. Storage keeps every object ever
+ * uploaded for a card: the PNG master beside the WebP it served, an image a
+ * correction replaced, one the quarantine hid, one staged and not yet
+ * approved. Being signed in and entitled says a learner may see the card's
+ * illustration; it does not say they may see any object that happens to sit
+ * in the card's folder. Only the exact path in flashcards.back_image_url is
+ * served, so hiding or replacing an image in the database withdraws its old
+ * URL at the same moment, without deleting anything from storage.
+ */
+export function isCurrentBackImage(
+  stored: string | null | undefined,
+  cardId: string,
+  file: string,
+): boolean {
+  return typeof stored === "string" && stored === `${BACK_IMAGE_PREFIX}${cardId}/${file}`;
+}
+
+/**
+ * Do these bytes still hash to the digest their path is named after?
+ *
+ * Every path is content-addressed: the file name is the start of the SHA-256
+ * of the bytes. An object overwritten after it was published keeps its name
+ * but not its hash, so it is refused at delivery rather than served as the
+ * approved illustration. The name holds 8 to 64 hex characters, so this
+ * catches any accidental or unauthorised overwrite; it is not a defence
+ * against someone holding the service key who sets out to forge a matching
+ * prefix (they could change the card itself).
+ */
+export function bytesMatchDigest(sha256Hex: string, digest: string): boolean {
+  return /^[0-9a-f]{64}$/.test(sha256Hex) && /^[0-9a-f]{8,64}$/.test(digest) && sha256Hex.startsWith(digest);
+}
+

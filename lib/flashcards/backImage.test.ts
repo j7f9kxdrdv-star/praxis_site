@@ -1,11 +1,14 @@
 import { describe, it, expect } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
+import { createHash } from "node:crypto";
 import {
   BACK_IMAGE_BUCKET,
   BACK_IMAGE_PREFIX,
   backImagePath,
+  bytesMatchDigest,
   isBackImagePath,
+  isCurrentBackImage,
   parseBackImageRequest,
 } from "@/lib/flashcards/backImage";
 
@@ -111,3 +114,39 @@ describe("recognising a stored url", () => {
     expect(isBackImagePath("https://example.com/x.png")).toBe(false);
   });
 });
+
+describe("only the card's current image", () => {
+  const current = `/flashcards/backs/${CARD}/${DIGEST}.webp`;
+
+  it("matches the exact path the card holds, and nothing else", () => {
+    expect(isCurrentBackImage(current, CARD, `${DIGEST}.webp`)).toBe(true);
+    expect(isCurrentBackImage(current, CARD, `${DIGEST}.png`)).toBe(false); // the master beside it
+    expect(isCurrentBackImage(current, CARD, "0123abcd.webp")).toBe(false); // superseded or staged
+    expect(isCurrentBackImage(current, "00000000-0000-4000-8000-000000000000", `${DIGEST}.webp`)).toBe(false);
+  });
+
+  it("refuses everything when the card holds no image", () => {
+    expect(isCurrentBackImage(null, CARD, `${DIGEST}.webp`)).toBe(false);
+    expect(isCurrentBackImage(undefined, CARD, `${DIGEST}.webp`)).toBe(false);
+    expect(isCurrentBackImage("", CARD, `${DIGEST}.webp`)).toBe(false);
+  });
+});
+
+describe("the bytes are the ones the path is named after", () => {
+  const bytes = Buffer.from("an illustration");
+  const hash = createHash("sha256").update(bytes).digest("hex");
+
+  it("accepts bytes whose SHA-256 starts with the digest, at any length the path allows", () => {
+    expect(bytesMatchDigest(hash, hash.slice(0, 8))).toBe(true);
+    expect(bytesMatchDigest(hash, hash)).toBe(true);
+  });
+
+  it("refuses changed bytes, and malformed input", () => {
+    const other = createHash("sha256").update("changed").digest("hex");
+    expect(bytesMatchDigest(other, hash.slice(0, 8))).toBe(false);
+    expect(bytesMatchDigest(hash, "")).toBe(false);
+    expect(bytesMatchDigest(hash, hash.slice(0, 7))).toBe(false);
+    expect(bytesMatchDigest("not-a-hash", hash.slice(0, 8))).toBe(false);
+  });
+});
+

@@ -24,11 +24,20 @@
  * CACHING IS THE WHOLE PERFORMANCE STORY. The digest is in the path, so the
  * bytes behind a URL never change and the answer is immutable for a year. The
  * CDN serves the repeats; this function runs on a miss.
+ *
+ * ONLY THE CARD'S CURRENT IMAGE. A signed-in, entitled learner gets the object
+ * named by the card's back_image_url and nothing else in its folder: not a
+ * superseded, quarantined, staged or master file, whatever its path. And the
+ * bytes must still hash to the digest in that path. See isCurrentBackImage
+ * and bytesMatchDigest in lib/flashcards/backImage.ts.
  */
+import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import {
   BACK_IMAGE_BUCKET,
+  bytesMatchDigest,
+  isCurrentBackImage,
   parseBackImageRequest,
 } from "@/lib/flashcards/backImage";
 import {
@@ -77,6 +86,17 @@ async function entitlementGuardInstalled(db: {
   return guardConfirmed;
 }
 
+/** The bucket's own limit; nothing larger can be a stored illustration. */
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+
+/** The stored object is not the image its path names. Never cached. */
+function integrityFailure(why: "mismatch" | "too_large") {
+  return new NextResponse("Image failed its integrity check.", {
+    status: 502,
+    headers: { "cache-control": "no-store", "content-type": "text/plain", "x-praxist-integrity": why },
+  });
+}
+
 /** Denials are never cached, by anyone, and say nothing about the object. */
 function denied(reason: string) {
   return new NextResponse("Not available on your plan.", {
@@ -121,11 +141,13 @@ export async function GET(
   if (!session.ok) return denied(`session_${session.reason}`);
 
   const db = createClient(projectUrl, serviceRoleKey, { auth: { persistSession: false } });
-  const { data: profile, error: profileError } = await db
-    .from("profiles")
-    .select(ENTITLEMENT_COLUMNS)
-    .eq("id", session.claim.userId)
-    .maybeSingle();
+  // The card is read alongside the profile, not after it, so knowing which
+  // image is current adds a primary-key lookup but no extra wait.
+  const [profileRead, cardRead] = await Promise.all([
+    db.from("profiles").select(ENTITLEMENT_COLUMNS).eq("id", session.claim.userId).maybeSingle(),
+    db.from("flashcards").select("back_image_url").eq("id", cardId).maybeSingle(),
+  ]);
+  const { data: profile, error: profileError } = profileRead;
 
   if (profileError) {
     // A column that does not exist yet lands here too, which is the schema
@@ -157,6 +179,16 @@ export async function GET(
     entitlementColumnsAreTrustworthy: await entitlementGuardInstalled(db),
   });
   if (!decision.allowed) return denied(decision.reason);
+
+  // Only now, for an entitled learner, does the path matter: is it the image
+  // this card holds right now? Anything else in the card's folder (a master,
+  // a superseded or quarantined image, one staged and not yet approved) is
+  // answered exactly like a missing object. Checked before the 304 below, so a
+  // browser holding an old image cannot keep revalidating it either. A card
+  // that cannot be read is a denial, never a guess.
+  if (cardRead.error) return denied("card_unreadable");
+  const current = (cardRead.data as { back_image_url?: string | null } | null)?.back_image_url;
+  if (!isCurrentBackImage(current, cardId, file)) return notFound();
 
   // Entitlement has now been checked. Only here is it safe to answer a
   // conditional request cheaply: the browser already holds these exact bytes,
@@ -219,6 +251,19 @@ export async function GET(
     });
   }
 
+  // The bytes must still be the ones the path is named after. An object
+  // overwritten in storage after it was published keeps its path but not its
+  // hash, and is refused rather than served as the approved illustration.
+  // Buffered rather than streamed to make that check: a served WebP is tens of
+  // kilobytes, and the bucket refuses anything over 10 MB.
+  const declared = Number(response.headers.get("content-length") ?? "0");
+  if (declared > MAX_IMAGE_BYTES) return integrityFailure("too_large");
+  const bytes = Buffer.from(await response.arrayBuffer());
+  if (bytes.length > MAX_IMAGE_BYTES) return integrityFailure("too_large");
+  if (!bytesMatchDigest(createHash("sha256").update(bytes).digest("hex"), target.digest)) {
+    return integrityFailure("mismatch");
+  }
+
   // NO Content-Security-Policy HERE, AND THAT IS DELIBERATE. The first version
   // sent `default-src 'none'; sandbox`, which is only meaningful if this
   // response is ever rendered as a document — and it cannot be. The type is
@@ -253,8 +298,7 @@ export async function GET(
     "x-content-type-options": "nosniff",
     "content-disposition": "inline",
   });
-  const length = response.headers.get("content-length");
-  if (length) headers.set("content-length", length);
+  headers.set("content-length", String(bytes.length));
 
-  return new NextResponse(response.body, { status: 200, headers });
+  return new NextResponse(bytes, { status: 200, headers });
 }
