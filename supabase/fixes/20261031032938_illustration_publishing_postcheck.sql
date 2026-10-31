@@ -9,7 +9,7 @@
 -- changes only together with it: the migration changes no card and makes no
 -- one an administrator, so both numbers must be exactly what they were.
 -- ═══════════════════════════════════════════════════════════════════════════
-WITH expected (illustrated_cards, administrators) AS (VALUES (71, 0)),
+WITH expected (illustrated_cards, administrators) AS (VALUES (55, 0)),
 fn(name, sig, operator_only) AS (
   VALUES ('illustration_record_verification', 'public.illustration_record_verification(text, text, bigint, text, text, text)', true),
          ('illustration_stage_batch',         'public.illustration_stage_batch(uuid, jsonb, text)',                          true),

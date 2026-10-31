@@ -6,14 +6,14 @@
 -- result table back before the migration is applied.
 --
 -- THE EXPECTED PRODUCTION STATE is the one line in `expected` below:
--- 71 illustrated cards (after the 15-image quarantine of 31 October) and no
+-- 55 illustrated cards (after the 15-image and the 16-image quarantines) and no
 -- administrator (one is activated only after this migration, as its own step).
--- Both are pass/fail. If the state changes before Phase B (for example the
--- 6-image quarantine runs first, leaving 65), this file is not loosened:
--- that one line is changed to the new reviewed number, in its own reviewed
--- change, and the tests prove the file then refuses every other count.
+-- Both are pass/fail. This is the version for running the 16-image quarantine
+-- BEFORE Phase B; the version for running Phase B first expects 71. They
+-- differ only in that number and its label, and the tests prove each refuses
+-- every other count.
 -- ═══════════════════════════════════════════════════════════════════════════
-WITH expected (illustrated_cards, administrators) AS (VALUES (71, 0))
+WITH expected (illustrated_cards, administrators) AS (VALUES (55, 0))
 SELECT * FROM (
   SELECT 1 AS n, 'PostgreSQL is 14 or newer' AS check_name, '>= 140000' AS expected,
          current_setting('server_version_num') AS actual,
@@ -100,7 +100,7 @@ SELECT * FROM (
          (SELECT count(*)::text FROM public.profiles WHERE is_admin),
          (SELECT count(*) FROM public.profiles WHERE is_admin) = (SELECT administrators FROM expected)
   UNION ALL
-  SELECT 17, 'illustrated cards today (71 after the 15-image quarantine)',
+  SELECT 17, 'illustrated cards today (55 after the 15- and 16-image quarantines)',
          (SELECT illustrated_cards::text FROM expected),
          (SELECT count(*)::text FROM public.flashcards WHERE back_image_url IS NOT NULL),
          (SELECT count(*) FROM public.flashcards WHERE back_image_url IS NOT NULL) = (SELECT illustrated_cards FROM expected)
