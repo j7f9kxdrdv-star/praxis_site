@@ -19,3 +19,4 @@ Rules:
 
 | Version | File | SHA-256 | Applied (UTC) | By | Post-check |
 |---|---|---|---|---|---|
+| 20261031032938 | `supabase/migrations/20261031032938_illustration_publishing.sql` | `262b15bd11c6357dd68e070a1c92956d2f3ee0eedd4386b84198f860265c9700` | 2026-11-04, between 14:50 and 14:55 | Mikko, pasted once in the SQL Editor | 14 of 14 ok (precheck 19 of 19 before) |
