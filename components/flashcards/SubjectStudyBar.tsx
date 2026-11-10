@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { SmallCaps, praxBtnGhost, praxBtnGreenOnCream } from "@/components/dashboard/PraxUI";
-import { sessionHref, type SectionId, type SubjectProjection } from "@/lib/flashcards/sections";
+import {
+  describeSubjectReview,
+  sessionHref,
+  type SectionId,
+  type SubjectProjection,
+} from "@/lib/flashcards/sections";
 
 // Study one subject with every chapter mixed together. Review is today's
 // recommended work limited to this subject, so it shares the daily limits with
@@ -11,22 +16,23 @@ export default function SubjectStudyBar({
   section,
   label,
   projection,
+  dueElsewhere,
 }: {
   section: SectionId;
   label: string;
   projection: SubjectProjection;
+  /** Due reviews waiting in the other subjects, for a quiet reminder. */
+  dueElsewhere: number;
 }) {
-  const { served, servedNew, servedReview, limitReached } = projection;
-  const headline =
-    served > 0
-      ? `${served} card${served === 1 ? "" : "s"} ready today`
-      : limitReached
-      ? "Today\u2019s daily limits are used up"
-      : `Nothing in ${label} is due right now`;
-  const detail =
-    served > 0
-      ? `${servedNew} new, ${servedReview} review${servedReview === 1 ? "" : "s"}. Review counts toward your daily limits; Extra Study doesn\u2019t.`
-      : "Extra Study works any time and doesn\u2019t touch your daily limits.";
+  const { served, limitReached, newLimitUsed, reviewLimitUsed } = projection;
+  const { headline, detail, elsewhere } = describeSubjectReview(projection, label, dueElsewhere);
+  const unavailable = limitReached
+    ? newLimitUsed && reviewLimitUsed
+      ? "Both daily limits are used up"
+      : newLimitUsed
+      ? "Today's new-card limit is used up"
+      : "Today's review limit is used up"
+    : "Nothing is due right now";
 
   return (
     <div
@@ -58,6 +64,14 @@ export default function SubjectStudyBar({
         >
           {detail}
         </p>
+        {elsewhere && (
+          <p
+            className="mt-0.5"
+            style={{ fontSize: 11.5, color: "var(--color-prax-ink-mute)", lineHeight: 1.5 }}
+          >
+            {elsewhere}
+          </p>
+        )}
       </div>
       <div className="flex gap-2 shrink-0">
         {served > 0 ? (
@@ -67,7 +81,7 @@ export default function SubjectStudyBar({
         ) : (
           <span
             aria-disabled="true"
-            title={limitReached ? "Today's daily limits are used up" : "Nothing is due right now"}
+            title={unavailable}
             style={{ ...praxBtnGreenOnCream, opacity: 0.4, cursor: "default" }}
           >
             Review

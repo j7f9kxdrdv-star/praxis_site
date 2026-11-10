@@ -38,7 +38,9 @@ export function parseSection(raw: string | null | undefined): SectionId | null {
 
 /** True when the URL names a subject that does not exist. */
 export function sectionParamProblem(raw: string | null | undefined): boolean {
-  return !!raw && parseSection(raw) === null;
+  // Absent (null) means "no subject". Present but empty ("?section=") is a
+  // request for a subject that names none, and must fail closed too.
+  return raw !== null && raw !== undefined && parseSection(raw) === null;
 }
 
 export function sectionLabel(id: SectionId): string {
@@ -56,15 +58,22 @@ export interface SubjectProjection {
   servedNew: number;
   servedReview: number;
   served: number;
+  /** New items are waiting but today's new-item allowance is spent. */
+  newLimitUsed: boolean;
+  /** Due reviews are waiting but today's review allowance is spent. */
+  reviewLimitUsed: boolean;
+  /** Items are waiting, yet none can be served today. */
   limitReached: boolean;
 }
 
 /**
- * How many cards a subject's Review button would serve right now.
+ * How many items a subject's Review button would serve right now.
  *
+ * `unseen` and `dueReviews` must be the exact eligible counts from
+ * countEligibleByDeck (./sessionQueue), the same definition the session uses.
  * The daily allowance is shared across the whole library, so a subject can
- * only use what is left of it today. New cards and reviews are capped
- * separately, exactly as the session loader caps them.
+ * only use what is left of it today. New items and reviews are capped
+ * separately, exactly as the session caps them.
  */
 export function projectSubjectReview(args: {
   unseen: number;
@@ -79,6 +88,47 @@ export function projectSubjectReview(args: {
     servedNew,
     servedReview,
     served,
+    newLimitUsed: args.unseen > 0 && args.newLeftToday <= 0,
+    reviewLimitUsed: args.dueReviews > 0 && args.reviewsLeftToday <= 0,
     limitReached: args.unseen + args.dueReviews > 0 && served === 0,
+  };
+}
+
+/**
+ * The words on a subject's box. Says which limit is spent, never implying both
+ * are when only one is. Counts are study items (one per blank), so the copy
+ * names them as "new" and "reviews" rather than as cards.
+ */
+export function describeSubjectReview(
+  p: SubjectProjection,
+  label: string,
+  dueElsewhere: number,
+): { headline: string; detail: string; elsewhere: string | null } {
+  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  let headline: string;
+  const notes: string[] = [];
+  if (p.served > 0) {
+    headline = `${p.served} to study today`;
+    notes.push(`${p.servedNew} new, ${plural(p.servedReview, "review", "reviews")}.`);
+    if (p.newLimitUsed) notes.push("Today\u2019s new-card limit is used up, so no new ones.");
+    if (p.reviewLimitUsed) notes.push("Today\u2019s review limit is used up, so no reviews.");
+    notes.push("Review counts toward your daily limits; Extra Study doesn\u2019t.");
+  } else if (p.newLimitUsed && p.reviewLimitUsed) {
+    headline = "Both daily limits are used up";
+    notes.push("Extra Study works any time and doesn\u2019t touch your daily limits.");
+  } else if (p.newLimitUsed) {
+    headline = "Today\u2019s new-card limit is used up";
+    notes.push(`No ${label} reviews are due. Extra Study works any time and doesn\u2019t touch your daily limits.`);
+  } else if (p.reviewLimitUsed) {
+    headline = "Today\u2019s review limit is used up";
+    notes.push(`No new ${label} cards are waiting. Extra Study works any time and doesn\u2019t touch your daily limits.`);
+  } else {
+    headline = `Nothing in ${label} is due right now`;
+    notes.push("Extra Study works any time and doesn\u2019t touch your daily limits.");
+  }
+  return {
+    headline,
+    detail: notes.join(" "),
+    elsewhere: dueElsewhere > 0 ? `${plural(dueElsewhere, "review is", "reviews are")} also due in other subjects.` : null,
   };
 }

@@ -14,6 +14,12 @@ import {
 import { summariseCards } from "@/lib/dashboard/phase";
 import { DEFAULT_DAY_START_HOUR, runtimeTimezone } from "@/lib/flashcards/studyDay";
 import { SECTIONS, projectSubjectReview } from "@/lib/flashcards/sections";
+import {
+  countEligibleByDeck,
+  itemKey,
+  type CardShape,
+  type StateShape,
+} from "@/lib/flashcards/sessionQueue";
 import SubjectStudyBar from "@/components/flashcards/SubjectStudyBar";
 import {
   PageHeader,
@@ -40,6 +46,10 @@ interface Deck {
   urgent_count: number; // due now (next_review_at <= now) + unseen
   soon_count: number; // due within 3 days
   later_count: number; // due 4+ days out
+  // Exactly what a Review session can serve from this deck, before the daily
+  // limits: the shared definition in lib/flashcards/sessionQueue.ts.
+  eligible_new: number;
+  eligible_due: number;
 }
 
 /* ─────────────── Page ─────────────── */
@@ -217,6 +227,13 @@ export default function FlashcardsHub() {
         profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR,
       );
 
+      // The subject boxes count with the session's own eligibility rule, not
+      // with the per-deck totals above (which also count state rows for blanks
+      // a card no longer has).
+      const stateByItem = new Map<string, StateShape>();
+      stateRows.forEach((st) => stateByItem.set(itemKey(st.flashcard_id, st.cloze_index), st));
+      const eligibleByDeck = countEligibleByDeck(cardRows as CardShape[], stateByItem, now);
+
       const enriched: Deck[] = deckRows.map((d) => {
         const urgent = urgentByDeck.get(d.id) || 0;
         const soon = soonByDeck.get(d.id) || 0;
@@ -234,6 +251,8 @@ export default function FlashcardsHub() {
           urgent_count: urgent,
           soon_count: soon,
           later_count: later,
+          eligible_new: eligibleByDeck.get(d.id)?.newItems ?? 0,
+          eligible_due: eligibleByDeck.get(d.id)?.dueReviews ?? 0,
         };
       });
 
@@ -913,18 +932,18 @@ export default function FlashcardsHub() {
                   : sectionReviewed >= totalCards && sectionUrgent === 0
                   ? "caught-up"
                   : "in-progress";
-              // What this subject's Review button would serve: its unseen and
-              // due cards, capped by what is left of the shared daily allowance.
-              const sectionUnseen = sectionDecks.reduce(
-                (s, d) => s + Math.max(0, d.card_count - d.reviewed_count),
-                0
-              );
+              // What this subject's Review button would serve: its exact
+              // eligible new and due items, capped by what is left of the
+              // shared daily allowance.
               const sectionProjection = projectSubjectReview({
-                unseen: sectionUnseen,
-                dueReviews: Math.max(0, sectionUrgent - sectionUnseen),
+                unseen: sectionDecks.reduce((s, d) => s + d.eligible_new, 0),
+                dueReviews: sectionDecks.reduce((s, d) => s + d.eligible_due, 0),
                 newLeftToday: newLimit - newToday,
                 reviewsLeftToday: reviewLimit - reviewsToday,
               });
+              const dueElsewhere = decks
+                .filter((d) => d.section !== section.id)
+                .reduce((s, d) => s + d.eligible_due, 0);
               const sectionProgressPct =
                 totalCards > 0
                   ? Math.min(
@@ -1023,6 +1042,7 @@ export default function FlashcardsHub() {
                           section={section.id}
                           label={section.label}
                           projection={sectionProjection}
+                          dueElsewhere={dueElsewhere}
                         />
                       )}
                       {sectionDecks.map((d) => (

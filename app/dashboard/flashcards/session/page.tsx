@@ -20,9 +20,22 @@ import { renderClozeSegments } from "@/lib/flashcards/cloze";
 import { nextSchedule, previewLabel, EASE_DEFAULT, type Rating } from "@/lib/flashcards/scheduler";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
 import { DEFAULT_DAY_START_HOUR, runtimeTimezone } from "@/lib/flashcards/studyDay";
-import { submitReview, type ReviewSource, type SubmittedReview } from "@/lib/flashcards/submitReview";
+import { submitReview, type SubmittedReview } from "@/lib/flashcards/submitReview";
 import { setCardFlag } from "@/lib/flashcards/cardFlags";
 import { parseSection, sectionLabel, sectionParamProblem, sessionHref } from "@/lib/flashcards/sections";
+import {
+  applyDailyLimits,
+  buildPools,
+  itemKey,
+  loadSessionData,
+  orderNewByCourse,
+  reviewSourceFor,
+  sortReviewsByDue,
+  type EmptyReason,
+  type Mode,
+  type ReviewItem,
+  type UserState,
+} from "@/lib/flashcards/sessionQueue";
 import StudySurface from "@/components/flashcards/StudySurface";
 import RotateGate from "@/components/flashcards/RotateGate";
 
@@ -30,50 +43,10 @@ import RotateGate from "@/components/flashcards/RotateGate";
 // Mirrors the per-deck study page but loads cards from EVERY deck the user has access to,
 // or, with ?section=<subject>, from every deck of that one subject (all its chapters, mixed).
 
-interface Card {
-  id: string;
-  card_type: "basic" | "cloze";
-  front_text: string | null;
-  back_text: string | null;
-  cloze_text: string | null;
-  cloze_count: number;
-  explanation: string | null;
-  /** Answer-side image, shown under the card on reveal. Null on most cards. */
-  back_image_url: string | null;
-  back_image_alt: string | null;
-  deck_id: string;
-}
-
-interface UserState {
-  flashcard_id: string;
-  cloze_index: number;
-  starred: boolean;
-  suspended: boolean;
-  interval_days: number;
-  ease_factor: number;
-  reps: number;
-  lapses: number;
-  next_review_at: string;
-  last_rating?: string | null;
-  last_reviewed_at?: string | null;
-}
-
-interface ReviewItem {
-  card: Card;
-  clozeIndex: number;
-  state: UserState | null;
-  /** Successful recalls still owed before this card leaves the session. */
-  owed?: number;
-  /** How many times it has appeared today, so a card cannot cycle forever. */
-  shows?: number;
-  /** Has this card already lapsed in this session? One lapse per card is enough. */
-  lapsed?: boolean;
-}
-
 // "cram" is kept only as a legacy URL alias. The concept is Extra Study: the
 // student choosing to work beyond today's recommendation. It is not lower
 // quality practice, and since PR4 it no longer spends Daily Review capacity.
-type Mode = "due" | "starred" | "extra_study";
+// (Mode is defined in lib/flashcards/sessionQueue.ts.)
 
 const MODE_TITLES: Record<Mode, string> = {
   due: "Daily Review",
@@ -165,7 +138,6 @@ function SessionInner() {
   // - "limit_reached": cards exist in the due pools but today's quota is
   //   already spent
   // - "nothing_due": no cards are actually due yet (caught up)
-  type EmptyReason = "limit_reached" | "nothing_due" | null;
   const [emptyReason, setEmptyReason] = useState<EmptyReason>(null);
   const [emptyContext, setEmptyContext] = useState<{
     newToday: number;
@@ -183,132 +155,46 @@ function SessionInner() {
 
   // ─── Load cross-deck queue ────────────────────────────────────────────────
   useEffect(() => {
+    // Stale-request guard. If the subject, mode, student or limits change while
+    // this load is in flight, its results must never reach the screen: a card
+    // from the previous subject must not appear in the new one. (The page is
+    // also remounted when the subject or mode changes; see SessionPage.)
+    let cancelled = false;
+
     async function load() {
       if (badSection) return; // rendered as a problem below; nothing to load
 
-      // A subject session draws only from that subject's decks. If they cannot
-      // be read, load nothing: falling back to every deck would be the wrong
-      // session wearing the right title.
-      let deckIds: string[] | null = null;
-      if (section) {
-        const { data: deckRows, error: deckError } = await supabase
-          .from("flashcard_decks")
-          .select("id")
-          .eq("section", section)
-          .order("id", { ascending: true });
-        if (deckError) {
-          setLoadError(true);
-          setLoading(false);
-          return;
-        }
-        deckIds = (deckRows ?? []).map((d) => d.id as string);
-        if (deckIds.length === 0) {
-          setLoading(false);
-          return;
-        }
+      // With a subject, any failed read fails the load (see loadSessionData).
+      const result = await loadSessionData(supabase, { userId: user.id, section });
+      if (cancelled) return;
+      if (!result.ok) {
+        setLoadError(true);
+        setLoading(false);
+        return;
       }
-
-      // Page through the ENTIRE card library. Without an explicit range,
-      // PostgREST silently caps this at 1000 rows. Once the bank grew past
-      // that, later decks were never fetched at all: their cards became
-      // invisible to Daily Review / Extra Study sessions, so the "new" pool looked empty even
-      // with thousands of unseen cards remaining, and the session would
-      // wrongly report "all caught up" the moment the review cap was hit.
-      const cards: Card[] = [];
-      const CARD_PAGE = 1000;
-      for (let from = 0; ; from += CARD_PAGE) {
-        let cardQuery = supabase
-          .from("flashcards")
-          .select("id, card_type, front_text, back_text, cloze_text, cloze_count, explanation, back_image_url, back_image_alt, deck_id");
-        // A subject has at most a few dozen decks, so this list stays short
-        // (unlike a list of card ids, which once outgrew the URL).
-        if (deckIds) cardQuery = cardQuery.in("deck_id", deckIds);
-        const { data, error } = await cardQuery
-          .order("id", { ascending: true })
-          .range(from, from + CARD_PAGE - 1);
-        if (error || !data || data.length === 0) break;
-        cards.push(...(data as Card[]));
-        if (data.length < CARD_PAGE) break;
+      if (result.incomplete) {
+        // Whole-library only, and kept as it has always behaved: the session
+        // proceeds with what loaded. Reported here so it is not silent.
+        console.error("Flashcard session: a page failed to load; the session may be incomplete.");
       }
-
+      const { cards, states, deckOrder } = result;
       if (cards.length === 0) {
         setLoading(false);
         return;
       }
 
-      // Fetch every state row this user has. The previous
-      // .in("flashcard_id", cards.map((c) => c.id)) clause produced an
-      // ~80KB URL once the library grew past ~1k cards, which PostgREST
-      // silently truncated — many state rows got dropped, the session
-      // misclassified seen cards as "new," and the daily-limit projection
-      // came out wrong. .eq("user_id") is selective enough on its own.
-      // Also page through results to clear the default 1000-row cap.
-      type SessionStateRow = UserState;
-      const stateRows: SessionStateRow[] = [];
-      const STATE_PAGE = 1000;
-      for (let from = 0; ; from += STATE_PAGE) {
-        const { data, error } = await supabase
-          .from("flashcard_user_state")
-          .select("flashcard_id, cloze_index, starred, suspended, interval_days, ease_factor, reps, lapses, next_review_at, last_rating, last_reviewed_at")
-          .eq("user_id", user.id)
-          // Stable order is REQUIRED for correct pagination: without it
-          // Postgres may return pages in shifting physical order (rows move
-          // when updated), silently dropping state rows — dropped rows made
-          // already-studied cards reappear as "new" and re-seed on grading.
-          .order("flashcard_id", { ascending: true })
-          .order("cloze_index", { ascending: true })
-          .range(from, from + STATE_PAGE - 1);
-        if (error || !data || data.length === 0) break;
-        stateRows.push(...(data as SessionStateRow[]));
-        if (data.length < STATE_PAGE) break;
-      }
-
       const stateMap = new Map<string, UserState>();
-      (stateRows || []).forEach((s) =>
-        stateMap.set(`${s.flashcard_id}::${s.cloze_index}`, s as UserState),
-      );
+      states.forEach((st) => stateMap.set(itemKey(st.flashcard_id, st.cloze_index), st));
 
       // Separate eligible items into "new" (never reviewed) and "review"
-      // (seen and due) pools so we can apply the user's daily limits to
-      // each independently. Starred and Extra Study skip these caps:
-      // they're user-initiated overrides.
-      const newPool: ReviewItem[] = [];
-      const reviewPool: ReviewItem[] = [];
-      const now = new Date().toISOString();
-
-      cards.forEach((c) => {
-        const groups = c.card_type === "cloze" ? Math.max(c.cloze_count, 1) : 1;
-        for (let i = 0; i < groups; i++) {
-          const idx = c.card_type === "cloze" ? i + 1 : 0;
-          const s = stateMap.get(`${c.id}::${idx}`) || null;
-          if (s?.suspended) continue;
-
-          const isDue = !s || s.next_review_at <= now;
-          const isStarred = s?.starred === true;
-
-          if (mode === "starred") {
-            if (!isStarred) continue;
-            reviewPool.push({ card: c, clozeIndex: idx, state: s });
-            continue;
-          }
-          if (mode === "due") {
-            if (!isDue) continue;
-            (s ? reviewPool : newPool).push({
-              card: c,
-              clozeIndex: idx,
-              state: s,
-            });
-            continue;
-          }
-          // mode === "extra_study" -> include everything (incl. unseen)
-          (s ? reviewPool : newPool).push({
-            card: c,
-            clozeIndex: idx,
-            state: s,
-          });
-        }
-      });
-
+      // (seen) pools so the user's daily limits apply to each independently.
+      // Starred and Extra Study skip these caps: they're user-initiated.
+      const { newPool, reviewPool: unsortedReviews } = buildPools(
+        cards,
+        stateMap,
+        new Date().toISOString(),
+        mode,
+      );
 
       // Serve the most overdue cards first.
       //
@@ -328,11 +214,7 @@ function SessionInner() {
       // Due-date order is also what tested best: simulated forward against that
       // same backlog it left 5,114 cards known after 30 days, against 5,055 for
       // most-overdue-by-retrievability and 4,424 for least-overdue-first.
-      reviewPool.sort((a, b) => {
-        const at = a.state?.next_review_at ?? "";
-        const bt = b.state?.next_review_at ?? "";
-        return at < bt ? -1 : at > bt ? 1 : 0;
-      });
+      const reviewPool = sortReviewsByDue(unsortedReviews);
 
       let items: ReviewItem[];
       if (mode === "due") {
@@ -349,38 +231,39 @@ function SessionInner() {
           runtimeTimezone(),
           profile?.day_start_hour ?? DEFAULT_DAY_START_HOUR,
         );
+        if (cancelled) return;
+        // A subject Review introduces new items in course order (chapter
+        // order, then authored card order), so a student is not shown new
+        // items from a chapter far ahead of where they are. The all-subject
+        // Daily Review keeps its existing order; changing it is a separate
+        // decision.
+        const orderedNew = deckOrder ? orderNewByCourse(newPool, deckOrder) : newPool;
         // Both categories are throttled per day per the user's settings,
         // subtracting whatever they've already studied today so a second
         // session in the same day doesn't blow past either cap.
-        const newQuota = Math.max(0, newLimit - newToday);
-        const reviewQuota = Math.max(0, reviewLimit - reviewsToday);
-        const poolNew = newPool.length;
-        const poolReview = reviewPool.length;
-        const servedNew = Math.min(poolNew, newQuota);
-        const servedReview = Math.min(poolReview, reviewQuota);
-        if (poolNew + poolReview === 0) {
-          // Genuinely caught up — nothing due right now.
-          setEmptyReason("nothing_due");
-        } else if (servedNew + servedReview === 0) {
-          // Cards exist in the due pools but today's quotas are already spent.
-          setEmptyReason("limit_reached");
-        } else {
-          setEmptyReason(null);
-        }
+        const limited = applyDailyLimits({
+          newPool: orderedNew,
+          reviewPool,
+          newLeft: newLimit - newToday,
+          reviewsLeft: reviewLimit - reviewsToday,
+        });
+        setEmptyReason(limited.emptyReason);
         setEmptyContext({
           newToday,
           reviewsToday,
           newLimit,
           reviewLimit,
-          poolNew,
-          poolReview,
+          poolNew: newPool.length,
+          poolReview: reviewPool.length,
         });
-        items = [...newPool.slice(0, newQuota), ...reviewPool.slice(0, reviewQuota)];
+        items = limited.items;
       } else {
         items = [...newPool, ...reviewPool];
       }
 
-      // Shuffle
+      // Shuffle. In a subject Review this keeps reviews mixed across chapters
+      // and keeps a card's blanks apart; course order decided WHICH new items
+      // were chosen, not the order they are shown in.
       for (let i = items.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [items[i], items[j]] = [items[j], items[i]];
@@ -390,7 +273,19 @@ function SessionInner() {
       setLoading(false);
     }
     load();
-  }, [user.id, mode, section, badSection, profile?.daily_new_card_limit, profile?.daily_review_limit]);
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    user.id,
+    mode,
+    section,
+    badSection,
+    profile?.daily_new_card_limit,
+    profile?.daily_review_limit,
+    // The study-day boundary decides what counts as "today" for the limits.
+    profile?.day_start_hour,
+  ]);
 
   // ─── Actions ──────────────────────────────────────────────────────────────
   const current = queue[index];
@@ -448,8 +343,9 @@ function SessionInner() {
     // 204 card-blanks ended up with a schedule that disagrees with their own
     // review log. The server also credits the study day in the same
     // transaction, so the streak can no longer drift from the reviews.
-    const source: ReviewSource =
-      mode === "due" ? "daily_review" : mode === "starred" ? "starred" : "extra_study";
+    // Unchanged by limiting a session to a subject: Review records Daily
+    // Review (spends the shared allowance), Extra Study records Extra Study.
+    const source = reviewSourceFor(mode);
 
     let sched: SubmittedReview;
     try {
@@ -916,6 +812,14 @@ function SessionInner() {
   );
 }
 
+// A new subject or mode is a new session: remount so no queue, progress or
+// card from the previous one can carry over while the next one loads.
+function KeyedSession() {
+  const search = useSearchParams();
+  const { user } = useDashboard();
+  return <SessionInner key={`${user.id}|${search.get("mode") ?? ""}|${search.get("section") ?? "\u0000"}`} />;
+}
+
 export default function SessionPage() {
   return (
     <Suspense fallback={
@@ -923,7 +827,7 @@ export default function SessionPage() {
         <div className="w-8 h-8 border-2 border-as-primary border-t-transparent rounded-full animate-spin" />
       </div>
     }>
-      <SessionInner />
+      <KeyedSession />
     </Suspense>
   );
 }
