@@ -22,6 +22,7 @@ import { countTodaysReviews } from "@/lib/flashcards/quota";
 import { DEFAULT_DAY_START_HOUR, runtimeTimezone } from "@/lib/flashcards/studyDay";
 import { submitReview, type SubmittedReview } from "@/lib/flashcards/submitReview";
 import { setCardFlag } from "@/lib/flashcards/cardFlags";
+import { formatCount } from "@/lib/format/count";
 import { parseSection, sectionLabel, sectionParamProblem, sessionHref } from "@/lib/flashcards/sections";
 import {
   applyDailyLimits,
@@ -540,8 +541,8 @@ function SessionInner() {
         <p className="text-as-outline text-sm mb-6 max-w-md mx-auto leading-relaxed">
           {isLimitReached && ctx ? (
             <>
-              That&apos;s today&apos;s recommended work done: <strong>{ctx.newToday}</strong>{" "}
-              new card{ctx.newToday === 1 ? "" : "s"} and <strong>{ctx.reviewsToday}</strong>{" "}
+              That&apos;s today&apos;s recommended work done: <strong>{formatCount(ctx.newToday)}</strong>{" "}
+              new card{ctx.newToday === 1 ? "" : "s"} and <strong>{formatCount(ctx.reviewsToday)}</strong>{" "}
               review card{ctx.reviewsToday === 1 ? "" : "s"}. Spaced repetition works best
               when you stop here and let the schedule do its job. If you want to keep
               studying, Extra Study is there. It uses the same memory schedule and it
@@ -599,10 +600,10 @@ function SessionInner() {
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-2">
             {title} · Complete
           </p>
-          <h1 className="font-headline text-3xl mb-3">{stats.done} cards reviewed</h1>
+          <h1 className="font-headline text-3xl mb-3">{formatCount(stats.done)} cards reviewed</h1>
           <p className="text-sm text-white/70">
             {missed > 0
-              ? `${missed} marked Again. They came back this session until you got them right.`
+              ? `${formatCount(missed)} marked Again. They came back this session until you got them right.`
               : "Clean run. Cards rescheduled per your ratings."}
           </p>
         </div>
@@ -700,7 +701,7 @@ function SessionInner() {
               </p>
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <p className="font-headline text-2xl text-as-primary tabular-nums">{stats.done}</p>
+                  <p className="font-headline text-2xl text-as-primary tabular-nums">{formatCount(stats.done)}</p>
                   <p className="text-[9px] font-bold uppercase tracking-widest text-as-outline mt-0.5">Done</p>
                 </div>
                 <div>

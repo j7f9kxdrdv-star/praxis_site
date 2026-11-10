@@ -8,6 +8,7 @@ import type { ClozeSegment } from "@/lib/flashcards/cloze";
 import type { Rating } from "@/lib/flashcards/scheduler";
 import type { RelearnAnswer } from "@/lib/flashcards/relearn";
 import RichText from "@/components/flashcards/RichText";
+import { formatCount } from "@/lib/format/count";
 
 /**
  * Presentational study surface — the card + reveal + grade controls, shared by
@@ -226,7 +227,7 @@ export default function StudySurface({
               <div className="h-full rounded-full bg-as-primary transition-[width] duration-300" style={{ width: `${pct}%` }} />
             </div>
             <span className="text-[11px] font-semibold tabular-nums text-as-outline shrink-0">
-              {progress!.done}/{progress!.total}
+              {formatCount(progress!.done)}/{formatCount(progress!.total)}
             </span>
           </div>
         )}

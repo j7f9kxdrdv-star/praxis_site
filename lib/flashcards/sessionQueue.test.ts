@@ -5,8 +5,10 @@ import {
   buildPools,
   classify,
   countEligibleByDeck,
+  isRealItem,
   itemIndices,
   itemKey,
+  keepRealItems,
   loadSessionData,
   orderNewByCourse,
   reviewSourceFor,
@@ -288,3 +290,42 @@ describe("loadSessionData", () => {
     }
   });
 });
+
+describe("isRealItem and keepRealItems (counting only blanks a card still has)", () => {
+  const cloze3 = { id: "c3", card_type: "cloze" as const, cloze_count: 3 };
+  const basic = { id: "b", card_type: "basic" as const, cloze_count: 0 };
+
+  it("a cloze card has blanks 1..N; a basic card has item 0 only", () => {
+    expect([0, 1, 2, 3, 4].map((i) => isRealItem(cloze3, i))).toEqual([false, true, true, true, false]);
+    expect([0, 1].map((i) => isRealItem(basic, i))).toEqual([true, false]);
+  });
+
+  it("drops rows for blanks a rewritten card lost, and rows for cards no longer in the library", () => {
+    const rows = [
+      { flashcard_id: "c3", cloze_index: 1 },
+      { flashcard_id: "c3", cloze_index: 4 },
+      { flashcard_id: "b", cloze_index: 0 },
+      { flashcard_id: "b", cloze_index: 2 },
+      { flashcard_id: "gone", cloze_index: 1 },
+    ];
+    expect(keepRealItems(rows, [cloze3, basic])).toEqual([
+      { flashcard_id: "c3", cloze_index: 1 },
+      { flashcard_id: "b", cloze_index: 0 },
+    ]);
+  });
+
+  it("keeps every field of the rows it keeps, and never changes the input", () => {
+    const rows = [{ flashcard_id: "c3", cloze_index: 2, next_review_at: PAST, suspended: true }];
+    const kept = keepRealItems(rows, [cloze3]);
+    expect(kept[0]).toBe(rows[0]);
+    expect(rows).toHaveLength(1);
+  });
+
+  it("on the test library, removes exactly the one orphan row of u1", async () => {
+    const { cards, states } = await loadOk(null);
+    const kept = keepRealItems(states, cards);
+    expect(states.length - kept.length).toBe(1);
+    expect(states.find((st) => !kept.includes(st))).toMatchObject({ flashcard_id: cardId("psych_soc", 1, 1), cloze_index: 4 });
+  });
+});
+

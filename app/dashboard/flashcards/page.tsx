@@ -13,10 +13,12 @@ import {
 } from "@/lib/dashboard/recommendedLimits";
 import { summariseCards } from "@/lib/dashboard/phase";
 import { DEFAULT_DAY_START_HOUR, runtimeTimezone } from "@/lib/flashcards/studyDay";
+import { formatCount } from "@/lib/format/count";
 import { SECTIONS, projectSubjectReview } from "@/lib/flashcards/sections";
 import {
   countEligibleByDeck,
   itemKey,
+  keepRealItems,
   type CardShape,
   type StateShape,
 } from "@/lib/flashcards/sessionQueue";
@@ -158,6 +160,10 @@ export default function FlashcardsHub() {
         stateRows.push(...data);
         if (data.length < PAGE) break;
       }
+      // Count only items a card still has. Rows left behind by a card that
+      // lost a blank cannot be studied, so they must not count as due,
+      // reviewed or starred (lib/flashcards/sessionQueue.ts, keepRealItems).
+      stateRows = keepRealItems(stateRows, cardRows as CardShape[]);
 
       const cardToDeck = new Map<string, string>();
       (cardRows || []).forEach((c) => cardToDeck.set(c.id, c.deck_id));
@@ -470,7 +476,7 @@ export default function FlashcardsHub() {
                     fontVariantNumeric: "tabular-nums lining-nums",
                   }}
                 >
-                  {totalDue}
+                  {formatCount(totalDue)}
                 </div>
                 <div
                   className="italic"
@@ -548,7 +554,7 @@ export default function FlashcardsHub() {
                           fontVariantNumeric: "tabular-nums",
                         }}
                       >
-                        {unseenAll}
+                        {formatCount(unseenAll)}
                       </strong>{" "}
                       unseen
                     </span>
@@ -560,7 +566,7 @@ export default function FlashcardsHub() {
                           fontVariantNumeric: "tabular-nums",
                         }}
                       >
-                        {dueReviewAll}
+                        {formatCount(dueReviewAll)}
                       </strong>{" "}
                       due
                     </span>
@@ -572,7 +578,7 @@ export default function FlashcardsHub() {
                           fontVariantNumeric: "tabular-nums",
                         }}
                       >
-                        {totalSoon}
+                        {formatCount(totalSoon)}
                       </strong>{" "}
                       soon
                     </span>
@@ -584,7 +590,7 @@ export default function FlashcardsHub() {
                           fontVariantNumeric: "tabular-nums",
                         }}
                       >
-                        {totalLater}
+                        {formatCount(totalLater)}
                       </strong>{" "}
                       later
                     </span>
@@ -600,7 +606,7 @@ export default function FlashcardsHub() {
                   >
                     {!isCapping
                       ? "Start Review"
-                      : `Start Review · ${servedToday} cards left today`}
+                      : `Start Review · ${formatCount(servedToday)} cards left today`}
                     <svg
                       width="14"
                       height="14"
@@ -623,21 +629,21 @@ export default function FlashcardsHub() {
                     >
                       Today&rsquo;s Daily Review:{" "}
                       <strong style={{ color: "var(--color-prax-cream)" }}>
-                        {newToday} of {newLimit} new cards
+                        {formatCount(newToday)} of {formatCount(newLimit)} new cards
                       </strong>{" "}
                       and{" "}
                       <strong style={{ color: "var(--color-prax-cream)" }}>
-                        {reviewsToday} of {reviewLimit} review cards
+                        {formatCount(reviewsToday)} of {formatCount(reviewLimit)} review cards
                       </strong>
-                      , so this session serves the {projectedNew} new and{" "}
-                      {projectedReview} review card
+                      , so this session serves the {formatCount(projectedNew)} new and{" "}
+                      {formatCount(projectedReview)} review card
                       {projectedReview === 1 ? "" : "s"}{" "}
                       you have left. These count
                       CARDS, not taps: a card you answer again after &ldquo;Again&rdquo;
                       is still one card.{" "}
                       {extraStudyAttemptsToday > 0 ? (
                         <>
-                          You have also done {extraStudyAttemptsToday} Extra Study
+                          You have also done {formatCount(extraStudyAttemptsToday)} Extra Study
                           attempt{extraStudyAttemptsToday === 1 ? "" : "s"}, which do
                           not come out of this allowance.{" "}
                         </>
@@ -701,14 +707,14 @@ export default function FlashcardsHub() {
                   >
                     You&rsquo;ve studied{" "}
                     <strong style={{ color: "var(--color-prax-cream)" }}>
-                      {newToday} new
+                      {formatCount(newToday)} new
                     </strong>{" "}
                     and{" "}
                     <strong style={{ color: "var(--color-prax-cream)" }}>
-                      {reviewsToday} reviews
+                      {formatCount(reviewsToday)} reviews
                     </strong>{" "}
-                    today. The {totalDue} cards still waiting are held until
-                    tomorrow by your daily limits ({newLimit} new / {reviewLimit}{" "}
+                    today. The {formatCount(totalDue)} cards still waiting are held until
+                    tomorrow by your daily limits ({formatCount(newLimit)} new / {formatCount(reviewLimit)}{" "}
                     review). Want to keep going now?{" "}
                     <button
                       type="button"
@@ -743,7 +749,7 @@ export default function FlashcardsHub() {
                   fontVariantNumeric: "tabular-nums lining-nums",
                 }}
               >
-                {totalItems}
+                {formatCount(totalItems)}
               </div>
               <div
                 className="italic mt-1"
@@ -797,7 +803,7 @@ export default function FlashcardsHub() {
                       fontVariantNumeric: "tabular-nums lining-nums",
                     }}
                   >
-                    {starredCount}
+                    {formatCount(starredCount)}
                   </div>
                   <div
                     className="italic"
@@ -858,7 +864,7 @@ export default function FlashcardsHub() {
                       fontVariantNumeric: "tabular-nums lining-nums",
                     }}
                   >
-                    {totalItems}
+                    {formatCount(totalItems)}
                   </div>
                   <div
                     className="italic"
@@ -990,7 +996,7 @@ export default function FlashcardsHub() {
                             }}
                           >
                             {sectionDecks.length} deck
-                            {sectionDecks.length === 1 ? "" : "s"} · {totalCards} cards
+                            {sectionDecks.length === 1 ? "" : "s"} · {formatCount(totalCards)} cards
                             {sectionReviewed > 0
                               ? ` · ${sectionProgressPct}% reviewed`
                               : ""}
@@ -1467,8 +1473,8 @@ function DeckCard({ deck }: { deck: Deck }) {
             {deck.topic}
             {deck.subtopic ? ` · ${deck.subtopic.replace(/_/g, " ")}` : ""}
             {" · "}
-            {deck.card_count} cards
-            {deck.reviewed_count > 0 ? ` · ${deck.reviewed_count} reviewed` : ""}
+            {formatCount(deck.card_count)} cards
+            {deck.reviewed_count > 0 ? ` · ${formatCount(deck.reviewed_count)} reviewed` : ""}
           </div>
 
           {/* Progress bar */}

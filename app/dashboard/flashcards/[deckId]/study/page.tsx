@@ -21,6 +21,7 @@ import { countTodaysReviews } from "@/lib/flashcards/quota";
 import { DEFAULT_DAY_START_HOUR, runtimeTimezone } from "@/lib/flashcards/studyDay";
 import { submitReview, type ReviewSource, type SubmittedReview } from "@/lib/flashcards/submitReview";
 import { setCardFlag } from "@/lib/flashcards/cardFlags";
+import { formatCount } from "@/lib/format/count";
 import StudySurface from "@/components/flashcards/StudySurface";
 import RotateGate from "@/components/flashcards/RotateGate";
 
@@ -514,10 +515,10 @@ export default function StudyPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
         <div className="bg-as-primary text-white rounded-[2rem] p-8 text-center mb-6">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-2">Session Complete</p>
-          <h1 className="font-headline text-3xl mb-3">{stats.done} cards reviewed</h1>
+          <h1 className="font-headline text-3xl mb-3">{formatCount(stats.done)} cards reviewed</h1>
           <p className="text-sm text-white/70">
             {missed > 0
-              ? `${missed} marked Again. They came back this session until you got them right.`
+              ? `${formatCount(missed)} marked Again. They came back this session until you got them right.`
               : "Clean run. Cards rescheduled per your ratings."}
           </p>
         </div>
@@ -609,7 +610,7 @@ export default function StudyPage() {
               </p>
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <p className="font-headline text-2xl text-as-primary tabular-nums">{stats.done}</p>
+                  <p className="font-headline text-2xl text-as-primary tabular-nums">{formatCount(stats.done)}</p>
                   <p className="text-[9px] font-bold uppercase tracking-widest text-as-outline mt-0.5">Done</p>
                 </div>
                 <div>

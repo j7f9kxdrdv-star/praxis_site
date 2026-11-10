@@ -10,6 +10,8 @@
 // none of it. Both keep recording the review sources they always have, so the
 // daily quota in ./quota.ts needs no change.
 
+import { formatCount } from "@/lib/format/count";
+
 export const SECTIONS = [
   { id: "biology", label: "Biology" },
   { id: "biochemistry", label: "Biochemistry" },
@@ -104,12 +106,12 @@ export function describeSubjectReview(
   label: string,
   dueElsewhere: number,
 ): { headline: string; detail: string; elsewhere: string | null } {
-  const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
+  const plural = (n: number, one: string, many: string) => `${formatCount(n)} ${n === 1 ? one : many}`;
   let headline: string;
   const notes: string[] = [];
   if (p.served > 0) {
-    headline = `${p.served} to study today`;
-    notes.push(`${p.servedNew} new, ${plural(p.servedReview, "review", "reviews")}.`);
+    headline = `${formatCount(p.served)} to study today`;
+    notes.push(`${formatCount(p.servedNew)} new, ${plural(p.servedReview, "review", "reviews")}.`);
     if (p.newLimitUsed) notes.push("Today\u2019s new-card limit is used up, so no new ones.");
     if (p.reviewLimitUsed) notes.push("Today\u2019s review limit is used up, so no reviews.");
     notes.push("Review counts toward your daily limits; Extra Study doesn\u2019t.");

@@ -72,6 +72,33 @@ export function itemIndices(card: Pick<CardShape, "card_type" | "cloze_count">):
 
 export const itemKey = (cardId: string, clozeIndex: number) => `${cardId}::${clozeIndex}`;
 
+/** Does this card still have this item? (A basic card has item 0; a cloze card 1..N.) */
+export function isRealItem(card: Pick<CardShape, "card_type" | "cloze_count">, clozeIndex: number): boolean {
+  if (card.card_type !== "cloze") return clozeIndex === 0;
+  return Number.isInteger(clozeIndex) && clozeIndex >= 1 && clozeIndex <= Math.max(card.cloze_count ?? 1, 1);
+}
+
+/**
+ * Keep only progress rows for items their card still has.
+ *
+ * When a card is rewritten with fewer blanks, a student's rows for the blanks
+ * it lost stay behind. No session can serve them (sessions walk the card's own
+ * blanks), so no count should include them either: they made the all-subject
+ * headline say 6,544 due where 6,532 could be studied, and a chapter say "236
+ * reviewed" of 233. The rows themselves are left untouched; this only decides
+ * what is counted.
+ */
+export function keepRealItems<S extends { flashcard_id: string; cloze_index: number }>(
+  states: S[],
+  cards: Pick<CardShape, "id" | "card_type" | "cloze_count">[],
+): S[] {
+  const byId = new Map(cards.map((c) => [c.id, c]));
+  return states.filter((st) => {
+    const card = byId.get(st.flashcard_id);
+    return card !== undefined && isRealItem(card, st.cloze_index);
+  });
+}
+
 /**
  * new:       never studied (no state row)
  * due:       studied, and due now

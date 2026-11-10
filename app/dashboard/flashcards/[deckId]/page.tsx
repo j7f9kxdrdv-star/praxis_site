@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useDashboard } from "@/components/dashboard/DashboardShell";
 import { supabase } from "@/lib/supabase";
 import { countClozeGroups, clozeToMaskedPreview } from "@/lib/flashcards/cloze";
+import { formatCount } from "@/lib/format/count";
 
 interface Deck {
   id: string;
@@ -174,7 +175,7 @@ export default function DeckDetailPage() {
       <div className="grid grid-cols-3 gap-3 mb-6">
         {[
           { label: "Items", value: totalItems.toString() },
-          { label: "Reviewed", value: `${reviewedItems}/${totalItems}` },
+          { label: "Reviewed", value: `${formatCount(reviewedItems)}/${formatCount(totalItems)}` },
           { label: "Due", value: dueItems.toString() },
         ].map(({ label, value }) => (
           <div
@@ -218,7 +219,7 @@ export default function DeckDetailPage() {
             </h2>
             <p className="text-sm text-as-on-primary/70">
               {dueItems > 0
-                ? `${dueItems} due now. Go through them in order.`
+                ? `${formatCount(dueItems)} due now. Go through them in order.`
                 : totalItems === 0
                 ? "This deck has no cards yet."
                 : "Nothing due. You can still review the whole deck if you want extra practice."}
@@ -239,7 +240,7 @@ export default function DeckDetailPage() {
         >
           <p className="text-[10px] font-bold uppercase tracking-widest text-as-outline mb-1">Starred</p>
           <p className="text-sm font-medium text-as-primary">
-            {starredItems > 0 ? `Review ${starredItems}` : "None starred"}
+            {starredItems > 0 ? `Review ${formatCount(starredItems)}` : "None starred"}
           </p>
         </button>
         <button
@@ -248,7 +249,7 @@ export default function DeckDetailPage() {
           className="bg-as-surface-container-lowest rounded-xl border border-as-outline-variant/15 p-4 text-left hover:border-as-primary/30 transition-all disabled:opacity-50"
         >
           <p className="text-[10px] font-bold uppercase tracking-widest text-as-outline mb-1">Extra Study</p>
-          <p className="text-sm font-medium text-as-primary">All {totalItems} cards</p>
+          <p className="text-sm font-medium text-as-primary">All {formatCount(totalItems)} cards</p>
         </button>
       </div>
 

@@ -64,6 +64,7 @@ import {
 import type { ScoreEstimate } from "@/lib/scoring/scoreEstimate";
 import { buildChecklist, type ChecklistInput, type FocusDeck } from "@/lib/dashboard/checklist";
 import { detectPhase, summariseCards, type PhaseResult } from "@/lib/dashboard/phase";
+import { keepRealItems, type CardShape } from "@/lib/flashcards/sessionQueue";
 import { countTodaysReviews } from "@/lib/flashcards/quota";
 import { startOfStudyDay } from "@/lib/flashcards/studyDay";
 
@@ -273,6 +274,10 @@ export default function DashboardHome() {
           if (data.length < PAGE) break;
         }
       }
+      // Count only items a card still has, as the Flashcards page and the
+      // study sessions do: rows left behind by a card that lost a blank cannot
+      // be studied, so they are not due (lib/flashcards/sessionQueue.ts).
+      stateRows = keepRealItems(stateRows, cardRows as CardShape[]);
 
       if (cancelled) return;
 

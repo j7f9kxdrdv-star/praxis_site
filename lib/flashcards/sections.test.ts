@@ -180,3 +180,17 @@ describe("describeSubjectReview (the words on the box)", () => {
     expect(d(1, 1, 5, 5, 140).elsewhere).toBe("140 reviews are also due in other subjects.");
   });
 });
+
+describe("describeSubjectReview writes large counts with thousands separators", () => {
+  it("the headline, the detail and the other-subjects line", () => {
+    const r = describeSubjectReview(
+      projectSubjectReview({ unseen: 1200, dueReviews: 1500, newLeftToday: 1100, reviewsLeftToday: 2000 }),
+      "Biology",
+      5354,
+    );
+    expect(r.headline).toBe("2,600 to study today");
+    expect(r.detail).toContain("1,100 new, 1,500 reviews.");
+    expect(r.elsewhere).toBe("5,354 reviews are also due in other subjects.");
+  });
+});
+
