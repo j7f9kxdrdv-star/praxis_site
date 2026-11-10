@@ -22,11 +22,13 @@ import { countTodaysReviews } from "@/lib/flashcards/quota";
 import { DEFAULT_DAY_START_HOUR, runtimeTimezone } from "@/lib/flashcards/studyDay";
 import { submitReview, type ReviewSource, type SubmittedReview } from "@/lib/flashcards/submitReview";
 import { setCardFlag } from "@/lib/flashcards/cardFlags";
+import { parseSection, sectionLabel, sectionParamProblem, sessionHref } from "@/lib/flashcards/sections";
 import StudySurface from "@/components/flashcards/StudySurface";
 import RotateGate from "@/components/flashcards/RotateGate";
 
 // Cross-deck session: due | starred | extra_study
-// Mirrors the per-deck study page but loads cards from EVERY deck the user has access to.
+// Mirrors the per-deck study page but loads cards from EVERY deck the user has access to,
+// or, with ?section=<subject>, from every deck of that one subject (all its chapters, mixed).
 
 interface Card {
   id: string;
@@ -91,6 +93,21 @@ const MODE_SUBTITLE: Record<Mode, string> = {
   extra_study: "Study beyond today's recommendation. These reviews count the same.",
 };
 
+// The same three, for a session limited to one subject.
+const SUBJECT_EMPTY: Record<Mode, (subject: string) => string> = {
+  due: (subject) => `Nothing in ${subject} is due right now.`,
+  starred: (subject) => `You haven't starred any ${subject} cards yet. Tap the star while studying to add some.`,
+  extra_study: (subject) => `No ${subject} cards yet.`,
+};
+
+const SUBJECT_SUBTITLE: Record<Mode, (subject: string) => string> = {
+  due: (subject) =>
+    `Today's recommended ${subject} cards, mixed across every chapter. They come out of your daily limits, which every subject shares.`,
+  starred: (subject) => `Your starred ${subject} cards, from every chapter.`,
+  extra_study: (subject) =>
+    `Any ${subject} card, mixed across every chapter, beyond today's recommendation. Your daily limits are untouched.`,
+};
+
 const RATING_DOT: Record<Rating, string> = {
   again: "bg-rose-400",
   hard: "bg-amber-400",
@@ -112,6 +129,13 @@ function SessionInner() {
       : rawMode === "starred"
       ? "starred"
       : "due";
+  // Optional: limit the session to one subject. An unknown subject is shown as
+  // a problem, never quietly widened to the whole library.
+  const rawSection = search.get("section");
+  const section = parseSection(rawSection);
+  const badSection = sectionParamProblem(rawSection);
+  const subject = section ? sectionLabel(section) : null;
+  const title = subject ? `${MODE_TITLES[mode]} · ${subject}` : MODE_TITLES[mode];
 
   const [queue, setQueue] = useState<ReviewItem[]>([]);
   const [index, setIndex] = useState(0);
@@ -133,6 +157,8 @@ function SessionInner() {
   // A failed save is shown, never swallowed. The previous write path ignored
   // errors entirely, so a student could grade a card and lose it silently.
   const [saveError, setSaveError] = useState<string | null>(null);
+  // A subject session whose decks could not be read.
+  const [loadError, setLoadError] = useState(false);
 
   // When the queue loads empty in "due" mode, we want to explain why so
   // the user doesn't see a generic blank screen. Two distinct causes:
@@ -158,6 +184,30 @@ function SessionInner() {
   // ─── Load cross-deck queue ────────────────────────────────────────────────
   useEffect(() => {
     async function load() {
+      if (badSection) return; // rendered as a problem below; nothing to load
+
+      // A subject session draws only from that subject's decks. If they cannot
+      // be read, load nothing: falling back to every deck would be the wrong
+      // session wearing the right title.
+      let deckIds: string[] | null = null;
+      if (section) {
+        const { data: deckRows, error: deckError } = await supabase
+          .from("flashcard_decks")
+          .select("id")
+          .eq("section", section)
+          .order("id", { ascending: true });
+        if (deckError) {
+          setLoadError(true);
+          setLoading(false);
+          return;
+        }
+        deckIds = (deckRows ?? []).map((d) => d.id as string);
+        if (deckIds.length === 0) {
+          setLoading(false);
+          return;
+        }
+      }
+
       // Page through the ENTIRE card library. Without an explicit range,
       // PostgREST silently caps this at 1000 rows. Once the bank grew past
       // that, later decks were never fetched at all: their cards became
@@ -167,9 +217,13 @@ function SessionInner() {
       const cards: Card[] = [];
       const CARD_PAGE = 1000;
       for (let from = 0; ; from += CARD_PAGE) {
-        const { data, error } = await supabase
+        let cardQuery = supabase
           .from("flashcards")
-          .select("id, card_type, front_text, back_text, cloze_text, cloze_count, explanation, back_image_url, back_image_alt, deck_id")
+          .select("id, card_type, front_text, back_text, cloze_text, cloze_count, explanation, back_image_url, back_image_alt, deck_id");
+        // A subject has at most a few dozen decks, so this list stays short
+        // (unlike a list of card ids, which once outgrew the URL).
+        if (deckIds) cardQuery = cardQuery.in("deck_id", deckIds);
+        const { data, error } = await cardQuery
           .order("id", { ascending: true })
           .range(from, from + CARD_PAGE - 1);
         if (error || !data || data.length === 0) break;
@@ -336,7 +390,7 @@ function SessionInner() {
       setLoading(false);
     }
     load();
-  }, [user.id, mode, profile?.daily_new_card_limit, profile?.daily_review_limit]);
+  }, [user.id, mode, section, badSection, profile?.daily_new_card_limit, profile?.daily_review_limit]);
 
   // ─── Actions ──────────────────────────────────────────────────────────────
   const current = queue[index];
@@ -541,6 +595,27 @@ function SessionInner() {
   const backText = current?.card.card_type === "basic" ? current.card.back_text : null;
 
   // ─── States ───────────────────────────────────────────────────────────────
+  if (badSection || loadError) {
+    return (
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 text-center">
+        <p className="text-as-primary font-headline text-xl mb-2">
+          {badSection ? "Subject not found" : `Couldn't load ${subject ?? "this subject"}`}
+        </p>
+        <p className="text-as-outline text-sm mb-6 max-w-md mx-auto leading-relaxed">
+          {badSection
+            ? "This link names a subject that doesn't exist. Pick one from your decks instead."
+            : "Check your connection and try again. Nothing was studied or changed."}
+        </p>
+        <Link
+          href="/dashboard/flashcards"
+          className="inline-block bg-as-primary text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-xl"
+        >
+          Back to Decks
+        </Link>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -564,7 +639,7 @@ function SessionInner() {
             ? "You're all caught up"
             : isNothingDue
             ? "Caught up for today"
-            : MODE_TITLES[mode]}
+            : title}
         </p>
         <p className="text-as-outline text-sm mb-6 max-w-md mx-auto leading-relaxed">
           {isLimitReached && ctx ? (
@@ -575,13 +650,21 @@ function SessionInner() {
               when you stop here and let the schedule do its job. If you want to keep
               studying, Extra Study is there. It uses the same memory schedule and it
               does not spend tomorrow&apos;s recommendation.
+              {subject && (
+                <>
+                  {" "}Your daily limits are shared by every subject, so studying {subject} draws
+                  from the same allowance.
+                </>
+              )}
             </>
           ) : isNothingDue ? (
             <>
-              Nothing is due right now. New cards land based on your spaced
+              Nothing{subject ? ` in ${subject}` : ""} is due right now. New cards land based on your spaced
               repetition schedule. Review more cards today to introduce new
               ones, or come back later as cards cycle back.
             </>
+          ) : subject ? (
+            SUBJECT_EMPTY[mode](subject)
           ) : (
             MODE_EMPTY[mode]
           )}
@@ -591,7 +674,7 @@ function SessionInner() {
             // Secondary, not primary. Finishing the recommendation is the
             // success state; Extra Study is a choice, not the next step.
             <Link
-              href="/dashboard/flashcards/session?mode=extra_study"
+              href={sessionHref("extra_study", section)}
               className="inline-block border-2 border-as-primary/40 text-as-primary text-xs font-bold uppercase tracking-wider px-5 py-3 rounded-xl"
             >
               Extra Study
@@ -618,7 +701,7 @@ function SessionInner() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10">
         <div className="bg-as-primary text-white rounded-[2rem] p-8 text-center mb-6">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/60 mb-2">
-            {MODE_TITLES[mode]} · Complete
+            {title} · Complete
           </p>
           <h1 className="font-headline text-3xl mb-3">{stats.done} cards reviewed</h1>
           <p className="text-sm text-white/70">
@@ -704,13 +787,13 @@ function SessionInner() {
             {/* Mode letterhead */}
             <div className="bg-as-surface-container-lowest border border-as-outline-variant/20 rounded-3xl p-5">
               <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-as-outline mb-1.5">
-                Cross-Deck Session
+                {subject ? `${subject} · All chapters` : "Cross-Deck Session"}
               </p>
               <h2 className="font-headline text-lg text-as-primary leading-tight mb-1.5">
                 {MODE_TITLES[mode]}
               </h2>
               <p className="text-xs text-as-on-surface-variant leading-relaxed">
-                {MODE_SUBTITLE[mode]}
+                {subject ? SUBJECT_SUBTITLE[mode](subject) : MODE_SUBTITLE[mode]}
               </p>
             </div>
 

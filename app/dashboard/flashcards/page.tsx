@@ -13,6 +13,8 @@ import {
 } from "@/lib/dashboard/recommendedLimits";
 import { summariseCards } from "@/lib/dashboard/phase";
 import { DEFAULT_DAY_START_HOUR, runtimeTimezone } from "@/lib/flashcards/studyDay";
+import { SECTIONS, projectSubjectReview } from "@/lib/flashcards/sections";
+import SubjectStudyBar from "@/components/flashcards/SubjectStudyBar";
 import {
   PageHeader,
   ActiveNowPill,
@@ -39,16 +41,6 @@ interface Deck {
   soon_count: number; // due within 3 days
   later_count: number; // due 4+ days out
 }
-
-const SECTIONS: { id: string; label: string }[] = [
-  { id: "biology", label: "Biology" },
-  { id: "biochemistry", label: "Biochemistry" },
-  { id: "chemistry", label: "Chemistry" },
-  { id: "organic_chemistry", label: "Organic Chemistry" },
-  { id: "physics", label: "Physics" },
-  { id: "scientific_reasoning", label: "Scientific Reasoning" },
-  { id: "psych_soc", label: "Psych / Soc" },
-];
 
 /* ─────────────── Page ─────────────── */
 
@@ -921,6 +913,18 @@ export default function FlashcardsHub() {
                   : sectionReviewed >= totalCards && sectionUrgent === 0
                   ? "caught-up"
                   : "in-progress";
+              // What this subject's Review button would serve: its unseen and
+              // due cards, capped by what is left of the shared daily allowance.
+              const sectionUnseen = sectionDecks.reduce(
+                (s, d) => s + Math.max(0, d.card_count - d.reviewed_count),
+                0
+              );
+              const sectionProjection = projectSubjectReview({
+                unseen: sectionUnseen,
+                dueReviews: Math.max(0, sectionUrgent - sectionUnseen),
+                newLeftToday: newLimit - newToday,
+                reviewsLeftToday: reviewLimit - reviewsToday,
+              });
               const sectionProgressPct =
                 totalCards > 0
                   ? Math.min(
@@ -1014,6 +1018,13 @@ export default function FlashcardsHub() {
 
                   {isExpanded && (
                     <div className="mt-2 ml-4 space-y-1">
+                      {dataLoaded && totalCards > 0 && (
+                        <SubjectStudyBar
+                          section={section.id}
+                          label={section.label}
+                          projection={sectionProjection}
+                        />
+                      )}
                       {sectionDecks.map((d) => (
                         <DeckCard key={d.id} deck={d} />
 
