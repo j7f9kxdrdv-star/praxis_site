@@ -105,9 +105,31 @@ describe("the Flashcards page counts only blanks a card still has", () => {
 });
 
 describe("the word \"cards\"", () => {
-  it("the headline explains that a card with several blanks counts once for each blank", async () => {
+  const NOTE = "Each blank on a flashcard counts as one study card.";
+
+  it("explains it while cards are due", async () => {
     await openHub(makeLibrary());
-    expect(screen.getByText(/A card with several blanks counts once for each blank\./)).toBeTruthy();
+    expect(headline().big).toBe("82");
+    expect(screen.getByText(/Clear your queue today/).textContent).toContain(NOTE);
+  });
+
+  it("explains it when the student is caught up", async () => {
+    const tables = makeLibrary();
+    // Every blank studied and due well in the future: nothing due, nothing unseen.
+    tables.flashcard_user_state = [];
+    for (const card of tables.flashcards) {
+      const n = card.card_type === "cloze" ? Number(card.cloze_count) : 1;
+      for (let i = 0; i < n; i++) tables.flashcard_user_state.push(state(String(card.id), card.card_type === "cloze" ? i + 1 : 0, FUTURE));
+    }
+    await openHub(tables);
+    expect(headline().big).toBe("0");
+    expect(screen.getByText(/Caught up\./).textContent).toContain(NOTE);
+  });
+
+  it("uses the agreed wording only, once", async () => {
+    await openHub(makeLibrary());
+    expect(screen.getAllByText(new RegExp(NOTE.replace(".", "\\."))).length).toBe(1);
+    expect(screen.queryByText(/counts once for each blank/)).toBeNull();
   });
 });
 
@@ -138,4 +160,3 @@ describe("counts are written with thousands separators", () => {
   });
 });
 
-void FUTURE;
