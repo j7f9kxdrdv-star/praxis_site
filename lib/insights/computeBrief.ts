@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Brief, Claim, Confidence } from "./types";
 import { forecastPaces, type ForecastCard } from "./forecast";
 import { studyDayKey, DEFAULT_DAY_START_HOUR, DEFAULT_TIMEZONE } from "@/lib/flashcards/studyDay";
+import { isRealItem } from "@/lib/flashcards/sessionQueue";
 
 /**
  * Tier 1 brief: everything the product can honestly say from flashcard
@@ -99,12 +100,12 @@ function wilsonLowerBound(ok: number, n: number): number {
 
 async function loadDeckTitles(
   db: SupabaseClient,
-): Promise<Map<string, { deckId: string; title: string }>> {
-  const cards: { id: string; deck_id: string }[] = [];
+): Promise<Map<string, { deckId: string; title: string; cardType: string; clozeCount: number | null }>> {
+  const cards: { id: string; deck_id: string; card_type: string; cloze_count: number | null }[] = [];
   for (let from = 0; ; from += 1000) {
     const { data, error } = await db
       .from("flashcards")
-      .select("id, deck_id")
+      .select("id, deck_id, card_type, cloze_count")
       .order("id", { ascending: true })
       .range(from, from + 999);
     if (error) throw new Error(error.message);
@@ -117,7 +118,12 @@ async function loadDeckTitles(
   return new Map(
     cards.map((c) => [
       c.id,
-      { deckId: c.deck_id, title: deckTitle.get(c.deck_id) ?? "Unknown deck" },
+      {
+        deckId: c.deck_id,
+        title: deckTitle.get(c.deck_id) ?? "Unknown deck",
+        cardType: c.card_type,
+        clozeCount: c.cloze_count,
+      },
     ]),
   );
 }
@@ -149,7 +155,15 @@ export async function computeBrief(
 ): Promise<Brief> {
   const [state, cardDeck] = await Promise.all([loadState(db, userId), loadDeckTitles(db)]);
   const now = new Date();
-  const live = state.filter((r) => !r.suspended);
+  // Count only blanks a card still has. A card rewritten with fewer blanks
+  // leaves rows for the blanks it lost; no session can show them, so they are
+  // not due, not leeches and not in circulation (the same rule as the
+  // Flashcards page and the dashboard: isRealItem, lib/flashcards/sessionQueue).
+  const real = state.filter((r) => {
+    const card = cardDeck.get(r.flashcard_id);
+    return card !== undefined && isRealItem({ card_type: card.cardType as "basic" | "cloze", cloze_count: card.clozeCount }, r.cloze_index);
+  });
+  const live = real.filter((r) => !r.suspended);
   const claims: Claim[] = [];
 
   // A student who has barely started gets an honest "nothing to say yet"

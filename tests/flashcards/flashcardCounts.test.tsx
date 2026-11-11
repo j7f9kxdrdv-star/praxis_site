@@ -104,6 +104,13 @@ describe("the Flashcards page counts only blanks a card still has", () => {
   });
 });
 
+describe("the word \"cards\"", () => {
+  it("the headline explains that a card with several blanks counts once for each blank", async () => {
+    await openHub(makeLibrary());
+    expect(screen.getByText(/A card with several blanks counts once for each blank\./)).toBeTruthy();
+  });
+});
+
 describe("counts are written with thousands separators", () => {
   it("the headline, the unseen figure, the library total and a chapter line", async () => {
     const tables = makeLibrary();

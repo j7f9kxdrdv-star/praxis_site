@@ -498,7 +498,7 @@ export default function FlashcardsHub() {
                 }}
               >
                 {totalDue > 0
-                  ? "Clear your queue today to keep retention strong. Unseen cards are new to you; due cards are scheduled for review now; soon cards land within 3 days."
+                  ? "Clear your queue today to keep retention strong. Unseen cards are new to you; due cards are scheduled for review now; soon cards land within 3 days. A card with several blanks counts once for each blank."
                   : "Caught up. Pick a deck below to get ahead of the curve, or keep going with Extra Study."}
               </div>
 
